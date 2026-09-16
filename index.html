@@ -29,25 +29,60 @@
         </a>
 
         <nav class="nav-links">
-            <a href="#home">HOME</a>
-            <a href="#standings">STANDINGS</a>
-            <a href="#calendar">CALENDAR</a>
-            <a href="#races">RACES</a>
-            <a href="#info">INFO</a>
+            <a href="#home" id="navHome">INICIO</a>
+            <a href="#standings" id="navStandings">CLASIFICACIÓN</a>
+            <a href="#calendar" id="navCalendar">CALENDARIO</a>
+            <a href="#races" id="navRaces">CARRERAS</a>
+            <a href="#info" id="navInfo">INFORMACIÓN</a>
         </nav>
 
-        <a
-            class="discord-btn"
-            href="https://discord.gg/4k8kPsP6Mb"
-            target="_blank"
-            rel="noopener noreferrer"
-        >
-            DISCORD ↗
-        </a>
+        <div class="nav-actions">
+            <!-- Language switcher: ES (bandera) - EN (bandera estados unidos) -->
+            <div class="lang-switcher" id="langSwitcher" role="group" aria-label="Cambiar idioma / Change language">
+                <button type="button" class="lang-btn active" id="langBtnEs" data-lang="es" aria-pressed="true" title="Cambiar a Español">
+                    <span class="lang-code">ES</span>
+                    <span class="flag-icon" aria-hidden="true">
+                        <svg viewBox="0 0 20 14" width="20" height="14" class="flag-svg" aria-hidden="true">
+                            <rect width="20" height="14" fill="#AA151B"/>
+                            <rect y="3.5" width="20" height="7" fill="#F1BF00"/>
+                            <circle cx="5" cy="7" r="1.8" fill="#AA151B" opacity="0.85"/>
+                        </svg>
+                    </span>
+                </button>
+                <span class="lang-sep" aria-hidden="true">-</span>
+                <button type="button" class="lang-btn" id="langBtnEn" data-lang="en" aria-pressed="false" title="Switch to English">
+                    <span class="lang-code">EN</span>
+                    <span class="flag-icon" aria-hidden="true">
+                        <svg viewBox="0 0 20 14" width="20" height="14" class="flag-svg" aria-hidden="true">
+                            <rect width="20" height="14" fill="#B22234"/>
+                            <rect y="2" width="20" height="1.8" fill="#FFFFFF"/>
+                            <rect y="4.6" width="20" height="1.8" fill="#FFFFFF"/>
+                            <rect y="7.6" width="20" height="1.8" fill="#FFFFFF"/>
+                            <rect y="10.2" width="20" height="1.8" fill="#FFFFFF"/>
+                            <rect width="8" height="7" fill="#3C3B6E"/>
+                            <circle cx="2.5" cy="2.2" r="0.6" fill="#FFFFFF"/>
+                            <circle cx="5.5" cy="2.2" r="0.6" fill="#FFFFFF"/>
+                            <circle cx="4" cy="3.5" r="0.6" fill="#FFFFFF"/>
+                            <circle cx="2.5" cy="4.8" r="0.6" fill="#FFFFFF"/>
+                            <circle cx="5.5" cy="4.8" r="0.6" fill="#FFFFFF"/>
+                        </svg>
+                    </span>
+                </button>
+            </div>
 
-        <button class="menu-btn" id="menuBtn" aria-label="Open menu">
-            ☰
-        </button>
+            <a
+                class="discord-btn"
+                href="https://discord.gg/4k8kPsP6Mb"
+                target="_blank"
+                rel="noopener noreferrer"
+            >
+                DISCORD ↗
+            </a>
+
+            <button class="menu-btn" id="menuBtn" aria-label="Open menu">
+                ☰
+            </button>
+        </div>
 
     </div>
 </header>
@@ -63,32 +98,32 @@
 
     <div class="hero-content">
 
-        <div class="eyebrow">
-            SEASON 1 · FORMULA FACTOR CHAMPIONSHIP
+        <div class="eyebrow" id="heroEyebrow">
+            TEMPORADA 1 · FORMULA FACTOR CHAMPIONSHIP
         </div>
 
-        <h1>
-            RACE<br>
-            WHEEL-TO-<br>
-            WHEEL<br>
-            ON THE<br>
+        <h1 id="heroTitle">
+            CORRE<br>
+            RUEDA A<br>
+            RUEDA<br>
+            EN LA PARRILLA<br>
             FORMULA<br>
-            FACTOR GRID
+            FACTOR
         </h1>
 
-        <p class="hero-description">
+        <p class="hero-description" id="heroDescription">
             Una liga de sim racing competitiva, limpia y abierta
             a pilotos que quieren correr, competir y disfrutar del motorsport.
         </p>
 
         <div class="hero-buttons">
 
-            <a href="#standings" class="btn btn-primary">
-                VIEW STANDINGS
+            <a href="#standings" class="btn btn-primary" id="heroBtnStandings">
+                VER CLASIFICACIÓN
             </a>
 
-            <a href="#calendar" class="btn btn-secondary">
-                VIEW CALENDAR
+            <a href="#calendar" class="btn btn-secondary" id="heroBtnCalendar">
+                VER CALENDARIO
             </a>
 
         </div>
@@ -100,25 +135,25 @@
 
         <div class="card-top">
             <span class="live-dot"></span>
-            NEXT RACE
+            <span id="nextRaceCardTopText">PRÓXIMA CARRERA</span>
         </div>
 
-        <div class="round-label">
+        <div class="round-label" id="nextRaceRound">
             ROUND 10
         </div>
 
         <div class="lightning">//</div>
 
-        <div class="next-label">
-            NEXT ROUND
+        <div class="next-label" id="nextRaceNextLabel">
+            SIGUIENTE RONDA
         </div>
 
-        <h2>
+        <h2 id="nextRaceTitle">
             NÜRBURGRING<br>
             GP
         </h2>
 
-        <p class="location">
+        <p class="location" id="nextRaceLocation">
             NÜRBURGRING ·<br>
             EUROPE
         </p>
@@ -127,27 +162,27 @@
 
             <div class="count-box">
                 <strong id="days">00</strong>
-                <span>DAYS</span>
+                <span id="labelDays">DÍAS</span>
             </div>
 
             <div class="count-box">
                 <strong id="hours">00</strong>
-                <span>HRS</span>
+                <span id="labelHours">HRS</span>
             </div>
 
             <div class="count-box">
                 <strong id="mins">00</strong>
-                <span>MIN</span>
+                <span id="labelMins">MIN</span>
             </div>
 
             <div class="count-box">
                 <strong id="secs">00</strong>
-                <span>SEC</span>
+                <span id="labelSecs">SEG</span>
             </div>
 
         </div>
 
-        <div class="race-date">
+        <div class="race-date" id="nextRaceDateText">
             20 SEP · 16:30<br>
             <span>CEST</span>
         </div>
@@ -164,23 +199,23 @@
 <section class="stats-section">
 
     <div class="stat">
-        <span>01</span>
-        <small>SEASON</small>
+        <span id="statSeason">01</span>
+        <small id="statLabelSeason">TEMPORADA</small>
     </div>
 
     <div class="stat">
-        <span>15</span>
-        <small>ROUNDS</small>
+        <span id="statRounds">15</span>
+        <small id="statLabelRounds">RONDAS</small>
     </div>
 
     <div class="stat">
         <span>∞</span>
-        <small>RACING</small>
+        <small id="statLabelRacing">COMPETICIÓN</small>
     </div>
 
     <div class="stat">
-        <span>44</span>
-        <small>DRIVERS</small>
+        <span id="statDrivers">44</span>
+        <small id="statLabelDrivers">PILOTOS</small>
     </div>
 
 </section>
@@ -195,12 +230,12 @@
     <div class="section-heading">
 
         <div>
-            <span class="section-kicker">CHAMPIONSHIP</span>
-            <h2>STANDINGS</h2>
+            <span class="section-kicker" id="standingsKicker">CAMPEONATO</span>
+            <h2 id="standingsHeading">CLASIFICACIÓN</h2>
         </div>
 
-        <p>
-            Season 1 championship classification
+        <p id="standingsSub">
+            Clasificación del campeonato Temporada 1
         </p>
 
     </div>
@@ -211,11 +246,11 @@
         <div class="table-title">
 
             <div>
-                <span>DRIVER CHAMPIONSHIP</span>
-                <small>AFTER ROUND 9</small>
+                <span id="driverChampionshipTitle">CAMPEONATO DE PILOTOS</span>
+                <small id="driverChampionshipRound">TRAS RONDA 9</small>
             </div>
 
-            <strong>POINTS</strong>
+            <strong id="driverPointsHeader">PUNTOS</strong>
 
         </div>
 
@@ -225,14 +260,14 @@
 
                 <thead>
                     <tr>
-                        <th>POS.</th>
-                        <th>DRIVER</th>
-                        <th>TEAM</th>
-                        <th>PTS</th>
+                        <th id="thDriverPos">POS.</th>
+                        <th id="thDriverName">PILOTO</th>
+                        <th id="thDriverTeam">EQUIPO</th>
+                        <th id="thDriverPts">PTS</th>
                     </tr>
                 </thead>
 
-                <tbody>
+                <tbody id="standingsTableBody">
 
                     <tr class="leader"><td>1</td><td>Dieguiosk</td><td class="team-hrt">HRT</td><td>153</td></tr>
                     <tr><td>2</td><td>Muntii</td><td class="team-redbull">Red Bull</td><td>125</td></tr>
@@ -285,6 +320,13 @@
 
         </div>
 
+        <div class="standings-expand-bar">
+            <button type="button" id="toggleStandingsBtn" class="standings-expand-btn" aria-expanded="false">
+                <span id="standingsToggleLabel">VER CLASIFICACIÓN COMPLETA (P11 - P44)</span>
+                <span id="standingsToggleIcon" class="expand-icon">▼</span>
+            </button>
+        </div>
+
     </div>
 
 
@@ -293,11 +335,11 @@
         <div class="table-title">
 
             <div>
-                <span>CONSTRUCTOR CHAMPIONSHIP</span>
-                <small>AFTER ROUND 9</small>
+                <span id="teamChampionshipTitle">CAMPEONATO DE CONSTRUCTORES</span>
+                <small id="teamChampionshipRound">TRAS RONDA 9</small>
             </div>
 
-            <strong>POINTS</strong>
+            <strong id="teamPointsHeader">PUNTOS</strong>
 
         </div>
 
@@ -307,14 +349,14 @@
 
                 <thead>
                     <tr>
-                        <th>POS.</th>
-                        <th>TEAM</th>
-                        <th>POINTS</th>
-                        <th>DIF.</th>
+                        <th id="thTeamPos">POS.</th>
+                        <th id="thTeamName">EQUIPO</th>
+                        <th id="thTeamPoints">PUNTOS</th>
+                        <th id="thTeamDiff">DIF.</th>
                     </tr>
                 </thead>
 
-                <tbody>
+                <tbody id="constructorsTableBody">
 
                     <tr class="leader"><td>1</td><td class="team-hrt">HRT</td><td>213</td><td>—</td></tr>
                     <tr><td>2</td><td class="team-redbull">Red Bull</td><td>213</td><td>0</td></tr>
@@ -349,12 +391,12 @@
     <div class="section-heading">
 
         <div>
-            <span class="section-kicker">SEASON 1</span>
-            <h2>CALENDAR</h2>
+            <span class="section-kicker" id="calendarKicker">TEMPORADA 1</span>
+            <h2 id="calendarHeading">CALENDARIO</h2>
         </div>
 
-        <p>
-            2026 championship calendar
+        <p id="calendarSub">
+            Calendario de la temporada 2026
         </p>
 
     </div>
@@ -554,11 +596,11 @@
     <div class="section-heading">
 
         <div>
-            <span class="section-kicker">RACE WEEKEND</span>
-            <h2>RACES</h2>
+            <span class="section-kicker" id="racesKicker">FIN DE SEMANA DE CARRERA</span>
+            <h2 id="racesHeading">CARRERAS</h2>
         </div>
 
-        <p>Follow the championship</p>
+        <p id="racesSub">Sigue el campeonato</p>
 
     </div>
 
@@ -566,13 +608,13 @@
     <div class="race-feature">
 
         <div class="race-feature-round">
-            ROUND<br>
+            <span id="raceFeatureRoundPrefix">RONDA</span><br>
             <strong>10</strong>
         </div>
 
         <div class="race-feature-main">
 
-            <span>NEXT EVENT</span>
+            <span id="raceFeatureNextEvent">PRÓXIMO EVENTO</span>
 
             <h3>NÜRBURGRING GP</h3>
 
@@ -615,27 +657,45 @@
 
         <div class="info-content">
 
-            <span class="section-kicker">
+            <span class="section-kicker" id="infoKicker">
                 FORMULA FACTOR CHAMPIONSHIP
             </span>
 
-            <h2>INFO</h2>
+            <h2 id="infoHeading">INFORMACIÓN</h2>
 
-            <p>
-                Formula Factor Championship is a competition in Assetto Corsa designed to bring together drivers that love motorsport simulation, especially Formula 1 from the V8 and V10 eras.
+            <p id="infoP1">
+                Formula Factor Championship es una competición en Assetto Corsa diseñada para reunir a pilotos amantes de la simulación y del automovilismo, especialmente de la Fórmula 1 de las eras V8 y V10.
             </p>
 
-            <p>
-                This championship offers competitive and highly realistic races. We aim to recreate the experience of a professional motorsport championship. Throughout the season, drivers must demonstrate not only speed, but also consistency, strategy, and adaptability to win the championship title.
+            <p id="infoP2">
+                Este campeonato ofrece carreras competitivas y de alto realismo. Buscamos recrear la experiencia de un campeonato profesional de motorsport. A lo largo de la temporada, los pilotos deberán demostrar no solo velocidad, sino también constancia, estrategia y capacidad de adaptación para alzarse con el título.
             </p>
 
-            <p>
-                The championship will consist of several races held on different circuits, and the scoring system will be based on the current Formula 1 system. Furthermore, the championship promotes respect among drivers, fair play on the track, and the development of a community where participants can enjoy competitive racing in a fair and sporting environment.
+            <p id="infoP3">
+                El campeonato constará de diversas citas en diferentes circuitos, con un sistema de puntuación basado en el sistema oficial de la Fórmula 1. Además, se promueve el respeto entre pilotos, el juego limpio en pista y una comunidad sana donde disfrutar de carreras igualadas.
             </p>
 
-            <p class="disclaimer">
-                Disclaimer: You need to be on the Discord server to stay updated on changes and to be able to join a team.
+            <p class="disclaimer" id="infoDisclaimer">
+                Aviso: Es imprescindible estar en el servidor de Discord para estar al día de los cambios y poder unirse a un equipo.
             </p>
+
+            <div class="info-socials">
+                <span class="socials-kicker" id="socialsKicker">ENLACES OFICIALES Y REDES SOCIALES</span>
+                <div class="socials-buttons">
+                    <a href="https://x.com/F0RMULAF4CTOR" target="_blank" rel="noopener noreferrer" class="social-pill social-x" aria-label="Formula Factor on X">
+                        <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+                        <span>X (Twitter)</span>
+                    </a>
+                    <a href="https://www.instagram.com/formulafactorchampionship" target="_blank" rel="noopener noreferrer" class="social-pill social-instagram" aria-label="Formula Factor on Instagram">
+                        <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+                        <span>Instagram</span>
+                    </a>
+                    <a href="https://discord.gg/4k8kPsP6Mb" target="_blank" rel="noopener noreferrer" class="social-pill social-discord discord-btn" aria-label="Formula Factor on Discord">
+                        <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028c.462-.63.874-1.295 1.226-1.994.021-.041.001-.09-.041-.106a13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.929 1.793 8.18 1.793 12.061 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.894.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.028zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.956-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.956 2.418-2.157 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.946 2.418-2.157 2.418z"/></svg>
+                        <span>Discord</span>
+                    </a>
+                </div>
+            </div>
 
         </div>
 
@@ -684,22 +744,22 @@
         <div class="result-highlights">
 
             <div class="highlight-box">
-                <span>WINNER</span>
+                <span id="labelWinner">GANADOR</span>
                 <strong id="resultWinner">—</strong>
             </div>
 
             <div class="highlight-box">
-                <span>POLE</span>
+                <span id="labelPole">POLE</span>
                 <strong id="resultPole">—</strong>
             </div>
 
             <div class="highlight-box">
-                <span>FASTEST LAP</span>
+                <span id="labelFastest">VUELTA RÁPIDA</span>
                 <strong id="resultFastest">—</strong>
             </div>
 
             <div class="highlight-box">
-                <span>DRIVER OF THE DAY</span>
+                <span id="labelDriverDay">PILOTO DEL DÍA</span>
                 <strong id="resultDriverDay">—</strong>
             </div>
 
@@ -709,8 +769,8 @@
         <div class="result-section">
 
             <div class="result-section-title">
-                <span>RACE RESULT</span>
-                <small>CLASSIFIED</small>
+                <span id="resultSectionTitle">RESULTADO DE CARRERA</span>
+                <small id="resultSectionSub">CLASIFICADOS</small>
             </div>
 
             <div class="result-table-wrapper">
@@ -719,10 +779,10 @@
 
                     <thead>
                         <tr>
-                            <th>POS.</th>
-                            <th>DRIVER</th>
-                            <th>TEAM</th>
-                            <th>STATUS</th>
+                            <th id="thResultPos">POS.</th>
+                            <th id="thResultDriver">PILOTO</th>
+                            <th id="thResultTeam">EQUIPO</th>
+                            <th id="thResultStatus">ESTADO</th>
                         </tr>
                     </thead>
 
@@ -737,7 +797,7 @@
 
         <div class="race-back">
             <button id="backToCalendar">
-                ← BACK TO CALENDAR
+                ← VOLVER AL CALENDARIO
             </button>
         </div>
 
@@ -764,12 +824,367 @@
         </div>
 
         <div class="footer-copy">
-            © 2026 FORMULA FACTOR CHAMPIONSHIP
+            <span>© 2026 FORMULA FACTOR CHAMPIONSHIP</span>
+            <button id="adminBtn" class="admin-hidden-trigger" type="button" aria-label="Acceso administrador" title="Administración">
+                <span class="admin-dot-icon">·</span>
+                <span class="admin-hidden-label">Admin</span>
+            </button>
         </div>
 
     </div>
 
 </footer>
+
+<!-- =========================
+     ADMIN AUTH MODAL
+========================= -->
+<div class="admin-auth-overlay" id="adminAuthOverlay" aria-hidden="true">
+    <div class="admin-auth-card">
+        <button class="admin-modal-close-btn" id="adminAuthClose" aria-label="Cerrar">&times;</button>
+        <div class="admin-card-badge">PANEL DE CONTROL</div>
+        <h3>ACCESO ADMINISTRADOR</h3>
+        <p class="admin-card-subtitle">Introduce la contraseña de seguridad para acceder al menú de administración.</p>
+        
+        <form id="adminLoginForm">
+            <div class="admin-input-group">
+                <label for="adminPasswordInput">CONTRASEÑA</label>
+                <div class="password-input-wrapper">
+                    <input type="password" id="adminPasswordInput" placeholder="Introduce la contraseña..." autocomplete="current-password" required>
+                    <button type="button" id="togglePasswordBtn" class="toggle-password-btn" aria-label="Ver u ocultar contraseña">👁</button>
+                </div>
+                <div class="admin-error-msg" id="adminLoginError">
+                    Contraseña incorrecta. Inténtalo de nuevo.
+                </div>
+            </div>
+
+            <div class="admin-form-actions">
+                <button type="button" class="btn btn-secondary" id="adminLoginCancel">CANCELAR</button>
+                <button type="submit" class="btn btn-primary" id="adminLoginSubmit">ACCEDER</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- =========================
+     ADMIN MENU MODAL
+========================= -->
+<div class="admin-panel-overlay" id="adminPanelOverlay" aria-hidden="true">
+    <div class="admin-panel-card">
+        <header class="admin-panel-header">
+            <div>
+                <div class="admin-card-badge">FFC // ADMIN PANEL</div>
+                <h2>MENÚ DE ADMINISTRACIÓN</h2>
+                <div class="admin-status-indicator">
+                    <span class="live-dot"></span>
+                    <span>Sesión de Administrador Activa</span>
+                </div>
+            </div>
+            <div class="admin-header-actions">
+                <button id="adminLogoutBtn" class="admin-logout-btn" type="button">Cerrar Sesión</button>
+                <button id="adminPanelClose" class="admin-modal-close-btn" aria-label="Cerrar panel">&times;</button>
+            </div>
+        </header>
+
+        <nav class="admin-tabs">
+            <button type="button" class="admin-tab-btn active" data-tab="tab-next-race">Próxima Carrera</button>
+            <button type="button" class="admin-tab-btn" data-tab="tab-race-results">Resultados de Carreras</button>
+            <button type="button" class="admin-tab-btn" data-tab="tab-standings">Clasificación</button>
+            <button type="button" class="admin-tab-btn" data-tab="tab-drivers">Pilotos &amp; Equipos</button>
+            <button type="button" class="admin-tab-btn" data-tab="tab-settings">Ajustes Generales</button>
+        </nav>
+
+        <div class="admin-panel-body">
+            <!-- TAB 1: PRÓXIMA CARRERA -->
+            <div class="admin-tab-pane active" id="tab-next-race">
+                <form id="nextRaceForm">
+                    <div class="admin-form-grid">
+                        <div class="admin-field">
+                            <label for="adminRaceRound">Ronda del Campeonato</label>
+                            <input type="text" id="adminRaceRound" placeholder="Ej: ROUND 10" required>
+                        </div>
+                        <div class="admin-field">
+                            <label for="adminRaceTitle">Nombre del Gran Premio</label>
+                            <input type="text" id="adminRaceTitle" placeholder="Ej: NÜRBURGRING GP" required>
+                        </div>
+                        <div class="admin-field">
+                            <label for="adminRaceLocation">Circuito y Región</label>
+                            <input type="text" id="adminRaceLocation" placeholder="Ej: NÜRBURGRING · EUROPE" required>
+                        </div>
+                        <div class="admin-field">
+                            <label for="adminRaceDateText">Texto de Fecha Visible</label>
+                            <input type="text" id="adminRaceDateText" placeholder="Ej: 20 SEP · 16:30 CEST" required>
+                        </div>
+                        <div class="admin-field admin-field-full">
+                            <label for="adminRaceDateTime">Fecha y Hora de la Carrera (Cuenta Regresiva)</label>
+                            <input type="datetime-local" id="adminRaceDateTime" required>
+                            <small class="admin-field-hint">Ajusta la fecha y hora oficial para que el contador en vivo sincronice automáticamente.</small>
+                        </div>
+                    </div>
+
+                    <div class="admin-save-bar">
+                        <span class="admin-save-notice" id="raceSaveNotice"></span>
+                        <button type="submit" class="btn btn-primary">Guardar Próxima Carrera</button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- TAB 2: RESULTADOS DE CARRERAS -->
+            <div class="admin-tab-pane" id="tab-race-results">
+                <form id="raceResultsForm">
+                    <div class="admin-results-selector-box">
+                        <div class="admin-field admin-field-full">
+                            <label for="adminSelectRace">SELECCIONAR CARRERA DE LA TEMPORADA</label>
+                            <select id="adminSelectRace" class="admin-select" required>
+                                <option value="australia">ROUND 01 — AUSTRALIA (Albert Park)</option>
+                                <option value="malaysia">ROUND 02 — MALAYSIA (Sepang)</option>
+                                <option value="bahrain">ROUND 03 — BAHRAIN (Sakhir)</option>
+                                <option value="turkey">ROUND 04 — TURKEY (Istanbul Park)</option>
+                                <option value="spain">ROUND 05 — SPAIN (Barcelona)</option>
+                                <option value="italy">ROUND 06 — ITALY (Monza)</option>
+                                <option value="austria">ROUND 07 — AUSTRIA (Red Bull Ring)</option>
+                                <option value="silverstone">ROUND 08 — GREAT BRITAIN (Silverstone)</option>
+                                <option value="hockenheim">ROUND 09 — GERMANY (Hockenheim)</option>
+                                <option value="nurburgring">ROUND 10 — EUROPE (Nürburgring GP)</option>
+                                <option value="hungary">ROUND 11 — HUNGARY (Hungaroring)</option>
+                                <option value="belgium">ROUND 12 — BELGIUM (Spa-Francorchamps)</option>
+                                <option value="singapore">ROUND 13 — SINGAPORE (Marina Bay)</option>
+                                <option value="cota">ROUND 14 — USA (COTA)</option>
+                                <option value="brazil">ROUND 15 — BRAZIL (Interlagos)</option>
+                            </select>
+                            <span class="admin-field-hint">Al cambiar de carrera se cargarán sus resultados oficiales para verlos o editarlos.</span>
+                        </div>
+                    </div>
+
+                    <div class="admin-results-section-divider">
+                        <span>DESTACADOS & VUELTA RÁPIDA</span>
+                    </div>
+
+                    <div class="admin-form-grid">
+                        <div class="admin-field">
+                            <label for="adminFastestDriver">VUELTA RÁPIDA (PILOTO) *</label>
+                            <select id="adminFastestDriver" class="admin-select" required>
+                                <!-- Populated dynamically with registered drivers -->
+                            </select>
+                        </div>
+                        <div class="admin-field">
+                            <label for="adminFastestTime">TIEMPO VUELTA RÁPIDA *</label>
+                            <input type="text" id="adminFastestTime" placeholder="Ej: 1:14.395" required>
+                        </div>
+
+                        <div class="admin-field">
+                            <label for="adminPoleDriver">POLE POSITION (PILOTO)</label>
+                            <select id="adminPoleDriver" class="admin-select">
+                                <!-- Populated dynamically with registered drivers -->
+                            </select>
+                        </div>
+                        <div class="admin-field">
+                            <label for="adminPoleTime">TIEMPO DE POLE</label>
+                            <input type="text" id="adminPoleTime" placeholder="Ej: 1:14.751">
+                        </div>
+
+                        <div class="admin-field">
+                            <label for="adminDriverDay">PILOTO DEL DÍA</label>
+                            <select id="adminDriverDay" class="admin-select">
+                                <!-- Populated dynamically with registered drivers -->
+                            </select>
+                        </div>
+                        <div class="admin-field">
+                            <label for="adminRaceDateInput">FECHA / TEXTO DE LA CARRERA</label>
+                            <input type="text" id="adminRaceDateInput" placeholder="Ej: 20 SEP">
+                        </div>
+                    </div>
+
+                    <div class="admin-standings-toolbar">
+                        <h4>ORDEN DE LLEGADA (PILOTOS POR DESPLEGABLE)</h4>
+                        <div class="admin-toolbar-btns">
+                            <button type="button" id="adminAddRacePosBtn" class="btn btn-secondary btn-sm">+ Añadir Posición</button>
+                            <button type="button" id="adminLoadDefaultPosBtn" class="btn btn-secondary btn-sm">Cargar Top 10</button>
+                        </div>
+                    </div>
+
+                    <div class="admin-table-wrapper">
+                        <table class="admin-table" id="adminRacePositionsTable">
+                            <thead>
+                                <tr>
+                                    <th style="width: 50px;">POS</th>
+                                    <th style="min-width: 220px;">PILOTO (DESPLEGABLE)</th>
+                                    <th style="min-width: 150px;">EQUIPO (OFICIAL · BLOQUEADO)</th>
+                                    <th style="min-width: 130px;">ESTADO</th>
+                                    <th style="width: 50px;"></th>
+                                </tr>
+                            </thead>
+                            <tbody id="adminRacePositionsBody">
+                                <!-- Generated with <select> for drivers -->
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="admin-save-bar">
+                        <span class="admin-save-notice" id="raceResultsSaveNotice"></span>
+                        <button type="submit" class="btn btn-primary">Guardar Resultados de Carrera</button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- TAB 2: CLASIFICACIÓN -->
+            <div class="admin-tab-pane" id="tab-standings">
+                <div class="admin-standings-toolbar">
+                    <div>
+                        <h4>Tabla de Pilotos y Puntos</h4>
+                        <p class="admin-field-hint">Modifica los puntos acumulados de cada piloto. El equipo está bloqueado aquí y se gestiona en la pestaña <strong>«Pilotos &amp; Equipos»</strong>.</p>
+                    </div>
+                    <button type="button" class="btn btn-secondary" id="adminAddDriverBtn">+ Añadir Piloto a Tabla</button>
+                </div>
+
+                <div class="admin-table-wrapper">
+                    <table class="admin-table">
+                        <thead>
+                            <tr>
+                                <th style="width: 50px;">POS</th>
+                                <th>PILOTO</th>
+                                <th>EQUIPO (OFICIAL)</th>
+                                <th style="width: 90px;">PTS</th>
+                                <th style="width: 70px;">ACCIÓN</th>
+                            </tr>
+                        </thead>
+                        <tbody id="adminStandingsTableBody">
+                            <!-- Populated dynamically via JS with locked team badges -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="admin-save-bar">
+                    <span class="admin-save-notice" id="standingsSaveNotice"></span>
+                    <button type="button" class="btn btn-primary" id="adminSaveStandingsBtn">Guardar Clasificación</button>
+                </div>
+            </div>
+
+            <!-- TAB: PILOTOS & EQUIPOS -->
+            <div class="admin-tab-pane" id="tab-drivers">
+                <div class="admin-tab-intro">
+                    <div class="admin-card-badge">CENSO OFICIAL</div>
+                    <h3>GESTIÓN OFICIAL DE PILOTOS Y EQUIPOS</h3>
+                    <p class="admin-field-hint">
+                        Agrega nuevos pilotos al campeonato o cambia el equipo asignado a cualquier piloto existente. 
+                        El equipo asignado aquí se aplicará de forma automática e inalterable en la <strong>clasificación general</strong> y en los <strong>resultados de carrera</strong>.
+                    </p>
+                </div>
+
+                <!-- AÑADIR PILOTO -->
+                <div class="admin-add-driver-card">
+                    <h4>REGISTRAR NUEVO PILOTO</h4>
+                    <form id="adminNewPilotForm" class="admin-add-pilot-form">
+                        <div class="admin-pilot-inputs">
+                            <div class="admin-field">
+                                <label for="newPilotName">Nombre del Piloto</label>
+                                <input type="text" id="newPilotName" placeholder="Ej: Fernando Alonso" required autocomplete="off">
+                            </div>
+                            <div class="admin-field">
+                                <label for="newPilotTeam">Equipo Asignado</label>
+                                <select id="newPilotTeam" required>
+                                    <option value="HRT">HRT</option>
+                                    <option value="Red Bull">Red Bull</option>
+                                    <option value="Ferrari">Ferrari</option>
+                                    <option value="Mercedes">Mercedes</option>
+                                    <option value="Toro Rosso">Toro Rosso</option>
+                                    <option value="Sauber">Sauber</option>
+                                    <option value="Lotus">Lotus</option>
+                                    <option value="Williams">Williams</option>
+                                    <option value="McLaren">McLaren</option>
+                                    <option value="Virgin">Virgin</option>
+                                    <option value="Renault">Renault</option>
+                                    <option value="Force India">Force India</option>
+                                </select>
+                            </div>
+                            <div class="admin-field admin-pilot-submit-field">
+                                <button type="submit" class="btn btn-primary" id="adminAddNewPilotBtn">+ Registrar Piloto</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- LISTADO Y EDICIÓN DE EQUIPOS -->
+                <div class="admin-drivers-list-section">
+                    <div class="admin-drivers-header">
+                        <div>
+                            <h4>PILOTOS REGISTRADOS (<span id="adminPilotTotalCount">44</span>)</h4>
+                            <p class="admin-field-hint">Selecciona el equipo correspondiente en el desplegable para cambiar de escudería a cualquier piloto.</p>
+                        </div>
+                        <div class="admin-drivers-search">
+                            <input type="text" id="adminSearchPilotInput" placeholder="🔍 Buscar piloto..." autocomplete="off">
+                        </div>
+                    </div>
+
+                    <div class="admin-table-wrapper admin-drivers-table-wrapper">
+                        <table class="admin-table admin-drivers-table">
+                            <thead>
+                                <tr>
+                                    <th style="width: 50px;">#</th>
+                                    <th>PILOTO</th>
+                                    <th>EQUIPO ASIGNADO (CAMBIAR AQUÍ)</th>
+                                    <th style="width: 80px; text-align: center;">ELIMINAR</th>
+                                </tr>
+                            </thead>
+                            <tbody id="adminDriversTableBody">
+                                <!-- Populated dynamically with team dropdowns -->
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="admin-save-bar">
+                        <span class="admin-save-notice" id="driversSaveNotice"></span>
+                        <button type="button" class="btn btn-primary" id="adminSaveDriversBtn">Guardar Cambios de Equipos</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 4: AJUSTES GENERALES -->
+            <div class="admin-tab-pane" id="tab-settings">
+                <form id="generalSettingsForm">
+                    <div class="admin-form-grid">
+                        <div class="admin-field admin-field-full">
+                            <label for="adminDiscordUrl">Enlace de Servidor de Discord</label>
+                            <input type="url" id="adminDiscordUrl" placeholder="https://discord.gg/...">
+                        </div>
+                        <div class="admin-field">
+                            <label for="adminXUrl">Enlace de X (Twitter)</label>
+                            <input type="url" id="adminXUrl" placeholder="https://x.com/F0RMULAF4CTOR">
+                        </div>
+                        <div class="admin-field">
+                            <label for="adminInstagramUrl">Enlace de Instagram</label>
+                            <input type="url" id="adminInstagramUrl" placeholder="https://www.instagram.com/formulafactorchampionship">
+                        </div>
+                        <div class="admin-field">
+                            <label for="adminStatSeason">Temporada Actual</label>
+                            <input type="text" id="adminStatSeason" placeholder="01">
+                        </div>
+                        <div class="admin-field">
+                            <label for="adminStatRounds">Total de Rounds</label>
+                            <input type="text" id="adminStatRounds" placeholder="15">
+                        </div>
+                        <div class="admin-field">
+                            <label for="adminStatDrivers">Pilotos en Grid</label>
+                            <input type="text" id="adminStatDrivers" placeholder="44">
+                        </div>
+                    </div>
+
+                    <div class="admin-danger-zone">
+                        <div>
+                            <strong>Restablecer Datos de Fábrica</strong>
+                            <p>Elimina todos los cambios guardados localmente y restaura la información inicial.</p>
+                        </div>
+                        <button type="button" id="adminResetDefaultBtn" class="admin-danger-btn">Restablecer Todo</button>
+                    </div>
+
+                    <div class="admin-save-bar">
+                        <span class="admin-save-notice" id="settingsSaveNotice"></span>
+                        <button type="submit" class="btn btn-primary">Guardar Ajustes</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
 
 
 <script src="script.js"></script>
