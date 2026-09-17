@@ -549,6 +549,11 @@ function updateCalendarCards(lang) {
             hintEl.textContent = dict.viewResults;
         }
 
+        const cardReplayBtn = card.querySelector(".card-replay-btn");
+        if (cardReplayBtn) {
+            cardReplayBtn.title = lang === "en" ? "Watch race replay" : "Ver repetición de la carrera";
+        }
+
         const actionNoteEl = card.querySelector(".calendar-action-note");
         if (actionNoteEl && dict.thisWeekend) {
             actionNoteEl.textContent = dict.thisWeekend;
@@ -1122,6 +1127,7 @@ const defaultRaceResults = {
         pole: "IvánR · 1:20.843",
         fastest: "IvánR · 1:22.300",
         driverDay: "BigTheo",
+        replayUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
 
         drivers: [
 
@@ -1565,6 +1571,8 @@ const resultFastest = document.getElementById("resultFastest");
 const resultDriverDay = document.getElementById("resultDriverDay");
 
 const resultRows = document.getElementById("resultRows");
+const resultReplayBtn = document.getElementById("resultReplayBtn");
+const resultReplayText = document.getElementById("resultReplayText");
 
 
 function openRace(raceKey, highlightDriver = null) {
@@ -1584,9 +1592,22 @@ function openRace(raceKey, highlightDriver = null) {
     resultFastest.textContent = race.fastest || "—";
     resultDriverDay.textContent = race.driverDay || "—";
 
-    resultRows.innerHTML = "";
-
     const isEn = typeof currentLanguage !== "undefined" && currentLanguage === "en";
+
+    // Handle Replay Link in Modal
+    if (resultReplayBtn) {
+        if (race.replayUrl && race.replayUrl.trim() !== "") {
+            resultReplayBtn.href = race.replayUrl.trim();
+            resultReplayBtn.style.display = "inline-flex";
+            if (resultReplayText) {
+                resultReplayText.textContent = isEn ? "view replay" : "ver repetición";
+            }
+        } else {
+            resultReplayBtn.style.display = "none";
+        }
+    }
+
+    resultRows.innerHTML = "";
 
     if (!race.drivers || race.drivers.length === 0) {
         const row = document.createElement("tr");
@@ -2068,6 +2089,7 @@ const adminPoleDriver = document.getElementById("adminPoleDriver");
 const adminPoleTime = document.getElementById("adminPoleTime");
 const adminDriverDay = document.getElementById("adminDriverDay");
 const adminRaceDateInput = document.getElementById("adminRaceDateInput");
+const adminRaceReplayUrl = document.getElementById("adminRaceReplayUrl");
 const adminRacePositionsTable = document.getElementById("adminRacePositionsTable");
 const adminRacePositionsBody = document.getElementById("adminRacePositionsBody");
 const adminAddRacePosBtn = document.getElementById("adminAddRacePosBtn");
@@ -4155,6 +4177,31 @@ function updateCalendarCardForRace(raceKey, raceData) {
             if (statusEl) statusEl.textContent = "UPCOMING";
         }
     }
+
+    // Corner Replay Button on Card (as requested in user image)
+    let replayBtn = card.querySelector(".card-replay-btn");
+    if (raceData && raceData.replayUrl && raceData.replayUrl.trim() !== "") {
+        if (!replayBtn) {
+            replayBtn = document.createElement("a");
+            replayBtn.className = "card-replay-btn";
+            replayBtn.target = "_blank";
+            replayBtn.rel = "noopener noreferrer";
+            replayBtn.setAttribute("aria-label", "Ver repetición de la carrera");
+            replayBtn.innerHTML = `<svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>`;
+            
+            const header = card.querySelector(".calendar-card-header") || card;
+            header.appendChild(replayBtn);
+        }
+        replayBtn.href = raceData.replayUrl.trim();
+        const curLang = typeof currentLanguage !== "undefined" ? currentLanguage : "es";
+        replayBtn.title = curLang === "en" ? "Watch race replay" : "Ver repetición de la carrera";
+        
+        replayBtn.onclick = (e) => {
+            e.stopPropagation();
+        };
+    } else if (replayBtn) {
+        replayBtn.remove();
+    }
 }
 
 // --- Official Driver Roster Management ---
@@ -4525,8 +4572,9 @@ function populateRaceResultsEditor(raceKey) {
     const driverDayVal = (race.driverDay && race.driverDay !== "TBA") ? race.driverDay : "";
     populateDriverSelect(adminDriverDay, driverDayVal, "-- Seleccionar Piloto del Día --");
 
-    // Race Date
+    // Race Date & Replay URL
     if (adminRaceDateInput) adminRaceDateInput.value = (race.date && race.date !== "TBA") ? race.date : (seasonRacesMeta[raceKey]?.date || "");
+    if (adminRaceReplayUrl) adminRaceReplayUrl.value = race.replayUrl || "";
 
     // Position rows: if race has drivers, render them; otherwise render empty table state
     const driversToRender = Array.isArray(race.drivers) && race.drivers.length > 0 ? race.drivers : [];
@@ -5456,6 +5504,7 @@ if (raceResultsForm) {
         const poleTime = adminPoleTime ? adminPoleTime.value.trim() : "";
         const driverDay = adminDriverDay ? adminDriverDay.value : "";
         const raceDate = adminRaceDateInput ? adminRaceDateInput.value.trim() : "";
+        const replayUrl = adminRaceReplayUrl ? adminRaceReplayUrl.value.trim() : "";
 
         const positionRows = adminRacePositionsBody ? adminRacePositionsBody.querySelectorAll("tr") : [];
         const drivers = [];
@@ -5506,6 +5555,7 @@ if (raceResultsForm) {
             pole: poleDriver && poleTime ? `${poleDriver} · ${poleTime}` : (poleDriver || "TBA"),
             fastest: `${fastestDriver} · ${fastestTime}`,
             driverDay: driverDay || winnerDriver || drivers[0].driver,
+            replayUrl: replayUrl,
             drivers: drivers
         };
 

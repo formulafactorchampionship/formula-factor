@@ -1161,7 +1161,15 @@
         <div class="result-section">
 
             <div class="result-section-title">
-                <span id="resultSectionTitle">RESULTADO DE CARRERA</span>
+                <div class="result-title-row">
+                    <span id="resultSectionTitle">RESULTADO DE CARRERA</span>
+                    <a id="resultReplayBtn" href="#" target="_blank" rel="noopener noreferrer" class="race-replay-modal-btn" style="display: none;">
+                        <span class="replay-flag-box">
+                            <svg viewBox="0 0 24 24" width="12" height="12" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+                        </span>
+                        <span id="resultReplayText">ver repetición</span>
+                    </a>
+                </div>
                 <small id="resultSectionSub">CLASIFICADOS</small>
             </div>
 
@@ -1647,6 +1655,11 @@
                         <div class="admin-field">
                             <label for="adminRaceDateInput">FECHA / TEXTO DE LA CARRERA</label>
                             <input type="text" id="adminRaceDateInput" placeholder="Ej: 20 SEP">
+                        </div>
+                        <div class="admin-field admin-field-full">
+                            <label for="adminRaceReplayUrl">ENLACE DE REPETICIÓN / VIDEO DE LA CARRERA (YOUTUBE / TWITCH)</label>
+                            <input type="url" id="adminRaceReplayUrl" placeholder="https://www.youtube.com/watch?v=... o https://twitch.tv/videos/...">
+                            <span class="admin-field-hint">Si incluyes un enlace de repetición, aparecerá un botón rojo "VER REPETICIÓN" en la esquina de la tarjeta y en los resultados del GP.</span>
                         </div>
                     </div>
 
