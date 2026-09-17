@@ -4613,6 +4613,7 @@ function populateAdminForms() {
     if (adminStatDrivers) adminStatDrivers.value = settings.drivers || "";
 
     renderAdminDriversTab();
+    if (typeof renderAdminVerifyTab === "function") renderAdminVerifyTab();
 
     if (adminSelectRace) {
         populateRaceResultsEditor(adminSelectRace.value || "australia");
@@ -4668,7 +4669,11 @@ function initFirestoreListeners() {
                 driver: data.driver || docSnap.id,
                 team: data.team || "Independent",
                 pos: data.pos || getOfficialDriverRank(data.driver || docSnap.id),
-                pts: Number(data.pts) || 0
+                pts: Number(data.pts) || 0,
+                verificationCode: data.verificationCode || null,
+                claimedByEmail: data.claimedByEmail || null,
+                claimedByUid: data.claimedByUid || null,
+                isVerified: !!data.isVerified
             });
         });
 
@@ -4708,6 +4713,7 @@ function initFirestoreListeners() {
         if (adminPanelOverlay && adminPanelOverlay.classList.contains("active")) {
             renderAdminStandingsEditor(currentPilotos);
             renderAdminDriversTab(adminSearchPilotInput ? adminSearchPilotInput.value : "");
+            if (typeof renderAdminVerifyTab === "function") renderAdminVerifyTab(typeof adminSearchVerifyPilotInput !== "undefined" && adminSearchVerifyPilotInput ? adminSearchVerifyPilotInput.value : "");
             if (adminSelectRace) populateRaceResultsEditor(adminSelectRace.value);
         }
     }, (error) => {
@@ -4900,6 +4906,10 @@ adminTabButtons.forEach(btn => {
         btn.classList.add("active");
         const pane = document.getElementById(targetId);
         if (pane) pane.classList.add("active");
+
+        if (targetId === "tab-verify" && typeof renderAdminVerifyTab === "function") {
+            renderAdminVerifyTab(typeof adminSearchVerifyPilotInput !== "undefined" && adminSearchVerifyPilotInput ? adminSearchVerifyPilotInput.value : "");
+        }
     });
 });
 
@@ -6364,6 +6374,9 @@ if (initialSavedLocalUser) {
     renderUserAuthState(initialSavedLocalUser);
 }
 
+let activeUserData = null;
+let unsubscribeUserDoc = null;
+
 // Listen to Firebase Auth state
 onAuthStateChanged(auth, (user) => {
     if (user) {
@@ -6374,9 +6387,35 @@ onAuthStateChanged(auth, (user) => {
             createdAt: new Date().toISOString()
         });
         renderUserAuthState(user);
+
+        if (unsubscribeUserDoc) unsubscribeUserDoc();
+        const userDocRef = doc(db, "usuarios", user.uid);
+        unsubscribeUserDoc = onSnapshot(userDocRef, (snap) => {
+            if (snap.exists()) {
+                activeUserData = snap.data();
+                if (typeof renderUserClaimState === "function") {
+                    renderUserClaimState(activeUserData);
+                }
+            } else {
+                setDoc(userDocRef, {
+                    uid: user.uid,
+                    email: user.email,
+                    displayName: user.displayName || user.email.split("@")[0],
+                    createdAt: new Date().toISOString()
+                }, { merge: true }).catch(err => console.error("Error al crear usuario doc:", err));
+            }
+        });
     } else {
+        if (unsubscribeUserDoc) {
+            unsubscribeUserDoc();
+            unsubscribeUserDoc = null;
+        }
+        activeUserData = null;
         const local = LocalAuthStore.getCurrentUser();
         renderUserAuthState(local);
+        if (typeof renderUserClaimState === "function") {
+            renderUserClaimState(null);
+        }
     }
 });
 
@@ -6579,6 +6618,405 @@ if (userResetForm) {
                 resetSubmitBtn.textContent = dict.auth ? dict.auth.btnSubmitReset : "ENVIAR ENLACE";
             }
         }
+    });
+}
+
+/* =========================================================
+   VERIFICATION & DRIVER CLAIMING SYSTEM (FIREBASE SYNC)
+========================================================= */
+
+// Elements for User Profile Claiming
+const userClaimForm = document.getElementById("userClaimForm");
+const userClaimCodeInput = document.getElementById("userClaimCodeInput");
+const userClaimNotice = document.getElementById("userClaimNotice");
+const userClaimUnverified = document.getElementById("userClaimUnverified");
+const userClaimVerified = document.getElementById("userClaimVerified");
+const userClaimedDriverName = document.getElementById("userClaimedDriverName");
+const userClaimedTeamName = document.getElementById("userClaimedTeamName");
+const userUnlinkDriverBtn = document.getElementById("userUnlinkDriverBtn");
+
+// Elements for Admin Verification Tab
+const adminVerifyDriverSelect = document.getElementById("adminVerifyDriverSelect");
+const adminGenerateCodeBtn = document.getElementById("adminGenerateCodeBtn");
+const adminGenerateNotice = document.getElementById("adminGenerateNotice");
+const adminCodeOutputBox = document.getElementById("adminCodeOutputBox");
+const adminGeneratedDriverName = document.getElementById("adminGeneratedDriverName");
+const adminGeneratedCodeDisplay = document.getElementById("adminGeneratedCodeDisplay");
+const adminCopyCodeBtn = document.getElementById("adminCopyCodeBtn");
+const adminSearchVerifyPilotInput = document.getElementById("adminSearchVerifyPilotInput");
+const adminVerifyTableBody = document.getElementById("adminVerifyTableBody");
+
+// Helper: Generate unique verification code
+function generateDriverVerificationCode() {
+    return "FF-" + Math.floor(100000 + Math.random() * 900000);
+}
+
+// Render claim state inside user profile dropdown
+function renderUserClaimState(uData) {
+    if (uData && uData.isVerified && uData.claimedDriver) {
+        if (userClaimUnverified) userClaimUnverified.style.display = "none";
+        if (userClaimVerified) userClaimVerified.style.display = "block";
+        if (userClaimedDriverName) userClaimedDriverName.textContent = uData.claimedDriver;
+        if (userClaimedTeamName) userClaimedTeamName.textContent = uData.claimedTeam || "Equipo Oficial";
+        if (authBtnLabel && authBtnLabel.dataset.customName) {
+            authBtnLabel.textContent = `${uData.claimedDriver.toUpperCase()} (VERIFICADO)`;
+        }
+    } else {
+        if (userClaimUnverified) userClaimUnverified.style.display = "block";
+        if (userClaimVerified) userClaimVerified.style.display = "none";
+        if (userClaimNotice) {
+            userClaimNotice.textContent = "";
+            userClaimNotice.style.color = "";
+        }
+    }
+}
+
+// User Profile - Submit Verification Code
+if (userClaimForm) {
+    userClaimForm.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        if (!activeUserAuth) {
+            if (userClaimNotice) {
+                userClaimNotice.textContent = "Debes iniciar sesión para verificar tu piloto.";
+                userClaimNotice.style.color = "#f85149";
+            }
+            return;
+        }
+
+        const rawCode = userClaimCodeInput ? userClaimCodeInput.value.trim().toUpperCase() : "";
+        if (!rawCode) return;
+
+        if (userClaimNotice) {
+            userClaimNotice.textContent = "Verificando código...";
+            userClaimNotice.style.color = "#8b949e";
+        }
+
+        try {
+            // Query Firestore 'pilotos' collection for code
+            const q = query(collection(db, "pilotos"), where("verificationCode", "==", rawCode));
+            const querySnap = await getDocs(q);
+
+            let matchedDriverDoc = null;
+            let matchedDriverData = null;
+
+            if (!querySnap.empty) {
+                matchedDriverDoc = querySnap.docs[0];
+                matchedDriverData = matchedDriverDoc.data();
+            } else {
+                // Fallback check in memory
+                const foundInLocal = (currentPilotos || []).find(p => (p.verificationCode || "").toUpperCase() === rawCode);
+                if (foundInLocal) {
+                    matchedDriverData = foundInLocal;
+                    matchedDriverDoc = { id: foundInLocal.id || getPilotDocId(foundInLocal.driver) };
+                }
+            }
+
+            if (!matchedDriverData || !matchedDriverDoc) {
+                if (userClaimNotice) {
+                    userClaimNotice.textContent = "❌ Código inválido. Solicita un código válido a hermesalo o adriii.lr en Discord.";
+                    userClaimNotice.style.color = "#f85149";
+                }
+                return;
+            }
+
+            if (matchedDriverData.claimedByUid && matchedDriverData.claimedByUid !== activeUserAuth.uid) {
+                if (userClaimNotice) {
+                    userClaimNotice.textContent = "❌ Este piloto ya está vinculado a otra cuenta.";
+                    userClaimNotice.style.color = "#f85149";
+                }
+                return;
+            }
+
+            // Save in Firestore with writeBatch
+            const batch = writeBatch(db);
+
+            // Update driver doc
+            const pilotRef = doc(db, "pilotos", matchedDriverDoc.id);
+            batch.update(pilotRef, {
+                claimedByEmail: activeUserAuth.email,
+                claimedByUid: activeUserAuth.uid,
+                isVerified: true,
+                verifiedAt: new Date().toISOString()
+            });
+
+            // Update user doc
+            const userRef = doc(db, "usuarios", activeUserAuth.uid);
+            batch.set(userRef, {
+                uid: activeUserAuth.uid,
+                email: activeUserAuth.email,
+                displayName: activeUserAuth.displayName || matchedDriverData.driver,
+                claimedDriver: matchedDriverData.driver,
+                claimedTeam: matchedDriverData.team || "Independent",
+                claimedDriverId: matchedDriverDoc.id,
+                isVerified: true,
+                verifiedAt: new Date().toISOString()
+            }, { merge: true });
+
+            await batch.commit();
+
+            if (userClaimCodeInput) userClaimCodeInput.value = "";
+            if (userClaimNotice) {
+                userClaimNotice.textContent = `¡Verificado con éxito como ${matchedDriverData.driver}!`;
+                userClaimNotice.style.color = "#10b981";
+            }
+
+            activeUserData = {
+                uid: activeUserAuth.uid,
+                email: activeUserAuth.email,
+                claimedDriver: matchedDriverData.driver,
+                claimedTeam: matchedDriverData.team || "Independent",
+                claimedDriverId: matchedDriverDoc.id,
+                isVerified: true
+            };
+            renderUserClaimState(activeUserData);
+
+        } catch (err) {
+            console.error("Error al verificar código de piloto:", err);
+            if (userClaimNotice) {
+                userClaimNotice.textContent = "Error al procesar la verificación en la base de datos.";
+                userClaimNotice.style.color = "#f85149";
+            }
+        }
+    });
+}
+
+// User Profile - Unlink Driver
+if (userUnlinkDriverBtn) {
+    userUnlinkDriverBtn.addEventListener("click", async () => {
+        if (!activeUserAuth || !activeUserData) return;
+        if (!confirm("¿Seguro que deseas desvincular tu cuenta de piloto oficial?")) return;
+
+        try {
+            const batch = writeBatch(db);
+
+            const driverDocId = activeUserData.claimedDriverId || (activeUserData.claimedDriver ? getPilotDocId(activeUserData.claimedDriver) : null);
+            if (driverDocId) {
+                batch.update(doc(db, "pilotos", driverDocId), {
+                    claimedByEmail: null,
+                    claimedByUid: null,
+                    isVerified: false
+                });
+            }
+
+            batch.update(doc(db, "usuarios", activeUserAuth.uid), {
+                claimedDriver: null,
+                claimedTeam: null,
+                claimedDriverId: null,
+                isVerified: false
+            });
+
+            await batch.commit();
+
+            activeUserData = { ...activeUserData, isVerified: false, claimedDriver: null };
+            renderUserClaimState(activeUserData);
+
+        } catch (err) {
+            console.error("Error al desvincular piloto:", err);
+        }
+    });
+}
+
+// Admin Panel - Render Verification Tab
+function renderAdminVerifyTab(filterTerm = "") {
+    if (!adminVerifyDriverSelect || !adminVerifyTableBody) return;
+
+    const list = (currentPilotos && currentPilotos.length > 0) ? currentPilotos : getSavedStandings();
+
+    // Populate Select Dropdown
+    const currentSelVal = adminVerifyDriverSelect.value;
+    adminVerifyDriverSelect.innerHTML = `<option value="">-- Seleccionar piloto oficial --</option>`;
+    list.forEach(p => {
+        const pId = p.id || getPilotDocId(p.driver);
+        const opt = document.createElement("option");
+        opt.value = pId;
+        opt.textContent = `${p.driver} (${p.team})${p.isVerified ? " [VERIFICADO]" : (p.verificationCode ? " [CÓDIGO GENERADO]" : "")}`;
+        if (pId === currentSelVal) opt.selected = true;
+        adminVerifyDriverSelect.appendChild(opt);
+    });
+
+    // Populate Table
+    const searchKey = filterTerm.trim().toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+    const filtered = list.filter(p => {
+        if (!searchKey) return true;
+        const nameNorm = p.driver.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+        const teamNorm = p.team.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+        const codeNorm = (p.verificationCode || "").toLowerCase();
+        const emailNorm = (p.claimedByEmail || "").toLowerCase();
+        return nameNorm.includes(searchKey) || teamNorm.includes(searchKey) || codeNorm.includes(searchKey) || emailNorm.includes(searchKey);
+    });
+
+    adminVerifyTableBody.innerHTML = "";
+
+    if (filtered.length === 0) {
+        adminVerifyTableBody.innerHTML = `
+            <tr>
+                <td colspan="7" style="text-align: center; padding: 20px; color: #8c929c;">
+                    No se encontraron pilotos que coincidan con la búsqueda.
+                </td>
+            </tr>
+        `;
+        return;
+    }
+
+    filtered.forEach((p, idx) => {
+        const pId = p.id || getPilotDocId(p.driver);
+        const tr = document.createElement("tr");
+
+        let statusBadge = `<span class="verify-badge-pending">PENDIENTE</span>`;
+        if (p.isVerified || p.claimedByEmail) {
+            statusBadge = `<span class="verify-badge-verified">VERIFICADO</span>`;
+        } else if (p.verificationCode) {
+            statusBadge = `<span class="verify-badge-code">CÓDIGO ACTIVO</span>`;
+        }
+
+        const activeCodeHtml = p.verificationCode 
+            ? `<code style="font-family: monospace; font-size: 14px; font-weight: bold; color: var(--gold,#d6b45c);">${p.verificationCode}</code>` 
+            : `<span style="color: #666;">—</span>`;
+
+        const linkedAccountHtml = p.claimedByEmail 
+            ? `<span style="color: #10b981; font-weight: 600;">${p.claimedByEmail}</span>` 
+            : `<span style="color: #666;">—</span>`;
+
+        tr.innerHTML = `
+            <td style="font-weight: bold; color: #8c929c;">${idx + 1}</td>
+            <td style="font-weight: 800; color: #fff;">${p.driver}</td>
+            <td style="color: var(--gold, #d6b45c); font-weight: 600;">${p.team}</td>
+            <td>${activeCodeHtml}</td>
+            <td>${linkedAccountHtml}</td>
+            <td>${statusBadge}</td>
+            <td style="text-align: center;">
+                <div style="display: flex; gap: 4px; justify-content: center;">
+                    <button type="button" class="btn btn-primary btn-sm btn-gen-code" data-pid="${pId}" title="Generar / Renovar Código" style="padding: 3px 8px; font-size: 11px;">⚡</button>
+                    ${p.verificationCode ? `<button type="button" class="btn btn-secondary btn-sm btn-copy-code" data-code="${p.verificationCode}" title="Copiar Código" style="padding: 3px 8px; font-size: 11px;">📋</button>` : ""}
+                    ${(p.verificationCode || p.isVerified || p.claimedByEmail) ? `<button type="button" class="btn btn-danger-outline btn-sm btn-revoke-code" data-pid="${pId}" title="Revocar Código / Desvincular" style="padding: 3px 8px; font-size: 11px;">🗑️</button>` : ""}
+                </div>
+            </td>
+        `;
+
+        adminVerifyTableBody.appendChild(tr);
+    });
+
+    // Row Event Listeners
+    adminVerifyTableBody.querySelectorAll(".btn-gen-code").forEach(btn => {
+        btn.addEventListener("click", () => {
+            const pId = btn.dataset.pid;
+            generateAndSaveCodeForPilotId(pId);
+        });
+    });
+
+    adminVerifyTableBody.querySelectorAll(".btn-copy-code").forEach(btn => {
+        btn.addEventListener("click", () => {
+            const code = btn.dataset.code;
+            navigator.clipboard.writeText(code).then(() => {
+                const orig = btn.textContent;
+                btn.textContent = "✓";
+                setTimeout(() => { btn.textContent = orig; }, 1500);
+            });
+        });
+    });
+
+    adminVerifyTableBody.querySelectorAll(".btn-revoke-code").forEach(btn => {
+        btn.addEventListener("click", async () => {
+            const pId = btn.dataset.pid;
+            const pilot = list.find(item => (item.id || getPilotDocId(item.driver)) === pId);
+            const pName = pilot ? pilot.driver : pId;
+
+            if (!confirm(`¿Revocar el código y desvincular a ${pName}?`)) return;
+
+            try {
+                await updateDoc(doc(db, "pilotos", pId), {
+                    verificationCode: null,
+                    claimedByEmail: null,
+                    claimedByUid: null,
+                    isVerified: false
+                });
+
+                if (pilot) {
+                    pilot.verificationCode = null;
+                    pilot.claimedByEmail = null;
+                    pilot.claimedByUid = null;
+                    pilot.isVerified = false;
+                }
+
+                renderAdminVerifyTab(adminSearchVerifyPilotInput ? adminSearchVerifyPilotInput.value : "");
+            } catch (err) {
+                console.error("Error al revocar código:", err);
+            }
+        });
+    });
+}
+
+async function generateAndSaveCodeForPilotId(pId) {
+    if (!pId) return;
+    const list = (currentPilotos && currentPilotos.length > 0) ? currentPilotos : getSavedStandings();
+    const pilot = list.find(item => (item.id || getPilotDocId(item.driver)) === pId);
+    if (!pilot) return;
+
+    const newCode = generateDriverVerificationCode();
+
+    try {
+        if (adminGenerateNotice) {
+            adminGenerateNotice.textContent = "Generando código...";
+            adminGenerateNotice.style.color = "#8b949e";
+        }
+
+        // Save directly to Firestore
+        await updateDoc(doc(db, "pilotos", pId), {
+            verificationCode: newCode
+        });
+
+        pilot.verificationCode = newCode;
+
+        if (adminCodeOutputBox) adminCodeOutputBox.style.display = "block";
+        if (adminGeneratedDriverName) adminGeneratedDriverName.textContent = pilot.driver.toUpperCase();
+        if (adminGeneratedCodeDisplay) adminGeneratedCodeDisplay.textContent = newCode;
+        if (adminGenerateNotice) {
+            adminGenerateNotice.textContent = "✓ ¡Código generado exitosamente en Firestore!";
+            adminGenerateNotice.style.color = "#10b981";
+        }
+
+        renderAdminVerifyTab(adminSearchVerifyPilotInput ? adminSearchVerifyPilotInput.value : "");
+
+    } catch (err) {
+        console.error("Error al guardar código en Firestore:", err);
+        if (adminGenerateNotice) {
+            adminGenerateNotice.textContent = "Error al guardar el código en Firestore.";
+            adminGenerateNotice.style.color = "#f85149";
+        }
+    }
+}
+
+// Admin - Generate Code Button
+if (adminGenerateCodeBtn) {
+    adminGenerateCodeBtn.addEventListener("click", () => {
+        const pId = adminVerifyDriverSelect ? adminVerifyDriverSelect.value : "";
+        if (!pId) {
+            alert("Por favor selecciona un piloto de la lista desplegable.");
+            return;
+        }
+        generateAndSaveCodeForPilotId(pId);
+    });
+}
+
+// Admin - Copy Code Button
+if (adminCopyCodeBtn) {
+    adminCopyCodeBtn.addEventListener("click", () => {
+        const code = adminGeneratedCodeDisplay ? adminGeneratedCodeDisplay.textContent : "";
+        if (!code) return;
+        navigator.clipboard.writeText(code).then(() => {
+            const origText = adminCopyCodeBtn.textContent;
+            adminCopyCodeBtn.textContent = "✓ ¡Copiado!";
+            setTimeout(() => {
+                adminCopyCodeBtn.textContent = origText;
+            }, 1800);
+        });
+    });
+}
+
+// Admin - Search Filter
+if (adminSearchVerifyPilotInput) {
+    adminSearchVerifyPilotInput.addEventListener("input", () => {
+        renderAdminVerifyTab(adminSearchVerifyPilotInput.value);
     });
 }
 

@@ -162,6 +162,40 @@
                             <span class="user-profile-label" id="userProfileStatusLabel">Estado</span>
                             <span class="user-profile-badge user-badge-connected" id="userProfileStatusVal">CONECTADO</span>
                         </div>
+
+                        <!-- Reclamar / Vincular Piloto -->
+                        <div class="user-claim-box" id="userClaimBox">
+                            <!-- Estado NO Verificado -->
+                            <div id="userClaimUnverified" class="user-claim-unverified">
+                                <div class="claim-notice-banner">
+                                    <span class="claim-icon">🔑</span>
+                                    <div class="claim-notice-info">
+                                        <strong>Reclamar perfil de piloto</strong>
+                                        <p>Solicita el código de verificación a un admin por Discord: <strong>hermesalo</strong> o <strong>adriii.lr</strong></p>
+                                    </div>
+                                </div>
+                                <form id="userClaimForm" class="user-claim-form">
+                                    <div class="claim-input-group">
+                                        <input type="text" id="userClaimCodeInput" placeholder="Código (ej: FF-8A9201)" required autocomplete="off">
+                                        <button type="submit" class="btn btn-primary btn-sm" id="userClaimSubmitBtn">Vincular</button>
+                                    </div>
+                                    <span id="userClaimNotice" class="claim-notice-msg"></span>
+                                </form>
+                            </div>
+
+                            <!-- Estado Verificado -->
+                            <div id="userClaimVerified" class="user-claim-verified" style="display: none;">
+                                <div class="verified-card-inner">
+                                    <span class="verified-check">✅</span>
+                                    <div class="verified-info">
+                                        <span class="verified-tag">PILOTO VERIFICADO</span>
+                                        <strong id="userClaimedDriverName" class="verified-name">Dieguiosk</strong>
+                                        <span id="userClaimedTeamName" class="verified-team">HRT</span>
+                                    </div>
+                                    <button type="button" id="userUnlinkDriverBtn" class="btn-unlink-icon" title="Desvincular perfil de piloto">✕</button>
+                                </div>
+                            </div>
+                        </div>
                         <div class="user-admin-shortcut" id="userAdminShortcut" style="display: none; margin-top: 10px;">
                             <button type="button" class="btn btn-primary btn-sm user-admin-panel-btn" id="userOpenAdminPanelBtn" style="width: 100%; font-size: 11px; padding: 7px 12px; letter-spacing: 0.05em; display: flex; align-items: center; justify-content: center; gap: 6px;">
                                 <svg viewBox="0 0 24 24" width="13" height="13" fill="currentColor"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg>
@@ -1554,6 +1588,7 @@
             <button type="button" class="admin-tab-btn" data-tab="tab-race-results">Resultados de Carreras</button>
             <button type="button" class="admin-tab-btn" data-tab="tab-standings">Clasificación</button>
             <button type="button" class="admin-tab-btn" data-tab="tab-drivers">Pilotos &amp; Equipos</button>
+            <button type="button" class="admin-tab-btn" data-tab="tab-verify">Verificación de Pilotos</button>
             <button type="button" class="admin-tab-btn" data-tab="tab-settings">Ajustes Generales</button>
         </nav>
 
@@ -1819,6 +1854,72 @@
                     <div class="admin-save-bar">
                         <span class="admin-save-notice" id="driversSaveNotice"></span>
                         <button type="button" class="btn btn-primary" id="adminSaveDriversBtn">Guardar Cambios de Equipos</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB: VERIFICACIÓN DE PILOTOS -->
+            <div class="admin-tab-pane" id="tab-verify">
+                <div class="admin-tab-intro">
+                    <div class="admin-card-badge">CÓDIGOS DE VERIFICACIÓN</div>
+                    <h3>VERIFICACIÓN Y VINCULACIÓN DE PILOTOS</h3>
+                    <p class="admin-field-hint">
+                        Genera un código único para cada piloto que lo solicite por Discord (<strong>hermesalo</strong> o <strong>adriii.lr</strong>). 
+                        Entrega el código al piloto para que lo introduzca en su perfil de la web y vincule su cuenta oficialmente en la base de datos de Firestore.
+                    </p>
+                </div>
+
+                <div class="admin-verify-generator-card">
+                    <div class="admin-form-grid">
+                        <div class="admin-field admin-field-full">
+                            <label for="adminVerifyDriverSelect">SELECCIONAR PILOTO PARA GENERAR CÓDIGO</label>
+                            <select id="adminVerifyDriverSelect" class="admin-select">
+                                <option value="">-- Seleccionar piloto oficial --</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="admin-verify-action-row" style="margin-top: 12px; display: flex; gap: 10px; align-items: center;">
+                        <button type="button" class="btn btn-primary" id="adminGenerateCodeBtn">⚡ Generar Código de Verificación</button>
+                        <span id="adminGenerateNotice" class="admin-save-notice"></span>
+                    </div>
+                    <div id="adminCodeOutputBox" class="admin-code-output-box" style="display: none; margin-top: 16px;">
+                        <span class="code-box-label">CÓDIGO GENERADO PARA <strong id="adminGeneratedDriverName">PILOTO</strong>:</span>
+                        <div class="code-box-display">
+                            <span id="adminGeneratedCodeDisplay" class="code-display-text">FF-8A9201</span>
+                            <button type="button" class="btn btn-secondary btn-sm" id="adminCopyCodeBtn">📋 Copiar Código</button>
+                        </div>
+                        <small class="admin-field-hint" style="margin-top: 6px; display: block;">Copia y entrega este código por Discord. Al colocarlo en su perfil, su cuenta quedará verificada.</small>
+                    </div>
+                </div>
+
+                <div class="admin-verify-list-section" style="margin-top: 24px;">
+                    <div class="admin-standings-toolbar">
+                        <div>
+                            <h4 style="margin: 0; color: #fff; font-family: 'Barlow Condensed', sans-serif; font-size: 18px;">Censo de Verificación en Firestore</h4>
+                            <p class="admin-field-hint" style="margin: 2px 0 0 0;">Lista de pilotos registrados, códigos activos y cuentas vinculadas.</p>
+                        </div>
+                        <div class="admin-drivers-search">
+                            <input type="text" id="adminSearchVerifyPilotInput" placeholder="🔍 Buscar piloto..." autocomplete="off">
+                        </div>
+                    </div>
+
+                    <div class="admin-table-wrapper">
+                        <table class="admin-table" id="adminVerifyTable">
+                            <thead>
+                                <tr>
+                                    <th style="width: 50px;">#</th>
+                                    <th>PILOTO</th>
+                                    <th>EQUIPO</th>
+                                    <th>CÓDIGO ACTIVO</th>
+                                    <th>CUENTA VINCULADA</th>
+                                    <th>ESTADO</th>
+                                    <th style="text-align: center; width: 140px;">ACCIONES</th>
+                                </tr>
+                            </thead>
+                            <tbody id="adminVerifyTableBody">
+                                <!-- Filas dinámicas -->
+                            </tbody>
+                        </table>
                     </div>
                 </div>
             </div>
