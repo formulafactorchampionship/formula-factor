@@ -3202,9 +3202,56 @@ footer {
     color: rgba(214, 180, 92, 0.4);
 }
 
-/* Standings Top 10 Collapsible */
+/* Standings Top 10 Collapsible & Mini Animation */
 .standings-row-hidden {
     display: none !important;
+}
+
+.standings-row-revealed {
+    animation: standingsRowCascade 0.32s cubic-bezier(0.16, 1, 0.3, 1) both;
+    animation-delay: var(--row-delay, 0ms);
+    will-change: transform, opacity;
+}
+
+.standings-row-collapsing {
+    animation: standingsRowCollapse 0.22s cubic-bezier(0.4, 0, 1, 1) both !important;
+    animation-delay: var(--collapse-delay, 0ms);
+    pointer-events: none;
+    will-change: transform, opacity;
+}
+
+@keyframes standingsRowCascade {
+    0% {
+        opacity: 0;
+        transform: translateY(-8px) scale(0.99);
+        background-color: rgba(214, 180, 92, 0.12);
+    }
+    40% {
+        opacity: 0.85;
+        background-color: rgba(214, 180, 92, 0.05);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+        background-color: transparent;
+    }
+}
+
+@keyframes standingsRowCollapse {
+    0% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+        background-color: transparent;
+    }
+    60% {
+        opacity: 0.4;
+        background-color: rgba(214, 180, 92, 0.04);
+    }
+    100% {
+        opacity: 0;
+        transform: translateY(-10px) scale(0.98);
+        background-color: transparent;
+    }
 }
 
 .standings-expand-bar {
@@ -3230,7 +3277,7 @@ footer {
     display: inline-flex;
     align-items: center;
     gap: 10px;
-    transition: all 0.2s ease;
+    transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .standings-expand-btn:hover {
@@ -3238,11 +3285,17 @@ footer {
     border-color: var(--gold);
     color: #fff;
     box-shadow: 0 4px 14px rgba(214, 180, 92, 0.15);
+    transform: translateY(-1px);
+}
+
+.standings-expand-btn:active {
+    transform: scale(0.97);
 }
 
 .standings-expand-btn .expand-icon {
     font-size: 11px;
-    transition: transform 0.25s ease;
+    display: inline-block;
+    transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 .standings-expand-btn.is-expanded .expand-icon {

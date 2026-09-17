@@ -2241,8 +2241,14 @@ function renderStandingsOnPage(drivers) {
                 rowDiv.className = "ranking-row driver-row-clickable";
                 rowDiv.setAttribute("data-driver", d.driver);
                 rowDiv.setAttribute("title", `Ver estadísticas de ${d.driver}`);
-                if (idx >= 10 && !isStandingsExpanded) {
-                    rowDiv.classList.add("standings-row-hidden");
+                if (idx >= 10) {
+                    if (!isStandingsExpanded) {
+                        rowDiv.classList.add("standings-row-hidden");
+                    } else {
+                        rowDiv.classList.add("standings-row-revealed");
+                        const delayStep = Math.min(idx - 10, 25);
+                        rowDiv.style.setProperty("--row-delay", `${delayStep * 15}ms`);
+                    }
                 }
                 rowDiv.innerHTML = `
                     <span class="ranking-row-pos">${idx + 1}</span>
@@ -2350,8 +2356,14 @@ function renderStandingsOnPage(drivers) {
                 rowDiv.className = "ranking-row driver-row-clickable";
                 rowDiv.setAttribute("data-driver", d.driver);
                 rowDiv.setAttribute("title", `Ver estadísticas de ${d.driver}`);
-                if (idx >= 10 && !isStandingsExpanded) {
-                    rowDiv.classList.add("standings-row-hidden");
+                if (idx >= 10) {
+                    if (!isStandingsExpanded) {
+                        rowDiv.classList.add("standings-row-hidden");
+                    } else {
+                        rowDiv.classList.add("standings-row-revealed");
+                        const delayStep = Math.min(idx - 10, 25);
+                        rowDiv.style.setProperty("--row-delay", `${delayStep * 15}ms`);
+                    }
                 }
                 rowDiv.innerHTML = `
                     <span class="ranking-row-pos">${idx + 1}</span>
@@ -2370,8 +2382,14 @@ function renderStandingsOnPage(drivers) {
         sorted.forEach((d, idx) => {
             const tr = document.createElement("tr");
             if (idx === 0) tr.classList.add("leader");
-            if (idx >= 10 && !isStandingsExpanded) {
-                tr.classList.add("standings-row-hidden");
+            if (idx >= 10) {
+                if (!isStandingsExpanded) {
+                    tr.classList.add("standings-row-hidden");
+                } else {
+                    tr.classList.add("standings-row-revealed");
+                    const delayStep = Math.min(idx - 10, 25);
+                    tr.style.setProperty("--row-delay", `${delayStep * 15}ms`);
+                }
             }
             tr.innerHTML = `
                 <td>${idx + 1}</td>
@@ -4438,12 +4456,68 @@ if (adminSearchPilotInput) {
     });
 }
 
-// Toggle Standings Rows (Top 10 vs Full)
+// Toggle Standings Rows (Top 10 vs Full) with Smooth Animations
+let isCollapsingStandings = false;
+
 if (toggleStandingsBtn) {
     toggleStandingsBtn.addEventListener("click", () => {
-        isStandingsExpanded = !isStandingsExpanded;
-        const saved = getSavedStandings();
-        renderStandingsOnPage(saved);
+        if (isCollapsingStandings) return;
+
+        if (isStandingsExpanded) {
+            // Initiate Collapse Animation
+            const saved = getSavedStandings();
+            const revealedRows = document.querySelectorAll("#driverRowsList .ranking-row, #standingsTableBody tr");
+            const extraRows = [];
+
+            revealedRows.forEach((row) => {
+                const posEl = row.querySelector(".ranking-row-pos, td:first-child");
+                if (posEl) {
+                    const posNum = parseInt(posEl.textContent.trim().replace(/\D/g, ""), 10);
+                    if (posNum > 10) {
+                        extraRows.push(row);
+                    }
+                }
+            });
+
+            if (extraRows.length > 0) {
+                isCollapsingStandings = true;
+                toggleStandingsBtn.classList.remove("is-expanded");
+                toggleStandingsBtn.setAttribute("aria-expanded", "false");
+                const label = document.getElementById("standingsToggleLabel");
+                const isEn = typeof currentLanguage !== "undefined" && currentLanguage === "en";
+                if (label) {
+                    label.textContent = isEn
+                        ? `VIEW FULL STANDINGS (P11 - P${saved.length})`
+                        : `VER CLASIFICACIÓN COMPLETA (P11 - P${saved.length})`;
+                }
+
+                // Add collapse animations in reverse order
+                const totalExtra = extraRows.length;
+                extraRows.forEach((row, idx) => {
+                    row.classList.remove("standings-row-revealed");
+                    const reverseIdx = totalExtra - 1 - idx;
+                    const delay = Math.min(reverseIdx, 20) * 8;
+                    row.style.setProperty("--collapse-delay", `${delay}ms`);
+                    row.classList.add("standings-row-collapsing");
+                });
+
+                const maxAnimationTime = 220 + (Math.min(totalExtra, 20) * 8);
+
+                setTimeout(() => {
+                    isStandingsExpanded = false;
+                    isCollapsingStandings = false;
+                    renderStandingsOnPage(saved);
+                }, maxAnimationTime);
+                return;
+            }
+
+            isStandingsExpanded = false;
+            renderStandingsOnPage(saved);
+        } else {
+            isStandingsExpanded = true;
+            const saved = getSavedStandings();
+            renderStandingsOnPage(saved);
+        }
     });
 }
 
