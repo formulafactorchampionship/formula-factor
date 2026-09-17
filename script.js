@@ -3131,8 +3131,12 @@ function findTeamStats(teamName) {
     // Calculate sum of points per team
     const teamPointsMap = {};
     F1_TEAMS.forEach(t => { teamPointsMap[t] = 0; });
+    const seenTeamDrivers = new Set();
     sortedDrivers.forEach(d => {
-        if (!d.team) return;
+        if (!d || !d.driver || !d.team) return;
+        const normKey = normalizeDriverKey(d.driver);
+        if (seenTeamDrivers.has(normKey)) return;
+        seenTeamDrivers.add(normKey);
         const cTeam = d.team.trim().toLowerCase();
         const m = F1_TEAMS.find(t => t.toLowerCase() === cTeam);
         if (m) {
@@ -3575,8 +3579,13 @@ function updateConstructorStandings(driverList) {
     const teamPointsMap = {};
     F1_TEAMS.forEach(t => { teamPointsMap[t] = 0; });
 
+    const seen = new Set();
     driverList.forEach(d => {
-        if (!d.team) return;
+        if (!d || !d.driver || !d.team) return;
+        const norm = normalizeDriverKey(d.driver);
+        if (seen.has(norm)) return;
+        seen.add(norm);
+
         const cleanTeam = d.team.trim().toLowerCase();
         const matched = F1_TEAMS.find(t => t.toLowerCase() === cleanTeam);
         if (matched) {
@@ -4583,7 +4592,7 @@ function initFirestoreListeners() {
         }
 
         isPilotosInitialLoaded = true;
-        const list = [];
+        const driverMap = new Map();
         let hasCorruptedPilot = false;
         let dieguioskFound = false;
         let rikidorsaFound = false;
@@ -4591,17 +4600,18 @@ function initFirestoreListeners() {
         snapshot.forEach(docSnap => {
             const data = docSnap.data();
             const pId = docSnap.id.toLowerCase();
-            const dName = (data.driver || "").toLowerCase();
-            if (pId === "dlegulosk" || dName === "dlegulosk" || pId === "rikiorsa" || dName === "rikiorsa") {
+            const dName = data.driver || docSnap.id;
+            const norm = normalizeDriverKey(dName);
+            if (pId === "dlegulosk" || dName.toLowerCase() === "dlegulosk" || pId === "rikiorsa" || dName.toLowerCase() === "rikiorsa") {
                 hasCorruptedPilot = true;
             }
-            if (pId === "dieguiosk" || dName === "dieguiosk") {
+            if (pId === "dieguiosk" || norm === "dieguiosk") {
                 dieguioskFound = true;
             }
-            if (pId === "rikidorsa" || dName === "rikidorsa") {
+            if (pId === "rikidorsa" || norm === "rikidorsa") {
                 rikidorsaFound = true;
             }
-            list.push({
+            driverMap.set(norm, {
                 id: docSnap.id,
                 driver: data.driver || docSnap.id,
                 team: data.team || "Independent",
@@ -4609,6 +4619,8 @@ function initFirestoreListeners() {
                 pts: Number(data.pts) || 0
             });
         });
+
+        const list = Array.from(driverMap.values());
 
         // If Firestore contains outdated or misspelled data from earlier sessions, migrate to official 44-driver dataset
         if (hasCorruptedPilot || !dieguioskFound || !rikidorsaFound || list.length < 44) {
