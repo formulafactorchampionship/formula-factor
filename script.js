@@ -13,7 +13,9 @@ import {
     updateDoc,
     deleteDoc,
     onSnapshot,
-    writeBatch
+    writeBatch,
+    query,
+    where
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 import {
     getAuth,
@@ -5822,12 +5824,14 @@ const LocalAuthStore = {
     }
 };
 
-// Cloud Authentication Service with direct Firebase Firestore synchronization
+// Cloud Authentication Service with direct Firebase Firestore & backend synchronization
 const CloudAuthService = {
     async registerUser(displayName, email, password) {
         const cleanEmail = email.trim().toLowerCase();
         const cleanName = displayName.trim() || cleanEmail.split("@")[0];
         const docId = getUserDocId(cleanEmail);
+        const pHash = await hashUserPassword(password);
+        let cloudUser = null;
 
         // 1. Try Firebase Auth first
         try {
@@ -5837,60 +5841,65 @@ const CloudAuthService = {
                     await updateProfile(userCred.user, { displayName: cleanName });
                 } catch (pErr) {}
 
-                const cloudUser = {
+                cloudUser = {
                     uid: userCred.user.uid,
                     displayName: cleanName,
                     email: cleanEmail,
-                    passwordHash: await hashUserPassword(password),
+                    passwordHash: pHash,
                     createdAt: new Date().toISOString()
                 };
-                try {
-                    await setDoc(doc(db, "usuarios", docId), cloudUser, { merge: true });
-                } catch (e) {}
-
-                LocalAuthStore.saveCloudUserLocal(cloudUser, password);
-                LocalAuthStore.setCurrentUser(cloudUser);
-                return cloudUser;
             }
         } catch (fbErr) {
-            console.warn("Firebase Auth create attempt result:", fbErr);
+            console.warn("Firebase Auth create attempt:", fbErr);
             if (fbErr.code === "auth/email-already-in-use") {
                 throw fbErr;
             }
         }
 
-        // 2. Direct Cloud Firestore authentication
-        try {
-            const userRef = doc(db, "usuarios", docId);
-            const snap = await getDoc(userRef);
-            if (snap.exists()) {
-                throw { code: "auth/email-already-in-use", message: "Email already in use" };
-            }
-
-            const pHash = await hashUserPassword(password);
-            const newUser = {
+        if (!cloudUser) {
+            cloudUser = {
                 uid: "user_" + Date.now() + "_" + Math.random().toString(36).substring(2, 8),
                 displayName: cleanName,
                 email: cleanEmail,
                 passwordHash: pHash,
                 createdAt: new Date().toISOString()
             };
-
-            await setDoc(userRef, newUser);
-            LocalAuthStore.saveCloudUserLocal(newUser, password);
-            LocalAuthStore.setCurrentUser(newUser);
-            return newUser;
-        } catch (dbErr) {
-            if (dbErr.code === "auth/email-already-in-use") throw dbErr;
-            console.error("Firestore cloud registration error:", dbErr);
-            const localUser = LocalAuthStore.register(cleanName, cleanEmail, password);
-            return localUser;
         }
+
+        // 2. Direct Cloud Firestore write
+        try {
+            const userRef = doc(db, "usuarios", docId);
+            await setDoc(userRef, cloudUser, { merge: true });
+        } catch (dbErr) {
+            console.warn("Firestore user setDoc notice:", dbErr);
+        }
+
+        // 3. Server backend synchronization
+        try {
+            await fetch('/api/auth/register', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    name: cleanName,
+                    email: cleanEmail,
+                    password: password,
+                    passwordHash: pHash
+                })
+            });
+        } catch (sErr) {
+            console.warn("Server auth register notice:", sErr);
+        }
+
+        // 4. Local storage cache & active session
+        LocalAuthStore.saveCloudUserLocal(cloudUser, password);
+        LocalAuthStore.setCurrentUser(cloudUser);
+        return cloudUser;
     },
 
     async loginUser(email, password) {
         const cleanEmail = email.trim().toLowerCase();
         const docId = getUserDocId(cleanEmail);
+        const pHash = await hashUserPassword(password);
 
         // 1. Try Firebase Auth first
         try {
@@ -5900,27 +5909,43 @@ const CloudAuthService = {
                     uid: cred.user.uid,
                     displayName: cred.user.displayName || cleanEmail.split("@")[0],
                     email: cred.user.email || cleanEmail,
+                    passwordHash: pHash,
                     createdAt: new Date().toISOString()
                 };
                 LocalAuthStore.saveCloudUserLocal(loggedIn, password);
                 LocalAuthStore.setCurrentUser(loggedIn);
+                try {
+                    await setDoc(doc(db, "usuarios", docId), loggedIn, { merge: true });
+                } catch (e) {}
                 return loggedIn;
             }
         } catch (fbErr) {
-            console.warn("Firebase Auth signIn attempt result:", fbErr);
+            console.warn("Firebase Auth signIn attempt:", fbErr);
+            if (fbErr.code === "auth/wrong-password") {
+                throw fbErr;
+            }
         }
 
         // 2. Direct Cloud Firestore user lookup (cross-device & incognito support)
-        const pHash = await hashUserPassword(password);
         try {
+            let userData = null;
             const userRef = doc(db, "usuarios", docId);
             const snap = await getDoc(userRef);
 
             if (snap.exists()) {
-                const userData = snap.data();
+                userData = snap.data();
+            } else {
+                // Try query by email field if document ID was different
+                const q = query(collection(db, "usuarios"), where("email", "==", cleanEmail));
+                const qSnap = await getDocs(q);
+                if (!qSnap.empty) {
+                    userData = qSnap.docs[0].data();
+                }
+            }
+
+            if (userData) {
                 const storedHash = userData.passwordHash;
                 const storedPlain = userData.password;
-
                 const isMatch = (storedHash && storedHash === pHash) || (storedPlain && storedPlain === password);
 
                 if (!isMatch) {
@@ -5942,14 +5967,51 @@ const CloudAuthService = {
 
                 LocalAuthStore.saveCloudUserLocal(userObj, password);
                 LocalAuthStore.setCurrentUser(userObj);
+
+                // Sync with server in background
+                fetch('/api/auth/register', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name: userObj.displayName, email: cleanEmail, password, passwordHash: pHash })
+                }).catch(() => {});
+
                 return userObj;
             }
         } catch (dbErr) {
             if (dbErr.code === "auth/wrong-password") throw dbErr;
-            console.warn("Firestore lookup failed:", dbErr);
+            console.warn("Firestore lookup error:", dbErr);
         }
 
-        // 3. Fallback to LocalAuthStore if Firestore is unavailable
+        // 3. Server backend lookup
+        try {
+            const sRes = await fetch('/api/auth/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email: cleanEmail, password, passwordHash: pHash })
+            });
+            if (sRes.ok) {
+                const sData = await sRes.json();
+                if (sData.user) {
+                    LocalAuthStore.saveCloudUserLocal(sData.user, password);
+                    LocalAuthStore.setCurrentUser(sData.user);
+                    // Sync back to Firestore
+                    try {
+                        await setDoc(doc(db, "usuarios", docId), { ...sData.user, passwordHash: pHash }, { merge: true });
+                    } catch (e) {}
+                    return sData.user;
+                }
+            } else {
+                const errData = await sRes.json().catch(() => ({}));
+                if (errData.code === "auth/wrong-password") {
+                    throw { code: "auth/wrong-password", message: "Wrong password" };
+                }
+            }
+        } catch (sErr) {
+            if (sErr.code === "auth/wrong-password") throw sErr;
+            console.warn("Server login attempt error:", sErr);
+        }
+
+        // 4. Fallback to LocalAuthStore if external services are offline
         const localUser = LocalAuthStore.login(cleanEmail, password);
         return localUser;
     },
@@ -5965,23 +6027,36 @@ const CloudAuthService = {
             try {
                 const userRef = doc(db, "usuarios", docId);
                 const snap = await getDoc(userRef);
-                if (!snap.exists()) {
-                    throw { code: "auth/user-not-found", message: "User not found" };
+                if (snap.exists()) {
+                    return true;
                 }
-                return true;
-            } catch (dbErr) {
-                if (dbErr.code === "auth/user-not-found") throw dbErr;
-                throw e;
-            }
+            } catch (dbErr) {}
+
+            try {
+                const localUsers = LocalAuthStore.getUsers();
+                if (localUsers.some(u => (u.email || "").toLowerCase().trim() === cleanEmail)) {
+                    return true;
+                }
+            } catch (lErr) {}
+
+            throw { code: "auth/user-not-found", message: "User not found" };
         }
     },
 
-    // Sync any pre-existing local accounts to Firestore Cloud on initialization
+    // Sync any pre-existing local accounts to Firestore & Backend Cloud on initialization
     async syncAllLocalUsersToFirestore() {
         try {
             const localUsers = LocalAuthStore.getUsers();
             if (!localUsers || localUsers.length === 0) return;
 
+            // Sync to backend server
+            fetch('/api/auth/sync', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ users: localUsers })
+            }).catch(() => {});
+
+            // Sync to Firestore
             for (const u of localUsers) {
                 if (!u || !u.email) continue;
                 const docId = getUserDocId(u.email);
@@ -5999,12 +6074,12 @@ const CloudAuthService = {
                 }
             }
         } catch (e) {
-            console.warn("Background Firestore user sync:", e);
+            console.warn("Background user sync:", e);
         }
     }
 };
 
-// Start background user sync to Firebase Firestore
+// Start background user sync to Firebase Firestore & Server
 CloudAuthService.syncAllLocalUsersToFirestore();
 
 function isFirebaseApiKeyInvalid(err) {
