@@ -15,6 +15,15 @@ import {
     onSnapshot,
     writeBatch
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import {
+    getAuth,
+    signInWithEmailAndPassword,
+    createUserWithEmailAndPassword,
+    signOut,
+    onAuthStateChanged,
+    sendPasswordResetEmail,
+    updateProfile
+} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
 let firebaseConfig = {
   apiKey: "AIzaSyAS4RecsGAS4JWUn1d-9_VyqFRKmkF_CNs",
@@ -46,6 +55,7 @@ try {
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
+const auth = getAuth(app);
 
 // In-Memory live Firestore synchronized state
 let currentPilotos = [];
@@ -340,6 +350,28 @@ const translations = {
             baseTag: "BASE: MADRID",
             desc: "Selecciona tu zona horaria para ver la hora local",
             btnTitle: "Zona horaria (Hora base: Madrid)"
+        },
+        auth: {
+            btnLabel: "INICIAR SESIÓN",
+            badge: "FORMULA FACTOR // ACCESO DE PILOTO",
+            tabLogin: "INICIAR SESIÓN",
+            tabRegister: "REGISTRARSE",
+            loginSub: "Introduce tu correo electrónico y contraseña para acceder a tu cuenta.",
+            registerSub: "Crea tu cuenta de piloto en Formula Factor Championship.",
+            resetSub: "Introduce tu correo para recibir un enlace oficial para restablecer tu contraseña.",
+            labelEmail: "CORREO ELECTRÓNICO",
+            labelPassword: "CONTRASEÑA",
+            labelPasswordReg: "CONTRASEÑA (MÍNIMO 6 CARACTERES)",
+            labelName: "NOMBRE / APODO DE PILOTO",
+            forgotLink: "¿Olvidaste tu contraseña?",
+            btnCancel: "CANCELAR",
+            btnBack: "VOLVER",
+            btnSubmitLogin: "INICIAR SESIÓN",
+            btnSubmitRegister: "CREAR CUENTA",
+            btnSubmitReset: "ENVIAR ENLACE",
+            statusConnected: "CONECTADO",
+            btnLogout: "CERRAR SESIÓN",
+            welcome: "Bienvenido"
         }
     },
     en: {
@@ -463,6 +495,28 @@ const translations = {
             baseTag: "BASE: MADRID",
             desc: "Select your timezone to view local times",
             btnTitle: "Time zone (Base: Madrid time)"
+        },
+        auth: {
+            btnLabel: "LOG IN",
+            badge: "FORMULA FACTOR // DRIVER ACCESS",
+            tabLogin: "LOG IN",
+            tabRegister: "REGISTER",
+            loginSub: "Enter your email and password to access your driver account.",
+            registerSub: "Create your driver account on Formula Factor Championship.",
+            resetSub: "Enter your email to receive an official password reset link.",
+            labelEmail: "EMAIL ADDRESS",
+            labelPassword: "PASSWORD",
+            labelPasswordReg: "PASSWORD (MIN. 6 CHARACTERS)",
+            labelName: "DRIVER NAME / ALIAS",
+            forgotLink: "Forgot your password?",
+            btnCancel: "CANCEL",
+            btnBack: "BACK",
+            btnSubmitLogin: "LOG IN",
+            btnSubmitRegister: "CREATE ACCOUNT",
+            btnSubmitReset: "SEND RESET LINK",
+            statusConnected: "CONNECTED",
+            btnLogout: "LOG OUT",
+            welcome: "Welcome"
         }
     }
 };
@@ -675,6 +729,45 @@ function applyTranslations(lang) {
     const tzBtnEl = document.getElementById("tzDropdownBtn");
     if (tzBtnEl && dict.tz) tzBtnEl.setAttribute("title", dict.tz.btnTitle);
 
+    // User Auth translations
+    if (dict.auth) {
+        const authBtnLabelEl = document.getElementById("authBtnLabel");
+        if (authBtnLabelEl && !authBtnLabelEl.dataset.customName) {
+            authBtnLabelEl.textContent = dict.auth.btnLabel;
+        }
+        const authBadgeEl = document.getElementById("authCardBadge");
+        if (authBadgeEl) authBadgeEl.textContent = dict.auth.badge;
+        const tabLog = document.getElementById("authTabLogin");
+        if (tabLog) tabLog.textContent = dict.auth.tabLogin;
+        const tabReg = document.getElementById("authTabRegister");
+        if (tabReg) tabReg.textContent = dict.auth.tabRegister;
+        const logSub = document.getElementById("authLoginSub");
+        if (logSub) logSub.textContent = dict.auth.loginSub;
+        const regSub = document.getElementById("authRegisterSub");
+        if (regSub) regSub.textContent = dict.auth.registerSub;
+        const resSub = document.getElementById("authResetSub");
+        if (resSub) resSub.textContent = dict.auth.resetSub;
+        const forgotLink = document.getElementById("authForgotBtn");
+        if (forgotLink) forgotLink.textContent = dict.auth.forgotLink;
+        const logCancel = document.getElementById("loginCancelBtn");
+        if (logCancel) logCancel.textContent = dict.auth.btnCancel;
+        const regCancel = document.getElementById("registerCancelBtn");
+        if (regCancel) regCancel.textContent = dict.auth.btnCancel;
+        const resBack = document.getElementById("resetBackBtn");
+        if (resBack) resBack.textContent = dict.auth.btnBack;
+        const logSubBtn = document.getElementById("loginSubmitBtn");
+        if (logSubBtn && !logSubBtn.disabled) logSubBtn.textContent = dict.auth.btnSubmitLogin;
+        const regSubBtn = document.getElementById("registerSubmitBtn");
+        if (regSubBtn && !regSubBtn.disabled) regSubBtn.textContent = dict.auth.btnSubmitRegister;
+        const resSubBtn = document.getElementById("resetSubmitBtn");
+        if (resSubBtn && !resSubBtn.disabled) resSubBtn.textContent = dict.auth.btnSubmitReset;
+        const uLogout = document.getElementById("userLogoutBtn");
+        if (uLogout) {
+            const logoutSpan = uLogout.querySelector("span:last-child");
+            if (logoutSpan) logoutSpan.textContent = dict.auth.btnLogout;
+        }
+    }
+
     // Calendar cards status & country
     updateCalendarCards(lang);
 
@@ -884,13 +977,17 @@ function setTimezone(tzId) {
 function closeAllDropdowns() {
     const langDd = document.getElementById("langDropdown");
     const tzDd = document.getElementById("tzDropdown");
+    const userDd = document.getElementById("userAuthDropdown");
     const langBtn = document.getElementById("langDropdownBtn");
     const tzBtn = document.getElementById("tzDropdownBtn");
+    const authBtn = document.getElementById("authHeaderBtn");
 
     if (langDd) langDd.classList.remove("is-open");
     if (tzDd) tzDd.classList.remove("is-open");
+    if (userDd) userDd.classList.remove("is-open");
     if (langBtn) langBtn.setAttribute("aria-expanded", "false");
     if (tzBtn) tzBtn.setAttribute("aria-expanded", "false");
+    if (authBtn) authBtn.setAttribute("aria-expanded", "false");
 }
 
 function initCustomDropdowns() {
@@ -5628,4 +5725,539 @@ if (adminResetDefaultBtn) {
         }
     });
 }
+
+/* =========================================================
+   USER AUTHENTICATION (EMAIL & PASSWORD) — FORMULA FACTOR
+========================================================= */
+
+// Local fallback authentication store (allows seamless preview/demo mode when Firebase Auth key is not yet set)
+const LocalAuthStore = {
+    getUsers() {
+        try {
+            const raw = localStorage.getItem("ffc_registered_users");
+            return raw ? JSON.parse(raw) : [];
+        } catch (e) {
+            return [];
+        }
+    },
+    saveUsers(users) {
+        try {
+            localStorage.setItem("ffc_registered_users", JSON.stringify(users));
+        } catch (e) {}
+    },
+    getCurrentUser() {
+        try {
+            const raw = localStorage.getItem("ffc_current_user");
+            return raw ? JSON.parse(raw) : null;
+        } catch (e) {
+            return null;
+        }
+    },
+    setCurrentUser(user) {
+        try {
+            if (user) {
+                localStorage.setItem("ffc_current_user", JSON.stringify(user));
+            } else {
+                localStorage.removeItem("ffc_current_user");
+            }
+        } catch (e) {}
+    },
+    register(displayName, email, password) {
+        const users = this.getUsers();
+        const normalizedEmail = email.toLowerCase().trim();
+        const existing = users.find(u => u.email.toLowerCase() === normalizedEmail);
+        if (existing) {
+            throw { code: "auth/email-already-in-use", message: "Email already in use" };
+        }
+        const newUser = {
+            uid: "user_" + Date.now() + "_" + Math.random().toString(36).substring(2, 7),
+            displayName: displayName.trim() || email.split("@")[0],
+            email: normalizedEmail,
+            password: password,
+            createdAt: new Date().toISOString()
+        };
+        users.push(newUser);
+        this.saveUsers(users);
+        this.setCurrentUser(newUser);
+        return newUser;
+    },
+    login(email, password) {
+        const users = this.getUsers();
+        const normalizedEmail = email.toLowerCase().trim();
+        const found = users.find(u => u.email.toLowerCase() === normalizedEmail);
+        if (!found) {
+            throw { code: "auth/user-not-found", message: "User not found" };
+        }
+        if (found.password !== password) {
+            throw { code: "auth/wrong-password", message: "Wrong password" };
+        }
+        this.setCurrentUser(found);
+        return found;
+    },
+    logout() {
+        this.setCurrentUser(null);
+    }
+};
+
+function isFirebaseApiKeyInvalid(err) {
+    if (!err) return false;
+    const code = String(err.code || "").toLowerCase();
+    const msg = String(err.message || "").toLowerCase();
+    return code.includes("api-key") || msg.includes("api-key") || msg.includes("api key") || code.includes("internal-error") || code.includes("invalid-credential");
+}
+
+// User Auth DOM Elements
+const authHeaderBtn = document.getElementById("authHeaderBtn");
+const authBtnLabel = document.getElementById("authBtnLabel");
+const authBtnIconWrap = document.getElementById("authBtnIconWrap");
+const userAuthDropdown = document.getElementById("userAuthDropdown");
+const userProfileMenu = document.getElementById("userProfileMenu");
+const userProfileAvatar = document.getElementById("userProfileAvatar");
+const userProfileName = document.getElementById("userProfileName");
+const userProfileEmail = document.getElementById("userProfileEmail");
+const userLogoutBtn = document.getElementById("userLogoutBtn");
+
+const userAuthOverlay = document.getElementById("userAuthOverlay");
+const userAuthClose = document.getElementById("userAuthClose");
+const authTabsNav = document.getElementById("authTabsNav");
+const authTabLogin = document.getElementById("authTabLogin");
+const authTabRegister = document.getElementById("authTabRegister");
+
+const authLoginSub = document.getElementById("authLoginSub");
+const authRegisterSub = document.getElementById("authRegisterSub");
+const authResetSub = document.getElementById("authResetSub");
+
+const authAlertBox = document.getElementById("authAlertBox");
+const authAlertText = document.getElementById("authAlertText");
+
+const userLoginForm = document.getElementById("userLoginForm");
+const loginEmailInput = document.getElementById("loginEmailInput");
+const loginPasswordInput = document.getElementById("loginPasswordInput");
+const toggleLoginPwdBtn = document.getElementById("toggleLoginPwdBtn");
+const loginSubmitBtn = document.getElementById("loginSubmitBtn");
+const loginCancelBtn = document.getElementById("loginCancelBtn");
+const authForgotBtn = document.getElementById("authForgotBtn");
+
+const userRegisterForm = document.getElementById("userRegisterForm");
+const registerNameInput = document.getElementById("registerNameInput");
+const registerEmailInput = document.getElementById("registerEmailInput");
+const registerPasswordInput = document.getElementById("registerPasswordInput");
+const toggleRegisterPwdBtn = document.getElementById("toggleRegisterPwdBtn");
+const registerSubmitBtn = document.getElementById("registerSubmitBtn");
+const registerCancelBtn = document.getElementById("registerCancelBtn");
+
+const userResetForm = document.getElementById("userResetForm");
+const resetEmailInput = document.getElementById("resetEmailInput");
+const resetSubmitBtn = document.getElementById("resetSubmitBtn");
+const resetBackBtn = document.getElementById("resetBackBtn");
+
+let activeUserAuth = null;
+let currentAuthTab = "login";
+
+// Helper: Show Alert inside Auth Modal
+function showAuthAlert(message, type = "error") {
+    if (!authAlertBox || !authAlertText) return;
+    authAlertText.textContent = message;
+    authAlertBox.className = "auth-alert-box " + (type === "success" ? "success" : "error");
+    authAlertBox.style.display = "flex";
+}
+
+function clearAuthAlert() {
+    if (!authAlertBox) return;
+    authAlertBox.style.display = "none";
+    if (authAlertText) authAlertText.textContent = "";
+}
+
+// Friendly Firebase Error Messages
+function getAuthErrorMessage(errCode) {
+    const isEn = currentLanguage === "en";
+    const str = String(errCode || "").toLowerCase();
+
+    if (str.includes("invalid-email")) {
+        return isEn ? "Invalid email address format." : "Formato de correo electrónico inválido.";
+    }
+    if (str.includes("user-not-found") || str.includes("wrong-password") || str.includes("invalid-credential")) {
+        return isEn ? "Incorrect email or password. Please try again." : "Correo o contraseña incorrectos. Verifica tus datos.";
+    }
+    if (str.includes("email-already-in-use")) {
+        return isEn ? "This email is already registered. Please log in instead." : "Este correo electrónico ya está registrado. Inicia sesión.";
+    }
+    if (str.includes("weak-password")) {
+        return isEn ? "Password is too weak. Please use at least 6 characters." : "La contraseña es muy débil. Debe tener al menos 6 caracteres.";
+    }
+    if (str.includes("user-disabled")) {
+        return isEn ? "This account has been disabled." : "Esta cuenta de usuario ha sido deshabilitada.";
+    }
+    if (str.includes("too-many-requests")) {
+        return isEn ? "Too many attempts. Please try again later." : "Demasiados intentos fallidos. Inténtalo más tarde.";
+    }
+    if (str.includes("network-request-failed")) {
+        return isEn ? "Network error. Please check your internet connection." : "Error de red. Comprueba tu conexión a internet.";
+    }
+    return isEn ? "An authentication error occurred. Please try again." : "Ocurrió un error al autenticar. Por favor inténtalo de nuevo.";
+}
+
+// Switch between Login / Register / Reset Tabs
+function switchUserAuthTab(tab) {
+    currentAuthTab = tab;
+    clearAuthAlert();
+
+    if (userLoginForm) userLoginForm.style.display = tab === "login" ? "block" : "none";
+    if (userRegisterForm) userRegisterForm.style.display = tab === "register" ? "block" : "none";
+    if (userResetForm) userResetForm.style.display = tab === "reset" ? "block" : "none";
+
+    if (authLoginSub) authLoginSub.style.display = tab === "login" ? "block" : "none";
+    if (authRegisterSub) authRegisterSub.style.display = tab === "register" ? "block" : "none";
+    if (authResetSub) authResetSub.style.display = tab === "reset" ? "block" : "none";
+
+    if (authTabsNav) {
+        authTabsNav.style.display = tab === "reset" ? "none" : "flex";
+    }
+
+    if (authTabLogin) {
+        if (tab === "login") authTabLogin.classList.add("active");
+        else authTabLogin.classList.remove("active");
+    }
+    if (authTabRegister) {
+        if (tab === "register") authTabRegister.classList.add("active");
+        else authTabRegister.classList.remove("active");
+    }
+
+    // Auto-focus first input
+    setTimeout(() => {
+        if (tab === "login" && loginEmailInput) loginEmailInput.focus();
+        else if (tab === "register" && registerNameInput) registerNameInput.focus();
+        else if (tab === "reset" && resetEmailInput) resetEmailInput.focus();
+    }, 60);
+}
+
+// Open and Close Modal
+function openUserAuthModal(tab = "login") {
+    if (!userAuthOverlay) return;
+    closeAllDropdowns();
+    clearAuthAlert();
+    switchUserAuthTab(tab);
+    userAuthOverlay.classList.add("active");
+    document.body.classList.add("modal-open");
+}
+
+function closeUserAuthModal() {
+    if (!userAuthOverlay) return;
+    userAuthOverlay.classList.remove("active");
+    if (!adminPanelOverlay || !adminPanelOverlay.classList.contains("active")) {
+        document.body.classList.remove("modal-open");
+    }
+    clearAuthAlert();
+    if (userLoginForm) userLoginForm.reset();
+    if (userRegisterForm) userRegisterForm.reset();
+    if (userResetForm) userResetForm.reset();
+}
+
+// Update UI on Auth State Change
+function renderUserAuthState(user) {
+    activeUserAuth = user;
+    const dict = translations[currentLanguage] || translations.es;
+
+    if (user) {
+        // User logged in
+        const displayName = user.displayName || (user.email ? user.email.split("@")[0] : "Piloto");
+        const initial = displayName.charAt(0).toUpperCase();
+
+        if (authHeaderBtn) {
+            authHeaderBtn.classList.add("is-logged-in");
+            authHeaderBtn.setAttribute("title", user.email || displayName);
+        }
+        if (authBtnLabel) {
+            authBtnLabel.dataset.customName = "true";
+            authBtnLabel.textContent = displayName.toUpperCase();
+        }
+        if (authBtnIconWrap) {
+            authBtnIconWrap.innerHTML = `<span class="user-header-avatar">${initial}</span>`;
+        }
+
+        if (userProfileAvatar) userProfileAvatar.textContent = initial;
+        if (userProfileName) userProfileName.textContent = displayName;
+        if (userProfileEmail) userProfileEmail.textContent = user.email || "";
+
+    } else {
+        // User logged out
+        if (authHeaderBtn) {
+            authHeaderBtn.classList.remove("is-logged-in");
+            authHeaderBtn.removeAttribute("title");
+        }
+        if (authBtnLabel) {
+            delete authBtnLabel.dataset.customName;
+            authBtnLabel.textContent = dict.auth ? dict.auth.btnLabel : "INICIAR SESIÓN";
+        }
+        if (authBtnIconWrap) {
+            authBtnIconWrap.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>`;
+        }
+    }
+}
+
+// Initialize from local user store if present
+const initialSavedLocalUser = LocalAuthStore.getCurrentUser();
+if (initialSavedLocalUser) {
+    renderUserAuthState(initialSavedLocalUser);
+}
+
+// Listen to Firebase Auth state
+onAuthStateChanged(auth, (user) => {
+    if (user) {
+        LocalAuthStore.setCurrentUser({
+            uid: user.uid,
+            displayName: user.displayName || (user.email ? user.email.split("@")[0] : "Piloto"),
+            email: user.email,
+            createdAt: new Date().toISOString()
+        });
+        renderUserAuthState(user);
+    } else {
+        const local = LocalAuthStore.getCurrentUser();
+        renderUserAuthState(local);
+    }
+});
+
+// Event Listeners for User Auth
+if (authHeaderBtn) {
+    authHeaderBtn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        if (activeUserAuth) {
+            // Logged in: toggle user profile menu
+            if (!userAuthDropdown) return;
+            const isOpen = userAuthDropdown.classList.contains("is-open");
+            closeAllDropdowns();
+            if (!isOpen) {
+                userAuthDropdown.classList.add("is-open");
+                authHeaderBtn.setAttribute("aria-expanded", "true");
+            }
+        } else {
+            // Not logged in: open login modal
+            openUserAuthModal("login");
+        }
+    });
+}
+
+// User Logout
+if (userLogoutBtn) {
+    userLogoutBtn.addEventListener("click", async (e) => {
+        e.stopPropagation();
+        try {
+            await signOut(auth);
+        } catch (e) {}
+        LocalAuthStore.logout();
+        renderUserAuthState(null);
+        closeAllDropdowns();
+    });
+}
+
+// Modal Closers & Tabs
+if (userAuthClose) userAuthClose.addEventListener("click", closeUserAuthModal);
+if (loginCancelBtn) loginCancelBtn.addEventListener("click", closeUserAuthModal);
+if (registerCancelBtn) registerCancelBtn.addEventListener("click", closeUserAuthModal);
+
+if (userAuthOverlay) {
+    userAuthOverlay.addEventListener("click", (e) => {
+        if (e.target === userAuthOverlay) closeUserAuthModal();
+    });
+}
+
+if (authTabLogin) {
+    authTabLogin.addEventListener("click", () => switchUserAuthTab("login"));
+}
+if (authTabRegister) {
+    authTabRegister.addEventListener("click", () => switchUserAuthTab("register"));
+}
+if (authForgotBtn) {
+    authForgotBtn.addEventListener("click", () => switchUserAuthTab("reset"));
+}
+if (resetBackBtn) {
+    resetBackBtn.addEventListener("click", () => switchUserAuthTab("login"));
+}
+
+// Toggle password visibility
+if (toggleLoginPwdBtn && loginPasswordInput) {
+    toggleLoginPwdBtn.addEventListener("click", () => {
+        const isPassword = loginPasswordInput.type === "password";
+        loginPasswordInput.type = isPassword ? "text" : "password";
+        toggleLoginPwdBtn.textContent = isPassword ? "🙈" : "👁";
+    });
+}
+
+if (toggleRegisterPwdBtn && registerPasswordInput) {
+    toggleRegisterPwdBtn.addEventListener("click", () => {
+        const isPassword = registerPasswordInput.type === "password";
+        registerPasswordInput.type = isPassword ? "text" : "password";
+        toggleRegisterPwdBtn.textContent = isPassword ? "🙈" : "👁";
+    });
+}
+
+// --- Login Form Submit ---
+if (userLoginForm) {
+    userLoginForm.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        clearAuthAlert();
+
+        const email = loginEmailInput ? loginEmailInput.value.trim() : "";
+        const password = loginPasswordInput ? loginPasswordInput.value : "";
+
+        if (!email || !password) {
+            showAuthAlert(currentLanguage === "en" ? "Please fill in all fields." : "Por favor completa todos los campos.");
+            return;
+        }
+
+        const isEn = currentLanguage === "en";
+        if (loginSubmitBtn) {
+            loginSubmitBtn.disabled = true;
+            loginSubmitBtn.textContent = isEn ? "LOGGING IN..." : "INICIANDO SESIÓN...";
+        }
+
+        try {
+            let loggedInUser = null;
+            try {
+                const cred = await signInWithEmailAndPassword(auth, email, password);
+                loggedInUser = cred.user;
+            } catch (fbErr) {
+                try {
+                    loggedInUser = LocalAuthStore.login(email, password);
+                } catch (localErr) {
+                    if (isFirebaseApiKeyInvalid(fbErr)) {
+                        throw localErr;
+                    } else {
+                        throw fbErr;
+                    }
+                }
+            }
+
+            if (loggedInUser) {
+                renderUserAuthState(loggedInUser);
+                closeUserAuthModal();
+            }
+        } catch (err) {
+            console.error("Login error:", err);
+            showAuthAlert(getAuthErrorMessage(err.code || err.message));
+        } finally {
+            if (loginSubmitBtn) {
+                loginSubmitBtn.disabled = false;
+                const dict = translations[currentLanguage] || translations.es;
+                loginSubmitBtn.textContent = dict.auth ? dict.auth.btnSubmitLogin : "INICIAR SESIÓN";
+            }
+        }
+    });
+}
+
+// --- Register Form Submit ---
+if (userRegisterForm) {
+    userRegisterForm.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        clearAuthAlert();
+
+        const name = registerNameInput ? registerNameInput.value.trim() : "";
+        const email = registerEmailInput ? registerEmailInput.value.trim() : "";
+        const password = registerPasswordInput ? registerPasswordInput.value : "";
+
+        const isEn = currentLanguage === "en";
+
+        if (!name || !email || !password) {
+            showAuthAlert(isEn ? "Please fill in all fields." : "Por favor completa todos los campos.");
+            return;
+        }
+
+        if (password.length < 6) {
+            showAuthAlert(isEn ? "Password must have at least 6 characters." : "La contraseña debe tener al menos 6 caracteres.");
+            return;
+        }
+
+        if (registerSubmitBtn) {
+            registerSubmitBtn.disabled = true;
+            registerSubmitBtn.textContent = isEn ? "CREATING ACCOUNT..." : "CREANDO CUENTA...";
+        }
+
+        try {
+            let registeredUser = null;
+            try {
+                const userCred = await createUserWithEmailAndPassword(auth, email, password);
+                if (userCred && userCred.user) {
+                    await updateProfile(userCred.user, { displayName: name });
+                    registeredUser = userCred.user;
+                    try {
+                        await setDoc(doc(db, "usuarios", userCred.user.uid), {
+                            displayName: name,
+                            email: email,
+                            createdAt: new Date().toISOString()
+                        });
+                    } catch (dbErr) {}
+                }
+            } catch (fbErr) {
+                if (isFirebaseApiKeyInvalid(fbErr)) {
+                    registeredUser = LocalAuthStore.register(name, email, password);
+                } else {
+                    throw fbErr;
+                }
+            }
+
+            if (registeredUser) {
+                renderUserAuthState(registeredUser);
+                closeUserAuthModal();
+            }
+        } catch (err) {
+            console.error("Registration error:", err);
+            showAuthAlert(getAuthErrorMessage(err.code || err.message));
+        } finally {
+            if (registerSubmitBtn) {
+                registerSubmitBtn.disabled = false;
+                const dict = translations[currentLanguage] || translations.es;
+                registerSubmitBtn.textContent = dict.auth ? dict.auth.btnSubmitRegister : "CREAR CUENTA";
+            }
+        }
+    });
+}
+
+// --- Reset Password Form Submit ---
+if (userResetForm) {
+    userResetForm.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        clearAuthAlert();
+
+        const email = resetEmailInput ? resetEmailInput.value.trim() : "";
+        const isEn = currentLanguage === "en";
+
+        if (!email) {
+            showAuthAlert(isEn ? "Please enter your email address." : "Por favor ingresa tu correo electrónico.");
+            return;
+        }
+
+        if (resetSubmitBtn) {
+            resetSubmitBtn.disabled = true;
+            resetSubmitBtn.textContent = isEn ? "SENDING..." : "ENVIANDO...";
+        }
+
+        try {
+            try {
+                await sendPasswordResetEmail(auth, email);
+            } catch (fbErr) {
+                if (!isFirebaseApiKeyInvalid(fbErr)) {
+                    throw fbErr;
+                }
+            }
+            showAuthAlert(
+                isEn
+                    ? "Password reset email sent. Please check your inbox."
+                    : "Enlace de restablecimiento enviado. Revisa tu bandeja de entrada.",
+                "success"
+            );
+            if (resetEmailInput) resetEmailInput.value = "";
+        } catch (err) {
+            console.error("Password reset error:", err);
+            showAuthAlert(getAuthErrorMessage(err.code || err.message));
+        } finally {
+            if (resetSubmitBtn) {
+                resetSubmitBtn.disabled = false;
+                const dict = translations[currentLanguage] || translations.es;
+                resetSubmitBtn.textContent = dict.auth ? dict.auth.btnSubmitReset : "ENVIAR ENLACE";
+            }
+        }
+    });
+}
+
+
 

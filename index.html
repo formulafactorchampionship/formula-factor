@@ -127,6 +127,44 @@
                 DISCORD ↗
             </a>
 
+            <!-- Botón de Inicio de Sesión (a la derecha de Discord) -->
+            <div class="custom-dropdown user-auth-dropdown" id="userAuthDropdown">
+                <button type="button" class="auth-header-btn" id="authHeaderBtn" aria-haspopup="dialog" aria-expanded="false" title="Iniciar sesión con email y contraseña">
+                    <span class="auth-btn-icon-wrap" id="authBtnIconWrap">
+                        <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor" aria-hidden="true">
+                            <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+                        </svg>
+                    </span>
+                    <span class="auth-btn-label" id="authBtnLabel">INICIAR SESIÓN</span>
+                </button>
+
+                <!-- Menú desplegable cuando el usuario ha iniciado sesión -->
+                <div class="dropdown-menu user-profile-menu" id="userProfileMenu" role="menu" aria-label="Perfil de usuario">
+                    <div class="user-profile-header">
+                        <div class="user-profile-avatar" id="userProfileAvatar">U</div>
+                        <div class="user-profile-meta">
+                            <span class="user-profile-name" id="userProfileName">Piloto</span>
+                            <span class="user-profile-email" id="userProfileEmail">usuario@email.com</span>
+                        </div>
+                    </div>
+                    <div class="user-profile-divider"></div>
+                    <div class="user-profile-body">
+                        <div class="user-profile-row">
+                            <span class="user-profile-label" id="userProfileStatusLabel">Estado</span>
+                            <span class="user-profile-badge user-badge-connected" id="userProfileStatusVal">CONECTADO</span>
+                        </div>
+                    </div>
+                    <div class="user-profile-footer">
+                        <button type="button" class="user-logout-btn" id="userLogoutBtn">
+                            <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor" aria-hidden="true">
+                                <path d="M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.58L17 17l5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z"/>
+                            </svg>
+                            <span id="userLogoutBtnText">Cerrar Sesión</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
             <button class="menu-btn" id="menuBtn" aria-label="Open menu">
                 ☰
             </button>
@@ -1338,6 +1376,139 @@
     </div>
 
 </footer>
+
+<!-- =========================
+     USER AUTH MODAL (LOGIN & REGISTRO)
+========================= -->
+<div class="user-auth-overlay" id="userAuthOverlay" aria-hidden="true">
+    <div class="user-auth-card">
+        <button class="admin-modal-close-btn" id="userAuthClose" aria-label="Cerrar">&times;</button>
+        <div class="auth-card-badge" id="authBadge">FORMULA FACTOR // ACCESO DE PILOTO</div>
+        
+        <!-- Tabs for Iniciar Sesión / Registrarse -->
+        <div class="auth-tabs" role="tablist">
+            <button type="button" class="auth-tab-btn active" id="authTabLogin" role="tab" aria-selected="true">
+                INICIAR SESIÓN
+            </button>
+            <button type="button" class="auth-tab-btn" id="authTabRegister" role="tab" aria-selected="false">
+                REGISTRARSE
+            </button>
+        </div>
+
+        <!-- Alert messages (Errors / Success) -->
+        <div class="auth-alert-box" id="authAlertBox" style="display: none;">
+            <svg class="auth-alert-icon" id="authAlertIcon" viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
+                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/>
+            </svg>
+            <span class="auth-alert-text" id="authAlertText"></span>
+        </div>
+
+        <!-- LOGIN FORM -->
+        <form id="userLoginForm" class="auth-form active">
+            <p class="auth-card-subtitle" id="loginSubtitle">Introduce tu correo electrónico y contraseña para acceder a tu cuenta.</p>
+            
+            <div class="admin-input-group auth-input-group">
+                <label for="loginEmailInput" id="labelLoginEmail">CORREO ELECTRÓNICO</label>
+                <div class="auth-input-wrapper">
+                    <svg class="auth-field-icon" viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
+                        <path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/>
+                    </svg>
+                    <input type="email" id="loginEmailInput" placeholder="piloto@formulafactor.com" autocomplete="email" required>
+                </div>
+            </div>
+
+            <div class="admin-input-group auth-input-group">
+                <div class="auth-label-row">
+                    <label for="loginPasswordInput" id="labelLoginPassword">CONTRASEÑA</label>
+                    <button type="button" class="auth-forgot-link" id="authForgotBtn">¿Olvidaste tu contraseña?</button>
+                </div>
+                <div class="auth-input-wrapper">
+                    <svg class="auth-field-icon" viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
+                        <path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/>
+                    </svg>
+                    <input type="password" id="loginPasswordInput" placeholder="••••••••" autocomplete="current-password" required>
+                    <button type="button" class="toggle-password-btn auth-toggle-pwd-btn" id="toggleLoginPwdBtn" aria-label="Mostrar u ocultar contraseña">
+                        👁
+                    </button>
+                </div>
+            </div>
+
+            <div class="admin-form-actions auth-form-actions">
+                <button type="button" class="btn btn-secondary" id="loginCancelBtn">CANCELAR</button>
+                <button type="submit" class="btn btn-primary" id="loginSubmitBtn">
+                    <span class="btn-text" id="loginSubmitBtnText">INICIAR SESIÓN</span>
+                </button>
+            </div>
+        </form>
+
+        <!-- REGISTER FORM -->
+        <form id="userRegisterForm" class="auth-form" style="display: none;">
+            <p class="auth-card-subtitle" id="registerSubtitle">Crea tu cuenta de piloto en Formula Factor Championship.</p>
+
+            <div class="admin-input-group auth-input-group">
+                <label for="registerNameInput" id="labelRegisterName">NOMBRE / APODO DE PILOTO</label>
+                <div class="auth-input-wrapper">
+                    <svg class="auth-field-icon" viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
+                        <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+                    </svg>
+                    <input type="text" id="registerNameInput" placeholder="Ej. Ayrton, Max, Dieguiosk..." autocomplete="name" required>
+                </div>
+            </div>
+
+            <div class="admin-input-group auth-input-group">
+                <label for="registerEmailInput" id="labelRegisterEmail">CORREO ELECTRÓNICO</label>
+                <div class="auth-input-wrapper">
+                    <svg class="auth-field-icon" viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
+                        <path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/>
+                    </svg>
+                    <input type="email" id="registerEmailInput" placeholder="piloto@formulafactor.com" autocomplete="email" required>
+                </div>
+            </div>
+
+            <div class="admin-input-group auth-input-group">
+                <label for="registerPasswordInput" id="labelRegisterPassword">CONTRASEÑA (MÍNIMO 6 CARACTERES)</label>
+                <div class="auth-input-wrapper">
+                    <svg class="auth-field-icon" viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
+                        <path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/>
+                    </svg>
+                    <input type="password" id="registerPasswordInput" placeholder="••••••••" autocomplete="new-password" minlength="6" required>
+                    <button type="button" class="toggle-password-btn auth-toggle-pwd-btn" id="toggleRegisterPwdBtn" aria-label="Mostrar u ocultar contraseña">
+                        👁
+                    </button>
+                </div>
+            </div>
+
+            <div class="admin-form-actions auth-form-actions">
+                <button type="button" class="btn btn-secondary" id="registerCancelBtn">CANCELAR</button>
+                <button type="submit" class="btn btn-primary" id="registerSubmitBtn">
+                    <span class="btn-text" id="registerSubmitBtnText">CREAR CUENTA</span>
+                </button>
+            </div>
+        </form>
+
+        <!-- PASSWORD RESET VIEW -->
+        <form id="userResetForm" class="auth-form" style="display: none;">
+            <p class="auth-card-subtitle" id="resetSubtitle">Introduce tu correo para recibir un enlace oficial para restablecer tu contraseña.</p>
+
+            <div class="admin-input-group auth-input-group">
+                <label for="resetEmailInput" id="labelResetEmail">CORREO ELECTRÓNICO</label>
+                <div class="auth-input-wrapper">
+                    <svg class="auth-field-icon" viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
+                        <path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/>
+                    </svg>
+                    <input type="email" id="resetEmailInput" placeholder="piloto@formulafactor.com" autocomplete="email" required>
+                </div>
+            </div>
+
+            <div class="admin-form-actions auth-form-actions">
+                <button type="button" class="btn btn-secondary" id="resetBackBtn">VOLVER</button>
+                <button type="submit" class="btn btn-primary" id="resetSubmitBtn">
+                    <span class="btn-text" id="resetSubmitBtnText">ENVIAR ENLACE</span>
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
 
 <!-- =========================
      ADMIN AUTH MODAL
