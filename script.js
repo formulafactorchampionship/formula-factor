@@ -2642,7 +2642,7 @@ function getDynamicSeasonMatrixData() {
         return {
             pos,
             id: driverObj.id || null,
-            number: driverObj.customNumber || meta.number || pos,
+            number: meta.number || pos,
             flag: driverObj.customFlag || meta.flag || "🏁",
             driver: driverName,
             team,
@@ -2651,7 +2651,6 @@ function getDynamicSeasonMatrixData() {
             dif,
             avatarUrl: driverObj.avatarUrl || null,
             cardColor: driverObj.cardColor || null,
-            customNumber: driverObj.customNumber || null,
             customFlag: driverObj.customFlag || null,
             bio: driverObj.bio || null,
             socialTwitch: driverObj.socialTwitch || null,
@@ -2892,7 +2891,7 @@ function openDriverStatsModal(driverName) {
     // Dorsal
     const dorsalEl = document.getElementById("driverModalDorsal");
     if (dorsalEl) {
-        const dorsalVal = data.customNumber ? `#${data.customNumber}` : (data.number ? `#${data.number}` : `#${data.pos}`);
+        const dorsalVal = data.number ? `#${data.number}` : `#${data.pos}`;
         dorsalEl.textContent = dorsalVal;
     }
 
@@ -4790,7 +4789,6 @@ function initFirestoreListeners() {
                 isVerified: !!data.isVerified,
                 avatarUrl: data.avatarUrl || null,
                 cardColor: data.cardColor || null,
-                customNumber: data.customNumber || null,
                 customFlag: data.customFlag || null,
                 bio: data.bio || null,
                 socialTwitch: data.socialTwitch || null,
@@ -4802,31 +4800,23 @@ function initFirestoreListeners() {
 
         const list = Array.from(driverMap.values());
 
-        // If Firestore contains outdated or misspelled data from earlier sessions, migrate to official 44-driver dataset
-        if (hasCorruptedPilot || !dieguioskFound || !rikidorsaFound || list.length < 44) {
-            console.log("Migrating Firestore pilots to official FFC 2010 Season dataset...");
+        // Clean corrupted legacy pilot IDs if present
+        if (hasCorruptedPilot) {
             try {
                 const batch = writeBatch(db);
                 batch.delete(doc(db, "pilotos", "dlegulosk"));
                 batch.delete(doc(db, "pilotos", "rikiorsa"));
-
-                defaultStandings.forEach(d => {
-                    const docRef = doc(db, "pilotos", getPilotDocId(d.driver));
-                    batch.set(docRef, {
-                        driver: d.driver,
-                        team: d.team,
-                        pos: d.pos,
-                        pts: Number(d.pts) || 0
-                    });
-                });
                 await batch.commit();
-                return;
             } catch (err) {
-                console.error("Error auto-migrating pilots into Firestore:", err);
+                console.error("Error cleaning legacy pilot IDs from Firestore:", err);
             }
         }
 
         currentPilotos = sortDriversStandings(list);
+
+        if (typeof syncUserClaimWithPilotos === "function") {
+            syncUserClaimWithPilotos();
+        }
 
         renderStandingsOnPage(currentPilotos);
         if (typeof updateStandingsToggleUI === "function") {
@@ -6497,6 +6487,52 @@ if (initialSavedLocalUser) {
     renderUserAuthState(initialSavedLocalUser);
 }
 
+// Synchronize user claim state across activeUserAuth, activeUserData, and currentPilotos
+function syncUserClaimWithPilotos() {
+    if (!activeUserAuth) return;
+
+    const userEmailClean = activeUserAuth.email ? activeUserAuth.email.trim().toLowerCase() : "";
+    const userUid = activeUserAuth.uid || "";
+
+    if (currentPilotos && currentPilotos.length > 0) {
+        const matchedP = currentPilotos.find(p => {
+            const pEmail = p.claimedByEmail ? p.claimedByEmail.trim().toLowerCase() : "";
+            const pUid = p.claimedByUid || "";
+            return (userEmailClean && pEmail === userEmailClean) || (userUid && pUid === userUid);
+        });
+
+        if (matchedP && (matchedP.isVerified || matchedP.claimedByEmail)) {
+            activeUserData = {
+                ...activeUserData,
+                uid: activeUserAuth.uid,
+                email: activeUserAuth.email,
+                claimedDriver: matchedP.driver,
+                claimedTeam: matchedP.team || "Independent",
+                claimedDriverId: matchedP.id || getPilotDocId(matchedP.driver),
+                isVerified: true,
+                avatarUrl: matchedP.avatarUrl || (activeUserData ? activeUserData.avatarUrl : null),
+                cardColor: matchedP.cardColor || (activeUserData ? activeUserData.cardColor : null),
+                customFlag: matchedP.customFlag || (activeUserData ? activeUserData.customFlag : null),
+                bio: matchedP.bio || (activeUserData ? activeUserData.bio : null),
+                socialTwitch: matchedP.socialTwitch || (activeUserData ? activeUserData.socialTwitch : null),
+                socialYoutube: matchedP.socialYoutube || (activeUserData ? activeUserData.socialYoutube : null),
+                socialTwitter: matchedP.socialTwitter || (activeUserData ? activeUserData.socialTwitter : null),
+                socialDiscord: matchedP.socialDiscord || (activeUserData ? activeUserData.socialDiscord : null)
+            };
+            if (typeof renderUserClaimState === "function") {
+                renderUserClaimState(activeUserData);
+            }
+            return;
+        }
+    }
+
+    if (activeUserData && activeUserData.isVerified && activeUserData.claimedDriver) {
+        if (typeof renderUserClaimState === "function") {
+            renderUserClaimState(activeUserData);
+        }
+    }
+}
+
 let activeUserData = null;
 let unsubscribeUserDoc = null;
 
@@ -6515,29 +6551,60 @@ onAuthStateChanged(auth, (user) => {
         const userDocRef = doc(db, "usuarios", user.uid);
         unsubscribeUserDoc = onSnapshot(userDocRef, (snap) => {
             if (snap.exists()) {
-                activeUserData = snap.data();
+                activeUserData = { ...snap.data(), ...activeUserData };
                 if (typeof renderUserClaimState === "function") {
                     renderUserClaimState(activeUserData);
                 }
-            } else {
-                setDoc(userDocRef, {
-                    uid: user.uid,
-                    email: user.email,
-                    displayName: user.displayName || user.email.split("@")[0],
-                    createdAt: new Date().toISOString()
-                }, { merge: true }).catch(err => console.error("Error al crear usuario doc:", err));
+            } else if (user.email) {
+                const emailDocRef = doc(db, "usuarios", getUserDocId(user.email));
+                getDoc(emailDocRef).then(eSnap => {
+                    if (eSnap.exists()) {
+                        activeUserData = { ...eSnap.data(), ...activeUserData };
+                        if (typeof renderUserClaimState === "function") {
+                            renderUserClaimState(activeUserData);
+                        }
+                    }
+                }).catch(() => {});
             }
+            syncUserClaimWithPilotos();
         });
     } else {
         if (unsubscribeUserDoc) {
             unsubscribeUserDoc();
             unsubscribeUserDoc = null;
         }
-        activeUserData = null;
         const local = LocalAuthStore.getCurrentUser();
-        renderUserAuthState(local);
-        if (typeof renderUserClaimState === "function") {
-            renderUserClaimState(null);
+        if (local) {
+            renderUserAuthState(local);
+            const userUid = local.uid || "";
+            const userEmail = local.email || "";
+
+            if (userUid) {
+                getDoc(doc(db, "usuarios", userUid)).then(snap => {
+                    if (snap.exists()) {
+                        activeUserData = snap.data();
+                        renderUserClaimState(activeUserData);
+                    } else if (userEmail) {
+                        getDoc(doc(db, "usuarios", getUserDocId(userEmail))).then(eSnap => {
+                            if (eSnap.exists()) {
+                                activeUserData = eSnap.data();
+                                renderUserClaimState(activeUserData);
+                            }
+                            syncUserClaimWithPilotos();
+                        }).catch(() => syncUserClaimWithPilotos());
+                    } else {
+                        syncUserClaimWithPilotos();
+                    }
+                }).catch(() => syncUserClaimWithPilotos());
+            } else {
+                syncUserClaimWithPilotos();
+            }
+        } else {
+            activeUserData = null;
+            renderUserAuthState(null);
+            if (typeof renderUserClaimState === "function") {
+                renderUserClaimState(null);
+            }
         }
     }
 });
@@ -6854,18 +6921,16 @@ if (userClaimForm) {
             // Save in Firestore with writeBatch
             const batch = writeBatch(db);
 
-            // Update driver doc
+            // 1. Update driver doc in 'pilotos'
             const pilotRef = doc(db, "pilotos", matchedDriverDoc.id);
-            batch.update(pilotRef, {
+            batch.set(pilotRef, {
                 claimedByEmail: activeUserAuth.email,
                 claimedByUid: activeUserAuth.uid,
                 isVerified: true,
                 verifiedAt: new Date().toISOString()
-            });
+            }, { merge: true });
 
-            // Update user doc
-            const userRef = doc(db, "usuarios", activeUserAuth.uid);
-            batch.set(userRef, {
+            const claimPayload = {
                 uid: activeUserAuth.uid,
                 email: activeUserAuth.email,
                 displayName: activeUserAuth.displayName || matchedDriverData.driver,
@@ -6874,7 +6939,17 @@ if (userClaimForm) {
                 claimedDriverId: matchedDriverDoc.id,
                 isVerified: true,
                 verifiedAt: new Date().toISOString()
-            }, { merge: true });
+            };
+
+            // 2. Update user doc by UID
+            const userRef = doc(db, "usuarios", activeUserAuth.uid);
+            batch.set(userRef, claimPayload, { merge: true });
+
+            // 3. Update user doc by Email Doc ID for cross-resolution
+            if (activeUserAuth.email) {
+                const userRef2 = doc(db, "usuarios", getUserDocId(activeUserAuth.email));
+                batch.set(userRef2, claimPayload, { merge: true });
+            }
 
             await batch.commit();
 
@@ -6884,15 +6959,19 @@ if (userClaimForm) {
                 userClaimNotice.style.color = "#10b981";
             }
 
-            activeUserData = {
-                uid: activeUserAuth.uid,
-                email: activeUserAuth.email,
-                claimedDriver: matchedDriverData.driver,
-                claimedTeam: matchedDriverData.team || "Independent",
-                claimedDriverId: matchedDriverDoc.id,
-                isVerified: true
-            };
+            // Update in-memory pilot data in currentPilotos
+            if (currentPilotos) {
+                const targetP = currentPilotos.find(p => (p.id || getPilotDocId(p.driver)) === matchedDriverDoc.id || normalizeDriverKey(p.driver) === normalizeDriverKey(matchedDriverData.driver));
+                if (targetP) {
+                    targetP.claimedByEmail = activeUserAuth.email;
+                    targetP.claimedByUid = activeUserAuth.uid;
+                    targetP.isVerified = true;
+                }
+            }
+
+            activeUserData = { ...activeUserData, ...claimPayload };
             renderUserClaimState(activeUserData);
+            syncUserClaimWithPilotos();
 
         } catch (err) {
             console.error("Error al verificar código de piloto:", err);
@@ -6922,14 +7001,28 @@ if (userUnlinkDriverBtn) {
                 });
             }
 
-            batch.update(doc(db, "usuarios", activeUserAuth.uid), {
+            const unlinkPayload = {
                 claimedDriver: null,
                 claimedTeam: null,
                 claimedDriverId: null,
                 isVerified: false
-            });
+            };
+
+            batch.set(doc(db, "usuarios", activeUserAuth.uid), unlinkPayload, { merge: true });
+            if (activeUserAuth.email) {
+                batch.set(doc(db, "usuarios", getUserDocId(activeUserAuth.email)), unlinkPayload, { merge: true });
+            }
 
             await batch.commit();
+
+            if (currentPilotos && driverDocId) {
+                const targetP = currentPilotos.find(p => (p.id || getPilotDocId(p.driver)) === driverDocId);
+                if (targetP) {
+                    targetP.claimedByEmail = null;
+                    targetP.claimedByUid = null;
+                    targetP.isVerified = false;
+                }
+            }
 
             activeUserData = { ...activeUserData, isVerified: false, claimedDriver: null };
             renderUserClaimState(activeUserData);
@@ -7154,7 +7247,6 @@ const userCardEditForm = document.getElementById("userCardEditForm");
 const editCardAvatar = document.getElementById("editCardAvatar");
 const editCardColor = document.getElementById("editCardColor");
 const editCardColorHex = document.getElementById("editCardColorHex");
-const editCardNumber = document.getElementById("editCardNumber");
 const editCardFlag = document.getElementById("editCardFlag");
 const editCardBio = document.getElementById("editCardBio");
 const editCardTwitch = document.getElementById("editCardTwitch");
@@ -7185,7 +7277,6 @@ function populateUserCardEditor(data) {
         editCardColor.value = data.cardColor || "#e10600";
         if (editCardColorHex) editCardColorHex.textContent = (data.cardColor || "#e10600").toUpperCase();
     }
-    if (editCardNumber) editCardNumber.value = data.customNumber || "";
     if (editCardFlag) editCardFlag.value = data.customFlag || "";
     if (editCardBio) editCardBio.value = data.bio || "";
     if (editCardTwitch) editCardTwitch.value = data.socialTwitch || "";
@@ -7220,7 +7311,6 @@ if (userCardEditForm) {
         const customPayload = {
             avatarUrl: editCardAvatar ? editCardAvatar.value.trim() : null,
             cardColor: editCardColor ? editCardColor.value : "#e10600",
-            customNumber: editCardNumber ? editCardNumber.value.trim() : null,
             customFlag: editCardFlag ? editCardFlag.value.trim() : null,
             bio: editCardBio ? editCardBio.value.trim() : null,
             socialTwitch: editCardTwitch ? editCardTwitch.value.trim() : null,
@@ -7239,10 +7329,15 @@ if (userCardEditForm) {
             const batch = writeBatch(db);
 
             // 1. Update document in 'pilotos' collection
-            batch.update(doc(db, "pilotos", pilotDocId), customPayload);
+            batch.set(doc(db, "pilotos", pilotDocId), customPayload, { merge: true });
 
-            // 2. Update document in 'usuarios' collection
+            // 2. Update document in 'usuarios' collection by UID
             batch.set(doc(db, "usuarios", activeUserAuth.uid), customPayload, { merge: true });
+
+            // 3. Update document in 'usuarios' collection by Email Doc ID
+            if (activeUserAuth.email) {
+                batch.set(doc(db, "usuarios", getUserDocId(activeUserAuth.email)), customPayload, { merge: true });
+            }
 
             await batch.commit();
 
