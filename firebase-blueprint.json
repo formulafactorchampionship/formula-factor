@@ -75,6 +75,19 @@
         "dateText": { "type": "string" },
         "dateTime": { "type": "string" }
       }
+    },
+    "UserAccount": {
+      "title": "UserAccount",
+      "description": "User profile and credentials synchronized across devices",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string" },
+        "displayName": { "type": "string" },
+        "email": { "type": "string" },
+        "passwordHash": { "type": "string" },
+        "createdAt": { "type": "string" }
+      },
+      "required": ["uid", "email"]
     }
   },
   "firestore": {
@@ -95,6 +108,12 @@
         "$ref": "#/entities/AppConfig"
       },
       "description": "General settings and upcoming race details"
+    },
+    "/usuarios/{userId}": {
+      "schema": {
+        "$ref": "#/entities/UserAccount"
+      },
+      "description": "User accounts cloud collection synchronized for multi-device login"
     }
   }
 }

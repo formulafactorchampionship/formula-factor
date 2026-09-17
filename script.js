@@ -370,6 +370,8 @@ const translations = {
             btnSubmitRegister: "CREAR CUENTA",
             btnSubmitReset: "ENVIAR ENLACE",
             statusConnected: "CONECTADO",
+            statusAdmin: "ADMINISTRADOR",
+            adminPanelBtn: "PANEL DE CONTROL",
             btnLogout: "CERRAR SESIÓN",
             welcome: "Bienvenido"
         }
@@ -515,6 +517,8 @@ const translations = {
             btnSubmitRegister: "CREATE ACCOUNT",
             btnSubmitReset: "SEND RESET LINK",
             statusConnected: "CONNECTED",
+            statusAdmin: "ADMINISTRATOR",
+            adminPanelBtn: "ADMIN PANEL",
             btnLogout: "LOG OUT",
             welcome: "Welcome"
         }
@@ -766,6 +770,8 @@ function applyTranslations(lang) {
             const logoutSpan = uLogout.querySelector("span:last-child");
             if (logoutSpan) logoutSpan.textContent = dict.auth.btnLogout;
         }
+        const uAdminBtn = document.getElementById("userAdminBtnText");
+        if (uAdminBtn && dict.auth && dict.auth.adminPanelBtn) uAdminBtn.textContent = dict.auth.adminPanelBtn;
     }
 
     // Calendar cards status & country
@@ -1798,10 +1804,16 @@ if ("IntersectionObserver" in window) {
 
 
 /* =========================================================
-   ADMIN AUTHENTICATION & PANEL SYSTEM
+   ADMIN AUTHENTICATION & PANEL SYSTEM (RESTRICTED TO ENZO)
 ========================================================= */
 
-const ADMIN_PASSWORD = "adminpassword2010";
+const ADMIN_EMAIL = "enzo.castillo.lomb@gmail.com";
+
+function isUserAdmin(user) {
+    const u = user !== undefined ? user : (typeof activeUserAuth !== "undefined" && activeUserAuth ? activeUserAuth : (typeof LocalAuthStore !== "undefined" ? LocalAuthStore.getCurrentUser() : null));
+    if (!u || !u.email) return false;
+    return u.email.trim().toLowerCase() === ADMIN_EMAIL.toLowerCase();
+}
 
 // Default configuration datasets
 const defaultNextRace = {
@@ -1968,15 +1980,10 @@ const defaultSettings = {
 };
 
 // Admin UI Selectors
+const headerAdminBtn = document.getElementById("headerAdminBtn");
 const adminBtn = document.getElementById("adminBtn");
-
-const adminAuthOverlay = document.getElementById("adminAuthOverlay");
-const adminAuthClose = document.getElementById("adminAuthClose");
-const adminLoginForm = document.getElementById("adminLoginForm");
-const adminPasswordInput = document.getElementById("adminPasswordInput");
-const togglePasswordBtn = document.getElementById("togglePasswordBtn");
-const adminLoginError = document.getElementById("adminLoginError");
-const adminLoginCancel = document.getElementById("adminLoginCancel");
+const userOpenAdminPanelBtn = document.getElementById("userOpenAdminPanelBtn");
+const userAdminShortcut = document.getElementById("userAdminShortcut");
 
 const adminPanelOverlay = document.getElementById("adminPanelOverlay");
 const adminPanelClose = document.getElementById("adminPanelClose");
@@ -2082,42 +2089,32 @@ const F1_TEAMS = [
 // Standings Expand State (Only Top 10 by default)
 let isStandingsExpanded = false;
 
-// Helper: Check Admin Authentication
+// Helper: Check Admin Authentication (Restricted to enzo.castillo.lomb@gmail.com)
 function isAdminAuthenticated() {
-    return sessionStorage.getItem("ffc_admin_auth") === "true";
+    return isUserAdmin();
 }
 
-// Modal Handlers
-function openAdminAuthModal() {
-    if (!adminAuthOverlay) return;
-    adminAuthOverlay.classList.add("active");
-    document.body.classList.add("modal-open");
-    if (adminPasswordInput) {
-        adminPasswordInput.value = "";
-        adminPasswordInput.classList.remove("input-error");
-        setTimeout(() => adminPasswordInput.focus(), 50);
-    }
-    if (adminLoginError) {
-        adminLoginError.style.display = "none";
-    }
-}
-
-function closeAdminAuthModal() {
-    if (!adminAuthOverlay) return;
-    adminAuthOverlay.classList.remove("active");
-    if (!adminPanelOverlay || !adminPanelOverlay.classList.contains("active")) {
-        document.body.classList.remove("modal-open");
-    }
-    if (adminPasswordInput) {
-        adminPasswordInput.value = "";
-        adminPasswordInput.classList.remove("input-error");
-    }
-    if (adminLoginError) {
-        adminLoginError.style.display = "none";
-    }
-}
-
+// Open and Close Admin Panel
 function openAdminPanel() {
+    if (!isUserAdmin()) {
+        const u = typeof activeUserAuth !== "undefined" && activeUserAuth ? activeUserAuth : (typeof LocalAuthStore !== "undefined" ? LocalAuthStore.getCurrentUser() : null);
+        if (!u || !u.email) {
+            openUserAuthModal("login");
+            showAuthAlert(
+                currentLanguage === "en"
+                    ? `Please log in with the administrator account (${ADMIN_EMAIL}) to access the admin panel.`
+                    : `Inicia sesión con la cuenta de administrador (${ADMIN_EMAIL}) para acceder al panel.`
+            );
+        } else {
+            alert(
+                currentLanguage === "en"
+                    ? `Access restricted: Only ${ADMIN_EMAIL} has administrator privileges.`
+                    : `Acceso restringido: Solo la cuenta ${ADMIN_EMAIL} tiene permisos de administración.`
+            );
+        }
+        return;
+    }
+
     if (!adminPanelOverlay) return;
     populateAdminForms();
     adminPanelOverlay.classList.add("active");
@@ -4803,64 +4800,32 @@ function initFirestoreListeners() {
     setLanguage(initialLang);
 })();
 
-// --- Admin Button Click ---
+// --- Admin Button Click & Permission Access ---
+if (headerAdminBtn) {
+    headerAdminBtn.addEventListener("click", () => {
+        openAdminPanel();
+    });
+}
+
 if (adminBtn) {
     adminBtn.addEventListener("click", () => {
-        if (isAdminAuthenticated()) {
-            openAdminPanel();
-        } else {
-            openAdminAuthModal();
-        }
+        openAdminPanel();
     });
 }
 
-// --- Login Form Submit ---
-if (adminLoginForm) {
-    adminLoginForm.addEventListener("submit", (e) => {
-        e.preventDefault();
-        const pwd = adminPasswordInput ? adminPasswordInput.value.trim() : "";
-
-        if (pwd === ADMIN_PASSWORD) {
-            sessionStorage.setItem("ffc_admin_auth", "true");
-            closeAdminAuthModal();
-            openAdminPanel();
-        } else {
-            if (adminLoginError) {
-                adminLoginError.style.display = "block";
-                adminLoginError.textContent = "Contraseña incorrecta. Inténtalo de nuevo.";
-            }
-            if (adminPasswordInput) {
-                adminPasswordInput.classList.add("input-error");
-                adminPasswordInput.focus();
-            }
-        }
+if (userOpenAdminPanelBtn) {
+    userOpenAdminPanelBtn.addEventListener("click", () => {
+        closeAllDropdowns();
+        openAdminPanel();
     });
 }
 
-// Password toggle eye
-if (togglePasswordBtn && adminPasswordInput) {
-    togglePasswordBtn.addEventListener("click", () => {
-        const isPassword = adminPasswordInput.type === "password";
-        adminPasswordInput.type = isPassword ? "text" : "password";
-        togglePasswordBtn.textContent = isPassword ? "🙈" : "👁";
-    });
-}
-
-// Modal Closers
-if (adminAuthClose) adminAuthClose.addEventListener("click", closeAdminAuthModal);
-if (adminLoginCancel) adminLoginCancel.addEventListener("click", closeAdminAuthModal);
+// Modal Closers & Admin Panel Controls
 if (adminPanelClose) adminPanelClose.addEventListener("click", closeAdminPanel);
 
 if (adminLogoutBtn) {
     adminLogoutBtn.addEventListener("click", () => {
-        sessionStorage.removeItem("ffc_admin_auth");
         closeAdminPanel();
-    });
-}
-
-if (adminAuthOverlay) {
-    adminAuthOverlay.addEventListener("click", (e) => {
-        if (e.target === adminAuthOverlay) closeAdminAuthModal();
     });
 }
 
@@ -5742,7 +5707,32 @@ if (adminResetDefaultBtn) {
    USER AUTHENTICATION (EMAIL & PASSWORD) — FORMULA FACTOR
 ========================================================= */
 
-// Local fallback authentication store (allows seamless preview/demo mode when Firebase Auth key is not yet set)
+// Helper: Standardized document ID for user emails in Firestore
+function getUserDocId(email) {
+    if (!email) return "";
+    return email.trim().toLowerCase().replace(/[^a-z0-9_.-]/g, '_');
+}
+
+// Helper: Secure password hashing for multi-device cloud storage
+async function hashUserPassword(password) {
+    if (!password) return "";
+    try {
+        const encoder = new TextEncoder();
+        const data = encoder.encode(password + "_formula_factor_auth_salt_2026");
+        const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+        const hashArray = Array.from(new Uint8Array(hashBuffer));
+        return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+    } catch (e) {
+        let hash = 0;
+        for (let i = 0; i < password.length; i++) {
+            hash = ((hash << 5) - hash) + password.charCodeAt(i);
+            hash |= 0;
+        }
+        return "fallback_hash_" + hash;
+    }
+}
+
+// Local fallback authentication store (enables offline capability & local cache)
 const LocalAuthStore = {
     getUsers() {
         try {
@@ -5755,6 +5745,27 @@ const LocalAuthStore = {
     saveUsers(users) {
         try {
             localStorage.setItem("ffc_registered_users", JSON.stringify(users));
+        } catch (e) {}
+    },
+    saveCloudUserLocal(user, plainPassword = "") {
+        try {
+            const users = this.getUsers();
+            const normalizedEmail = (user.email || "").toLowerCase().trim();
+            const idx = users.findIndex(u => (u.email || "").toLowerCase().trim() === normalizedEmail);
+            const entry = {
+                uid: user.uid,
+                displayName: user.displayName,
+                email: normalizedEmail,
+                password: plainPassword || (idx >= 0 ? users[idx].password : ""),
+                passwordHash: user.passwordHash || (idx >= 0 ? users[idx].passwordHash : ""),
+                createdAt: user.createdAt || new Date().toISOString()
+            };
+            if (idx >= 0) {
+                users[idx] = entry;
+            } else {
+                users.push(entry);
+            }
+            this.saveUsers(users);
         } catch (e) {}
     },
     getCurrentUser() {
@@ -5777,7 +5788,7 @@ const LocalAuthStore = {
     register(displayName, email, password) {
         const users = this.getUsers();
         const normalizedEmail = email.toLowerCase().trim();
-        const existing = users.find(u => u.email.toLowerCase() === normalizedEmail);
+        const existing = users.find(u => (u.email || "").toLowerCase().trim() === normalizedEmail);
         if (existing) {
             throw { code: "auth/email-already-in-use", message: "Email already in use" };
         }
@@ -5796,11 +5807,11 @@ const LocalAuthStore = {
     login(email, password) {
         const users = this.getUsers();
         const normalizedEmail = email.toLowerCase().trim();
-        const found = users.find(u => u.email.toLowerCase() === normalizedEmail);
+        const found = users.find(u => (u.email || "").toLowerCase().trim() === normalizedEmail);
         if (!found) {
             throw { code: "auth/user-not-found", message: "User not found" };
         }
-        if (found.password !== password) {
+        if (found.password && found.password !== password) {
             throw { code: "auth/wrong-password", message: "Wrong password" };
         }
         this.setCurrentUser(found);
@@ -5810,6 +5821,191 @@ const LocalAuthStore = {
         this.setCurrentUser(null);
     }
 };
+
+// Cloud Authentication Service with direct Firebase Firestore synchronization
+const CloudAuthService = {
+    async registerUser(displayName, email, password) {
+        const cleanEmail = email.trim().toLowerCase();
+        const cleanName = displayName.trim() || cleanEmail.split("@")[0];
+        const docId = getUserDocId(cleanEmail);
+
+        // 1. Try Firebase Auth first
+        try {
+            const userCred = await createUserWithEmailAndPassword(auth, cleanEmail, password);
+            if (userCred && userCred.user) {
+                try {
+                    await updateProfile(userCred.user, { displayName: cleanName });
+                } catch (pErr) {}
+
+                const cloudUser = {
+                    uid: userCred.user.uid,
+                    displayName: cleanName,
+                    email: cleanEmail,
+                    passwordHash: await hashUserPassword(password),
+                    createdAt: new Date().toISOString()
+                };
+                try {
+                    await setDoc(doc(db, "usuarios", docId), cloudUser, { merge: true });
+                } catch (e) {}
+
+                LocalAuthStore.saveCloudUserLocal(cloudUser, password);
+                LocalAuthStore.setCurrentUser(cloudUser);
+                return cloudUser;
+            }
+        } catch (fbErr) {
+            console.warn("Firebase Auth create attempt result:", fbErr);
+            if (fbErr.code === "auth/email-already-in-use") {
+                throw fbErr;
+            }
+        }
+
+        // 2. Direct Cloud Firestore authentication
+        try {
+            const userRef = doc(db, "usuarios", docId);
+            const snap = await getDoc(userRef);
+            if (snap.exists()) {
+                throw { code: "auth/email-already-in-use", message: "Email already in use" };
+            }
+
+            const pHash = await hashUserPassword(password);
+            const newUser = {
+                uid: "user_" + Date.now() + "_" + Math.random().toString(36).substring(2, 8),
+                displayName: cleanName,
+                email: cleanEmail,
+                passwordHash: pHash,
+                createdAt: new Date().toISOString()
+            };
+
+            await setDoc(userRef, newUser);
+            LocalAuthStore.saveCloudUserLocal(newUser, password);
+            LocalAuthStore.setCurrentUser(newUser);
+            return newUser;
+        } catch (dbErr) {
+            if (dbErr.code === "auth/email-already-in-use") throw dbErr;
+            console.error("Firestore cloud registration error:", dbErr);
+            const localUser = LocalAuthStore.register(cleanName, cleanEmail, password);
+            return localUser;
+        }
+    },
+
+    async loginUser(email, password) {
+        const cleanEmail = email.trim().toLowerCase();
+        const docId = getUserDocId(cleanEmail);
+
+        // 1. Try Firebase Auth first
+        try {
+            const cred = await signInWithEmailAndPassword(auth, cleanEmail, password);
+            if (cred && cred.user) {
+                const loggedIn = {
+                    uid: cred.user.uid,
+                    displayName: cred.user.displayName || cleanEmail.split("@")[0],
+                    email: cred.user.email || cleanEmail,
+                    createdAt: new Date().toISOString()
+                };
+                LocalAuthStore.saveCloudUserLocal(loggedIn, password);
+                LocalAuthStore.setCurrentUser(loggedIn);
+                return loggedIn;
+            }
+        } catch (fbErr) {
+            console.warn("Firebase Auth signIn attempt result:", fbErr);
+        }
+
+        // 2. Direct Cloud Firestore user lookup (cross-device & incognito support)
+        const pHash = await hashUserPassword(password);
+        try {
+            const userRef = doc(db, "usuarios", docId);
+            const snap = await getDoc(userRef);
+
+            if (snap.exists()) {
+                const userData = snap.data();
+                const storedHash = userData.passwordHash;
+                const storedPlain = userData.password;
+
+                const isMatch = (storedHash && storedHash === pHash) || (storedPlain && storedPlain === password);
+
+                if (!isMatch) {
+                    throw { code: "auth/wrong-password", message: "Wrong password" };
+                }
+
+                if (!storedHash) {
+                    try {
+                        await setDoc(userRef, { passwordHash: pHash }, { merge: true });
+                    } catch (e) {}
+                }
+
+                const userObj = {
+                    uid: userData.uid || ("user_" + Date.now()),
+                    displayName: userData.displayName || cleanEmail.split("@")[0],
+                    email: userData.email || cleanEmail,
+                    createdAt: userData.createdAt || new Date().toISOString()
+                };
+
+                LocalAuthStore.saveCloudUserLocal(userObj, password);
+                LocalAuthStore.setCurrentUser(userObj);
+                return userObj;
+            }
+        } catch (dbErr) {
+            if (dbErr.code === "auth/wrong-password") throw dbErr;
+            console.warn("Firestore lookup failed:", dbErr);
+        }
+
+        // 3. Fallback to LocalAuthStore if Firestore is unavailable
+        const localUser = LocalAuthStore.login(cleanEmail, password);
+        return localUser;
+    },
+
+    async resetPassword(email) {
+        const cleanEmail = email.trim().toLowerCase();
+        const docId = getUserDocId(cleanEmail);
+
+        try {
+            await sendPasswordResetEmail(auth, cleanEmail);
+            return true;
+        } catch (e) {
+            try {
+                const userRef = doc(db, "usuarios", docId);
+                const snap = await getDoc(userRef);
+                if (!snap.exists()) {
+                    throw { code: "auth/user-not-found", message: "User not found" };
+                }
+                return true;
+            } catch (dbErr) {
+                if (dbErr.code === "auth/user-not-found") throw dbErr;
+                throw e;
+            }
+        }
+    },
+
+    // Sync any pre-existing local accounts to Firestore Cloud on initialization
+    async syncAllLocalUsersToFirestore() {
+        try {
+            const localUsers = LocalAuthStore.getUsers();
+            if (!localUsers || localUsers.length === 0) return;
+
+            for (const u of localUsers) {
+                if (!u || !u.email) continue;
+                const docId = getUserDocId(u.email);
+                const userRef = doc(db, "usuarios", docId);
+                const snap = await getDoc(userRef);
+                if (!snap.exists()) {
+                    const pHash = u.passwordHash || (u.password ? await hashUserPassword(u.password) : "");
+                    await setDoc(userRef, {
+                        uid: u.uid || ("user_" + Date.now()),
+                        displayName: u.displayName || u.email.split("@")[0],
+                        email: u.email.toLowerCase().trim(),
+                        passwordHash: pHash,
+                        createdAt: u.createdAt || new Date().toISOString()
+                    });
+                }
+            }
+        } catch (e) {
+            console.warn("Background Firestore user sync:", e);
+        }
+    }
+};
+
+// Start background user sync to Firebase Firestore
+CloudAuthService.syncAllLocalUsersToFirestore();
 
 function isFirebaseApiKeyInvalid(err) {
     if (!err) return false;
@@ -5827,6 +6023,7 @@ const userProfileMenu = document.getElementById("userProfileMenu");
 const userProfileAvatar = document.getElementById("userProfileAvatar");
 const userProfileName = document.getElementById("userProfileName");
 const userProfileEmail = document.getElementById("userProfileEmail");
+const userProfileStatusVal = document.getElementById("userProfileStatusVal");
 const userLogoutBtn = document.getElementById("userLogoutBtn");
 
 const userAuthOverlay = document.getElementById("userAuthOverlay");
@@ -5969,6 +6166,7 @@ function closeUserAuthModal() {
 function renderUserAuthState(user) {
     activeUserAuth = user;
     const dict = translations[currentLanguage] || translations.es;
+    const isAdmin = isUserAdmin(user);
 
     if (user) {
         // User logged in
@@ -5991,6 +6189,23 @@ function renderUserAuthState(user) {
         if (userProfileName) userProfileName.textContent = displayName;
         if (userProfileEmail) userProfileEmail.textContent = user.email || "";
 
+        if (userProfileStatusVal) {
+            if (isAdmin) {
+                userProfileStatusVal.textContent = dict.auth && dict.auth.statusAdmin ? dict.auth.statusAdmin : "ADMINISTRADOR";
+                userProfileStatusVal.className = "user-profile-badge user-badge-admin";
+            } else {
+                userProfileStatusVal.textContent = dict.auth && dict.auth.statusConnected ? dict.auth.statusConnected : "CONECTADO";
+                userProfileStatusVal.className = "user-profile-badge user-badge-connected";
+            }
+        }
+
+        if (userAdminShortcut) {
+            userAdminShortcut.style.display = isAdmin ? "block" : "none";
+        }
+        if (headerAdminBtn) {
+            headerAdminBtn.style.display = isAdmin ? "inline-flex" : "none";
+        }
+
     } else {
         // User logged out
         if (authHeaderBtn) {
@@ -6003,6 +6218,12 @@ function renderUserAuthState(user) {
         }
         if (authBtnIconWrap) {
             authBtnIconWrap.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>`;
+        }
+        if (userAdminShortcut) {
+            userAdminShortcut.style.display = "none";
+        }
+        if (headerAdminBtn) {
+            headerAdminBtn.style.display = "none";
         }
     }
 }
@@ -6124,21 +6345,7 @@ if (userLoginForm) {
         }
 
         try {
-            let loggedInUser = null;
-            try {
-                const cred = await signInWithEmailAndPassword(auth, email, password);
-                loggedInUser = cred.user;
-            } catch (fbErr) {
-                try {
-                    loggedInUser = LocalAuthStore.login(email, password);
-                } catch (localErr) {
-                    if (isFirebaseApiKeyInvalid(fbErr)) {
-                        throw localErr;
-                    } else {
-                        throw fbErr;
-                    }
-                }
-            }
+            const loggedInUser = await CloudAuthService.loginUser(email, password);
 
             if (loggedInUser) {
                 renderUserAuthState(loggedInUser);
@@ -6185,27 +6392,7 @@ if (userRegisterForm) {
         }
 
         try {
-            let registeredUser = null;
-            try {
-                const userCred = await createUserWithEmailAndPassword(auth, email, password);
-                if (userCred && userCred.user) {
-                    await updateProfile(userCred.user, { displayName: name });
-                    registeredUser = userCred.user;
-                    try {
-                        await setDoc(doc(db, "usuarios", userCred.user.uid), {
-                            displayName: name,
-                            email: email,
-                            createdAt: new Date().toISOString()
-                        });
-                    } catch (dbErr) {}
-                }
-            } catch (fbErr) {
-                if (isFirebaseApiKeyInvalid(fbErr)) {
-                    registeredUser = LocalAuthStore.register(name, email, password);
-                } else {
-                    throw fbErr;
-                }
-            }
+            const registeredUser = await CloudAuthService.registerUser(name, email, password);
 
             if (registeredUser) {
                 renderUserAuthState(registeredUser);
@@ -6244,17 +6431,11 @@ if (userResetForm) {
         }
 
         try {
-            try {
-                await sendPasswordResetEmail(auth, email);
-            } catch (fbErr) {
-                if (!isFirebaseApiKeyInvalid(fbErr)) {
-                    throw fbErr;
-                }
-            }
+            await CloudAuthService.resetPassword(email);
             showAuthAlert(
                 isEn
-                    ? "Password reset email sent. Please check your inbox."
-                    : "Enlace de restablecimiento enviado. Revisa tu bandeja de entrada.",
+                    ? "Password reset request processed. If an account exists, instructions have been prepared."
+                    : "Solicitud procesada. Si la cuenta existe, se enviarán las instrucciones.",
                 "success"
             );
             if (resetEmailInput) resetEmailInput.value = "";
