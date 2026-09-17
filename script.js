@@ -7241,8 +7241,9 @@ if (adminSearchVerifyPilotInput) {
    USER DRIVER CARD CUSTOMIZER (FIREBASE SYNC)
 ========================================================= */
 
-const toggleDriverCardEditorBtn = document.getElementById("toggleDriverCardEditorBtn");
-const userDriverCardEditor = document.getElementById("userDriverCardEditor");
+const cardEditorModalOverlay = document.getElementById("cardEditorModalOverlay");
+const closeCardEditorModalBtn = document.getElementById("closeCardEditorModal");
+const openCardCustomizerPopupBtn = document.getElementById("openCardCustomizerPopupBtn");
 const userCardEditForm = document.getElementById("userCardEditForm");
 const editCardAvatar = document.getElementById("editCardAvatar");
 const editCardColor = document.getElementById("editCardColor");
@@ -7255,11 +7256,32 @@ const editCardTwitter = document.getElementById("editCardTwitter");
 const editCardDiscord = document.getElementById("editCardDiscord");
 const editCardNotice = document.getElementById("editCardNotice");
 
-if (toggleDriverCardEditorBtn && userDriverCardEditor) {
-    toggleDriverCardEditorBtn.addEventListener("click", () => {
-        const isHidden = userDriverCardEditor.style.display === "none";
-        userDriverCardEditor.style.display = isHidden ? "block" : "none";
-        toggleDriverCardEditorBtn.textContent = isHidden ? "🔼 Ocultar Personalizador" : "🎨 Personalizar Tarjeta de Piloto";
+function openCardEditorModal() {
+    if (!cardEditorModalOverlay) return;
+    if (activeUserData) populateUserCardEditor(activeUserData);
+    cardEditorModalOverlay.classList.add("active");
+    cardEditorModalOverlay.setAttribute("aria-hidden", "false");
+    document.body.style.overflow = "hidden";
+}
+
+function closeCardEditorModal() {
+    if (!cardEditorModalOverlay) return;
+    cardEditorModalOverlay.classList.remove("active");
+    cardEditorModalOverlay.setAttribute("aria-hidden", "true");
+    document.body.style.overflow = "";
+}
+
+if (openCardCustomizerPopupBtn) {
+    openCardCustomizerPopupBtn.addEventListener("click", () => {
+        closeAllDropdowns();
+        openCardEditorModal();
+    });
+}
+
+if (closeCardEditorModalBtn) closeCardEditorModalBtn.addEventListener("click", closeCardEditorModal);
+if (cardEditorModalOverlay) {
+    cardEditorModalOverlay.addEventListener("click", (e) => {
+        if (e.target === cardEditorModalOverlay) closeCardEditorModal();
     });
 }
 

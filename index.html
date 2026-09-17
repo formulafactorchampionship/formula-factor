@@ -195,56 +195,10 @@
                                     <button type="button" id="userUnlinkDriverBtn" class="btn-unlink-icon" title="Desvincular perfil de piloto">✕</button>
                                 </div>
 
-                                <button type="button" class="btn btn-secondary btn-sm user-edit-card-toggle" id="toggleDriverCardEditorBtn" style="width: 100%; margin-top: 8px; font-size: 11px; padding: 6px; display: flex; align-items: center; justify-content: center; gap: 6px;">
-                                    🎨 Personalizar Tarjeta de Piloto
-                                </button>
-
-                                <div id="userDriverCardEditor" class="user-driver-card-editor" style="display: none; margin-top: 10px;">
-                                    <div class="card-editor-header">
-                                        <strong>PERSONALIZAR TU TARJETA DE PILOTO</strong>
-                                        <p>Los cambios se guardarán en Firebase y se reflejarán públicamente en tu ficha de piloto.</p>
-                                    </div>
-
-                                    <form id="userCardEditForm" class="card-edit-form">
-                                        <div class="card-edit-field">
-                                            <label for="editCardAvatar">FOTO DE PERFIL / AVATAR (URL)</label>
-                                            <input type="url" id="editCardAvatar" class="claim-input" placeholder="https://ejemplo.com/mi-foto.jpg">
-                                        </div>
-
-                                        <div class="card-edit-row-2">
-                                            <div class="card-edit-field">
-                                                <label for="editCardColor">COLOR DE TARJETA</label>
-                                                <div class="color-picker-wrapper">
-                                                    <input type="color" id="editCardColor" value="#e10600">
-                                                    <span id="editCardColorHex" class="color-hex-label">#E10600</span>
-                                                </div>
-                                            </div>
-                                            <div class="card-edit-field">
-                                                <label for="editCardFlag">BANDERA / PAÍS (EMOJI)</label>
-                                                <input type="text" id="editCardFlag" class="claim-input" placeholder="Ej: 🇪🇸 o 🇲🇽" maxlength="8">
-                                            </div>
-                                        </div>
-
-                                        <div class="card-edit-field">
-                                            <label for="editCardBio">BIOGRAFÍA / DESCRIPCIÓN</label>
-                                            <textarea id="editCardBio" class="claim-textarea" rows="2" placeholder="Resumen de tu estilo de conducción, periféricos, logros..." maxlength="300"></textarea>
-                                        </div>
-
-                                        <div class="card-edit-field">
-                                            <label>REDES SOCIALES & CONTACTO</label>
-                                            <div class="social-input-grid">
-                                                <input type="text" id="editCardTwitch" class="claim-input" placeholder="Twitch (ej: mi_canal)">
-                                                <input type="text" id="editCardYoutube" class="claim-input" placeholder="YouTube (ej: mi_canal)">
-                                                <input type="text" id="editCardTwitter" class="claim-input" placeholder="X/Twitter (ej: @handle)">
-                                                <input type="text" id="editCardDiscord" class="claim-input" placeholder="Discord Tag (ej: usuario)">
-                                            </div>
-                                        </div>
-
-                                        <div class="card-edit-actions" style="margin-top: 8px;">
-                                            <button type="submit" class="btn btn-primary btn-sm" id="saveDriverCardBtn" style="width: 100%;">⚡ Guardar Cambios en Firebase</button>
-                                            <span id="editCardNotice" class="claim-notice-msg" style="text-align: center; margin-top: 4px; display: block;"></span>
-                                        </div>
-                                    </form>
+                                <div id="userCardCustomizeBtnWrap" style="margin-top: 8px;">
+                                    <button type="button" class="btn-customize-card-trigger" id="openCardCustomizerPopupBtn">
+                                        🎨 Personalizar Tarjeta
+                                    </button>
                                 </div>
                             </div>
                         </div>
