@@ -40,7 +40,7 @@ const pendingTeamChanges = new Map();
 
 function getPilotDocId(driverName) {
     if (!driverName) return "pilot_" + Date.now();
-    return driverName.trim().toLowerCase().replace(/[^a-z0-9_-]/g, '_') || ("pilot_" + Date.now());
+    return driverName.trim().toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9_-]/g, '_') || ("pilot_" + Date.now());
 }
 
 /* =========================================================
@@ -963,7 +963,7 @@ const defaultRaceResults = {
 
             { pos: 1, driver: "IvánR", team: "HRT", status: "FINISHED" },
             { pos: 2, driver: "BigTheo", team: "Ferrari", status: "FINISHED" },
-            { pos: 3, driver: "Dlegulosk", team: "HRT", status: "FINISHED" },
+            { pos: 3, driver: "Dieguiosk", team: "HRT", status: "FINISHED" },
             { pos: 4, driver: "TheWereGH", team: "Sauber", status: "FINISHED" },
             { pos: 5, driver: "Sir Galactic", team: "Renault", status: "FINISHED" },
             { pos: 6, driver: "AMF", team: "Williams", status: "FINISHED" },
@@ -999,7 +999,7 @@ const defaultRaceResults = {
             { pos: 2, driver: "Muntii", team: "Red Bull", status: "FINISHED" },
             { pos: 3, driver: "Baena", team: "Mercedes", status: "FINISHED" },
             { pos: 4, driver: "BigTheo", team: "Ferrari", status: "FINISHED" },
-            { pos: 5, driver: "Dlegulosk", team: "HRT", status: "FINISHED" },
+            { pos: 5, driver: "Dieguiosk", team: "HRT", status: "FINISHED" },
             { pos: 6, driver: "Viktolo", team: "Toro Rosso", status: "FINISHED" },
             { pos: 7, driver: "TheWereGH", team: "Sauber", status: "FINISHED" },
             { pos: 8, driver: "AMF", team: "Williams", status: "FINISHED" },
@@ -1023,8 +1023,8 @@ const defaultRaceResults = {
         date: "12 JUL",
 
         winner: "Sbinn",
-        pole: "Dlegulosk · 1:29.938",
-        fastest: "Dlegulosk · 1:30.946",
+        pole: "Dieguiosk · 1:29.938",
+        fastest: "Dieguiosk · 1:30.946",
         driverDay: "Sbinn",
 
         drivers: [
@@ -1032,7 +1032,7 @@ const defaultRaceResults = {
             { pos: 1, driver: "Sbinn", team: "Toro Rosso", status: "FINISHED" },
             { pos: 2, driver: "ElMamut", team: "Virgin", status: "FINISHED" },
             { pos: 3, driver: "CarlosUre", team: "Force India", status: "FINISHED" },
-            { pos: 4, driver: "Dlegulosk", team: "HRT", status: "FINISHED" },
+            { pos: 4, driver: "Dieguiosk", team: "HRT", status: "FINISHED" },
             { pos: 5, driver: "Muntii", team: "Red Bull", status: "FINISHED" },
             { pos: 6, driver: "BigTheo", team: "Ferrari", status: "FINISHED" },
             { pos: 7, driver: "Sir Galactic", team: "Renault", status: "FINISHED" },
@@ -1073,7 +1073,7 @@ const defaultRaceResults = {
             { pos: 4, driver: "BigTheo", team: "Ferrari", status: "FINISHED" },
             { pos: 5, driver: "Sbinn", team: "Toro Rosso", status: "FINISHED" },
             { pos: 6, driver: "Novitaa", team: "Red Bull", status: "FINISHED" },
-            { pos: 7, driver: "Dlegulosk", team: "HRT", status: "FINISHED" },
+            { pos: 7, driver: "Dieguiosk", team: "HRT", status: "FINISHED" },
             { pos: 8, driver: "Viktolo", team: "Toro Rosso", status: "FINISHED" },
             { pos: 9, driver: "Licha", team: "Ferrari", status: "FINISHED" },
             { pos: 10, driver: "TheWereGH", team: "Sauber", status: "FINISHED" },
@@ -1092,14 +1092,14 @@ const defaultRaceResults = {
         location: "BARCELONA · SPAIN",
         date: "09 AUG",
 
-        winner: "Dlegulosk",
-        pole: "Dlegulosk · 1:14.578",
+        winner: "Dieguiosk",
+        pole: "Dieguiosk · 1:14.578",
         fastest: "BigTheo · 1:17.346",
-        driverDay: "Dlegulosk",
+        driverDay: "Dieguiosk",
 
         drivers: [
 
-            { pos: 1, driver: "Dlegulosk", team: "HRT", status: "FINISHED" },
+            { pos: 1, driver: "Dieguiosk", team: "HRT", status: "FINISHED" },
             { pos: 2, driver: "Muntii", team: "Red Bull", status: "FINISHED" },
             { pos: 3, driver: "Novitaa", team: "Red Bull", status: "FINISHED" },
             { pos: 4, driver: "BigTheo", team: "Ferrari", status: "FINISHED" },
@@ -1133,7 +1133,7 @@ const defaultRaceResults = {
         drivers: [
 
             { pos: 1, driver: "Novitaa", team: "Red Bull", status: "FINISHED" },
-            { pos: 2, driver: "Dlegulosk", team: "HRT", status: "FINISHED" },
+            { pos: 2, driver: "Dieguiosk", team: "HRT", status: "FINISHED" },
             { pos: 3, driver: "Erik Brenna", team: "Force India", status: "FINISHED" },
             { pos: 4, driver: "Kri", team: "Renault", status: "FINISHED" },
             { pos: 5, driver: "Novi", team: "Ferrari", status: "FINISHED" },
@@ -1159,14 +1159,14 @@ const defaultRaceResults = {
         location: "RED BULL RING · AUSTRIA",
         date: "23 AUG",
 
-        winner: "Dlegulosk",
-        pole: "Dlegulosk · 1:09.297",
+        winner: "Dieguiosk",
+        pole: "Dieguiosk · 1:09.297",
         fastest: "Suforr · 1:09.619",
         driverDay: "Gold",
 
         drivers: [
 
-            { pos: 1, driver: "Dlegulosk", team: "HRT", status: "FINISHED" },
+            { pos: 1, driver: "Dieguiosk", team: "HRT", status: "FINISHED" },
             { pos: 2, driver: "Gold", team: "Williams", status: "FINISHED" },
             { pos: 3, driver: "Muntii", team: "Red Bull", status: "FINISHED" },
             { pos: 4, driver: "Suforr", team: "Mercedes", status: "FINISHED" },
@@ -1199,14 +1199,14 @@ const defaultRaceResults = {
 
         winner: "Muntii",
         pole: "Novitaa · 1:28.943",
-        fastest: "Dlegulosk · 1:30.468",
+        fastest: "Dieguiosk · 1:30.468",
         driverDay: "Victor",
 
         drivers: [
 
             { pos: 1, driver: "Muntii", team: "Red Bull", status: "FINISHED" },
             { pos: 2, driver: "Novitaa", team: "Red Bull", status: "FINISHED" },
-            { pos: 3, driver: "Dlegulosk", team: "HRT", status: "FINISHED" },
+            { pos: 3, driver: "Dieguiosk", team: "HRT", status: "FINISHED" },
             { pos: 4, driver: "Victor", team: "McLaren", status: "FINISHED" },
             { pos: 5, driver: "Licha", team: "Ferrari", status: "FINISHED" },
             { pos: 6, driver: "Dericcc", team: "Virgin", status: "FINISHED" },
@@ -1217,7 +1217,7 @@ const defaultRaceResults = {
             { pos: 11, driver: "Suforr", team: "Mercedes", status: "DNF" },
             { pos: 12, driver: "Novi", team: "Ferrari", status: "DNF" },
             { pos: 13, driver: "Krisdemurr", team: "Williams", status: "DNF" },
-            { pos: 14, driver: "RikiORSA", team: "Virgin", status: "DNF" }
+            { pos: 14, driver: "RikiDorsa", team: "Virgin", status: "DNF" }
 
         ]
 
@@ -1231,14 +1231,14 @@ const defaultRaceResults = {
         location: "HOCKENHEIMRING · GERMANY",
         date: "13 SEP",
 
-        winner: "Dlegulosk",
+        winner: "Dieguiosk",
         pole: "Novitaa · 1:14.751",
         fastest: "Suforr · 1:14.395",
-        driverDay: "Dlegulosk",
+        driverDay: "Dieguiosk",
 
         drivers: [
 
-            { pos: 1, driver: "Dlegulosk", team: "HRT", status: "FINISHED" },
+            { pos: 1, driver: "Dieguiosk", team: "HRT", status: "FINISHED" },
             { pos: 2, driver: "Novitaa", team: "Red Bull", status: "FINISHED" },
             { pos: 3, driver: "Muntii", team: "Red Bull", status: "FINISHED" },
             { pos: 4, driver: "Lil", team: "Lotus", status: "FINISHED" },
@@ -1579,7 +1579,7 @@ const defaultNextRace = {
 };
 
 const defaultStandings = [
-    { pos: 1, driver: "Dlegulosk", team: "HRT", pts: 153 },
+    { pos: 1, driver: "Dieguiosk", team: "HRT", pts: 153 },
     { pos: 2, driver: "Muntii", team: "Red Bull", pts: 125 },
     { pos: 3, driver: "Novitaa", team: "Red Bull", pts: 88 },
     { pos: 4, driver: "BigTheo", team: "Ferrari", pts: 64 },
@@ -1613,7 +1613,7 @@ const defaultStandings = [
     { pos: 32, driver: "TucnakCZE", team: "Force India", pts: 0 },
     { pos: 33, driver: "ElNano", team: "Force India", pts: 0 },
     { pos: 34, driver: "Oscar Soria", team: "Williams", pts: 0 },
-    { pos: 35, driver: "RikiORSA", team: "Virgin", pts: 0 },
+    { pos: 35, driver: "RikiDorsa", team: "Virgin", pts: 0 },
     { pos: 36, driver: "Drips", team: "McLaren", pts: 0 },
     { pos: 37, driver: "Y6NJ", team: "Red Bull", pts: 0 },
     { pos: 38, driver: "Zenthix", team: "Williams", pts: 0 },
@@ -1626,7 +1626,7 @@ const defaultStandings = [
 ];
 
 const defaultDriverRoster = [
-    { driver: "Dlegulosk", team: "HRT" },
+    { driver: "Dieguiosk", team: "HRT" },
     { driver: "Muntii", team: "Red Bull" },
     { driver: "Novitaa", team: "Red Bull" },
     { driver: "BigTheo", team: "Ferrari" },
@@ -1660,7 +1660,7 @@ const defaultDriverRoster = [
     { driver: "TucnakCZE", team: "Force India" },
     { driver: "ElNano", team: "Force India" },
     { driver: "Oscar Soria", team: "Williams" },
-    { driver: "RikiORSA", team: "Virgin" },
+    { driver: "RikiDorsa", team: "Virgin" },
     { driver: "Drips", team: "McLaren" },
     { driver: "Y6NJ", team: "Red Bull" },
     { driver: "Zenthix", team: "Williams" },
@@ -1674,7 +1674,7 @@ const defaultDriverRoster = [
 
 /* Official FFC 2010 Season Dataset (Exact mapping from Championship Spreadsheet) */
 const ffc2010SeasonDrivers = [
-    { pos: 1, number: 23, flag: "🇵🇹", driver: "Dlegulosk", team: "HRT", r: ["15", "10", "13*", "6", "25", "18", "25", "16*", "25", "--", "--", "--", "--", "--", "--"], pts: 153, dif: "--" },
+    { pos: 1, number: 23, flag: "🇵🇹", driver: "Dieguiosk", team: "HRT", r: ["15", "10", "13*", "6", "25", "18", "25", "16*", "25", "--", "--", "--", "--", "--", "--"], pts: 153, dif: "--" },
     { pos: 2, number: 99, flag: "🇪🇸", driver: "Muntii", team: "Red Bull", r: ["--", "(18)", "10", "18", "18", "6", "15", "25", "15", "--", "--", "--", "--", "--", "--"], pts: 125, dif: "-28" },
     { pos: 3, number: 26, flag: "🇪🇸", driver: "Novitaa", team: "Red Bull", r: ["--", "--", "--", "9*", "15", "(26*)", "2", "(18)", "(18)", "--", "--", "--", "--", "--", "--"], pts: 88, dif: "-65" },
     { pos: 4, number: 5, flag: "🇪🇸", driver: "BigTheo", team: "Ferrari", r: ["18", "12", "8", "12", "13*", "--", "OUT", "1", "--", "--", "--", "--", "--", "--", "--"], pts: 64, dif: "-89" },
@@ -1708,7 +1708,7 @@ const ffc2010SeasonDrivers = [
     { pos: 32, number: 34, flag: "🇨🇿", driver: "TucnakCZE", team: "Force India", r: ["OUT", "--", "--", "--", "--", "--", "--", "--", "--", "--", "--", "--", "--", "--", "--"], pts: 0, dif: "-153" },
     { pos: 33, number: 31, flag: "🇮🇹", driver: "ElNano", team: "Force India", r: ["--", "--", "0", "--", "--", "--", "--", "--", "--", "--", "--", "--", "--", "--", "--"], pts: 0, dif: "-153" },
     { pos: 34, number: 6, flag: "🇪🇸", driver: "Oscar Soria", team: "Williams", r: ["--", "OUT", "0", "--", "--", "--", "--", "--", "--", "--", "--", "--", "--", "--", "--"], pts: 0, dif: "-153" },
-    { pos: 35, number: 85, flag: "🇪🇸", driver: "RikiORSA", team: "Virgin", r: ["--", "--", "--", "--", "--", "--", "--", "OUT", "--", "--", "--", "--", "--", "--", "--"], pts: 0, dif: "-153" },
+    { pos: 35, number: 85, flag: "🇪🇸", driver: "RikiDorsa", team: "Virgin", r: ["--", "--", "--", "--", "--", "--", "--", "OUT", "--", "--", "--", "--", "--", "--", "--"], pts: 0, dif: "-153" },
     { pos: 36, number: 11, flag: "🇦🇷", driver: "Drips", team: "McLaren", r: ["--", "OUT", "--", "--", "--", "--", "--", "--", "--", "--", "--", "--", "--", "--", "--"], pts: 0, dif: "-153" },
     { pos: 37, number: 55, flag: "🇳🇬", driver: "Y6NJ", team: "Red Bull", r: ["OUT", "--", "--", "--", "--", "--", "--", "--", "--", "--", "--", "--", "--", "--", "--"], pts: 0, dif: "-153" },
     { pos: 38, number: 19, flag: "🇦🇹", driver: "Zenthix", team: "Williams", r: ["--", "--", "--", "--", "--", "OUT", "--", "--", "--", "--", "--", "--", "--", "--", "--"], pts: 0, dif: "-153" },
@@ -2762,12 +2762,12 @@ function getOfficialDriverRoster() {
 
 function getDriverTeam(driverName) {
     if (!driverName) return "Independent";
-    const key = driverName.trim().toLowerCase();
+    const key = driverName.trim().toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
     if (currentPilotos && currentPilotos.length > 0) {
-        const found = currentPilotos.find(p => p.driver.trim().toLowerCase() === key);
+        const found = currentPilotos.find(p => p.driver.trim().toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "") === key);
         if (found && found.team) return found.team;
     }
-    const defaultFound = defaultStandings.find(p => p.driver.trim().toLowerCase() === key);
+    const defaultFound = defaultStandings.find(p => p.driver.trim().toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "") === key);
     if (defaultFound && defaultFound.team) return defaultFound.team;
     return "Independent";
 }
@@ -3176,18 +3176,22 @@ function initFirestoreListeners() {
 
         isPilotosInitialLoaded = true;
         const list = [];
-        let hasLegacyPilot = false;
-        let dleguloskFound = false;
+        let hasCorruptedPilot = false;
+        let dieguioskFound = false;
+        let rikidorsaFound = false;
 
         snapshot.forEach(docSnap => {
             const data = docSnap.data();
             const pId = docSnap.id.toLowerCase();
             const dName = (data.driver || "").toLowerCase();
-            if (pId === "dieguiosk" || dName === "dieguiosk") {
-                hasLegacyPilot = true;
+            if (pId === "dlegulosk" || dName === "dlegulosk" || pId === "rikiorsa" || dName === "rikiorsa") {
+                hasCorruptedPilot = true;
             }
-            if (pId === "dlegulosk" || dName === "dlegulosk") {
-                dleguloskFound = true;
+            if (pId === "dieguiosk" || dName === "dieguiosk") {
+                dieguioskFound = true;
+            }
+            if (pId === "rikidorsa" || dName === "rikidorsa") {
+                rikidorsaFound = true;
             }
             list.push({
                 id: docSnap.id,
@@ -3197,14 +3201,14 @@ function initFirestoreListeners() {
             });
         });
 
-        // If Firestore contains outdated data from earlier sessions, migrate to official 44-driver dataset
-        if (hasLegacyPilot || !dleguloskFound || list.length < 44) {
+        // If Firestore contains outdated or misspelled data from earlier sessions, migrate to official 44-driver dataset
+        if (hasCorruptedPilot || !dieguioskFound || !rikidorsaFound || list.length < 44) {
             console.log("Migrating Firestore pilots to official FFC 2010 Season dataset...");
             try {
                 const batch = writeBatch(db);
-                if (hasLegacyPilot) {
-                    batch.delete(doc(db, "pilotos", "dieguiosk"));
-                }
+                batch.delete(doc(db, "pilotos", "dlegulosk"));
+                batch.delete(doc(db, "pilotos", "rikiorsa"));
+
                 defaultStandings.forEach(d => {
                     const docRef = doc(db, "pilotos", getPilotDocId(d.driver));
                     batch.set(docRef, {
@@ -3296,7 +3300,7 @@ function initFirestoreListeners() {
             raceResults[docSnap.id] = rData;
             updateCalendarCardForRace(docSnap.id, rData);
 
-            if (rData.winner === "Dieguiosk" || (rData.drivers && rData.drivers.some(d => d.driver === "Dieguiosk" || d.driver === "Ted Theo"))) {
+            if (rData.winner === "Dlegulosk" || (rData.drivers && rData.drivers.some(d => d.driver === "Dlegulosk" || d.driver === "RikiORSA" || d.driver === "Ted Theo"))) {
                 hasLegacyRaceData = true;
             }
         });
