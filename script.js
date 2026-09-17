@@ -16,7 +16,7 @@ import {
     writeBatch
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
-const firebaseConfig = {
+let firebaseConfig = {
   apiKey: "AIzaSyAS4RecsGAS4JWUn1d-9_VyqFRKmkF_CNs",
   authDomain: "formula-factor.firebaseapp.com",
   projectId: "formula-factor",
@@ -25,6 +25,24 @@ const firebaseConfig = {
   appId: "1:91130346513:web:7be9ef155980eba95045b0",
   measurementId: "G-GHEET6HXNY"
 };
+
+try {
+  const configRes = await fetch('/firebase-applet-config.json');
+  if (configRes.ok && configRes.headers.get('content-type')?.includes('application/json')) {
+    const customConfig = await configRes.json();
+    firebaseConfig = { ...firebaseConfig, ...customConfig };
+  }
+} catch (e) {}
+
+try {
+  const envRes = await fetch('/api/config');
+  if (envRes.ok && envRes.headers.get('content-type')?.includes('application/json')) {
+    const envData = await envRes.json();
+    if (envData.firebaseApiKey) {
+      firebaseConfig.apiKey = envData.firebaseApiKey;
+    }
+  }
+} catch (e) {}
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
@@ -216,6 +234,14 @@ const translations = {
             btnStandings: "VER CLASIFICACIÓN",
             btnCalendar: "VER CALENDARIO"
         },
+        live: {
+            badge: "EN DIRECTO",
+            title: "ESTAMOS EN DIRECTO",
+            subtitle: "Sigue la retransmisión oficial de la carrera en vivo por Twitch.",
+            watchOnTwitch: "VER EN TWITCH.TV ↗",
+            btnStandings: "VER CLASIFICACIÓN",
+            btnCalendar: "VER CALENDARIO"
+        },
         nextRace: {
             cardTop: "PRÓXIMA CARRERA",
             nextLabel: "SIGUIENTE RONDA",
@@ -260,7 +286,8 @@ const translations = {
                 "UPCOMING": "PRÓXIMAMENTE",
                 "FINAL ROUND": "RONDA FINAL"
             },
-            viewResults: "VER RESULTADOS →",
+            viewResults: "RESULTADOS →",
+            thisWeekend: "ESTE FIN DE SEMANA",
             countries: {
                 "SPAIN": "ESPAÑA",
                 "AUSTRALIA": "AUSTRALIA",
@@ -330,6 +357,14 @@ const translations = {
             btnStandings: "VIEW STANDINGS",
             btnCalendar: "VIEW CALENDAR"
         },
+        live: {
+            badge: "LIVE NOW",
+            title: "WE ARE LIVE",
+            subtitle: "Watch the official championship race broadcast live on Twitch.",
+            watchOnTwitch: "WATCH ON TWITCH.TV ↗",
+            btnStandings: "VIEW STANDINGS",
+            btnCalendar: "VIEW CALENDAR"
+        },
         nextRace: {
             cardTop: "NEXT RACE",
             nextLabel: "NEXT ROUND",
@@ -374,7 +409,8 @@ const translations = {
                 "UPCOMING": "UPCOMING",
                 "FINAL ROUND": "FINAL ROUND"
             },
-            viewResults: "VIEW RESULTS →",
+            viewResults: "RESULTS →",
+            thisWeekend: "THIS WEEKEND",
             countries: {
                 "SPAIN": "SPAIN",
                 "AUSTRALIA": "AUSTRALIA",
@@ -453,6 +489,11 @@ function updateCalendarCards(lang) {
             hintEl.textContent = dict.viewResults;
         }
 
+        const actionNoteEl = card.querySelector(".calendar-action-note");
+        if (actionNoteEl && dict.thisWeekend) {
+            actionNoteEl.textContent = dict.thisWeekend;
+        }
+
         const countryEl = card.querySelector("p");
         if (countryEl) {
             if (!card.dataset.origCountry) {
@@ -491,6 +532,18 @@ function applyTranslations(lang) {
     if (heroBS) heroBS.textContent = dict.hero.btnStandings;
     const heroBC = document.getElementById("heroBtnCalendar");
     if (heroBC) heroBC.textContent = dict.hero.btnCalendar;
+
+    // Live Stream Hero
+    if (dict.live) {
+        const liveBadge = document.getElementById("liveStatusBadge");
+        if (liveBadge) liveBadge.textContent = dict.live.badge;
+        const twitchBtnLabel = document.getElementById("twitchBtnLabel");
+        if (twitchBtnLabel) twitchBtnLabel.textContent = dict.live.watchOnTwitch;
+        const heroLiveBtnStandings = document.getElementById("heroLiveBtnStandings");
+        if (heroLiveBtnStandings) heroLiveBtnStandings.textContent = dict.live.btnStandings;
+        const heroLiveBtnCalendar = document.getElementById("heroLiveBtnCalendar");
+        if (heroLiveBtnCalendar) heroLiveBtnCalendar.textContent = dict.live.btnCalendar;
+    }
 
     // Next race card
     const nrcTop = document.getElementById("nextRaceCardTopText");
@@ -1807,7 +1860,11 @@ const defaultSettings = {
     instagramUrl: "https://www.instagram.com/formulafactorchampionship",
     season: "01",
     rounds: "15",
-    drivers: "44"
+    drivers: "44",
+    liveMode: false,
+    twitchChannel: "https://www.twitch.tv/driezzz12",
+    liveTitle: "ESTAMOS EN DIRECTO",
+    liveSubtitle: "Sigue la retransmisión oficial de la carrera en vivo por Twitch."
 };
 
 // Admin UI Selectors
@@ -1860,6 +1917,11 @@ const standingsSaveNotice = document.getElementById("standingsSaveNotice");
 
 // Settings Elements
 const generalSettingsForm = document.getElementById("generalSettingsForm");
+const adminLiveMode = document.getElementById("adminLiveMode");
+const adminTwitchChannel = document.getElementById("adminTwitchChannel");
+const adminLiveTitle = document.getElementById("adminLiveTitle");
+const adminLiveSubtitle = document.getElementById("adminLiveSubtitle");
+const adminSwitchStatusText = document.getElementById("adminSwitchStatusText");
 const adminDiscordUrl = document.getElementById("adminDiscordUrl");
 const adminXUrl = document.getElementById("adminXUrl");
 const adminInstagramUrl = document.getElementById("adminInstagramUrl");
@@ -3110,8 +3172,30 @@ function renderAdminStandingsEditor(drivers) {
 }
 
 // --- Settings Logic ---
+function extractTwitchChannel(input) {
+    if (!input) return "driezzz12";
+    let cleaned = String(input).trim().replace(/\/+$/, "");
+    const match = cleaned.match(/(?:twitch\.tv\/)?([a-zA-Z0-9_]+)$/i);
+    return match ? match[1] : (cleaned || "driezzz12");
+}
+
+function buildTwitchEmbedUrl(channelInput) {
+    const chan = extractTwitchChannel(channelInput);
+    const parents = new Set();
+    if (typeof window !== "undefined" && window.location && window.location.hostname) {
+        parents.add(window.location.hostname);
+    }
+    parents.add("ais-dev-llhirdz3pjvgtgrzjmkdqn-850418529081.europe-west2.run.app");
+    parents.add("ais-pre-llhirdz3pjvgtgrzjmkdqn-850418529081.europe-west2.run.app");
+    parents.add("localhost");
+    parents.add("127.0.0.1");
+
+    const parentQuery = Array.from(parents).map(p => `parent=${encodeURIComponent(p)}`).join("&");
+    return `https://player.twitch.tv/?channel=${encodeURIComponent(chan)}&${parentQuery}&autoplay=true&muted=false`;
+}
+
 function getSavedSettings() {
-    if (currentSettings && (currentSettings.discordUrl !== undefined || currentSettings.season !== undefined)) {
+    if (currentSettings && (currentSettings.discordUrl !== undefined || currentSettings.season !== undefined || currentSettings.liveMode !== undefined)) {
         return currentSettings;
     }
     return defaultSettings;
@@ -3141,6 +3225,66 @@ function renderSettingsOnPage(settings) {
     if (statSeasonEl && settings.season) statSeasonEl.textContent = settings.season;
     if (statRoundsEl && settings.rounds) statRoundsEl.textContent = settings.rounds;
     if (statDriversEl && settings.drivers) statDriversEl.textContent = settings.drivers;
+
+    // Live Mode (Transmisión en directo Twitch)
+    const heroSection = document.getElementById("home");
+    const heroContentStandard = document.getElementById("heroContentStandard");
+    const heroContentLive = document.getElementById("heroContentLive");
+    const twitchPlayerContainer = document.getElementById("twitchPlayerContainer");
+    const twitchExternalLink = document.getElementById("twitchExternalLink");
+    const heroLiveHeading = document.getElementById("heroLiveHeading");
+    const heroLiveSubtitle = document.getElementById("heroLiveSubtitle");
+
+    const isLive = Boolean(settings && settings.liveMode);
+    const channel = extractTwitchChannel(settings?.twitchChannel || "https://www.twitch.tv/driezzz12");
+    const twitchUrl = `https://www.twitch.tv/${channel}`;
+
+    if (heroSection) {
+        heroSection.classList.toggle("is-live-mode", isLive);
+    }
+
+    if (heroContentStandard && heroContentLive) {
+        if (isLive) {
+            heroContentStandard.style.display = "none";
+            heroContentLive.style.display = "flex";
+
+            if (heroLiveHeading) {
+                const defaultTitle = currentLanguage === "en" ? "WE ARE LIVE" : "ESTAMOS EN DIRECTO";
+                heroLiveHeading.textContent = settings.liveTitle || defaultTitle;
+            }
+            if (heroLiveSubtitle) {
+                const defaultSub = currentLanguage === "en"
+                    ? "Watch the official championship race broadcast live on Twitch."
+                    : "Sigue la retransmisión oficial de la carrera en vivo por Twitch.";
+                heroLiveSubtitle.textContent = settings.liveSubtitle || defaultSub;
+            }
+            if (twitchExternalLink) {
+                twitchExternalLink.href = twitchUrl;
+            }
+
+            // Mount or update Twitch embed iframe
+            if (twitchPlayerContainer) {
+                const currentIframe = twitchPlayerContainer.querySelector("iframe");
+                const embedUrl = buildTwitchEmbedUrl(channel);
+                if (!currentIframe || currentIframe.dataset.channel !== channel) {
+                    twitchPlayerContainer.innerHTML = `<iframe 
+                        src="${embedUrl}" 
+                        data-channel="${channel}"
+                        allowfullscreen="true" 
+                        scrolling="no" 
+                        allow="autoplay; fullscreen"
+                        title="Formula Factor Championship Twitch Live Stream">
+                    </iframe>`;
+                }
+            }
+        } else {
+            heroContentStandard.style.display = "block";
+            heroContentLive.style.display = "none";
+            if (twitchPlayerContainer) {
+                twitchPlayerContainer.innerHTML = "";
+            }
+        }
+    }
 }
 
 function escapeHtml(str) {
@@ -3263,8 +3407,10 @@ function updateCalendarCardForRace(raceKey, raceData) {
         if (!hint) {
             hint = document.createElement("span");
             hint.className = "click-hint";
-            hint.textContent = "VIEW RESULTS →";
-            card.appendChild(hint);
+            const curLang = typeof currentLanguage !== "undefined" ? currentLanguage : "es";
+            hint.textContent = (translations[curLang]?.calendar?.viewResults) || "RESULTS →";
+            const footer = card.querySelector(".calendar-card-footer") || card;
+            footer.appendChild(hint);
         }
 
         card.onclick = () => openRace(raceKey);
@@ -3677,6 +3823,17 @@ function populateAdminForms() {
     renderAdminStandingsEditor(standings);
 
     const settings = getSavedSettings();
+    if (adminLiveMode) {
+        adminLiveMode.checked = Boolean(settings.liveMode);
+    }
+    if (adminSwitchStatusText) {
+        const isLive = Boolean(settings.liveMode);
+        adminSwitchStatusText.textContent = isLive ? "MODO DIRECTO ACTIVADO" : "MODO DIRECTO DESACTIVADO";
+        adminSwitchStatusText.classList.toggle("is-active", isLive);
+    }
+    if (adminTwitchChannel) adminTwitchChannel.value = settings.twitchChannel || "https://www.twitch.tv/driezzz12";
+    if (adminLiveTitle) adminLiveTitle.value = settings.liveTitle || "ESTAMOS EN DIRECTO";
+    if (adminLiveSubtitle) adminLiveSubtitle.value = settings.liveSubtitle || "Sigue la retransmisión oficial de la carrera en vivo por Twitch.";
     if (adminDiscordUrl) adminDiscordUrl.value = settings.discordUrl || "";
     if (adminXUrl) adminXUrl.value = settings.xUrl || "";
     if (adminInstagramUrl) adminInstagramUrl.value = settings.instagramUrl || "";
@@ -3812,6 +3969,17 @@ function initFirestoreListeners() {
             currentSettings = docSnap.data();
             renderSettingsOnPage(currentSettings);
             if (adminPanelOverlay && adminPanelOverlay.classList.contains("active")) {
+                if (adminLiveMode) {
+                    adminLiveMode.checked = Boolean(currentSettings.liveMode);
+                }
+                if (adminSwitchStatusText) {
+                    const isLive = Boolean(currentSettings.liveMode);
+                    adminSwitchStatusText.textContent = isLive ? "MODO DIRECTO ACTIVADO" : "MODO DIRECTO DESACTIVADO";
+                    adminSwitchStatusText.classList.toggle("is-active", isLive);
+                }
+                if (adminTwitchChannel) adminTwitchChannel.value = currentSettings.twitchChannel || "https://www.twitch.tv/driezzz12";
+                if (adminLiveTitle) adminLiveTitle.value = currentSettings.liveTitle || "ESTAMOS EN DIRECTO";
+                if (adminLiveSubtitle) adminLiveSubtitle.value = currentSettings.liveSubtitle || "Sigue la retransmisión oficial de la carrera en vivo por Twitch.";
                 if (adminDiscordUrl) adminDiscordUrl.value = currentSettings.discordUrl || "";
                 if (adminXUrl) adminXUrl.value = currentSettings.xUrl || "";
                 if (adminInstagramUrl) adminInstagramUrl.value = currentSettings.instagramUrl || "";
@@ -4115,11 +4283,26 @@ if (adminSaveStandingsBtn) {
     });
 }
 
+// Toggle live mode switch status label
+if (adminLiveMode) {
+    adminLiveMode.addEventListener("change", () => {
+        if (adminSwitchStatusText) {
+            const isChecked = adminLiveMode.checked;
+            adminSwitchStatusText.textContent = isChecked ? "MODO DIRECTO ACTIVADO" : "MODO DIRECTO DESACTIVADO";
+            adminSwitchStatusText.classList.toggle("is-active", isChecked);
+        }
+    });
+}
+
 // Save General Settings
 if (generalSettingsForm) {
     generalSettingsForm.addEventListener("submit", async (e) => {
         e.preventDefault();
         const settings = {
+            liveMode: adminLiveMode ? adminLiveMode.checked : false,
+            twitchChannel: adminTwitchChannel ? adminTwitchChannel.value.trim() : "https://www.twitch.tv/driezzz12",
+            liveTitle: adminLiveTitle ? adminLiveTitle.value.trim() : "ESTAMOS EN DIRECTO",
+            liveSubtitle: adminLiveSubtitle ? adminLiveSubtitle.value.trim() : "Sigue la retransmisión oficial de la carrera en vivo por Twitch.",
             discordUrl: adminDiscordUrl ? adminDiscordUrl.value.trim() : "",
             xUrl: adminXUrl ? adminXUrl.value.trim() : "",
             instagramUrl: adminInstagramUrl ? adminInstagramUrl.value.trim() : "",

@@ -10,6 +10,12 @@ const PORT = 3000;
 
 app.use(express.static(__dirname));
 
+app.get('/api/config', (req, res) => {
+  res.json({
+    firebaseApiKey: process.env.FIREBASE_API_KEY || ''
+  });
+});
+
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, 'index.html'));
 });

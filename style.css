@@ -69,7 +69,8 @@ button {
     min-height: 76px;
     display: flex;
     align-items: center;
-    gap: 30px;
+    justify-content: space-between;
+    gap: 20px;
 }
 
 .brand {
@@ -80,6 +81,7 @@ button {
     font-weight: 800;
     letter-spacing: 1px;
     white-space: nowrap;
+    flex: 1 1 0;
 }
 
 .brand-logo {
@@ -95,8 +97,9 @@ button {
 .nav-links {
     display: flex;
     align-items: center;
+    justify-content: center;
     gap: 26px;
-    margin-left: auto;
+    flex: 0 0 auto;
 }
 
 .nav-links a {
@@ -115,7 +118,9 @@ button {
 .nav-actions {
     display: flex;
     align-items: center;
+    justify-content: flex-end;
     gap: 14px;
+    flex: 1 1 0;
 }
 
 /* =========================
@@ -588,6 +593,264 @@ button {
     background: #182233;
     border-color: var(--gold);
     color: var(--gold-light) !important;
+}
+
+/* =========================
+   LIVE STREAM (MODO DIRECTO)
+========================= */
+
+.hero.is-live-mode {
+    grid-template-columns: 1.35fr 0.65fr;
+    align-items: center;
+}
+
+.hero-live-container {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    z-index: 2;
+}
+
+.hero-live-header {
+    margin-bottom: 16px;
+}
+
+.live-status-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(239, 68, 68, 0.16);
+    border: 1px solid rgba(239, 68, 68, 0.5);
+    padding: 5px 14px;
+    border-radius: 9999px;
+    font-family: "Barlow Condensed", sans-serif;
+    font-size: 13px;
+    font-weight: 800;
+    letter-spacing: 1.5px;
+    color: #ef4444;
+    width: fit-content;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+}
+
+.live-pulse-dot {
+    width: 8px;
+    height: 8px;
+    background: #ef4444;
+    border-radius: 50%;
+    box-shadow: 0 0 10px #ef4444;
+    animation: livePulseAnim 1.6s infinite ease-in-out;
+}
+
+@keyframes livePulseAnim {
+    0% {
+        transform: scale(0.9);
+        box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.8);
+    }
+    70% {
+        transform: scale(1.15);
+        box-shadow: 0 0 0 10px rgba(239, 68, 68, 0);
+    }
+    100% {
+        transform: scale(0.9);
+        box-shadow: 0 0 0 0 rgba(239, 68, 68, 0);
+    }
+}
+
+.hero-live-title {
+    font-family: "Barlow Condensed", sans-serif;
+    font-size: clamp(40px, 4.8vw, 68px);
+    font-weight: 900;
+    line-height: 0.92;
+    letter-spacing: -1px;
+    text-transform: uppercase;
+    color: #ffffff;
+    margin: 0 0 8px 0;
+    text-shadow: 0 4px 16px rgba(0, 0, 0, 0.6);
+}
+
+.hero-live-subtitle {
+    color: #aeb3bc;
+    font-size: 15px;
+    line-height: 1.5;
+    margin: 0 0 16px 0;
+    max-width: 600px;
+}
+
+.twitch-player-wrapper {
+    position: relative;
+    width: 100%;
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1.5px solid rgba(239, 68, 68, 0.4);
+    box-shadow: 0 14px 40px rgba(0, 0, 0, 0.65), 0 0 30px rgba(239, 68, 68, 0.16);
+    background: #000;
+    margin-bottom: 22px;
+    transition: border-color 0.25s ease, box-shadow 0.25s ease;
+}
+
+.twitch-player-wrapper:hover {
+    border-color: rgba(239, 68, 68, 0.8);
+    box-shadow: 0 18px 48px rgba(0, 0, 0, 0.75), 0 0 36px rgba(239, 68, 68, 0.26);
+}
+
+.twitch-player-aspect {
+    position: relative;
+    width: 100%;
+    padding-bottom: 56.25%; /* 16:9 Aspect Ratio */
+    height: 0;
+    background: #04060a;
+}
+
+.twitch-player-aspect iframe {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border: none;
+}
+
+.hero-live-actions {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    align-items: center;
+}
+
+.btn-twitch {
+    background: #9146ff;
+    border: 1px solid #a970ff;
+    color: #ffffff !important;
+    gap: 8px;
+    font-weight: 800;
+    text-decoration: none;
+    box-shadow: 0 4px 14px rgba(145, 70, 255, 0.3);
+}
+
+.btn-twitch:hover {
+    background: #772ce8;
+    border-color: #9146ff;
+    color: #ffffff !important;
+    box-shadow: 0 6px 20px rgba(145, 70, 255, 0.5);
+    transform: translateY(-2px);
+}
+
+.twitch-icon {
+    flex-shrink: 0;
+    display: inline-block;
+}
+
+/* Admin Live Mode Settings Section */
+.admin-live-settings-card {
+    background: rgba(239, 68, 68, 0.05);
+    border: 1px solid rgba(239, 68, 68, 0.3);
+    border-radius: 8px;
+    padding: 22px;
+    margin-bottom: 24px;
+    box-shadow: inset 0 0 20px rgba(239, 68, 68, 0.03);
+}
+
+.admin-live-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.admin-live-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    font-family: "Barlow Condensed", sans-serif;
+    font-size: 13px;
+    font-weight: 900;
+    letter-spacing: 1.5px;
+    color: #ef4444;
+    background: rgba(239, 68, 68, 0.12);
+    border: 1px solid rgba(239, 68, 68, 0.35);
+    padding: 5px 12px;
+    border-radius: 4px;
+}
+
+.admin-live-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #ef4444;
+    box-shadow: 0 0 8px #ef4444;
+}
+
+.admin-switch-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    cursor: pointer;
+    user-select: none;
+}
+
+.admin-switch-text {
+    font-family: "Barlow Condensed", sans-serif;
+    font-size: 14px;
+    font-weight: 800;
+    letter-spacing: 1px;
+    color: #aeb3bc;
+    transition: color 0.25s ease;
+}
+
+.admin-switch-text.is-active {
+    color: #ef4444;
+}
+
+.admin-switch {
+    position: relative;
+    display: inline-block;
+    width: 48px;
+    height: 26px;
+}
+
+.admin-switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+    position: absolute;
+}
+
+.admin-slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #1a2230;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    transition: 0.3s;
+    border-radius: 34px;
+}
+
+.admin-slider:before {
+    position: absolute;
+    content: "";
+    height: 18px;
+    width: 18px;
+    left: 3px;
+    bottom: 3px;
+    background-color: #737a83;
+    transition: 0.3s;
+    border-radius: 50%;
+}
+
+.admin-switch input:checked + .admin-slider {
+    background-color: #ef4444;
+    border-color: #ef4444;
+    box-shadow: 0 0 12px rgba(239, 68, 68, 0.5);
+}
+
+.admin-switch input:checked + .admin-slider:before {
+    transform: translateX(22px);
+    background-color: #ffffff;
 }
 
 
@@ -1420,122 +1683,268 @@ button {
 
 .calendar-grid {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(4, 1fr);
     gap: 16px;
 }
 
 .calendar-card {
-    min-height: 280px;
-    padding: 25px;
+    min-height: 215px;
+    padding: 22px 24px;
     position: relative;
-    background: #090d13;
-    border: 1px solid var(--border);
+    background: #080c13;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 12px;
     overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
     transition:
-        transform 0.25s ease,
-        border-color 0.25s ease,
-        background 0.25s ease;
+        transform 0.22s ease,
+        border-color 0.22s ease,
+        box-shadow 0.22s ease,
+        background 0.22s ease;
 }
 
 .calendar-card:hover {
-    transform: translateY(-4px);
-    border-color: rgba(214,180,92,0.35);
+    transform: translateY(-3px);
+    border-color: rgba(255, 255, 255, 0.18);
+    background: #0c111a;
+}
+
+.calendar-card-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 10px;
 }
 
 .calendar-number {
     font-family: "Barlow Condensed", sans-serif;
-    font-size: 48px;
+    font-size: 32px;
     font-weight: 900;
-    color: rgba(255,255,255,0.08);
     line-height: 1;
+    color: #ffffff;
+    letter-spacing: 0.5px;
 }
 
 .calendar-status {
-    margin-top: 10px;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 3px 9px;
+    border-radius: 9999px;
     font-family: "Barlow Condensed", sans-serif;
     font-size: 11px;
     font-weight: 800;
-    letter-spacing: 1.5px;
-    color: #737a83;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+    line-height: 1.2;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    color: #717d8e;
+}
+
+/* Completed Badge (Green) */
+.calendar-card.completed .calendar-status {
+    background: rgba(16, 185, 129, 0.08);
+    border: 1px solid rgba(16, 185, 129, 0.35);
+    color: #10b981;
+}
+
+.calendar-card.completed .calendar-status::before {
+    content: "✓";
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    border: 1.2px solid currentColor;
+    font-size: 7.5px;
+    font-weight: 900;
+    line-height: 1;
+}
+
+/* Next Race Badge (Red) */
+.calendar-card.next .calendar-status {
+    background: rgba(239, 68, 68, 0.22);
+    border: 1px solid rgba(239, 68, 68, 0.6);
+    color: #ff4d4d;
+}
+
+.calendar-card.next .calendar-status::before {
+    content: "";
+    display: inline-block;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background-color: currentColor;
+    box-shadow: 0 0 6px rgba(255, 77, 77, 0.8);
+}
+
+/* Middle / Titles */
+.calendar-card-body {
+    margin-top: 14px;
+    margin-bottom: 18px;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
 }
 
 .calendar-card h3 {
-    margin-top: 15px;
     font-family: "Barlow Condensed", sans-serif;
-    font-size: 36px;
+    font-size: 26px;
     font-weight: 900;
-    line-height: 0.9;
+    line-height: 1.05;
+    letter-spacing: 0.5px;
+    color: #ffffff;
+    text-transform: uppercase;
+    margin: 0;
 }
 
 .calendar-card p {
-    margin-top: 7px;
-    color: #777e87;
-    font-size: 12px;
-    letter-spacing: 1px;
+    margin-top: 4px;
+    color: #717d8e;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+    margin-bottom: 0;
+}
+
+/* Card Footer */
+.calendar-card-footer {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 10px;
+    margin-top: auto;
+}
+
+.calendar-datetime {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
 }
 
 .calendar-date {
-    margin-top: 35px;
     font-family: "Barlow Condensed", sans-serif;
-    font-size: 21px;
-    font-weight: 800;
+    font-size: 17px;
+    font-weight: 900;
+    color: #f3f4f6;
+    letter-spacing: 0.5px;
+    line-height: 1.1;
+    margin: 0;
 }
 
 .calendar-time {
     display: block;
-    margin-top: 3px;
-    color: var(--gold);
+    margin: 0;
+    color: #717d8e;
     font-size: 11px;
+    font-weight: 600;
+    font-family: "Inter", sans-serif;
+    letter-spacing: 0.2px;
 }
 
-.completed {
-    border-top: 2px solid rgba(255,255,255,0.12);
+/* Action Links on Bottom Right */
+.click-hint {
+    font-family: "Barlow Condensed", sans-serif;
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: 0.6px;
+    color: #ef4444;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    position: static;
+    opacity: 1;
+    transform: none;
+    transition: transform 0.2s ease, color 0.2s ease;
+    user-select: none;
+    white-space: nowrap;
 }
 
-.next {
-    border: 1px solid rgba(214,180,92,0.5);
-    background:
-        linear-gradient(145deg, rgba(214,180,92,0.08), transparent),
-        #090d13;
+.race-link:hover .click-hint {
+    transform: translateX(3px);
+    color: #f87171;
 }
 
-.next .calendar-status {
-    color: var(--gold-light);
+.calendar-action-note {
+    font-family: "Barlow Condensed", sans-serif;
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: 0.6px;
+    color: #ef4444;
+    white-space: nowrap;
 }
 
-.next .calendar-number {
-    color: rgba(214,180,92,0.22);
-}
-
-.upcoming {
-    opacity: 0.7;
-}
-
+/* Test Days Specifics */
 .test-card {
-    opacity: 0.55;
+    border: 1px dashed rgba(255, 255, 255, 0.16);
+    background: #080c13;
+}
+
+.test-card .calendar-number {
+    color: #717d8e;
+}
+
+/* Next Race Specifics (Active round with glowing red border and top gradient) */
+.calendar-card.next {
+    border: 1.5px solid #ef4444;
+    box-shadow: 0 0 24px rgba(239, 68, 68, 0.18), inset 0 0 16px rgba(239, 68, 68, 0.03);
+    background: #0c1018;
+}
+
+.calendar-card.next::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 16px;
+    right: 16px;
+    height: 2px;
+    background: linear-gradient(90deg, #f59e0b, #ef4444 50%, #f59e0b);
+    border-radius: 2px;
+}
+
+.calendar-card.next .calendar-number {
+    color: #ef4444;
+}
+
+/* Upcoming Races (Rounds 11-15) */
+.calendar-card.upcoming {
+    border-color: rgba(255, 255, 255, 0.05);
+    background: #070a10;
+}
+
+.calendar-card.upcoming .calendar-number {
+    color: #374151;
+}
+
+.calendar-card.upcoming h3 {
+    color: #525c6b;
+}
+
+.calendar-card.upcoming p {
+    color: #374151;
+}
+
+.calendar-card.upcoming .calendar-date {
+    color: #525c6b;
+}
+
+.calendar-card.upcoming .calendar-time {
+    color: #374151;
+}
+
+.calendar-card.upcoming .calendar-status {
+    color: #525c6b;
+    border-color: rgba(255, 255, 255, 0.05);
 }
 
 .race-link {
     cursor: pointer;
-}
-
-.click-hint {
-    position: absolute;
-    right: 22px;
-    bottom: 22px;
-    color: var(--gold);
-    font-family: "Barlow Condensed", sans-serif;
-    font-size: 11px;
-    font-weight: 800;
-    letter-spacing: 1px;
-    opacity: 0;
-    transform: translateY(5px);
-    transition: 0.2s ease;
-}
-
-.race-link:hover .click-hint {
-    opacity: 1;
-    transform: translateY(0);
 }
 
 
@@ -1977,6 +2386,10 @@ footer {
         min-height: 68px;
     }
 
+    .brand {
+        flex: 0 1 auto;
+    }
+
     .brand-name {
         font-size: 17px;
     }
@@ -2009,6 +2422,7 @@ footer {
     }
 
     .nav-actions {
+        flex: 0 0 auto;
         margin-left: auto;
         gap: 8px;
     }
