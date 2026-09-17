@@ -3860,6 +3860,522 @@ footer {
     border: 1px solid rgba(234, 88, 12, 0.3);
 }
 
+/* ==============================================
+   STANDINGS INTERACTIVITY: DRIVER CLICKABLE STYLES
+============================================== */
+.driver-clickable {
+    cursor: pointer !important;
+    position: relative;
+    transition: color 0.18s ease, text-shadow 0.18s ease;
+}
+
+.driver-clickable:hover {
+    color: var(--gold-light, #fce79a) !important;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    text-shadow: 0 0 12px rgba(214, 180, 92, 0.4);
+}
+
+.driver-card-clickable {
+    cursor: pointer !important;
+    transition: transform 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease;
+}
+
+.driver-card-clickable:hover {
+    border-color: rgba(214, 180, 92, 0.45) !important;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.45);
+}
+
+.driver-row-clickable {
+    cursor: pointer !important;
+    transition: background-color 0.15s ease, transform 0.12s ease;
+}
+
+.driver-row-clickable:hover {
+    background: rgba(214, 180, 92, 0.08) !important;
+}
+
+.driver-row-clickable:hover .ranking-row-name {
+    color: var(--gold-light, #fce79a);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+}
+
+.driver-cell-content {
+    cursor: pointer;
+    transition: transform 0.15s ease;
+}
+
+.driver-cell-content:hover .driver-name-text {
+    color: var(--gold-light, #fce79a);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+}
+
+/* ==============================================
+   MINI TARJETA DE ESTADÍSTICAS DE PILOTO (MODAL)
+============================================== */
+.driver-modal-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 2200;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    background: rgba(3, 6, 11, 0.88);
+    backdrop-filter: blur(12px);
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transition: opacity 0.24s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.24s ease;
+}
+
+.driver-modal-overlay.active {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+}
+
+.driver-modal-card {
+    width: min(520px, 100%);
+    max-height: calc(100vh - 40px);
+    overflow-y: auto;
+    background: #080c13;
+    border: 1px solid rgba(214, 180, 92, 0.32);
+    border-radius: 12px;
+    box-shadow: 0 25px 70px rgba(0, 0, 0, 0.85);
+    position: relative;
+    transform: translateY(14px) scale(0.98);
+    transition: transform 0.26s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.driver-modal-overlay.active .driver-modal-card {
+    transform: translateY(0) scale(1);
+}
+
+.driver-modal-strip {
+    height: 4px;
+    width: 100%;
+    border-radius: 12px 12px 0 0;
+    background: linear-gradient(90deg, #d6b45c, #f3d483);
+}
+
+/* Team Accent Strips */
+.driver-modal-strip.team-hrt { background: linear-gradient(90deg, #d5c299, #b89b58); }
+.driver-modal-strip.team-redbull { background: linear-gradient(90deg, #0600ef, #d90429); }
+.driver-modal-strip.team-ferrari { background: linear-gradient(90deg, #dc0000, #ff4d4d); }
+.driver-modal-strip.team-mercedes { background: linear-gradient(90deg, #00d2be, #c0c0c0); }
+.driver-modal-strip.team-tororosso { background: linear-gradient(90deg, #4c00be, #002288); }
+.driver-modal-strip.team-sauber { background: linear-gradient(90deg, #ffffff, #7f8897); }
+.driver-modal-strip.team-mclaren { background: linear-gradient(90deg, #ff8000, #c0c0c0); }
+.driver-modal-strip.team-williams { background: linear-gradient(90deg, #0082fa, #ffffff); }
+.driver-modal-strip.team-lotus { background: linear-gradient(90deg, #2b8220, #d4af37); }
+.driver-modal-strip.team-virgin { background: linear-gradient(90deg, #7a0000, #000000); }
+.driver-modal-strip.team-renault { background: linear-gradient(90deg, #fff500, #111111); }
+.driver-modal-strip.team-forceindia { background: linear-gradient(90deg, #ff5f0f, #ffffff, #008000); }
+
+.driver-modal-close {
+    position: absolute;
+    top: 14px;
+    right: 16px;
+    width: 34px;
+    height: 34px;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 6px;
+    background: rgba(255, 255, 255, 0.04);
+    color: #fff;
+    font-size: 24px;
+    line-height: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: 0.18s ease;
+    z-index: 10;
+}
+
+.driver-modal-close:hover {
+    border-color: var(--gold);
+    color: var(--gold-light);
+    background: rgba(214, 180, 92, 0.12);
+}
+
+.driver-modal-header {
+    padding: 24px 24px 18px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.driver-modal-dorsal {
+    font-family: "Barlow Condensed", sans-serif;
+    font-size: 42px;
+    font-weight: 900;
+    line-height: 1;
+    color: var(--gold, #d6b45c);
+    padding: 6px 14px;
+    background: rgba(214, 180, 92, 0.08);
+    border: 1px solid rgba(214, 180, 92, 0.22);
+    border-radius: 8px;
+    min-width: 64px;
+    text-align: center;
+    box-shadow: inset 0 0 15px rgba(214, 180, 92, 0.05);
+}
+
+.driver-modal-identity {
+    flex: 1;
+    min-width: 0;
+}
+
+.driver-modal-name-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 6px;
+}
+
+.driver-modal-flag {
+    font-size: 24px;
+    line-height: 1;
+}
+
+.driver-modal-name {
+    font-family: "Barlow Condensed", sans-serif;
+    font-size: 32px;
+    font-weight: 900;
+    letter-spacing: 0.5px;
+    color: #fff;
+    line-height: 1;
+    margin: 0;
+    text-transform: uppercase;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.driver-modal-meta-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.driver-modal-team-pill {
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    padding: 3px 9px;
+    border-radius: 4px;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    color: #fff;
+}
+
+.driver-modal-role-badge {
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+    padding: 3px 8px;
+    border-radius: 4px;
+    background: rgba(214, 180, 92, 0.12);
+    color: #fce79a;
+    border: 1px solid rgba(214, 180, 92, 0.32);
+}
+
+/* KPI Bento Grid */
+.driver-modal-kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+    padding: 16px 24px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.driver-kpi-item {
+    background: rgba(255, 255, 255, 0.025);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 6px;
+    padding: 8px 6px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    min-height: 56px;
+}
+
+.driver-kpi-label {
+    font-size: 9px;
+    font-weight: 800;
+    letter-spacing: 0.8px;
+    color: #8892b0;
+    text-transform: uppercase;
+    margin-bottom: 2px;
+}
+
+.driver-kpi-val {
+    font-family: "Barlow Condensed", sans-serif;
+    font-size: 22px;
+    font-weight: 900;
+    line-height: 1;
+    color: #fff;
+}
+
+.driver-kpi-item.kpi-gold .driver-kpi-val {
+    color: #fce79a;
+    text-shadow: 0 0 10px rgba(245, 158, 11, 0.25);
+}
+
+.driver-kpi-item.kpi-highlight-pts .driver-kpi-val {
+    color: #6ee7b7;
+}
+
+/* Rounds Breakdown */
+.driver-modal-rounds-section {
+    padding: 18px 24px 22px;
+}
+
+.driver-modal-rounds-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 12px;
+}
+
+.rounds-section-title {
+    font-size: 12px;
+    font-weight: 900;
+    letter-spacing: 1px;
+    color: #fff;
+    text-transform: uppercase;
+}
+
+.rounds-section-sub {
+    font-size: 10px;
+    color: #7f8897;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+}
+
+.driver-modal-rounds-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 6px;
+}
+
+.round-card-mini {
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 6px;
+    padding: 7px 4px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    transition: transform 0.18s cubic-bezier(0.4, 0, 0.2, 1),
+                background 0.18s ease,
+                border-color 0.18s ease,
+                box-shadow 0.18s ease;
+    cursor: pointer;
+    user-select: none;
+    position: relative;
+}
+
+.round-card-mini:hover {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(225, 6, 0, 0.6);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 14px rgba(0, 0, 0, 0.45), 0 0 10px rgba(225, 6, 0, 0.2);
+}
+
+.round-card-mini:active {
+    transform: translateY(0);
+}
+
+.round-card-mini:focus-visible {
+    outline: 2px solid #e10600;
+    outline-offset: 2px;
+}
+
+.round-card-mini::after {
+    content: "↗";
+    position: absolute;
+    top: 3px;
+    right: 4px;
+    font-size: 8px;
+    line-height: 1;
+    color: rgba(255, 255, 255, 0.35);
+    opacity: 0;
+    transition: opacity 0.15s ease, transform 0.15s ease;
+    transform: translate(-1px, 1px);
+    pointer-events: none;
+}
+
+.round-card-mini:hover::after {
+    opacity: 1;
+    color: #e10600;
+    transform: translate(0, 0);
+}
+
+.round-card-mini-top {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 3px;
+    font-size: 10px;
+    color: #8892b0;
+    font-weight: 700;
+}
+
+.round-card-mini-flag {
+    font-size: 11px;
+    line-height: 1;
+}
+
+.round-res-pill {
+    font-family: "Barlow Condensed", sans-serif;
+    font-size: 15px;
+    font-weight: 800;
+    line-height: 1;
+    padding: 3px 5px;
+    border-radius: 4px;
+    width: 100%;
+    text-align: center;
+}
+
+.round-res-pill.res-win {
+    background: rgba(245, 158, 11, 0.22);
+    color: #fce79a;
+    border: 1px solid rgba(245, 158, 11, 0.45);
+}
+
+.round-res-pill.res-podium {
+    background: rgba(148, 163, 184, 0.18);
+    color: #f1f5f9;
+    border: 1px solid rgba(148, 163, 184, 0.35);
+}
+
+.round-res-pill.res-pts {
+    background: rgba(16, 185, 129, 0.14);
+    color: #a7f3d0;
+    border: 1px solid rgba(16, 185, 129, 0.25);
+}
+
+.round-res-pill.res-out {
+    background: rgba(239, 68, 68, 0.18);
+    color: #fca5a5;
+    border: 1px solid rgba(239, 68, 68, 0.3);
+}
+
+.round-res-pill.res-none {
+    background: rgba(255, 255, 255, 0.02);
+    color: #475569;
+    border: 1px solid rgba(255, 255, 255, 0.04);
+}
+
+.round-card-badges {
+    display: flex;
+    gap: 3px;
+    justify-content: center;
+    min-height: 12px;
+}
+
+.extra-badge {
+    font-size: 8px;
+    font-weight: 900;
+    letter-spacing: 0.5px;
+    line-height: 1;
+    padding: 1px 3px;
+    border-radius: 2px;
+}
+
+.badge-pole {
+    background: #ffffff;
+    color: #0b0f17;
+}
+
+.badge-fl {
+    background: rgba(210, 168, 255, 0.22);
+    color: #e9d5ff;
+    border: 1px solid rgba(210, 168, 255, 0.35);
+}
+
+@media (max-width: 600px) {
+    .driver-modal-header {
+        padding: 20px 16px 14px;
+        gap: 12px;
+    }
+    .driver-modal-dorsal {
+        font-size: 32px;
+        min-width: 52px;
+        padding: 4px 8px;
+    }
+    .driver-modal-name {
+        font-size: 26px;
+    }
+    .driver-modal-kpi-grid {
+        grid-template-columns: repeat(2, 1fr);
+        padding: 12px 16px;
+    }
+    .driver-modal-rounds-section {
+        padding: 14px 16px 18px;
+    }
+    .driver-modal-rounds-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+/* ==============================================
+   RACE REDIRECTION HIGHLIGHTS & EFFECTS
+   ============================================== */
+@keyframes cardPulseGlow {
+    0% {
+        box-shadow: 0 0 0 0 rgba(225, 6, 0, 0.75);
+        border-color: #e10600;
+        transform: translateY(-4px);
+    }
+    35% {
+        box-shadow: 0 0 28px 6px rgba(225, 6, 0, 0.55);
+        border-color: #ff3333;
+        transform: translateY(-4px);
+    }
+    100% {
+        box-shadow: 0 0 0 0 rgba(225, 6, 0, 0);
+        border-color: var(--border);
+        transform: translateY(0);
+    }
+}
+
+.calendar-card.card-highlight-pulse {
+    animation: cardPulseGlow 2.4s ease-out;
+    z-index: 5;
+}
+
+.result-table tr.result-row-highlight {
+    background: rgba(225, 6, 0, 0.16) !important;
+    border-left: 3px solid #e10600;
+}
+
+.result-table tr.result-row-highlight td {
+    color: #ffffff;
+    font-weight: 700;
+}
+
+.result-table .driver-clickable {
+    cursor: pointer;
+    transition: color 0.15s ease, text-decoration 0.15s ease;
+}
+
+.result-table .driver-clickable:hover {
+    color: #e10600 !important;
+    text-decoration: underline;
+}
+
+
 
 
 

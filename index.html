@@ -289,18 +289,18 @@
     </div>
 
     <div class="standings-view-selector" id="standingsViewSelector">
-        <button type="button" class="standings-view-tab active" id="tabStandingsMatrix" data-view="matrix">
-            <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M3 3v18h18V3H3zm8 16H5v-4h6v4zm0-6H5V9h6v4zm0-6H5V5h6v2zm8 12h-6v-4h6v4zm0-6h-6V9h6v4zm0-6h-6V5h6v2z"/></svg>
-            <span id="tabLabelMatrix">TABLA OFICIAL FFC 2010 SEASON</span>
-        </button>
-        <button type="button" class="standings-view-tab" id="tabStandingsCards" data-view="cards">
+        <button type="button" class="standings-view-tab active" id="tabStandingsCards" data-view="cards">
             <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V5h14v14zM7 10h2v7H7zm4-3h2v10h-2zm4 6h2v4h-2z"/></svg>
             <span id="tabLabelCards">VISTA RESUMEN &amp; PODIO</span>
         </button>
+        <button type="button" class="standings-view-tab" id="tabStandingsMatrix" data-view="matrix">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M3 3v18h18V3H3zm8 16H5v-4h6v4zm0-6H5V9h6v4zm0-6H5V5h6v2zm8 12h-6v-4h6v4zm0-6h-6V9h6v4zm0-6h-6V5h6v2z"/></svg>
+            <span id="tabLabelMatrix">TABLA OFICIAL FFC 2010 SEASON</span>
+        </button>
     </div>
 
-    <!-- Official Matrix Table View (Direct Match with Screenshot) -->
-    <div class="ffc-matrix-wrapper" id="standingsMatrixView">
+    <!-- Official Matrix Table View (Alternative View) -->
+    <div class="ffc-matrix-wrapper" id="standingsMatrixView" style="display: none;">
         <div class="ffc-matrix-header-banner">
             <span class="ffc-matrix-banner-text">FORMULA FACTOR CHAMPIONSHIP - FFC 2010 SEASON</span>
         </div>
@@ -356,8 +356,8 @@
         </div>
     </div>
 
-    <!-- Cards & Podium View (Alternative Toggle View) -->
-    <div class="standings-cards-container" id="standingsCardsView" style="display: none;">
+    <!-- Cards & Podium View (Primary View) -->
+    <div class="standings-cards-container" id="standingsCardsView">
 
     <div class="standings-block">
 
@@ -375,11 +375,11 @@
         <div class="ranking-board" id="driverRankingBoard">
 
             <!-- P1: Leader Hero Row -->
-            <div class="ranking-leader-row" id="driverLeaderRow">
+            <div class="ranking-leader-row driver-card-clickable" id="driverLeaderRow" data-driver="Dieguiosk" title="Ver estadísticas de Dieguiosk">
                 <div class="ranking-leader-left">
                     <span class="ranking-leader-pos">1.</span>
                     <div class="ranking-leader-info">
-                        <span class="ranking-leader-name">Dieguiosk</span>
+                        <span class="ranking-leader-name driver-clickable" data-driver="Dieguiosk">Dieguiosk</span>
                         <div class="ranking-leader-meta">
                             <span class="ranking-team-pill team-hrt">HRT</span>
                         </div>
@@ -401,11 +401,11 @@
 
             <!-- P2 & P3: Split Podium Columns -->
             <div class="ranking-podium-split" id="driverPodiumSplit">
-                <div class="ranking-podium-col ranking-p2" id="driverP2Col">
+                <div class="ranking-podium-col ranking-p2 driver-card-clickable" id="driverP2Col" data-driver="Muntii" title="Ver estadísticas de Muntii">
                     <div class="ranking-podium-left">
                         <span class="ranking-podium-pos">2.</span>
                         <div class="ranking-podium-info">
-                            <span class="ranking-podium-name">Muntii</span>
+                            <span class="ranking-podium-name driver-clickable" data-driver="Muntii">Muntii</span>
                             <div class="ranking-podium-meta">
                                 <span class="ranking-team-pill team-redbull">Red Bull</span>
                             </div>
@@ -418,11 +418,11 @@
                         </div>
                     </div>
                 </div>
-                <div class="ranking-podium-col ranking-p3" id="driverP3Col">
+                <div class="ranking-podium-col ranking-p3 driver-card-clickable" id="driverP3Col" data-driver="Novitaa" title="Ver estadísticas de Novitaa">
                     <div class="ranking-podium-left">
                         <span class="ranking-podium-pos">3.</span>
                         <div class="ranking-podium-info">
-                            <span class="ranking-podium-name">Novitaa</span>
+                            <span class="ranking-podium-name driver-clickable" data-driver="Novitaa">Novitaa</span>
                             <div class="ranking-podium-meta">
                                 <span class="ranking-team-pill team-redbull">Red Bull</span>
                             </div>
@@ -447,13 +447,47 @@
 
             <!-- P4+: Rows List -->
             <div class="ranking-rows-list" id="driverRowsList">
-                <div class="ranking-row"><span class="ranking-row-pos">4</span><span class="ranking-row-name">BigTheo</span><span class="ranking-row-team team-ferrari">Ferrari</span><span class="ranking-row-pts">64</span></div>
-                <div class="ranking-row"><span class="ranking-row-pos">5</span><span class="ranking-row-name">Suforr</span><span class="ranking-row-team team-mercedes">Mercedes</span><span class="ranking-row-pts">53</span></div>
-                <div class="ranking-row"><span class="ranking-row-pos">6</span><span class="ranking-row-name">IvánR</span><span class="ranking-row-team team-hrt">HRT</span><span class="ranking-row-pts">52</span></div>
-                <div class="ranking-row"><span class="ranking-row-pos">7</span><span class="ranking-row-name">Sbinn</span><span class="ranking-row-team team-tororosso">Toro Rosso</span><span class="ranking-row-pts">35</span></div>
-                <div class="ranking-row"><span class="ranking-row-pos">8</span><span class="ranking-row-name">Licha</span><span class="ranking-row-team team-ferrari">Ferrari</span><span class="ranking-row-pts">33</span></div>
-                <div class="ranking-row"><span class="ranking-row-pos">9</span><span class="ranking-row-name">TheWereGH</span><span class="ranking-row-team team-sauber">Sauber</span><span class="ranking-row-pts">32</span></div>
-                <div class="ranking-row"><span class="ranking-row-pos">10</span><span class="ranking-row-name">Victor</span><span class="ranking-row-team team-mclaren">McLaren</span><span class="ranking-row-pts">22</span></div>
+                <div class="ranking-row driver-row-clickable" data-driver="BigTheo" title="Ver estadísticas de BigTheo"><span class="ranking-row-pos">4</span><span class="ranking-row-name driver-clickable" data-driver="BigTheo">BigTheo</span><span class="ranking-row-team team-ferrari">Ferrari</span><span class="ranking-row-pts">64</span></div>
+                <div class="ranking-row driver-row-clickable" data-driver="Suforr" title="Ver estadísticas de Suforr"><span class="ranking-row-pos">5</span><span class="ranking-row-name driver-clickable" data-driver="Suforr">Suforr</span><span class="ranking-row-team team-mercedes">Mercedes</span><span class="ranking-row-pts">53</span></div>
+                <div class="ranking-row driver-row-clickable" data-driver="IvánR" title="Ver estadísticas de IvánR"><span class="ranking-row-pos">6</span><span class="ranking-row-name driver-clickable" data-driver="IvánR">IvánR</span><span class="ranking-row-team team-hrt">HRT</span><span class="ranking-row-pts">52</span></div>
+                <div class="ranking-row driver-row-clickable" data-driver="Sbinn" title="Ver estadísticas de Sbinn"><span class="ranking-row-pos">7</span><span class="ranking-row-name driver-clickable" data-driver="Sbinn">Sbinn</span><span class="ranking-row-team team-tororosso">Toro Rosso</span><span class="ranking-row-pts">35</span></div>
+                <div class="ranking-row driver-row-clickable" data-driver="Licha" title="Ver estadísticas de Licha"><span class="ranking-row-pos">8</span><span class="ranking-row-name driver-clickable" data-driver="Licha">Licha</span><span class="ranking-row-team team-ferrari">Ferrari</span><span class="ranking-row-pts">33</span></div>
+                <div class="ranking-row driver-row-clickable" data-driver="TheWereGH" title="Ver estadísticas de TheWereGH"><span class="ranking-row-pos">9</span><span class="ranking-row-name driver-clickable" data-driver="TheWereGH">TheWereGH</span><span class="ranking-row-team team-sauber">Sauber</span><span class="ranking-row-pts">32</span></div>
+                <div class="ranking-row driver-row-clickable" data-driver="Victor" title="Ver estadísticas de Victor"><span class="ranking-row-pos">10</span><span class="ranking-row-name driver-clickable" data-driver="Victor">Victor</span><span class="ranking-row-team team-mclaren">McLaren</span><span class="ranking-row-pts">22</span></div>
+                <div class="ranking-row driver-row-clickable standings-row-hidden" data-driver="Gold" title="Ver estadísticas de Gold"><span class="ranking-row-pos">11</span><span class="ranking-row-name driver-clickable" data-driver="Gold">Gold</span><span class="ranking-row-team team-williams">Williams</span><span class="ranking-row-pts">20</span></div>
+                <div class="ranking-row driver-row-clickable standings-row-hidden" data-driver="Viktolo" title="Ver estadísticas de Viktolo"><span class="ranking-row-pos">12</span><span class="ranking-row-name driver-clickable" data-driver="Viktolo">Viktolo</span><span class="ranking-row-team team-tororosso">Toro Rosso</span><span class="ranking-row-pts">20</span></div>
+                <div class="ranking-row driver-row-clickable standings-row-hidden" data-driver="Farlonso" title="Ver estadísticas de Farlonso"><span class="ranking-row-pos">13</span><span class="ranking-row-name driver-clickable" data-driver="Farlonso">Farlonso</span><span class="ranking-row-team team-lotus">Lotus</span><span class="ranking-row-pts">20</span></div>
+                <div class="ranking-row driver-row-clickable standings-row-hidden" data-driver="AMF" title="Ver estadísticas de AMF"><span class="ranking-row-pos">14</span><span class="ranking-row-name driver-clickable" data-driver="AMF">AMF</span><span class="ranking-row-team team-williams">Williams</span><span class="ranking-row-pts">20</span></div>
+                <div class="ranking-row driver-row-clickable standings-row-hidden" data-driver="ElMamut" title="Ver estadísticas de ElMamut"><span class="ranking-row-pos">15</span><span class="ranking-row-name driver-clickable" data-driver="ElMamut">ElMamut</span><span class="ranking-row-team team-virgin">Virgin</span><span class="ranking-row-pts">18</span></div>
+                <div class="ranking-row driver-row-clickable standings-row-hidden" data-driver="Baena" title="Ver estadísticas de Baena"><span class="ranking-row-pos">16</span><span class="ranking-row-name driver-clickable" data-driver="Baena">Baena</span><span class="ranking-row-team team-mercedes">Mercedes</span><span class="ranking-row-pts">16</span></div>
+                <div class="ranking-row driver-row-clickable standings-row-hidden" data-driver="Sir Galactic" title="Ver estadísticas de Sir Galactic"><span class="ranking-row-pos">17</span><span class="ranking-row-name driver-clickable" data-driver="Sir Galactic">Sir Galactic</span><span class="ranking-row-team team-renault">Renault</span><span class="ranking-row-pts">16</span></div>
+                <div class="ranking-row driver-row-clickable standings-row-hidden" data-driver="DiegoSniper69" title="Ver estadísticas de DiegoSniper69"><span class="ranking-row-pos">18</span><span class="ranking-row-name driver-clickable" data-driver="DiegoSniper69">DiegoSniper69</span><span class="ranking-row-team team-sauber">Sauber</span><span class="ranking-row-pts">15</span></div>
+                <div class="ranking-row driver-row-clickable standings-row-hidden" data-driver="Erik Brenna" title="Ver estadísticas de Erik Brenna"><span class="ranking-row-pos">19</span><span class="ranking-row-name driver-clickable" data-driver="Erik Brenna">Erik Brenna</span><span class="ranking-row-team team-forceindia">Force India</span><span class="ranking-row-pts">15</span></div>
+                <div class="ranking-row driver-row-clickable standings-row-hidden" data-driver="CarlosUre" title="Ver estadísticas de CarlosUre"><span class="ranking-row-pos">20</span><span class="ranking-row-name driver-clickable" data-driver="CarlosUre">CarlosUre</span><span class="ranking-row-team team-forceindia">Force India</span><span class="ranking-row-pts">15</span></div>
+                <div class="ranking-row driver-row-clickable standings-row-hidden" data-driver="Dericcc" title="Ver estadísticas de Dericcc"><span class="ranking-row-pos">21</span><span class="ranking-row-name driver-clickable" data-driver="Dericcc">Dericcc</span><span class="ranking-row-team team-virgin">Virgin</span><span class="ranking-row-pts">13</span></div>
+                <div class="ranking-row driver-row-clickable standings-row-hidden" data-driver="Lil" title="Ver estadísticas de Lil"><span class="ranking-row-pos">22</span><span class="ranking-row-name driver-clickable" data-driver="Lil">Lil</span><span class="ranking-row-team team-lotus">Lotus</span><span class="ranking-row-pts">12</span></div>
+                <div class="ranking-row driver-row-clickable standings-row-hidden" data-driver="Kri" title="Ver estadísticas de Kri"><span class="ranking-row-pos">23</span><span class="ranking-row-name driver-clickable" data-driver="Kri">Kri</span><span class="ranking-row-team team-renault">Renault</span><span class="ranking-row-pts">12</span></div>
+                <div class="ranking-row driver-row-clickable standings-row-hidden" data-driver="Novi" title="Ver estadísticas de Novi"><span class="ranking-row-pos">24</span><span class="ranking-row-name driver-clickable" data-driver="Novi">Novi</span><span class="ranking-row-team team-ferrari">Ferrari</span><span class="ranking-row-pts">11</span></div>
+                <div class="ranking-row driver-row-clickable standings-row-hidden" data-driver="Daidaiiro" title="Ver estadísticas de Daidaiiro"><span class="ranking-row-pos">25</span><span class="ranking-row-name driver-clickable" data-driver="Daidaiiro">Daidaiiro</span><span class="ranking-row-team team-lotus">Lotus</span><span class="ranking-row-pts">9</span></div>
+                <div class="ranking-row driver-row-clickable standings-row-hidden" data-driver="Nando_FA14" title="Ver estadísticas de Nando_FA14"><span class="ranking-row-pos">26</span><span class="ranking-row-name driver-clickable" data-driver="Nando_FA14">Nando_FA14</span><span class="ranking-row-team team-hrt">HRT</span><span class="ranking-row-pts">8</span></div>
+                <div class="ranking-row driver-row-clickable standings-row-hidden" data-driver="Krisdemurr" title="Ver estadísticas de Krisdemurr"><span class="ranking-row-pos">27</span><span class="ranking-row-name driver-clickable" data-driver="Krisdemurr">Krisdemurr</span><span class="ranking-row-team team-williams">Williams</span><span class="ranking-row-pts">8</span></div>
+                <div class="ranking-row driver-row-clickable standings-row-hidden" data-driver="Rafale" title="Ver estadísticas de Rafale"><span class="ranking-row-pos">28</span><span class="ranking-row-name driver-clickable" data-driver="Rafale">Rafale</span><span class="ranking-row-team team-mclaren">McLaren</span><span class="ranking-row-pts">6</span></div>
+                <div class="ranking-row driver-row-clickable standings-row-hidden" data-driver="TheAgus60" title="Ver estadísticas de TheAgus60"><span class="ranking-row-pos">29</span><span class="ranking-row-name driver-clickable" data-driver="TheAgus60">TheAgus60</span><span class="ranking-row-team team-mclaren">McLaren</span><span class="ranking-row-pts">5</span></div>
+                <div class="ranking-row driver-row-clickable standings-row-hidden" data-driver="J-DOT" title="Ver estadísticas de J-DOT"><span class="ranking-row-pos">30</span><span class="ranking-row-name driver-clickable" data-driver="J-DOT">J-DOT</span><span class="ranking-row-team team-mclaren">McLaren</span><span class="ranking-row-pts">2</span></div>
+                <div class="ranking-row driver-row-clickable standings-row-hidden" data-driver="N. Duro" title="Ver estadísticas de N. Duro"><span class="ranking-row-pos">31</span><span class="ranking-row-name driver-clickable" data-driver="N. Duro">N. Duro</span><span class="ranking-row-team team-ferrari">Ferrari</span><span class="ranking-row-pts">1</span></div>
+                <div class="ranking-row driver-row-clickable standings-row-hidden" data-driver="TucnakCZE" title="Ver estadísticas de TucnakCZE"><span class="ranking-row-pos">32</span><span class="ranking-row-name driver-clickable" data-driver="TucnakCZE">TucnakCZE</span><span class="ranking-row-team team-forceindia">Force India</span><span class="ranking-row-pts">0</span></div>
+                <div class="ranking-row driver-row-clickable standings-row-hidden" data-driver="ElNano" title="Ver estadísticas de ElNano"><span class="ranking-row-pos">33</span><span class="ranking-row-name driver-clickable" data-driver="ElNano">ElNano</span><span class="ranking-row-team team-forceindia">Force India</span><span class="ranking-row-pts">0</span></div>
+                <div class="ranking-row driver-row-clickable standings-row-hidden" data-driver="Oscar Soria" title="Ver estadísticas de Oscar Soria"><span class="ranking-row-pos">34</span><span class="ranking-row-name driver-clickable" data-driver="Oscar Soria">Oscar Soria</span><span class="ranking-row-team team-williams">Williams</span><span class="ranking-row-pts">0</span></div>
+                <div class="ranking-row driver-row-clickable standings-row-hidden" data-driver="RikiDorsa" title="Ver estadísticas de RikiDorsa"><span class="ranking-row-pos">35</span><span class="ranking-row-name driver-clickable" data-driver="RikiDorsa">RikiDorsa</span><span class="ranking-row-team team-virgin">Virgin</span><span class="ranking-row-pts">0</span></div>
+                <div class="ranking-row driver-row-clickable standings-row-hidden" data-driver="Drips" title="Ver estadísticas de Drips"><span class="ranking-row-pos">36</span><span class="ranking-row-name driver-clickable" data-driver="Drips">Drips</span><span class="ranking-row-team team-mclaren">McLaren</span><span class="ranking-row-pts">0</span></div>
+                <div class="ranking-row driver-row-clickable standings-row-hidden" data-driver="Y6NJ" title="Ver estadísticas de Y6NJ"><span class="ranking-row-pos">37</span><span class="ranking-row-name driver-clickable" data-driver="Y6NJ">Y6NJ</span><span class="ranking-row-team team-redbull">Red Bull</span><span class="ranking-row-pts">0</span></div>
+                <div class="ranking-row driver-row-clickable standings-row-hidden" data-driver="Zenthix" title="Ver estadísticas de Zenthix"><span class="ranking-row-pos">38</span><span class="ranking-row-name driver-clickable" data-driver="Zenthix">Zenthix</span><span class="ranking-row-team team-williams">Williams</span><span class="ranking-row-pts">0</span></div>
+                <div class="ranking-row driver-row-clickable standings-row-hidden" data-driver="VGXEmi" title="Ver estadísticas de VGXEmi"><span class="ranking-row-pos">39</span><span class="ranking-row-name driver-clickable" data-driver="VGXEmi">VGXEmi</span><span class="ranking-row-team team-forceindia">Force India</span><span class="ranking-row-pts">0</span></div>
+                <div class="ranking-row driver-row-clickable standings-row-hidden" data-driver="Zukini" title="Ver estadísticas de Zukini"><span class="ranking-row-pos">40</span><span class="ranking-row-name driver-clickable" data-driver="Zukini">Zukini</span><span class="ranking-row-team team-tororosso">Toro Rosso</span><span class="ranking-row-pts">0</span></div>
+                <div class="ranking-row driver-row-clickable standings-row-hidden" data-driver="SkyFall" title="Ver estadísticas de SkyFall"><span class="ranking-row-pos">41</span><span class="ranking-row-name driver-clickable" data-driver="SkyFall">SkyFall</span><span class="ranking-row-team team-tororosso">Toro Rosso</span><span class="ranking-row-pts">0</span></div>
+                <div class="ranking-row driver-row-clickable standings-row-hidden" data-driver="Bartus" title="Ver estadísticas de Bartus"><span class="ranking-row-pos">42</span><span class="ranking-row-name driver-clickable" data-driver="Bartus">Bartus</span><span class="ranking-row-team team-renault">Renault</span><span class="ranking-row-pts">0</span></div>
+                <div class="ranking-row driver-row-clickable standings-row-hidden" data-driver="Hpdypro27" title="Ver estadísticas de Hpdypro27"><span class="ranking-row-pos">43</span><span class="ranking-row-name driver-clickable" data-driver="Hpdypro27">Hpdypro27</span><span class="ranking-row-team team-redbull">Red Bull</span><span class="ranking-row-pts">0</span></div>
+                <div class="ranking-row driver-row-clickable standings-row-hidden" data-driver="Galogb" title="Ver estadísticas de Galogb"><span class="ranking-row-pos">44</span><span class="ranking-row-name driver-clickable" data-driver="Galogb">Galogb</span><span class="ranking-row-team team-lotus">Lotus</span><span class="ranking-row-pts">0</span></div>
             </div>
 
         </div>
@@ -525,16 +559,16 @@
 
             <!-- P3+: Rows List -->
             <div class="ranking-rows-list" id="teamRowsList">
-                <div class="ranking-row"><span class="ranking-row-pos">3</span><span class="ranking-row-name team-ferrari">Ferrari</span><span class="ranking-row-pts">108</span><span class="ranking-row-diff">-105</span></div>
-                <div class="ranking-row"><span class="ranking-row-pos">4</span><span class="ranking-row-name team-tororosso">Toro Rosso</span><span class="ranking-row-pts">70</span><span class="ranking-row-diff">-143</span></div>
-                <div class="ranking-row"><span class="ranking-row-pos">5</span><span class="ranking-row-name team-mercedes">Mercedes</span><span class="ranking-row-pts">69</span><span class="ranking-row-diff">-144</span></div>
+                <div class="ranking-row"><span class="ranking-row-pos">3</span><span class="ranking-row-name team-ferrari">Ferrari</span><span class="ranking-row-pts">109</span><span class="ranking-row-diff">-104</span></div>
+                <div class="ranking-row"><span class="ranking-row-pos">4</span><span class="ranking-row-name team-mercedes">Mercedes</span><span class="ranking-row-pts">69</span><span class="ranking-row-diff">-144</span></div>
+                <div class="ranking-row"><span class="ranking-row-pos">5</span><span class="ranking-row-name team-tororosso">Toro Rosso</span><span class="ranking-row-pts">55</span><span class="ranking-row-diff">-158</span></div>
                 <div class="ranking-row"><span class="ranking-row-pos">6</span><span class="ranking-row-name team-williams">Williams</span><span class="ranking-row-pts">48</span><span class="ranking-row-diff">-165</span></div>
                 <div class="ranking-row"><span class="ranking-row-pos">7</span><span class="ranking-row-name team-sauber">Sauber</span><span class="ranking-row-pts">47</span><span class="ranking-row-diff">-166</span></div>
                 <div class="ranking-row"><span class="ranking-row-pos">8</span><span class="ranking-row-name team-lotus">Lotus</span><span class="ranking-row-pts">41</span><span class="ranking-row-diff">-172</span></div>
-                <div class="ranking-row"><span class="ranking-row-pos">9</span><span class="ranking-row-name team-mclaren">McLaren</span><span class="ranking-row-pts">36</span><span class="ranking-row-diff">-177</span></div>
+                <div class="ranking-row"><span class="ranking-row-pos">9</span><span class="ranking-row-name team-mclaren">McLaren</span><span class="ranking-row-pts">35</span><span class="ranking-row-diff">-178</span></div>
                 <div class="ranking-row"><span class="ranking-row-pos">10</span><span class="ranking-row-name team-virgin">Virgin</span><span class="ranking-row-pts">31</span><span class="ranking-row-diff">-182</span></div>
-                <div class="ranking-row"><span class="ranking-row-pos">11</span><span class="ranking-row-name team-renault">Renault</span><span class="ranking-row-pts">28</span><span class="ranking-row-diff">-185</span></div>
-                <div class="ranking-row"><span class="ranking-row-pos">12</span><span class="ranking-row-name team-forceindia">Force India</span><span class="ranking-row-pts">30</span><span class="ranking-row-diff">-183</span></div>
+                <div class="ranking-row"><span class="ranking-row-pos">11</span><span class="ranking-row-name team-forceindia">Force India</span><span class="ranking-row-pts">30</span><span class="ranking-row-diff">-183</span></div>
+                <div class="ranking-row"><span class="ranking-row-pos">12</span><span class="ranking-row-name team-renault">Renault</span><span class="ranking-row-pts">28</span><span class="ranking-row-diff">-185</span></div>
             </div>
 
         </div>
@@ -967,6 +1001,82 @@
 
     </div>
 
+</div>
+
+
+<!-- ==============================================
+     MINI TARJETA DE ESTADÍSTICAS DE PILOTO (MODAL)
+============================================== -->
+<div class="driver-modal-overlay" id="driverModalOverlay" aria-hidden="true" role="dialog" aria-modal="true">
+    <div class="driver-modal-card" id="driverModalCard">
+        <!-- Team color top accent strip -->
+        <div class="driver-modal-strip" id="driverModalStrip"></div>
+
+        <!-- Close button -->
+        <button type="button" class="driver-modal-close" id="closeDriverModal" aria-label="Cerrar tarjeta de piloto">&times;</button>
+
+        <!-- Driver Hero Header -->
+        <div class="driver-modal-header">
+            <div class="driver-modal-dorsal" id="driverModalDorsal">#23</div>
+            <div class="driver-modal-identity">
+                <div class="driver-modal-name-row">
+                    <span class="driver-modal-flag" id="driverModalFlag">🇵🇹</span>
+                    <h3 class="driver-modal-name" id="driverModalName">Dieguiosk</h3>
+                </div>
+                <div class="driver-modal-meta-row">
+                    <span class="driver-modal-team-pill team-hrt" id="driverModalTeam">HRT</span>
+                    <span class="driver-modal-role-badge" id="driverModalRoleBadge">LÍDER DEL CAMPEONATO</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Key Championship KPIs Bento Grid -->
+        <div class="driver-modal-kpi-grid">
+            <div class="driver-kpi-item kpi-gold">
+                <span class="driver-kpi-label" id="lblKpiPos">POSICIÓN</span>
+                <strong class="driver-kpi-val" id="driverKpiPos">P1</strong>
+            </div>
+            <div class="driver-kpi-item kpi-highlight-pts">
+                <span class="driver-kpi-label" id="lblKpiPts">PUNTOS</span>
+                <strong class="driver-kpi-val" id="driverKpiPts">153</strong>
+            </div>
+            <div class="driver-kpi-item">
+                <span class="driver-kpi-label" id="lblKpiGap">DIFERENCIA</span>
+                <strong class="driver-kpi-val" id="driverKpiGap">LÍDER</strong>
+            </div>
+            <div class="driver-kpi-item">
+                <span class="driver-kpi-label" id="lblKpiWins">VICTORIAS</span>
+                <strong class="driver-kpi-val" id="driverKpiWins">3</strong>
+            </div>
+            <div class="driver-kpi-item">
+                <span class="driver-kpi-label" id="lblKpiPodiums">PODIOS</span>
+                <strong class="driver-kpi-val" id="driverKpiPodiums">6</strong>
+            </div>
+            <div class="driver-kpi-item">
+                <span class="driver-kpi-label" id="lblKpiPoles">POLES</span>
+                <strong class="driver-kpi-val" id="driverKpiPoles">0</strong>
+            </div>
+            <div class="driver-kpi-item">
+                <span class="driver-kpi-label" id="lblKpiFastest">V. RÁPIDAS</span>
+                <strong class="driver-kpi-val" id="driverKpiFastest">2</strong>
+            </div>
+            <div class="driver-kpi-item">
+                <span class="driver-kpi-label" id="lblKpiRaces">CARRERAS</span>
+                <strong class="driver-kpi-val" id="driverKpiRaces">9</strong>
+            </div>
+        </div>
+
+        <!-- Season Rounds Breakdown (R1 to R15) -->
+        <div class="driver-modal-rounds-section">
+            <div class="driver-modal-rounds-header">
+                <span class="rounds-section-title" id="lblRoundsTitle">TRAYECTORIA FFC 2010 (R1 - R15)</span>
+                <small class="rounds-section-sub" id="lblRoundsSub">RESULTADOS POR CARRERA</small>
+            </div>
+            <div class="driver-modal-rounds-grid" id="driverModalRoundsGrid">
+                <!-- Dynamically populated per driver -->
+            </div>
+        </div>
+    </div>
 </div>
 
 
