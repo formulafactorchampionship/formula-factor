@@ -625,9 +625,10 @@ function applyTranslations(lang) {
     // Calendar cards status & country
     updateCalendarCards(lang);
 
-    // Standings expand button text
+    // Standings expand button text & ranking board re-render
     if (typeof getSavedStandings === "function") {
         const drivers = getSavedStandings();
+        renderStandingsOnPage(drivers);
         updateStandingsToggleUI(drivers.length);
     }
 }
@@ -637,17 +638,17 @@ function applyTranslations(lang) {
 ========================================================= */
 
 const FLAG_SVGS = {
-    es: `<svg viewBox="0 0 20 14" width="20" height="14" class="flag-svg" aria-hidden="true"><rect width="20" height="14" fill="#AA151B"/><rect y="3.5" width="20" height="7" fill="#F1BF00"/><circle cx="5.5" cy="7" r="1.8" fill="#AA151B" opacity="0.9"/></svg>`,
-    uk: `<svg viewBox="0 0 60 30" width="20" height="14" class="flag-svg" aria-hidden="true"><rect width="60" height="30" fill="#012169"/><path d="M0 0 L60 30 M60 0 L0 30" stroke="#FFFFFF" stroke-width="6"/><path d="M0 0 L30 15 M60 30 L30 15" stroke="#C8102E" stroke-width="2"/><path d="M60 0 L30 15 M0 30 L30 15" stroke="#C8102E" stroke-width="2"/><path d="M30 0 v30 M0 15 h60" stroke="#FFFFFF" stroke-width="10"/><path d="M30 0 v30 M0 15 h60" stroke="#C8102E" stroke-width="6"/></svg>`,
-    ar: `<svg viewBox="0 0 20 14" width="20" height="14" class="flag-svg" aria-hidden="true"><rect width="20" height="14" fill="#74ACDF"/><rect y="4.66" width="20" height="4.68" fill="#FFFFFF"/><circle cx="10" cy="7" r="1.6" fill="#F6B40E"/><circle cx="10" cy="7" r="0.9" fill="#843511"/></svg>`,
-    mx: `<svg viewBox="0 0 20 14" width="20" height="14" class="flag-svg" aria-hidden="true"><rect width="6.66" height="14" fill="#006847"/><rect x="6.66" width="6.68" height="14" fill="#FFFFFF"/><rect x="13.34" width="6.66" height="14" fill="#CE1126"/><circle cx="10" cy="7" r="1.3" fill="#8A6430"/></svg>`,
-    co: `<svg viewBox="0 0 20 14" width="20" height="14" class="flag-svg" aria-hidden="true"><rect width="20" height="7" fill="#FCD116"/><rect y="7" width="20" height="3.5" fill="#003893"/><rect y="10.5" width="20" height="3.5" fill="#CE1126"/></svg>`,
-    cl: `<svg viewBox="0 0 20 14" width="20" height="14" class="flag-svg" aria-hidden="true"><rect y="7" width="20" height="7" fill="#D52B1E"/><rect width="20" height="7" fill="#FFFFFF"/><rect width="7" height="7" fill="#0039A6"/><polygon points="3.5,1.5 4.1,3.4 5.9,3.4 4.5,4.5 5,6.3 3.5,5.1 2,6.3 2.5,4.5 1.1,3.4 2.9,3.4" fill="#FFFFFF"/></svg>`,
-    br: `<svg viewBox="0 0 20 14" width="20" height="14" class="flag-svg" aria-hidden="true"><rect width="20" height="14" fill="#009739"/><polygon points="10,1.8 18.2,7 10,12.2 1.8,7" fill="#FEDD00"/><circle cx="10" cy="7" r="3.2" fill="#012169"/><path d="M7 6.8 Q10 5.6 13 7.2" stroke="#FFFFFF" stroke-width="0.7" fill="none"/></svg>`,
-    us: `<svg viewBox="0 0 20 14" width="20" height="14" class="flag-svg" aria-hidden="true"><rect width="20" height="14" fill="#B22234"/><path d="M0 1.08h20 M0 3.23h20 M0 5.38h20 M0 7.54h20 M0 9.69h20 M0 11.85h20" stroke="#FFFFFF" stroke-width="1.08"/><rect width="8" height="7.54" fill="#3C3B6E"/><circle cx="2" cy="2" r="0.45" fill="#FFFFFF"/><circle cx="4" cy="2" r="0.45" fill="#FFFFFF"/><circle cx="6" cy="2" r="0.45" fill="#FFFFFF"/><circle cx="3" cy="3.77" r="0.45" fill="#FFFFFF"/><circle cx="5" cy="3.77" r="0.45" fill="#FFFFFF"/><circle cx="2" cy="5.54" r="0.45" fill="#FFFFFF"/><circle cx="4" cy="5.54" r="0.45" fill="#FFFFFF"/><circle cx="6" cy="5.54" r="0.45" fill="#FFFFFF"/></svg>`,
-    jp: `<svg viewBox="0 0 20 14" width="20" height="14" class="flag-svg" aria-hidden="true"><rect width="20" height="14" fill="#FFFFFF"/><circle cx="10" cy="7" r="4.2" fill="#BC002D"/></svg>`,
-    au: `<svg viewBox="0 0 20 14" width="20" height="14" class="flag-svg" aria-hidden="true"><rect width="20" height="14" fill="#00008B"/><g transform="scale(0.33, 0.45)"><rect width="20" height="14" fill="#012169"/><path d="M0 0 L20 14 M20 0 L0 14" stroke="#FFFFFF" stroke-width="2"/><path d="M0 0 L10 7 M20 14 L10 7" stroke="#C8102E" stroke-width="0.8"/><path d="M20 0 L10 7 M0 14 L10 7" stroke="#C8102E" stroke-width="0.8"/><path d="M10 0 v14 M0 7 h20" stroke="#FFFFFF" stroke-width="3"/><path d="M10 0 v14 M0 7 h20" stroke="#C8102E" stroke-width="1.8"/></g><polygon points="4,10 4.3,10.8 5.1,10.6 4.6,11.3 5,12 4.2,11.7 3.8,12.4 3.7,11.6 2.9,11.7 3.5,11.1 3.1,10.4 3.8,10.7" fill="#FFFFFF"/><circle cx="15" cy="3.5" r="0.6" fill="#FFFFFF"/><circle cx="17" cy="5" r="0.6" fill="#FFFFFF"/><circle cx="16" cy="8" r="0.6" fill="#FFFFFF"/><circle cx="13" cy="7" r="0.6" fill="#FFFFFF"/><circle cx="14.5" cy="11" r="0.8" fill="#FFFFFF"/></svg>`,
-    utc: `<svg viewBox="0 0 20 14" width="20" height="14" class="flag-svg" aria-hidden="true"><rect width="20" height="14" fill="#141c28"/><circle cx="10" cy="7" r="5.2" fill="none" stroke="#60a5fa" stroke-width="1.1"/><ellipse cx="10" cy="7" rx="2.5" ry="5.2" fill="none" stroke="#60a5fa" stroke-width="0.9"/><line x1="4.8" y1="7" x2="15.2" y2="7" stroke="#60a5fa" stroke-width="0.9"/><line x1="6" y1="4.2" x2="14" y2="4.2" stroke="#60a5fa" stroke-width="0.75"/><line x1="6" y1="9.8" x2="14" y2="9.8" stroke="#60a5fa" stroke-width="0.75"/></svg>`
+    es: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 17" width="24" height="17" class="flag-svg" aria-hidden="true"><rect width="24" height="17" fill="#c60b1e"/><rect y="4.25" width="24" height="8.5" fill="#ffc400"/><circle cx="6.5" cy="8.5" r="2.2" fill="#c60b1e"/><rect x="5.8" y="7" width="1.4" height="3" fill="#ffc400"/><circle cx="6.5" cy="6.2" r="0.8" fill="#c60b1e"/></svg>`,
+    uk: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 60 30" width="24" height="17" class="flag-svg" aria-hidden="true"><rect width="60" height="30" fill="#012169"/><path d="M0 0 L60 30 M60 0 L0 30" stroke="#FFFFFF" stroke-width="6"/><path d="M0 0 L30 15 M60 30 L30 15" stroke="#C8102E" stroke-width="2"/><path d="M60 0 L30 15 M0 30 L30 15" stroke="#C8102E" stroke-width="2"/><path d="M30 0 v30 M0 15 h60" stroke="#FFFFFF" stroke-width="10"/><path d="M30 0 v30 M0 15 h60" stroke="#C8102E" stroke-width="6"/></svg>`,
+    ar: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 17" width="24" height="17" class="flag-svg" aria-hidden="true"><rect width="24" height="17" fill="#74ACDF"/><rect y="5.66" width="24" height="5.68" fill="#FFFFFF"/><circle cx="12" cy="8.5" r="2" fill="#F6B40E"/><circle cx="12" cy="8.5" r="1.1" fill="#843511"/><path d="M12 5.5v6 M9 8.5h6 M10 6.5l4 4 M14 6.5l-4 4" stroke="#F6B40E" stroke-width="0.7"/></svg>`,
+    mx: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 17" width="24" height="17" class="flag-svg" aria-hidden="true"><rect width="8" height="17" fill="#006847"/><rect x="8" width="8" height="17" fill="#FFFFFF"/><rect x="16" width="8" height="17" fill="#CE1126"/><circle cx="12" cy="8.5" r="1.8" fill="#8B5A2B"/><circle cx="12" cy="8.5" r="1.1" fill="#556B2F"/></svg>`,
+    co: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 17" width="24" height="17" class="flag-svg" aria-hidden="true"><rect width="24" height="8.5" fill="#FCD116"/><rect y="8.5" width="24" height="4.25" fill="#003893"/><rect y="12.75" width="24" height="4.25" fill="#CE1126"/></svg>`,
+    cl: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 17" width="24" height="17" class="flag-svg" aria-hidden="true"><rect y="8.5" width="24" height="8.5" fill="#D52B1E"/><rect width="24" height="8.5" fill="#FFFFFF"/><rect width="8.5" height="8.5" fill="#0039A6"/><polygon points="4.25,2 4.9,4.2 7.1,4.2 5.3,5.5 6,7.7 4.25,6.3 2.5,7.7 3.2,5.5 1.4,4.2 3.6,4.2" fill="#FFFFFF"/></svg>`,
+    br: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 17" width="24" height="17" class="flag-svg" aria-hidden="true"><rect width="24" height="17" fill="#009739"/><polygon points="12,2.2 21.8,8.5 12,14.8 2.2,8.5" fill="#FEDD00"/><circle cx="12" cy="8.5" r="3.8" fill="#012169"/><path d="M8.8 8.2 Q12 6.8 15.2 8.8" stroke="#FFFFFF" stroke-width="0.8" fill="none"/></svg>`,
+    us: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 17" width="24" height="17" class="flag-svg" aria-hidden="true"><rect width="24" height="17" fill="#B22234"/><path d="M0 1.3h24 M0 3.9h24 M0 6.5h24 M0 9.1h24 M0 11.7h24 M0 14.3h24" stroke="#FFFFFF" stroke-width="1.3"/><rect width="10" height="9.1" fill="#3C3B6E"/><circle cx="2.5" cy="2.3" r="0.6" fill="#FFFFFF"/><circle cx="5" cy="2.3" r="0.6" fill="#FFFFFF"/><circle cx="7.5" cy="2.3" r="0.6" fill="#FFFFFF"/><circle cx="3.75" cy="4.55" r="0.6" fill="#FFFFFF"/><circle cx="6.25" cy="4.55" r="0.6" fill="#FFFFFF"/><circle cx="2.5" cy="6.8" r="0.6" fill="#FFFFFF"/><circle cx="5" cy="6.8" r="0.6" fill="#FFFFFF"/><circle cx="7.5" cy="6.8" r="0.6" fill="#FFFFFF"/></svg>`,
+    jp: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 17" width="24" height="17" class="flag-svg" aria-hidden="true"><rect width="24" height="17" fill="#FFFFFF"/><circle cx="12" cy="8.5" r="5" fill="#BC002D"/></svg>`,
+    au: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 17" width="24" height="17" class="flag-svg" aria-hidden="true"><rect width="24" height="17" fill="#00008B"/><g transform="scale(0.4, 0.55)"><rect width="24" height="15" fill="#012169"/><path d="M0 0 L24 15 M24 0 L0 15" stroke="#FFFFFF" stroke-width="2.5"/><path d="M0 0 L12 7.5 M24 15 L12 7.5" stroke="#C8102E" stroke-width="1"/><path d="M24 0 L12 7.5 M0 15 L12 7.5" stroke="#C8102E" stroke-width="1"/><path d="M12 0 v15 M0 7.5 h24" stroke="#FFFFFF" stroke-width="4"/><path d="M12 0 v15 M0 7.5 h24" stroke="#C8102E" stroke-width="2.2"/></g><polygon points="4.8,12 5.2,13 6.2,12.7 5.6,13.6 6.1,14.5 5.1,14.1 4.6,15 4.5,14 3.5,14.1 4.2,13.4 3.7,12.5 4.6,12.9" fill="#FFFFFF"/><circle cx="18" cy="4.2" r="0.75" fill="#FFFFFF"/><circle cx="20.5" cy="6" r="0.75" fill="#FFFFFF"/><circle cx="19.2" cy="9.6" r="0.75" fill="#FFFFFF"/><circle cx="15.6" cy="8.4" r="0.75" fill="#FFFFFF"/><circle cx="17.4" cy="13.2" r="0.95" fill="#FFFFFF"/></svg>`,
+    utc: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 17" width="24" height="17" class="flag-svg" aria-hidden="true"><rect width="24" height="17" fill="#0b1320"/><circle cx="12" cy="8.5" r="6" fill="none" stroke="#38bdf8" stroke-width="1.3"/><ellipse cx="12" cy="8.5" rx="3" ry="6" fill="none" stroke="#38bdf8" stroke-width="1"/><line x1="6" y1="8.5" x2="18" y2="8.5" stroke="#38bdf8" stroke-width="1"/><line x1="7.5" y1="5.1" x2="16.5" y2="5.1" stroke="#38bdf8" stroke-width="0.85"/><line x1="7.5" y1="11.9" x2="16.5" y2="11.9" stroke="#38bdf8" stroke-width="0.85"/></svg>`
 };
 
 const FLAG_SVG_ES = FLAG_SVGS.es;
@@ -794,9 +795,13 @@ function renderTimezoneOptions() {
     });
 
     const currentTzCodeEl = document.getElementById("currentTzCode");
+    const currentTzFlagEl = document.getElementById("currentTzFlag");
     const activeTz = TIMEZONES.find(t => t.id === selectedTimezone) || TIMEZONES[0];
     if (currentTzCodeEl) {
         currentTzCodeEl.textContent = activeTz.short;
+    }
+    if (currentTzFlagEl) {
+        currentTzFlagEl.innerHTML = activeTz.flagSvg;
     }
 }
 
@@ -811,9 +816,13 @@ function setTimezone(tzId) {
     }
 
     const currentTzCodeEl = document.getElementById("currentTzCode");
+    const currentTzFlagEl = document.getElementById("currentTzFlag");
     const activeTz = TIMEZONES.find(t => t.id === tzId) || TIMEZONES[0];
     if (currentTzCodeEl) {
         currentTzCodeEl.textContent = activeTz.short;
+    }
+    if (currentTzFlagEl) {
+        currentTzFlagEl.innerHTML = activeTz.flagSvg;
     }
 
     renderNextRaceOnPage(getSavedNextRace());
@@ -945,27 +954,27 @@ const defaultRaceResults = {
         location: "MELBOURNE · AUSTRALIA",
         date: "14 JUN",
 
-        winner: "IvanR",
-        pole: "IvanR · 1:20.843",
-        fastest: "IvanR · 1:22.300",
+        winner: "IvánR",
+        pole: "IvánR · 1:20.843",
+        fastest: "IvánR · 1:22.300",
         driverDay: "BigTheo",
 
         drivers: [
 
-            { pos: 1, driver: "IvanR", team: "HRT", status: "FINISHED" },
+            { pos: 1, driver: "IvánR", team: "HRT", status: "FINISHED" },
             { pos: 2, driver: "BigTheo", team: "Ferrari", status: "FINISHED" },
-            { pos: 3, driver: "Dieguiosk", team: "HRT", status: "FINISHED" },
+            { pos: 3, driver: "Dlegulosk", team: "HRT", status: "FINISHED" },
             { pos: 4, driver: "TheWereGH", team: "Sauber", status: "FINISHED" },
             { pos: 5, driver: "Sir Galactic", team: "Renault", status: "FINISHED" },
             { pos: 6, driver: "AMF", team: "Williams", status: "FINISHED" },
             { pos: 7, driver: "Daidaiiro", team: "Lotus", status: "FINISHED" },
             { pos: 8, driver: "Dericcc", team: "Virgin", status: "FINISHED" },
             { pos: 9, driver: "J-DOT", team: "McLaren", status: "FINISHED" },
-            { pos: 10, driver: "Baena", team: "Mercedes", status: "DNF" },
-            { pos: 11, driver: "TucnakCZE", team: "Force India", status: "DNF" },
-            { pos: 12, driver: "CarlosUre", team: "Force India", status: "DNF" },
+            { pos: 10, driver: "Baena", team: "Mercedes", status: "FINISHED" },
+            { pos: 11, driver: "CarlosUre", team: "Force India", status: "DNF" },
+            { pos: 12, driver: "TucnakCZE", team: "Force India", status: "DNF" },
             { pos: 13, driver: "Sbinn", team: "Toro Rosso", status: "DNF" },
-            { pos: 14, driver: "Y6NJ", team: "Red Bull", status: "DNS" }
+            { pos: 14, driver: "Y6NJ", team: "Red Bull", status: "DNF" }
 
         ]
 
@@ -979,27 +988,27 @@ const defaultRaceResults = {
         location: "SEPANG · MALAYSIA",
         date: "28 JUN",
 
-        winner: "IvanR",
-        pole: "IvanR · 1:33.062",
-        fastest: "IvanR · 1:33.662",
-        driverDay: "IvanR",
+        winner: "IvánR",
+        pole: "IvánR · 1:33.062",
+        fastest: "IvánR · 1:33.662",
+        driverDay: "IvánR",
 
         drivers: [
 
-            { pos: 1, driver: "IvanR", team: "HRT", status: "FINISHED" },
+            { pos: 1, driver: "IvánR", team: "HRT", status: "FINISHED" },
             { pos: 2, driver: "Muntii", team: "Red Bull", status: "FINISHED" },
             { pos: 3, driver: "Baena", team: "Mercedes", status: "FINISHED" },
             { pos: 4, driver: "BigTheo", team: "Ferrari", status: "FINISHED" },
-            { pos: 5, driver: "Dieguiosk", team: "HRT", status: "FINISHED" },
+            { pos: 5, driver: "Dlegulosk", team: "HRT", status: "FINISHED" },
             { pos: 6, driver: "Viktolo", team: "Toro Rosso", status: "FINISHED" },
             { pos: 7, driver: "TheWereGH", team: "Sauber", status: "FINISHED" },
             { pos: 8, driver: "AMF", team: "Williams", status: "FINISHED" },
             { pos: 9, driver: "Daidaiiro", team: "Lotus", status: "FINISHED" },
-            { pos: 10, driver: "Novi", team: "McLaren", status: "FINISHED" },
-            { pos: 11, driver: "Oscar Soria", team: "Williams", status: "DNF" },
-            { pos: 12, driver: "Nando_FA14", team: "Renault", status: "DNF" },
-            { pos: 13, driver: "Drips", team: "McLaren", status: "DNF" },
-            { pos: 14, driver: "Suforr", team: "Mercedes", status: "DNF" }
+            { pos: 10, driver: "Novi", team: "Ferrari", status: "FINISHED" },
+            { pos: 11, driver: "Suforr", team: "Mercedes", status: "DNF" },
+            { pos: 12, driver: "Nando_FA14", team: "HRT", status: "DNF" },
+            { pos: 13, driver: "Oscar Soria", team: "Williams", status: "DNF" },
+            { pos: 14, driver: "Drips", team: "McLaren", status: "DNF" }
 
         ]
 
@@ -1014,8 +1023,8 @@ const defaultRaceResults = {
         date: "12 JUL",
 
         winner: "Sbinn",
-        pole: "Dieguiosk · 1:29.938",
-        fastest: "Dieguiosk · 1:30.946",
+        pole: "Dlegulosk · 1:29.938",
+        fastest: "Dlegulosk · 1:30.946",
         driverDay: "Sbinn",
 
         drivers: [
@@ -1023,7 +1032,7 @@ const defaultRaceResults = {
             { pos: 1, driver: "Sbinn", team: "Toro Rosso", status: "FINISHED" },
             { pos: 2, driver: "ElMamut", team: "Virgin", status: "FINISHED" },
             { pos: 3, driver: "CarlosUre", team: "Force India", status: "FINISHED" },
-            { pos: 4, driver: "Dieguiosk", team: "HRT", status: "FINISHED" },
+            { pos: 4, driver: "Dlegulosk", team: "HRT", status: "FINISHED" },
             { pos: 5, driver: "Muntii", team: "Red Bull", status: "FINISHED" },
             { pos: 6, driver: "BigTheo", team: "Ferrari", status: "FINISHED" },
             { pos: 7, driver: "Sir Galactic", team: "Renault", status: "FINISHED" },
@@ -1031,13 +1040,13 @@ const defaultRaceResults = {
             { pos: 9, driver: "AMF", team: "Williams", status: "FINISHED" },
             { pos: 10, driver: "Daidaiiro", team: "Lotus", status: "FINISHED" },
             { pos: 11, driver: "ElNano", team: "Force India", status: "FINISHED" },
-            { pos: 12, driver: "Nando_FA14", team: "Renault", status: "FINISHED" },
+            { pos: 12, driver: "Nando_FA14", team: "HRT", status: "FINISHED" },
             { pos: 13, driver: "Oscar Soria", team: "Williams", status: "FINISHED" },
             { pos: 14, driver: "Dericcc", team: "Virgin", status: "FINISHED" },
             { pos: 15, driver: "TheAgus60", team: "McLaren", status: "DNF" },
-            { pos: 16, driver: "Novi", team: "McLaren", status: "DNF" },
+            { pos: 16, driver: "Novi", team: "Ferrari", status: "DNF" },
             { pos: 17, driver: "Baena", team: "Mercedes", status: "DNF" },
-            { pos: 18, driver: "IvanR", team: "HRT", status: "DNF" }
+            { pos: 18, driver: "IvánR", team: "HRT", status: "DNF" }
 
         ]
 
@@ -1052,7 +1061,7 @@ const defaultRaceResults = {
         date: "19 JUL",
 
         winner: "Suforr",
-        pole: "IvanR · 1:25.843",
+        pole: "Suforr · 1:25.843",
         fastest: "Novitaa · 1:27.846",
         driverDay: "Suforr",
 
@@ -1064,19 +1073,12 @@ const defaultRaceResults = {
             { pos: 4, driver: "BigTheo", team: "Ferrari", status: "FINISHED" },
             { pos: 5, driver: "Sbinn", team: "Toro Rosso", status: "FINISHED" },
             { pos: 6, driver: "Novitaa", team: "Red Bull", status: "FINISHED" },
-            { pos: 7, driver: "Dieguiosk", team: "HRT", status: "FINISHED" },
+            { pos: 7, driver: "Dlegulosk", team: "HRT", status: "FINISHED" },
             { pos: 8, driver: "Viktolo", team: "Toro Rosso", status: "FINISHED" },
             { pos: 9, driver: "Licha", team: "Ferrari", status: "FINISHED" },
-            { pos: 10, driver: "TheWereGH", team: "Sauber", status: "DNF" },
-            { pos: 11, driver: "IvanR", team: "HRT", status: "DNF" },
-
-            /*
-             * The original result supplied contains TheWereGH again
-             * with McLaren. The user confirmed both spellings refer
-             * to the same pilot. It is therefore retained as a
-             * separate source row rather than inventing another driver.
-             */
-            { pos: 12, driver: "TheWereGH", team: "McLaren", status: "DNF" }
+            { pos: 10, driver: "TheWereGH", team: "Sauber", status: "FINISHED" },
+            { pos: 11, driver: "IvánR", team: "HRT", status: "DNF" },
+            { pos: 12, driver: "Rafale", team: "McLaren", status: "DNF" }
 
         ]
 
@@ -1090,23 +1092,23 @@ const defaultRaceResults = {
         location: "BARCELONA · SPAIN",
         date: "09 AUG",
 
-        winner: "Dieguiosk",
-        pole: "Dieguiosk · 1:14.578",
+        winner: "Dlegulosk",
+        pole: "Dlegulosk · 1:14.578",
         fastest: "BigTheo · 1:17.346",
-        driverDay: "Dieguiosk",
+        driverDay: "Dlegulosk",
 
         drivers: [
 
-            { pos: 1, driver: "Dieguiosk", team: "HRT", status: "FINISHED" },
+            { pos: 1, driver: "Dlegulosk", team: "HRT", status: "FINISHED" },
             { pos: 2, driver: "Muntii", team: "Red Bull", status: "FINISHED" },
             { pos: 3, driver: "Novitaa", team: "Red Bull", status: "FINISHED" },
             { pos: 4, driver: "BigTheo", team: "Ferrari", status: "FINISHED" },
             { pos: 5, driver: "Suforr", team: "Mercedes", status: "FINISHED" },
-            { pos: 6, driver: "Viktolo", team: "Toro Rosso", status: "FINISHED" },
+            { pos: 6, driver: "Nando_FA14", team: "HRT", status: "FINISHED" },
             { pos: 7, driver: "AMF", team: "Williams", status: "FINISHED" },
             { pos: 8, driver: "Licha", team: "Ferrari", status: "FINISHED" },
             { pos: 9, driver: "Rafale", team: "McLaren", status: "FINISHED" },
-            { pos: 10, driver: "Dericcc", team: "Virgin", status: "DNF" },
+            { pos: 10, driver: "Dericcc", team: "Virgin", status: "FINISHED" },
             { pos: 11, driver: "TheWereGH", team: "Sauber", status: "DNF" },
             { pos: 12, driver: "ElMamut", team: "Virgin", status: "DNF" },
             { pos: 13, driver: "Kri", team: "Renault", status: "DNF" }
@@ -1131,25 +1133,19 @@ const defaultRaceResults = {
         drivers: [
 
             { pos: 1, driver: "Novitaa", team: "Red Bull", status: "FINISHED" },
-            { pos: 2, driver: "Dieguiosk", team: "HRT", status: "FINISHED" },
-            { pos: 3, driver: "Erik Brenna", team: "Toro Rosso", status: "FINISHED" },
+            { pos: 2, driver: "Dlegulosk", team: "HRT", status: "FINISHED" },
+            { pos: 3, driver: "Erik Brenna", team: "Force India", status: "FINISHED" },
             { pos: 4, driver: "Kri", team: "Renault", status: "FINISHED" },
-
-            /* Novi changed to Ferrari from Monza */
             { pos: 5, driver: "Novi", team: "Ferrari", status: "FINISHED" },
-
-            /* Nando_FA14 changed to HRT from Monza */
-            { pos: 6, driver: "Nando_FA14", team: "HRT", status: "FINISHED" },
-
+            { pos: 6, driver: "Viktolo", team: "Toro Rosso", status: "FINISHED" },
             { pos: 7, driver: "Muntii", team: "Red Bull", status: "FINISHED" },
             { pos: 8, driver: "Rafale", team: "McLaren", status: "FINISHED" },
             { pos: 9, driver: "TheWereGH", team: "Sauber", status: "FINISHED" },
             { pos: 10, driver: "Licha", team: "Ferrari", status: "FINISHED" },
-            { pos: 11, driver: "Suforr", team: "Mercedes", status: "FINISHED" },
-            { pos: 12, driver: "Sbinn", team: "Toro Rosso", status: "FINISHED" },
-            { pos: 13, driver: "Dericcc", team: "Virgin", status: "FINISHED" },
-            { pos: 14, driver: "Zenthix", team: "Williams", status: "FINISHED" },
-            { pos: 15, driver: "TheAgus60", team: "McLaren", status: "FINISHED" }
+            { pos: 11, driver: "Suforr", team: "Mercedes", status: "DNF" },
+            { pos: 12, driver: "Sbinn", team: "Toro Rosso", status: "DNF" },
+            { pos: 13, driver: "Dericcc", team: "Virgin", status: "DNF" },
+            { pos: 14, driver: "Zenthix", team: "Williams", status: "DNF" }
 
         ]
 
@@ -1163,27 +1159,27 @@ const defaultRaceResults = {
         location: "RED BULL RING · AUSTRIA",
         date: "23 AUG",
 
-        winner: "Dieguiosk",
-        pole: "Dieguiosk · 1:09.297",
+        winner: "Dlegulosk",
+        pole: "Dlegulosk · 1:09.297",
         fastest: "Suforr · 1:09.619",
         driverDay: "Gold",
 
         drivers: [
 
-            { pos: 1, driver: "Dieguiosk", team: "HRT", status: "FINISHED" },
+            { pos: 1, driver: "Dlegulosk", team: "HRT", status: "FINISHED" },
             { pos: 2, driver: "Gold", team: "Williams", status: "FINISHED" },
             { pos: 3, driver: "Muntii", team: "Red Bull", status: "FINISHED" },
             { pos: 4, driver: "Suforr", team: "Mercedes", status: "FINISHED" },
             { pos: 5, driver: "Licha", team: "Ferrari", status: "FINISHED" },
-            { pos: 6, driver: "Krisdemur", team: "Williams", status: "FINISHED" },
+            { pos: 6, driver: "Krisdemurr", team: "Williams", status: "FINISHED" },
             { pos: 7, driver: "Farlonso", team: "Lotus", status: "FINISHED" },
             { pos: 8, driver: "TheAgus60", team: "McLaren", status: "FINISHED" },
-            { pos: 9, driver: "Novitaa", team: "Red Bull", status: "DNF" },
-            { pos: 10, driver: "TheWereGH", team: "Sauber", status: "DNF" },
+            { pos: 9, driver: "Novitaa", team: "Red Bull", status: "FINISHED" },
+            { pos: 10, driver: "TheWereGH", team: "Sauber", status: "FINISHED" },
             { pos: 11, driver: "BigTheo", team: "Ferrari", status: "DNF" },
-            { pos: 12, driver: "Dericcc", team: "Virgin", status: "DNF" },
-            { pos: 13, driver: "Nando_FA14", team: "HRT", status: "DNF" },
-            { pos: 14, driver: "Sbinn", team: "Toro Rosso", status: "DNF" },
+            { pos: 12, driver: "Sbinn", team: "Toro Rosso", status: "DNF" },
+            { pos: 13, driver: "Dericcc", team: "Virgin", status: "DNF" },
+            { pos: 14, driver: "Nando_FA14", team: "HRT", status: "DNF" },
             { pos: 15, driver: "Novi", team: "Ferrari", status: "DNF" },
             { pos: 16, driver: "Viktolo", team: "Toro Rosso", status: "DNF" },
             { pos: 17, driver: "Rafale", team: "McLaren", status: "DSQ" },
@@ -1202,29 +1198,26 @@ const defaultRaceResults = {
         date: "07 SEP",
 
         winner: "Muntii",
-        pole: "Suforr · 1:28.943",
-        fastest: "Dieguiosk · 1:30.468",
+        pole: "Novitaa · 1:28.943",
+        fastest: "Dlegulosk · 1:30.468",
         driverDay: "Victor",
 
         drivers: [
 
             { pos: 1, driver: "Muntii", team: "Red Bull", status: "FINISHED" },
             { pos: 2, driver: "Novitaa", team: "Red Bull", status: "FINISHED" },
-            { pos: 3, driver: "Dieguiosk", team: "HRT", status: "FINISHED" },
+            { pos: 3, driver: "Dlegulosk", team: "HRT", status: "FINISHED" },
             { pos: 4, driver: "Victor", team: "McLaren", status: "FINISHED" },
             { pos: 5, driver: "Licha", team: "Ferrari", status: "FINISHED" },
             { pos: 6, driver: "Dericcc", team: "Virgin", status: "FINISHED" },
             { pos: 7, driver: "Farlonso", team: "Lotus", status: "FINISHED" },
             { pos: 8, driver: "TheWereGH", team: "Sauber", status: "FINISHED" },
-            { pos: 9, driver: "Ted Theo", team: "Ferrari", status: "DNF" },
-            { pos: 10, driver: "Gold", team: "Williams", status: "DNF" },
-
-            /* Novi changed to Toro Rosso at Silverstone */
-            { pos: 11, driver: "Novi", team: "Toro Rosso", status: "DNF" },
-
-            { pos: 12, driver: "RikiORSA", team: "Virgin", status: "DNF" },
-            { pos: 13, driver: "rossi", team: "McLaren", status: "DNF" },
-            { pos: 14, driver: "Suforr", team: "Mercedes", status: "DNF" }
+            { pos: 9, driver: "Gold", team: "Williams", status: "FINISHED" },
+            { pos: 10, driver: "BigTheo", team: "Ferrari", status: "FINISHED" },
+            { pos: 11, driver: "Suforr", team: "Mercedes", status: "DNF" },
+            { pos: 12, driver: "Novi", team: "Ferrari", status: "DNF" },
+            { pos: 13, driver: "Krisdemurr", team: "Williams", status: "DNF" },
+            { pos: 14, driver: "RikiORSA", team: "Virgin", status: "DNF" }
 
         ]
 
@@ -1238,25 +1231,26 @@ const defaultRaceResults = {
         location: "HOCKENHEIMRING · GERMANY",
         date: "13 SEP",
 
-        winner: "Dieguiosk",
-        pole: "Dieguiosk · 1:14.751",
+        winner: "Dlegulosk",
+        pole: "Novitaa · 1:14.751",
         fastest: "Suforr · 1:14.395",
-        driverDay: "Dieguiosk",
+        driverDay: "Dlegulosk",
 
         drivers: [
 
-            { pos: 1, driver: "Dieguiosk", team: "HRT", status: "FINISHED" },
+            { pos: 1, driver: "Dlegulosk", team: "HRT", status: "FINISHED" },
             { pos: 2, driver: "Novitaa", team: "Red Bull", status: "FINISHED" },
             { pos: 3, driver: "Muntii", team: "Red Bull", status: "FINISHED" },
             { pos: 4, driver: "Lil", team: "Lotus", status: "FINISHED" },
             { pos: 5, driver: "Victor", team: "McLaren", status: "FINISHED" },
             { pos: 6, driver: "Farlonso", team: "Lotus", status: "FINISHED" },
             { pos: 7, driver: "TheWereGH", team: "Sauber", status: "FINISHED" },
-            { pos: 8, driver: "Suforr", team: "Mercedes", status: "DNF" },
-            { pos: 9, driver: "Licha", team: "Ferrari", status: "DNF" },
-            { pos: 10, driver: "TheAgus60", team: "McLaren", status: "DNF" },
-            { pos: 11, driver: "Dericcc", team: "Virgin", status: "DNF" },
-            { pos: 12, driver: "Kri", team: "Renault", status: "DNS" }
+            { pos: 8, driver: "Suforr", team: "Mercedes", status: "FINISHED" },
+            { pos: 9, driver: "Licha", team: "Ferrari", status: "FINISHED" },
+            { pos: 10, driver: "TheAgus60", team: "McLaren", status: "FINISHED" },
+            { pos: 11, driver: "N. Duro", team: "Ferrari", status: "FINISHED" },
+            { pos: 12, driver: "Dericcc", team: "Virgin", status: "DNF" },
+            { pos: 13, driver: "Kri", team: "Renault", status: "DNF" }
 
         ]
 
@@ -1585,7 +1579,7 @@ const defaultNextRace = {
 };
 
 const defaultStandings = [
-    { pos: 1, driver: "Dieguiosk", team: "HRT", pts: 153 },
+    { pos: 1, driver: "Dlegulosk", team: "HRT", pts: 153 },
     { pos: 2, driver: "Muntii", team: "Red Bull", pts: 125 },
     { pos: 3, driver: "Novitaa", team: "Red Bull", pts: 88 },
     { pos: 4, driver: "BigTheo", team: "Ferrari", pts: 64 },
@@ -1609,17 +1603,17 @@ const defaultStandings = [
     { pos: 22, driver: "Lil", team: "Lotus", pts: 12 },
     { pos: 23, driver: "Kri", team: "Renault", pts: 12 },
     { pos: 24, driver: "Novi", team: "Ferrari", pts: 11 },
-    { pos: 25, driver: "Dadaaliro", team: "Lotus", pts: 9 },
+    { pos: 25, driver: "Daidaiiro", team: "Lotus", pts: 9 },
     { pos: 26, driver: "Nando_FA14", team: "HRT", pts: 8 },
-    { pos: 27, driver: "Krisdemur", team: "Williams", pts: 8 },
+    { pos: 27, driver: "Krisdemurr", team: "Williams", pts: 8 },
     { pos: 28, driver: "Rafale", team: "McLaren", pts: 6 },
     { pos: 29, driver: "TheAgus60", team: "McLaren", pts: 5 },
     { pos: 30, driver: "J-DOT", team: "McLaren", pts: 2 },
     { pos: 31, driver: "N. Duro", team: "Ferrari", pts: 1 },
     { pos: 32, driver: "TucnakCZE", team: "Force India", pts: 0 },
-    { pos: 33, driver: "ElNando", team: "Force India", pts: 0 },
+    { pos: 33, driver: "ElNano", team: "Force India", pts: 0 },
     { pos: 34, driver: "Oscar Soria", team: "Williams", pts: 0 },
-    { pos: 35, driver: "RikiDorsa", team: "Virgin", pts: 0 },
+    { pos: 35, driver: "RikiORSA", team: "Virgin", pts: 0 },
     { pos: 36, driver: "Drips", team: "McLaren", pts: 0 },
     { pos: 37, driver: "Y6NJ", team: "Red Bull", pts: 0 },
     { pos: 38, driver: "Zenthix", team: "Williams", pts: 0 },
@@ -1632,7 +1626,7 @@ const defaultStandings = [
 ];
 
 const defaultDriverRoster = [
-    { driver: "Dieguiosk", team: "HRT" },
+    { driver: "Dlegulosk", team: "HRT" },
     { driver: "Muntii", team: "Red Bull" },
     { driver: "Novitaa", team: "Red Bull" },
     { driver: "BigTheo", team: "Ferrari" },
@@ -1656,17 +1650,17 @@ const defaultDriverRoster = [
     { driver: "Lil", team: "Lotus" },
     { driver: "Kri", team: "Renault" },
     { driver: "Novi", team: "Ferrari" },
-    { driver: "Dadaaliro", team: "Lotus" },
+    { driver: "Daidaiiro", team: "Lotus" },
     { driver: "Nando_FA14", team: "HRT" },
-    { driver: "Krisdemur", team: "Williams" },
+    { driver: "Krisdemurr", team: "Williams" },
     { driver: "Rafale", team: "McLaren" },
     { driver: "TheAgus60", team: "McLaren" },
     { driver: "J-DOT", team: "McLaren" },
     { driver: "N. Duro", team: "Ferrari" },
     { driver: "TucnakCZE", team: "Force India" },
-    { driver: "ElNando", team: "Force India" },
+    { driver: "ElNano", team: "Force India" },
     { driver: "Oscar Soria", team: "Williams" },
-    { driver: "RikiDorsa", team: "Virgin" },
+    { driver: "RikiORSA", team: "Virgin" },
     { driver: "Drips", team: "McLaren" },
     { driver: "Y6NJ", team: "Red Bull" },
     { driver: "Zenthix", team: "Williams" },
@@ -1676,6 +1670,54 @@ const defaultDriverRoster = [
     { driver: "Bartus", team: "Renault" },
     { driver: "Hpdypro27", team: "Red Bull" },
     { driver: "Galogb", team: "Lotus" }
+];
+
+/* Official FFC 2010 Season Dataset (Exact mapping from Championship Spreadsheet) */
+const ffc2010SeasonDrivers = [
+    { pos: 1, number: 23, flag: "🇵🇹", driver: "Dlegulosk", team: "HRT", r: ["15", "10", "13*", "6", "25", "18", "25", "16*", "25", "--", "--", "--", "--", "--", "--"], pts: 153, dif: "--" },
+    { pos: 2, number: 99, flag: "🇪🇸", driver: "Muntii", team: "Red Bull", r: ["--", "(18)", "10", "18", "18", "6", "15", "25", "15", "--", "--", "--", "--", "--", "--"], pts: 125, dif: "-28" },
+    { pos: 3, number: 26, flag: "🇪🇸", driver: "Novitaa", team: "Red Bull", r: ["--", "--", "--", "9*", "15", "(26*)", "2", "(18)", "(18)", "--", "--", "--", "--", "--", "--"], pts: 88, dif: "-65" },
+    { pos: 4, number: 5, flag: "🇪🇸", driver: "BigTheo", team: "Ferrari", r: ["18", "12", "8", "12", "13*", "--", "OUT", "1", "--", "--", "--", "--", "--", "--", "--"], pts: 64, dif: "-89" },
+    { pos: 5, number: 92, flag: "🇪🇸", driver: "Suforr", team: "Mercedes", r: ["--", "OUT", "--", "(25)", "10", "OUT", "13*", "OUT", "5*", "--", "--", "--", "--", "--", "--"], pts: 53, dif: "-100" },
+    { pos: 6, number: 7, flag: "🇮🇹", driver: "IvánR", team: "HRT", r: ["(26*)", "(26*)", "OUT", "OUT", "--", "--", "--", "--", "--", "--", "--", "--", "--", "--", "--"], pts: 52, dif: "-101" },
+    { pos: 7, number: 88, flag: "🇪🇸", driver: "Sbinn", team: "Toro Rosso", r: ["OUT", "--", "25", "10", "--", "OUT", "OUT", "--", "--", "--", "--", "--", "--", "--", "--"], pts: 35, dif: "-118" },
+    { pos: 8, number: 27, flag: "🇦🇷", driver: "Licha", team: "Ferrari", r: ["--", "--", "4", "2", "4", "1", "10", "10", "2", "--", "--", "--", "--", "--", "--"], pts: 33, dif: "-120" },
+    { pos: 9, number: 21, flag: "🇪🇸", driver: "TheWereGH", team: "Sauber", r: ["12", "6", "--", "1", "OUT", "2", "1", "4", "6", "--", "--", "--", "--", "--", "--"], pts: 32, dif: "-121" },
+    { pos: 10, number: 46, flag: "🇨🇭", driver: "Victor", team: "McLaren", r: ["--", "--", "--", "--", "--", "--", "--", "12", "10", "--", "--", "--", "--", "--", "--"], pts: 22, dif: "-131" },
+    { pos: 11, number: 12, flag: "🇧🇷", driver: "Gold", team: "Williams", r: ["--", "--", "--", "--", "--", "--", "18", "2", "--", "--", "--", "--", "--", "--", "--"], pts: 20, dif: "-133" },
+    { pos: 12, number: 22, flag: "🇦🇷", driver: "Viktolo", team: "Toro Rosso", r: ["--", "8", "--", "4", "8", "--", "OUT", "--", "--", "--", "--", "--", "--", "--", "--"], pts: 20, dif: "-133" },
+    { pos: 13, number: 777, flag: "🏴󠁧󠁢󠁳󠁣󠁴󠁿", driver: "Farlonso", team: "Lotus", r: ["--", "--", "--", "--", "--", "--", "6", "6", "8", "--", "--", "--", "--", "--", "--"], pts: 20, dif: "-133" },
+    { pos: 14, number: 29, flag: "🇨🇴", driver: "AMF", team: "Williams", r: ["8", "4", "2", "--", "6", "--", "--", "--", "--", "--", "--", "--", "--", "--", "--"], pts: 20, dif: "-133" },
+    { pos: 15, number: 71, flag: "🇪🇸", driver: "ElMamut", team: "Virgin", r: ["--", "--", "18", "--", "OUT", "--", "--", "--", "--", "--", "--", "--", "--", "--", "--"], pts: 18, dif: "-135" },
+    { pos: 16, number: 82, flag: "🇪🇸", driver: "Baena", team: "Mercedes", r: ["1", "15", "OUT", "--", "--", "--", "--", "--", "--", "--", "--", "--", "--", "--", "--"], pts: 16, dif: "-137" },
+    { pos: 17, number: 2, flag: "🏴󠁧󠁢󠁳󠁣󠁴󠁿", driver: "Sir Galactic", team: "Renault", r: ["10", "--", "6", "--", "--", "--", "--", "--", "--", "--", "--", "--", "--", "--", "--"], pts: 16, dif: "-137" },
+    { pos: 18, number: 32, flag: "🇪🇸", driver: "DiegoSniper69", team: "Sauber", r: ["--", "--", "--", "15", "--", "--", "--", "--", "--", "--", "--", "--", "--", "--", "--"], pts: 15, dif: "-138" },
+    { pos: 19, number: 36, flag: "🇬🇧", driver: "Erik Brenna", team: "Force India", r: ["--", "--", "--", "--", "--", "15", "--", "--", "--", "--", "--", "--", "--", "--", "--"], pts: 15, dif: "-138" },
+    { pos: 20, number: 24, flag: "🇪🇸", driver: "CarlosUre", team: "Force India", r: ["OUT", "--", "15", "--", "--", "--", "--", "--", "--", "--", "--", "--", "--", "--", "--"], pts: 15, dif: "-138" },
+    { pos: 21, number: 13, flag: "🇪🇸", driver: "Dericcc", team: "Virgin", r: ["4", "--", "0", "--", "1", "OUT", "OUT", "8", "OUT", "--", "--", "--", "--", "--", "--"], pts: 13, dif: "-140" },
+    { pos: 22, number: 45, flag: "🇪🇸", driver: "Lil", team: "Lotus", r: ["--", "--", "--", "--", "--", "--", "--", "--", "12", "--", "--", "--", "--", "--", "--"], pts: 12, dif: "-141" },
+    { pos: 23, number: 88, flag: "🇧🇬", driver: "Kri", team: "Renault", r: ["--", "--", "--", "--", "OUT", "12", "OUT", "--", "OUT", "--", "--", "--", "--", "--", "--"], pts: 12, dif: "-141" },
+    { pos: 24, number: 67, flag: "🏴󠁧󠁢󠁳󠁣󠁴󠁿", driver: "Novi", team: "Ferrari", r: ["--", "1", "OUT", "--", "--", "10", "OUT", "OUT", "--", "--", "--", "--", "--", "--", "--"], pts: 11, dif: "-142" },
+    { pos: 25, number: 20, flag: "🇯🇵", driver: "Daidaiiro", team: "Lotus", r: ["6", "2", "1", "--", "--", "--", "--", "--", "--", "--", "--", "--", "--", "--", "--"], pts: 9, dif: "-144" },
+    { pos: 26, number: 14, flag: "🇪🇸", driver: "Nando_FA14", team: "HRT", r: ["--", "OUT", "0", "--", "8", "OUT", "--", "--", "--", "--", "--", "--", "--", "--", "--"], pts: 8, dif: "-145" },
+    { pos: 27, number: 43, flag: "🇧🇷", driver: "Krisdemurr", team: "Williams", r: ["--", "--", "--", "--", "--", "--", "8", "OUT", "--", "--", "--", "--", "--", "--", "--"], pts: 8, dif: "-145" },
+    { pos: 28, number: 8, flag: "🇪🇸", driver: "Rafale", team: "McLaren", r: ["--", "--", "--", "OUT", "2", "4", "OUT", "--", "--", "--", "--", "--", "--", "--", "--"], pts: 6, dif: "-147" },
+    { pos: 29, number: 69, flag: "🇪🇸", driver: "TheAgus60", team: "McLaren", r: ["--", "--", "OUT", "--", "--", "OUT", "4", "--", "1", "--", "--", "--", "--", "--", "--"], pts: 5, dif: "-148" },
+    { pos: 30, number: 10, flag: "🇦🇷", driver: "J-DOT", team: "McLaren", r: ["2", "--", "--", "--", "--", "--", "--", "--", "--", "--", "--", "--", "--", "--", "--"], pts: 2, dif: "-151" },
+    { pos: 31, number: 1, flag: "🇮🇹", driver: "N. Duro", team: "Ferrari", r: ["--", "--", "--", "--", "--", "--", "--", "--", "1", "--", "--", "--", "--", "--", "--"], pts: 1, dif: "-152" },
+    { pos: 32, number: 34, flag: "🇨🇿", driver: "TucnakCZE", team: "Force India", r: ["OUT", "--", "--", "--", "--", "--", "--", "--", "--", "--", "--", "--", "--", "--", "--"], pts: 0, dif: "-153" },
+    { pos: 33, number: 31, flag: "🇮🇹", driver: "ElNano", team: "Force India", r: ["--", "--", "0", "--", "--", "--", "--", "--", "--", "--", "--", "--", "--", "--", "--"], pts: 0, dif: "-153" },
+    { pos: 34, number: 6, flag: "🇪🇸", driver: "Oscar Soria", team: "Williams", r: ["--", "OUT", "0", "--", "--", "--", "--", "--", "--", "--", "--", "--", "--", "--", "--"], pts: 0, dif: "-153" },
+    { pos: 35, number: 85, flag: "🇪🇸", driver: "RikiORSA", team: "Virgin", r: ["--", "--", "--", "--", "--", "--", "--", "OUT", "--", "--", "--", "--", "--", "--", "--"], pts: 0, dif: "-153" },
+    { pos: 36, number: 11, flag: "🇦🇷", driver: "Drips", team: "McLaren", r: ["--", "OUT", "--", "--", "--", "--", "--", "--", "--", "--", "--", "--", "--", "--", "--"], pts: 0, dif: "-153" },
+    { pos: 37, number: 55, flag: "🇳🇬", driver: "Y6NJ", team: "Red Bull", r: ["OUT", "--", "--", "--", "--", "--", "--", "--", "--", "--", "--", "--", "--", "--", "--"], pts: 0, dif: "-153" },
+    { pos: 38, number: 19, flag: "🇦🇹", driver: "Zenthix", team: "Williams", r: ["--", "--", "--", "--", "--", "OUT", "--", "--", "--", "--", "--", "--", "--", "--", "--"], pts: 0, dif: "-153" },
+    { pos: 39, number: 89, flag: "🇦🇷", driver: "VGXEmi", team: "Force India", r: ["--", "--", "--", "--", "--", "--", "--", "--", "--", "--", "--", "--", "--", "--", "--"], pts: 0, dif: "-153" },
+    { pos: 40, number: 14, flag: "🇦🇷", driver: "Zukini", team: "Toro Rosso", r: ["--", "--", "--", "--", "--", "--", "--", "--", "--", "--", "--", "--", "--", "--", "--"], pts: 0, dif: "-153" },
+    { pos: 41, number: 28, flag: "🇹🇷", driver: "SkyFall", team: "Toro Rosso", r: ["--", "--", "--", "--", "--", "--", "--", "--", "--", "--", "--", "--", "--", "--", "--"], pts: 0, dif: "-153" },
+    { pos: 42, number: 9, flag: "🇷🇺", driver: "Bartus", team: "Renault", r: ["--", "--", "--", "--", "--", "--", "--", "--", "--", "--", "--", "--", "--", "--", "--"], pts: 0, dif: "-153" },
+    { pos: 43, number: 27, flag: "🇫🇷", driver: "Hpdypro27", team: "Red Bull", r: ["--", "--", "--", "--", "--", "--", "--", "--", "--", "--", "--", "--", "--", "--", "--"], pts: 0, dif: "-153" },
+    { pos: 44, number: 68, flag: "🇪🇸", driver: "Galogb", team: "Lotus", r: ["--", "--", "--", "--", "--", "--", "--", "--", "--", "--", "--", "--", "--", "--", "--"], pts: 0, dif: "-153" }
 ];
 
 const defaultSettings = {
@@ -1721,8 +1763,17 @@ const raceSaveNotice = document.getElementById("raceSaveNotice");
 // Standings Target Elements
 const standingsTableBody = document.getElementById("standingsTableBody");
 const constructorsTableBody = document.getElementById("constructorsTableBody");
+const driverRankingBoard = document.getElementById("driverRankingBoard");
+const driverLeaderRow = document.getElementById("driverLeaderRow");
+const driverPodiumSplit = document.getElementById("driverPodiumSplit");
+const driverRowsList = document.getElementById("driverRowsList");
+const teamRankingBoard = document.getElementById("teamRankingBoard");
+const teamLeaderRow = document.getElementById("teamLeaderRow");
+const teamPodiumSplit = document.getElementById("teamPodiumSplit");
+const teamRowsList = document.getElementById("teamRowsList");
 const adminStandingsTableBody = document.getElementById("adminStandingsTableBody");
 const adminAddDriverBtn = document.getElementById("adminAddDriverBtn");
+const adminRecalcStandingsBtn = document.getElementById("adminRecalcStandingsBtn");
 const adminSaveStandingsBtn = document.getElementById("adminSaveStandingsBtn");
 const standingsSaveNotice = document.getElementById("standingsSaveNotice");
 
@@ -1764,6 +1815,8 @@ const adminRacePositionsTable = document.getElementById("adminRacePositionsTable
 const adminRacePositionsBody = document.getElementById("adminRacePositionsBody");
 const adminAddRacePosBtn = document.getElementById("adminAddRacePosBtn");
 const adminLoadDefaultPosBtn = document.getElementById("adminLoadDefaultPosBtn");
+const adminResetRaceBtn = document.getElementById("adminResetRaceBtn");
+const adminResetRaceBtnBottom = document.getElementById("adminResetRaceBtnBottom");
 const raceResultsSaveNotice = document.getElementById("raceResultsSaveNotice");
 const toggleStandingsBtn = document.getElementById("toggleStandingsBtn");
 const standingsToggleLabel = document.getElementById("standingsToggleLabel");
@@ -1910,34 +1963,317 @@ function getSavedStandings() {
 }
 
 function renderStandingsOnPage(drivers) {
-    if (!standingsTableBody) return;
-    standingsTableBody.innerHTML = "";
-
     // Sort by points descending
     const sorted = [...drivers].sort((a, b) => Number(b.pts) - Number(a.pts));
+    const isEn = typeof currentLanguage !== "undefined" && currentLanguage === "en";
+    const leaderBadgeText = isEn ? "LEADER" : "LÍDER";
+    const trophySvg = `
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" class="leader-trophy-icon" aria-hidden="true">
+            <path d="M19 5h-2V3H7v2H5c-1.1 0-2 .9-2 2v1c0 2.55 1.92 4.63 4.39 4.94A5.01 5.01 0 0 0 11 15.9V19H8v2h8v-2h-3v-3.1c1.84-.36 3.28-1.78 3.61-3.96C19.08 11.63 21 9.55 21 8V7c0-1.1-.9-2-2-2zM5 8V7h2v3.82C5.84 10.4 5 9.3 5 8zm14 0c0 1.3-.84 2.4-2 2.82V7h2v1z"/>
+        </svg>
+    `;
 
-    sorted.forEach((d, idx) => {
-        const tr = document.createElement("tr");
-        if (idx === 0) tr.classList.add("leader");
-        if (idx >= 10 && !isStandingsExpanded) {
-            tr.classList.add("standings-row-hidden");
+    const leaderPts = sorted[0] ? Number(sorted[0].pts) : 0;
+    const tiedLeaders = sorted.filter(d => Number(d.pts) === leaderPts && leaderPts > 0);
+    const isLeaderTied = tiedLeaders.length > 1;
+
+    if (isLeaderTied) {
+        // Tied P1 Hero Row: Empate badge top-center, Left: "1." + Driver 1, Center: Points, Right: Driver 2
+        if (driverLeaderRow) {
+            driverLeaderRow.classList.add("is-tied");
+            const d1 = tiedLeaders[0];
+            const d2 = tiedLeaders[1];
+            const tieBadgeText = isEn ? "TIE" : "EMPATE";
+            driverLeaderRow.innerHTML = `
+                <div class="ranking-tied-badge">
+                    <span>${tieBadgeText}</span>
+                </div>
+                <div class="ranking-tied-left">
+                    <span class="ranking-leader-pos">1.</span>
+                    <div class="ranking-tied-team">
+                        <span class="ranking-leader-name">${escapeHtml(d1.driver)}</span>
+                        <span class="ranking-team-pill ${getTeamClass(d1.team)}">${escapeHtml(d1.team)}</span>
+                    </div>
+                </div>
+                <div class="ranking-tied-center">
+                    <div class="ranking-pts-tag ranking-tied-pts">
+                        <strong class="pts-num">${Number(d1.pts)}</strong>
+                        <small class="pts-label">PTS</small>
+                    </div>
+                </div>
+                <div class="ranking-tied-right">
+                    <div class="ranking-tied-team">
+                        <span class="ranking-leader-name">${escapeHtml(d2 ? d2.driver : '')}</span>
+                        <span class="ranking-team-pill ${getTeamClass(d2 ? d2.team : '')}">${escapeHtml(d2 ? d2.team : '')}</span>
+                    </div>
+                </div>
+            `;
         }
-        tr.innerHTML = `
-            <td>${idx + 1}</td>
-            <td>${escapeHtml(d.driver)}</td>
-            <td class="${getTeamClass(d.team)}">${escapeHtml(d.team)}</td>
-            <td>${Number(d.pts)}</td>
-        `;
-        standingsTableBody.appendChild(tr);
-    });
+
+        // Hide P2 & P3 podium split when P1 is tied
+        if (driverPodiumSplit) {
+            driverPodiumSplit.style.display = "none";
+        }
+
+        // Start rows list directly from tiedLeaders.length (position 3 if 2 tied)
+        if (driverRowsList) {
+            driverRowsList.innerHTML = "";
+            for (let idx = tiedLeaders.length; idx < sorted.length; idx++) {
+                const d = sorted[idx];
+                const rowDiv = document.createElement("div");
+                rowDiv.className = "ranking-row";
+                if (idx >= 10 && !isStandingsExpanded) {
+                    rowDiv.classList.add("standings-row-hidden");
+                }
+                rowDiv.innerHTML = `
+                    <span class="ranking-row-pos">${idx + 1}</span>
+                    <span class="ranking-row-name">${escapeHtml(d.driver)}</span>
+                    <span class="ranking-row-team ${getTeamClass(d.team)}">${escapeHtml(d.team)}</span>
+                    <span class="ranking-row-pts">${Number(d.pts)}</span>
+                `;
+                driverRowsList.appendChild(rowDiv);
+            }
+        }
+    } else {
+        // Standard Single Leader Flow
+        if (driverLeaderRow) {
+            driverLeaderRow.classList.remove("is-tied");
+            if (sorted[0]) {
+                const d1 = sorted[0];
+                driverLeaderRow.innerHTML = `
+                    <div class="ranking-leader-left">
+                        <span class="ranking-leader-pos">1.</span>
+                        <div class="ranking-leader-info">
+                            <span class="ranking-leader-name">${escapeHtml(d1.driver)}</span>
+                            <div class="ranking-leader-meta">
+                                <span class="ranking-team-pill ${getTeamClass(d1.team)}">${escapeHtml(d1.team)}</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="ranking-leader-right">
+                        <div class="ranking-pts-tag">
+                            <strong class="pts-num">${Number(d1.pts)}</strong>
+                            <small class="pts-label">PTS</small>
+                        </div>
+                        <div class="leader-badge-pill" id="driverLeaderBadge">
+                            <span class="leader-badge-text">${leaderBadgeText}</span>
+                            ${trophySvg}
+                        </div>
+                    </div>
+                `;
+            }
+        }
+
+        // 2. Render P2 & P3 Split Columns
+        if (driverPodiumSplit) {
+            driverPodiumSplit.style.display = "";
+            const d2 = sorted[1];
+            const d3 = sorted[2];
+            let p2Html = "";
+            let p3Html = "";
+
+            if (d2) {
+                p2Html = `
+                    <div class="ranking-podium-col ranking-p2" id="driverP2Col">
+                        <div class="ranking-podium-left">
+                            <span class="ranking-podium-pos">2.</span>
+                            <div class="ranking-podium-info">
+                                <span class="ranking-podium-name">${escapeHtml(d2.driver)}</span>
+                                <div class="ranking-podium-meta">
+                                    <span class="ranking-team-pill ${getTeamClass(d2.team)}">${escapeHtml(d2.team)}</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="ranking-podium-right">
+                            <div class="ranking-pts-tag">
+                                <strong class="pts-num">${Number(d2.pts)}</strong>
+                                <small class="pts-label">PTS</small>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+
+            if (d3) {
+                p3Html = `
+                    <div class="ranking-podium-col ranking-p3" id="driverP3Col">
+                        <div class="ranking-podium-left">
+                            <span class="ranking-podium-pos">3.</span>
+                            <div class="ranking-podium-info">
+                                <span class="ranking-podium-name">${escapeHtml(d3.driver)}</span>
+                                <div class="ranking-podium-meta">
+                                    <span class="ranking-team-pill ${getTeamClass(d3.team)}">${escapeHtml(d3.team)}</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="ranking-podium-right">
+                            <div class="ranking-pts-tag">
+                                <strong class="pts-num">${Number(d3.pts)}</strong>
+                                <small class="pts-label">PTS</small>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+
+            driverPodiumSplit.innerHTML = p2Html + p3Html;
+        }
+
+        // 3. Render P4+ Rows List
+        if (driverRowsList) {
+            driverRowsList.innerHTML = "";
+            for (let idx = 3; idx < sorted.length; idx++) {
+                const d = sorted[idx];
+                const rowDiv = document.createElement("div");
+                rowDiv.className = "ranking-row";
+                if (idx >= 10 && !isStandingsExpanded) {
+                    rowDiv.classList.add("standings-row-hidden");
+                }
+                rowDiv.innerHTML = `
+                    <span class="ranking-row-pos">${idx + 1}</span>
+                    <span class="ranking-row-name">${escapeHtml(d.driver)}</span>
+                    <span class="ranking-row-team ${getTeamClass(d.team)}">${escapeHtml(d.team)}</span>
+                    <span class="ranking-row-pts">${Number(d.pts)}</span>
+                `;
+                driverRowsList.appendChild(rowDiv);
+            }
+        }
+    }
+
+    // Fallback if legacy standingsTableBody is present
+    if (standingsTableBody) {
+        standingsTableBody.innerHTML = "";
+        sorted.forEach((d, idx) => {
+            const tr = document.createElement("tr");
+            if (idx === 0) tr.classList.add("leader");
+            if (idx >= 10 && !isStandingsExpanded) {
+                tr.classList.add("standings-row-hidden");
+            }
+            tr.innerHTML = `
+                <td>${idx + 1}</td>
+                <td>${escapeHtml(d.driver)}</td>
+                <td class="${getTeamClass(d.team)}">${escapeHtml(d.team)}</td>
+                <td>${Number(d.pts)}</td>
+            `;
+            standingsTableBody.appendChild(tr);
+        });
+    }
 
     updateStandingsToggleUI(sorted.length);
     updateConstructorStandings(sorted);
+    renderFfcMatrixTable();
+}
+
+// --- Official FFC 2010 Season Matrix Spreadsheet Renderer ---
+function renderFfcMatrixTable(filterText = "") {
+    const tbody = document.getElementById("ffcMatrixTableBody");
+    if (!tbody || typeof ffc2010SeasonDrivers === "undefined") return;
+
+    const query = (filterText || "").trim().toLowerCase();
+    const rows = ffc2010SeasonDrivers.filter(d => {
+        if (!query) return true;
+        return d.driver.toLowerCase().includes(query) || (d.team && d.team.toLowerCase().includes(query));
+    });
+
+    tbody.innerHTML = "";
+    rows.forEach((row) => {
+        const tr = document.createElement("tr");
+
+        // Pos Pill class
+        let posContent = `${row.pos}`;
+        if (row.pos === 1) {
+            posContent = `<span class="pos-pill-1">1</span>`;
+        } else if (row.pos === 2) {
+            posContent = `<span class="pos-pill-2">2</span>`;
+        } else if (row.pos === 3) {
+            posContent = `<span class="pos-pill-3">3</span>`;
+        }
+
+        // Driver cell
+        const driverContent = `
+            <div class="driver-cell-content">
+                <span class="driver-number-badge ${getTeamClass(row.team)}">${row.number || ""}</span>
+                <span class="driver-flag-emoji">${row.flag || ""}</span>
+                <span class="driver-name-text">${escapeHtml(row.driver)}</span>
+            </div>
+        `;
+
+        // Render 15 race cells
+        let raceCellsHtml = "";
+        for (let i = 0; i < 15; i++) {
+            const rawVal = row.r[i] !== undefined ? String(row.r[i]) : "--";
+            let formattedVal = "";
+
+            if (rawVal.startsWith("(") && rawVal.endsWith(")")) {
+                // Pole Position: circled e.g. (18) or (26*)
+                const inner = rawVal.slice(1, -1);
+                const hasFL = inner.includes("*");
+                const cleanScore = inner.replace("*", "");
+                formattedVal = `<span class="score-pole ${hasFL ? 'score-fl' : ''}">${cleanScore}</span>`;
+            } else if (rawVal.endsWith("*")) {
+                // Fastest Lap (+1 bonus point) e.g. 13*
+                const cleanScore = rawVal.replace("*", "");
+                formattedVal = `<span class="score-cell score-fl">${cleanScore}*</span>`;
+            } else if (rawVal === "25") {
+                formattedVal = `<span class="score-cell score-win">25</span>`;
+            } else if (rawVal === "OUT") {
+                formattedVal = `<span class="score-out">OUT</span>`;
+            } else if (rawVal === "DSQ") {
+                formattedVal = `<span class="score-dsq">DSQ</span>`;
+            } else if (rawVal === "0") {
+                formattedVal = `<span class="score-cell score-zero">0</span>`;
+            } else if (rawVal === "--") {
+                formattedVal = `<span class="score-cell score-none">--</span>`;
+            } else {
+                formattedVal = `<span class="score-cell">${escapeHtml(rawVal)}</span>`;
+            }
+
+            raceCellsHtml += `<td>${formattedVal}</td>`;
+        }
+
+        tr.innerHTML = `
+            <td class="col-pos">${posContent}</td>
+            <td class="col-driver">${driverContent}</td>
+            <td class="col-team ${getTeamClass(row.team)}">${escapeHtml(row.team)}</td>
+            ${raceCellsHtml}
+            <td class="col-points">${row.pts}</td>
+            <td class="col-dif">${row.dif}</td>
+        `;
+        tbody.appendChild(tr);
+    });
+}
+
+function initStandingsViewTabs() {
+    const tabMatrix = document.getElementById("tabStandingsMatrix");
+    const tabCards = document.getElementById("tabStandingsCards");
+    const viewMatrix = document.getElementById("standingsMatrixView");
+    const viewCards = document.getElementById("standingsCardsView");
+
+    if (tabMatrix && tabCards && viewMatrix && viewCards) {
+        tabMatrix.addEventListener("click", () => {
+            tabMatrix.classList.add("active");
+            tabCards.classList.remove("active");
+            viewMatrix.style.display = "block";
+            viewCards.style.display = "none";
+        });
+
+        tabCards.addEventListener("click", () => {
+            tabCards.classList.add("active");
+            tabMatrix.classList.remove("active");
+            viewMatrix.style.display = "none";
+            viewCards.style.display = "block";
+        });
+    }
+
+    const searchInput = document.getElementById("matrixSearchInput");
+    if (searchInput) {
+        searchInput.addEventListener("input", (e) => {
+            renderFfcMatrixTable(e.target.value);
+        });
+    }
 }
 
 function updateConstructorStandings(driverList) {
-    if (!constructorsTableBody) return;
-
     // Calculate sum of points per team
     const teamPointsMap = {};
     F1_TEAMS.forEach(t => { teamPointsMap[t] = 0; });
@@ -1956,21 +2292,194 @@ function updateConstructorStandings(driverList) {
     // Sort descending by points
     constructorRows.sort((a, b) => b.pts - a.pts);
 
-    constructorsTableBody.innerHTML = "";
-    const leaderPts = constructorRows[0].pts;
+    const leaderPts = constructorRows[0] ? constructorRows[0].pts : 0;
+    const tiedLeaders = constructorRows.filter(r => r.pts === leaderPts && leaderPts > 0);
+    const isLeaderTied = tiedLeaders.length > 1;
 
-    constructorRows.forEach((row, idx) => {
-        const tr = document.createElement("tr");
-        if (idx === 0) tr.classList.add("leader");
-        const diff = idx === 0 ? "—" : (row.pts - leaderPts === 0 ? "0" : `${row.pts - leaderPts}`);
-        tr.innerHTML = `
-            <td>${idx + 1}</td>
-            <td class="${getTeamClass(row.team)}">${escapeHtml(row.team)}</td>
-            <td>${row.pts}</td>
-            <td>${diff}</td>
-        `;
-        constructorsTableBody.appendChild(tr);
-    });
+    const isEn = typeof currentLanguage !== "undefined" && currentLanguage === "en";
+    const leaderBadgeText = isEn ? "LEADER" : "LÍDER";
+    const trophySvg = `
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" class="leader-trophy-icon" aria-hidden="true">
+            <path d="M19 5h-2V3H7v2H5c-1.1 0-2 .9-2 2v1c0 2.55 1.92 4.63 4.39 4.94A5.01 5.01 0 0 0 11 15.9V19H8v2h8v-2h-3v-3.1c1.84-.36 3.28-1.78 3.61-3.96C19.08 11.63 21 9.55 21 8V7c0-1.1-.9-2-2-2zM5 8V7h2v3.82C5.84 10.4 5 9.3 5 8zm14 0c0 1.3-.84 2.4-2 2.82V7h2v1z"/>
+        </svg>
+    `;
+
+    if (isLeaderTied) {
+        // Tied P1 Hero Row: Empate badge top-center, Left: "1." + Team 1, Center: Points, Right: Team 2
+        if (teamLeaderRow) {
+            teamLeaderRow.classList.add("is-tied");
+            const t1 = tiedLeaders[0];
+            const t2 = tiedLeaders[1];
+            const tieBadgeText = isEn ? "TIE" : "EMPATE";
+            teamLeaderRow.innerHTML = `
+                <div class="ranking-tied-badge" id="teamTiedBadge">
+                    <span>${tieBadgeText}</span>
+                </div>
+                <div class="ranking-tied-left">
+                    <span class="ranking-leader-pos">1.</span>
+                    <div class="ranking-tied-team">
+                        <span class="ranking-leader-name ${getTeamClass(t1.team)}">${escapeHtml(t1.team)}</span>
+                        <span class="ranking-team-pill ${getTeamClass(t1.team)}">${escapeHtml(t1.team)}</span>
+                    </div>
+                </div>
+                <div class="ranking-tied-center">
+                    <div class="ranking-pts-tag ranking-tied-pts">
+                        <strong class="pts-num">${t1.pts}</strong>
+                        <small class="pts-label">PTS</small>
+                    </div>
+                </div>
+                <div class="ranking-tied-right">
+                    <div class="ranking-tied-team">
+                        <span class="ranking-leader-name ${getTeamClass(t2 ? t2.team : '')}">${escapeHtml(t2 ? t2.team : '')}</span>
+                        <span class="ranking-team-pill ${getTeamClass(t2 ? t2.team : '')}">${escapeHtml(t2 ? t2.team : '')}</span>
+                    </div>
+                </div>
+            `;
+        }
+
+        // Hide P2 & P3 podium split when P1 is tied
+        if (teamPodiumSplit) {
+            teamPodiumSplit.style.display = "none";
+        }
+
+        // Start rows list from tiedLeaders.length (position 3 if 2 tied)
+        if (teamRowsList) {
+            teamRowsList.innerHTML = "";
+            for (let idx = tiedLeaders.length; idx < constructorRows.length; idx++) {
+                const row = constructorRows[idx];
+                const diff = row.pts - leaderPts === 0 ? "0" : `${row.pts - leaderPts}`;
+                const rowDiv = document.createElement("div");
+                rowDiv.className = "ranking-row";
+                rowDiv.innerHTML = `
+                    <span class="ranking-row-pos">${idx + 1}</span>
+                    <span class="ranking-row-name ${getTeamClass(row.team)}">${escapeHtml(row.team)}</span>
+                    <span class="ranking-row-pts">${row.pts}</span>
+                    <span class="ranking-row-diff">${diff}</span>
+                `;
+                teamRowsList.appendChild(rowDiv);
+            }
+        }
+    } else {
+        // Standard Single Leader Flow
+        if (teamLeaderRow) {
+            teamLeaderRow.classList.remove("is-tied");
+            if (constructorRows[0]) {
+                const t1 = constructorRows[0];
+                teamLeaderRow.innerHTML = `
+                    <div class="ranking-leader-left">
+                        <span class="ranking-leader-pos">1.</span>
+                        <div class="ranking-leader-info">
+                            <span class="ranking-leader-name ${getTeamClass(t1.team)}">${escapeHtml(t1.team)}</span>
+                            <div class="ranking-leader-meta">
+                                <span class="ranking-team-pill ${getTeamClass(t1.team)}">CONSTRUCTOR</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="ranking-leader-right">
+                        <div class="ranking-pts-tag">
+                            <strong class="pts-num">${t1.pts}</strong>
+                            <small class="pts-label">PTS</small>
+                        </div>
+                        <div class="leader-badge-pill" id="teamLeaderBadge">
+                            <span class="leader-badge-text">${leaderBadgeText}</span>
+                            ${trophySvg}
+                        </div>
+                    </div>
+                `;
+            }
+        }
+
+        if (teamPodiumSplit) {
+            teamPodiumSplit.style.display = "";
+            const t2 = constructorRows[1];
+            const t3 = constructorRows[2];
+            const diff2 = t2 ? (t2.pts - leaderPts === 0 ? "0" : `${t2.pts - leaderPts}`) : "0";
+            const diff3 = t3 ? (t3.pts - leaderPts === 0 ? "0" : `${t3.pts - leaderPts}`) : "0";
+
+            let p2Html = "";
+            let p3Html = "";
+
+            if (t2) {
+                p2Html = `
+                    <div class="ranking-podium-col ranking-p2" id="teamP2Col">
+                        <div class="ranking-podium-left">
+                            <span class="ranking-podium-pos">2.</span>
+                            <div class="ranking-podium-info">
+                                <span class="ranking-podium-name ${getTeamClass(t2.team)}">${escapeHtml(t2.team)}</span>
+                                <div class="ranking-podium-meta">
+                                    <span class="ranking-diff">${diff2} DIF.</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="ranking-podium-right">
+                            <div class="ranking-pts-tag">
+                                <strong class="pts-num">${t2.pts}</strong>
+                                <small class="pts-label">PTS</small>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+
+            if (t3) {
+                p3Html = `
+                    <div class="ranking-podium-col ranking-p3" id="teamP3Col">
+                        <div class="ranking-podium-left">
+                            <span class="ranking-podium-pos">3.</span>
+                            <div class="ranking-podium-info">
+                                <span class="ranking-podium-name ${getTeamClass(t3.team)}">${escapeHtml(t3.team)}</span>
+                                <div class="ranking-podium-meta">
+                                    <span class="ranking-diff">${diff3} DIF.</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="ranking-podium-right">
+                            <div class="ranking-pts-tag">
+                                <strong class="pts-num">${t3.pts}</strong>
+                                <small class="pts-label">PTS</small>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+
+            teamPodiumSplit.innerHTML = p2Html + p3Html;
+        }
+
+        if (teamRowsList) {
+            teamRowsList.innerHTML = "";
+            for (let idx = 3; idx < constructorRows.length; idx++) {
+                const row = constructorRows[idx];
+                const diff = row.pts - leaderPts === 0 ? "0" : `${row.pts - leaderPts}`;
+                const rowDiv = document.createElement("div");
+                rowDiv.className = "ranking-row";
+                rowDiv.innerHTML = `
+                    <span class="ranking-row-pos">${idx + 1}</span>
+                    <span class="ranking-row-name ${getTeamClass(row.team)}">${escapeHtml(row.team)}</span>
+                    <span class="ranking-row-pts">${row.pts}</span>
+                    <span class="ranking-row-diff">${diff}</span>
+                `;
+                teamRowsList.appendChild(rowDiv);
+            }
+        }
+    }
+
+    // Fallback if legacy constructorsTableBody is present
+    if (constructorsTableBody) {
+        constructorsTableBody.innerHTML = "";
+        constructorRows.forEach((row, idx) => {
+            const tr = document.createElement("tr");
+            if (idx === 0) tr.classList.add("leader");
+            const diff = idx === 0 ? "—" : (row.pts - leaderPts === 0 ? "0" : `${row.pts - leaderPts}`);
+            tr.innerHTML = `
+                <td>${idx + 1}</td>
+                <td class="${getTeamClass(row.team)}">${escapeHtml(row.team)}</td>
+                <td>${row.pts}</td>
+                <td>${diff}</td>
+            `;
+            constructorsTableBody.appendChild(tr);
+        });
+    }
 }
 
 function updateStandingsToggleUI(totalCount) {
@@ -2047,13 +2556,13 @@ function renderAdminStandingsEditor(drivers) {
                 if (row) row.remove();
                 return;
             }
-            if (confirm(`¿Deseas eliminar a "${driverName}" de Firestore?`)) {
+            const confirmed = await showAppConfirm("Eliminar Piloto", `¿Deseas eliminar a "${driverName}" de Firestore?`, "Eliminar", "Cancelar");
+            if (confirmed) {
                 try {
                     await deleteDoc(doc(db, "pilotos", pilotId));
                     if (row) row.remove();
                 } catch (err) {
                     console.error("Error deleting driver from Firestore:", err);
-                    alert("Error al eliminar de Firestore: " + err.message);
                 }
             }
         });
@@ -2102,6 +2611,65 @@ function escapeHtml(str) {
         .replace(/>/g, "&gt;")
         .replace(/"/g, "&quot;")
         .replace(/'/g, "&#039;");
+}
+
+// In-App Accessible Confirmation Modal (Guaranteed to work in iframes and all browsers)
+function showAppConfirm(title, message, confirmText = "Confirmar", cancelText = "Cancelar") {
+    return new Promise((resolve) => {
+        let overlay = document.getElementById("customConfirmModal");
+        if (!overlay) {
+            overlay = document.createElement("div");
+            overlay.id = "customConfirmModal";
+            overlay.className = "custom-confirm-overlay";
+            document.body.appendChild(overlay);
+        }
+
+        const paragraphs = String(message)
+            .split("\n")
+            .map(p => p.trim() ? `<p>${escapeHtml(p)}</p>` : "<div style='height:6px;'></div>")
+            .join("");
+
+        overlay.innerHTML = `
+            <div class="custom-confirm-card" role="dialog" aria-modal="true">
+                <div class="custom-confirm-header">
+                    <span class="custom-confirm-icon">⚠️</span>
+                    <h3 class="custom-confirm-title">${escapeHtml(title)}</h3>
+                </div>
+                <div class="custom-confirm-body">
+                    ${paragraphs}
+                </div>
+                <div class="custom-confirm-actions">
+                    <button type="button" class="btn btn-secondary btn-sm" id="customConfirmCancelBtn">${escapeHtml(cancelText)}</button>
+                    <button type="button" class="btn btn-danger-outline btn-sm" id="customConfirmOkBtn">${escapeHtml(confirmText)}</button>
+                </div>
+            </div>
+        `;
+
+        overlay.classList.add("active");
+
+        const cancelBtn = overlay.querySelector("#customConfirmCancelBtn");
+        const okBtn = overlay.querySelector("#customConfirmOkBtn");
+
+        let settled = false;
+        const finish = (val) => {
+            if (settled) return;
+            settled = true;
+            overlay.classList.remove("active");
+            resolve(val);
+        };
+
+        cancelBtn.onclick = (e) => {
+            e.stopPropagation();
+            finish(false);
+        };
+        okBtn.onclick = (e) => {
+            e.stopPropagation();
+            finish(true);
+        };
+        overlay.onclick = (e) => {
+            if (e.target === overlay) finish(false);
+        };
+    });
 }
 
 // --- Race Results Logic ---
@@ -2261,12 +2829,13 @@ function renderAdminDriversTab(filterText = "") {
         btn.addEventListener("click", async () => {
             const pilotId = btn.dataset.pilotId;
             const driverName = btn.dataset.driver;
-            if (pilotId && confirm(`¿Deseas eliminar a "${driverName}" de la base de datos en Firestore?`)) {
+            if (!pilotId) return;
+            const confirmed = await showAppConfirm("Eliminar Piloto", `¿Deseas eliminar a "${driverName}" de la base de datos en Firestore?`, "Eliminar", "Cancelar");
+            if (confirmed) {
                 try {
                     await deleteDoc(doc(db, "pilotos", pilotId));
                 } catch (err) {
                     console.error("Error deleting driver from Firestore:", err);
-                    alert("Error al eliminar de Firestore: " + err.message);
                 }
             }
         });
@@ -2346,9 +2915,55 @@ function getDefaultTop10Positions() {
     }));
 }
 
+// --- Official F1 Points System ---
+const F1_POINTS_MAP = {
+    1: 25,
+    2: 18,
+    3: 15,
+    4: 12,
+    5: 10,
+    6: 8,
+    7: 6,
+    8: 4,
+    9: 2,
+    10: 1
+};
+const F1_FASTEST_LAP_PTS = 1;
+
+function normalizeDriverKey(name) {
+    if (!name) return "";
+    return name.trim().normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+}
+
+function getF1PointsBadgeHtml(pos, status = "FINISHED") {
+    if (status === "DSQ") {
+        return `<span class="race-pts-tag dsq">0 PTS (DSQ)</span>`;
+    }
+    const pts = F1_POINTS_MAP[pos] || 0;
+    if (pts > 0) {
+        return `<span class="race-pts-tag active">+${pts} PTS</span>`;
+    }
+    return `<span class="race-pts-tag muted">0 PTS</span>`;
+}
+
 function renderRacePositionsTable(list) {
     if (!adminRacePositionsBody) return;
     adminRacePositionsBody.innerHTML = "";
+
+    if (!Array.isArray(list) || list.length === 0) {
+        const emptyTr = document.createElement("tr");
+        emptyTr.className = "race-pos-empty-row";
+        emptyTr.innerHTML = `
+            <td colspan="6" style="text-align: center; color: #8c929c; padding: 26px 16px; font-size: 13.5px;">
+                <div style="display: flex; flex-direction: column; align-items: center; gap: 8px;">
+                    <span style="color: #d1d6e0; font-weight: 700; font-size: 14px;">🏁 No hay resultados registrados para este Gran Premio</span>
+                    <span style="font-size: 12.5px; color: #788190;">Haz clic en <strong>«+ Añadir Posición»</strong> o en <strong>«Cargar Top 10»</strong> para registrar el orden de llegada.</span>
+                </div>
+            </td>
+        `;
+        adminRacePositionsBody.appendChild(emptyTr);
+        return;
+    }
 
     const driverList = getAllDriverList();
 
@@ -2374,6 +2989,8 @@ function renderRacePositionsTable(list) {
             statusOptions += `<option value="${st}" ${isSelected ? "selected" : ""}>${st}</option>`;
         });
 
+        const statusVal = item.status || "FINISHED";
+
         tr.innerHTML = `
             <td class="pos-cell" style="font-weight: 800; color: var(--gold); text-align: center;">${idx + 1}</td>
             <td>
@@ -2392,6 +3009,9 @@ function renderRacePositionsTable(list) {
                     ${statusOptions}
                 </select>
             </td>
+            <td class="race-pos-pts-cell" style="text-align: center;">
+                ${getF1PointsBadgeHtml(idx + 1, statusVal)}
+            </td>
             <td style="text-align: center;">
                 <button type="button" class="admin-remove-btn race-pos-remove-btn" title="Eliminar posición">🗑</button>
             </td>
@@ -2400,6 +3020,8 @@ function renderRacePositionsTable(list) {
         const driverSelect = tr.querySelector(".race-driver-select");
         const teamBadge = tr.querySelector(".team-locked-badge");
         const teamVal = tr.querySelector(".race-team-val");
+        const statusSelect = tr.querySelector(".race-status-select");
+        const ptsCell = tr.querySelector(".race-pos-pts-cell");
 
         driverSelect.addEventListener("change", () => {
             const val = driverSelect.value;
@@ -2408,6 +3030,13 @@ function renderRacePositionsTable(list) {
                 teamBadge.textContent = officialTeam;
                 teamBadge.className = `team-locked-badge ${getTeamClass(officialTeam)}`;
                 teamVal.value = officialTeam;
+            }
+        });
+
+        statusSelect.addEventListener("change", () => {
+            const currentPos = parseInt(tr.querySelector(".pos-cell").textContent, 10) || (idx + 1);
+            if (ptsCell) {
+                ptsCell.innerHTML = getF1PointsBadgeHtml(currentPos, statusSelect.value);
             }
         });
 
@@ -2422,10 +3051,20 @@ function renderRacePositionsTable(list) {
 
 function reindexRacePositions() {
     if (!adminRacePositionsBody) return;
-    const rows = adminRacePositionsBody.querySelectorAll("tr");
+    const rows = adminRacePositionsBody.querySelectorAll("tr.race-pos-row");
+    if (rows.length === 0) {
+        renderRacePositionsTable([]);
+        return;
+    }
     rows.forEach((row, idx) => {
         const cell = row.querySelector(".pos-cell");
         if (cell) cell.textContent = idx + 1;
+        const statusSelect = row.querySelector(".race-status-select");
+        const ptsCell = row.querySelector(".race-pos-pts-cell");
+        if (ptsCell) {
+            const st = statusSelect ? statusSelect.value : "FINISHED";
+            ptsCell.innerHTML = getF1PointsBadgeHtml(idx + 1, st);
+        }
     });
 }
 
@@ -2436,17 +3075,17 @@ function populateRaceResultsEditor(raceKey) {
         title: raceKey.toUpperCase(),
         location: "",
         date: "TBA",
-        winner: "",
-        pole: "",
-        fastest: "",
-        driverDay: "",
+        winner: "TBA",
+        pole: "TBA",
+        fastest: "TBA",
+        driverDay: "TBA",
         drivers: []
     };
 
     // Fastest Lap (Vuelta Rápida)
     let fastestDriver = "";
     let fastestTime = "";
-    if (race.fastest) {
+    if (race.fastest && race.fastest !== "TBA") {
         if (race.fastest.includes(" · ")) {
             const parts = race.fastest.split(" · ");
             fastestDriver = parts[0].trim();
@@ -2461,7 +3100,7 @@ function populateRaceResultsEditor(raceKey) {
     // Pole
     let poleDriver = "";
     let poleTime = "";
-    if (race.pole) {
+    if (race.pole && race.pole !== "TBA") {
         if (race.pole.includes(" · ")) {
             const parts = race.pole.split(" · ");
             poleDriver = parts[0].trim();
@@ -2474,13 +3113,14 @@ function populateRaceResultsEditor(raceKey) {
     if (adminPoleTime) adminPoleTime.value = poleTime;
 
     // Driver of the Day
-    populateDriverSelect(adminDriverDay, race.driverDay || "", "-- Seleccionar Piloto del Día --");
+    const driverDayVal = (race.driverDay && race.driverDay !== "TBA") ? race.driverDay : "";
+    populateDriverSelect(adminDriverDay, driverDayVal, "-- Seleccionar Piloto del Día --");
 
     // Race Date
-    if (adminRaceDateInput) adminRaceDateInput.value = race.date || "";
+    if (adminRaceDateInput) adminRaceDateInput.value = (race.date && race.date !== "TBA") ? race.date : (seasonRacesMeta[raceKey]?.date || "");
 
-    // Position rows
-    const driversToRender = (race.drivers && race.drivers.length > 0) ? race.drivers : getDefaultTop10Positions();
+    // Position rows: if race has drivers, render them; otherwise render empty table state
+    const driversToRender = Array.isArray(race.drivers) && race.drivers.length > 0 ? race.drivers : [];
     renderRacePositionsTable(driversToRender);
 }
 
@@ -2536,8 +3176,19 @@ function initFirestoreListeners() {
 
         isPilotosInitialLoaded = true;
         const list = [];
+        let hasLegacyPilot = false;
+        let dleguloskFound = false;
+
         snapshot.forEach(docSnap => {
             const data = docSnap.data();
+            const pId = docSnap.id.toLowerCase();
+            const dName = (data.driver || "").toLowerCase();
+            if (pId === "dieguiosk" || dName === "dieguiosk") {
+                hasLegacyPilot = true;
+            }
+            if (pId === "dlegulosk" || dName === "dlegulosk") {
+                dleguloskFound = true;
+            }
             list.push({
                 id: docSnap.id,
                 driver: data.driver || docSnap.id,
@@ -2545,6 +3196,29 @@ function initFirestoreListeners() {
                 pts: Number(data.pts) || 0
             });
         });
+
+        // If Firestore contains outdated data from earlier sessions, migrate to official 44-driver dataset
+        if (hasLegacyPilot || !dleguloskFound || list.length < 44) {
+            console.log("Migrating Firestore pilots to official FFC 2010 Season dataset...");
+            try {
+                const batch = writeBatch(db);
+                if (hasLegacyPilot) {
+                    batch.delete(doc(db, "pilotos", "dieguiosk"));
+                }
+                defaultStandings.forEach(d => {
+                    const docRef = doc(db, "pilotos", getPilotDocId(d.driver));
+                    batch.set(docRef, {
+                        driver: d.driver,
+                        team: d.team,
+                        pts: Number(d.pts) || 0
+                    });
+                });
+                await batch.commit();
+                return;
+            } catch (err) {
+                console.error("Error auto-migrating pilots into Firestore:", err);
+            }
+        }
 
         list.sort((a, b) => b.pts - a.pts);
         currentPilotos = list;
@@ -2614,26 +3288,33 @@ function initFirestoreListeners() {
     onSnapshot(collection(db, "carreras"), async (snapshot) => {
         isCarrerasInitialLoaded = true;
         const existingKeys = new Set();
+        let hasLegacyRaceData = false;
 
         snapshot.forEach(docSnap => {
             existingKeys.add(docSnap.id);
             const rData = docSnap.data();
             raceResults[docSnap.id] = rData;
             updateCalendarCardForRace(docSnap.id, rData);
+
+            if (rData.winner === "Dieguiosk" || (rData.drivers && rData.drivers.some(d => d.driver === "Dieguiosk" || d.driver === "Ted Theo"))) {
+                hasLegacyRaceData = true;
+            }
         });
 
         // Ensure ALL 15 calendar races exist in Firestore
         const missingKeys = Object.keys(defaultRaceResults).filter(k => !existingKeys.has(k));
-        if (missingKeys.length > 0) {
+        if (missingKeys.length > 0 || hasLegacyRaceData) {
             try {
                 const batch = writeBatch(db);
-                missingKeys.forEach(key => {
-                    const docRef = doc(db, "carreras", key);
-                    batch.set(docRef, defaultRaceResults[key]);
+                Object.keys(defaultRaceResults).forEach(key => {
+                    if (missingKeys.includes(key) || hasLegacyRaceData) {
+                        const docRef = doc(db, "carreras", key);
+                        batch.set(docRef, defaultRaceResults[key]);
+                    }
                 });
                 await batch.commit();
             } catch (err) {
-                console.error("Error auto-seeding missing calendar races into Firestore:", err);
+                console.error("Error updating races in Firestore:", err);
             }
         }
 
@@ -2661,6 +3342,10 @@ function initFirestoreListeners() {
     // Initialize custom dropdowns (Language & Timezone)
     initCustomDropdowns();
     renderTimezoneOptions();
+
+    // Initialize Matrix Spreadsheet and View Tabs
+    initStandingsViewTabs();
+    renderFfcMatrixTable();
 
     const initialLang = (() => {
         try {
@@ -3042,7 +3727,9 @@ if (adminSelectRace) {
 if (adminAddRacePosBtn) {
     adminAddRacePosBtn.addEventListener("click", () => {
         if (!adminRacePositionsBody) return;
-        const count = adminRacePositionsBody.querySelectorAll("tr").length + 1;
+        const emptyRow = adminRacePositionsBody.querySelector(".race-pos-empty-row");
+        if (emptyRow) emptyRow.remove();
+        const count = adminRacePositionsBody.querySelectorAll("tr.race-pos-row").length + 1;
         const driverList = getAllDriverList();
 
         let driverOptions = `<option value="">-- Seleccionar Piloto --</option>`;
@@ -3073,6 +3760,9 @@ if (adminAddRacePosBtn) {
                     <option value="DSQ">DSQ</option>
                 </select>
             </td>
+            <td class="race-pos-pts-cell" style="text-align: center;">
+                ${getF1PointsBadgeHtml(count, "FINISHED")}
+            </td>
             <td style="text-align: center;">
                 <button type="button" class="admin-remove-btn race-pos-remove-btn" title="Eliminar posición">🗑</button>
             </td>
@@ -3081,6 +3771,8 @@ if (adminAddRacePosBtn) {
         const driverSelect = tr.querySelector(".race-driver-select");
         const teamBadge = tr.querySelector(".team-locked-badge");
         const teamVal = tr.querySelector(".race-team-val");
+        const statusSelect = tr.querySelector(".race-status-select");
+        const ptsCell = tr.querySelector(".race-pos-pts-cell");
 
         driverSelect.addEventListener("change", () => {
             const val = driverSelect.value;
@@ -3089,6 +3781,13 @@ if (adminAddRacePosBtn) {
                 teamBadge.textContent = officialTeam;
                 teamBadge.className = `team-locked-badge ${getTeamClass(officialTeam)}`;
                 teamVal.value = officialTeam;
+            }
+        });
+
+        statusSelect.addEventListener("change", () => {
+            const currentPos = parseInt(tr.querySelector(".pos-cell").textContent, 10) || count;
+            if (ptsCell) {
+                ptsCell.innerHTML = getF1PointsBadgeHtml(currentPos, statusSelect.value);
             }
         });
 
@@ -3105,6 +3804,147 @@ if (adminLoadDefaultPosBtn) {
     adminLoadDefaultPosBtn.addEventListener("click", () => {
         renderRacePositionsTable(getDefaultTop10Positions());
     });
+}
+
+// --- Dynamic Standings & Points Calculation Engine ---
+function calculateAllStandingsFromRaces(racesMap = raceResults, baseDriverList = []) {
+    const driversMap = new Map();
+    const finishesMap = new Map();
+
+    // 1. Seed drivers from official roster and existing list
+    const allKnown = getAllDriverList();
+    allKnown.forEach(d => {
+        if (!d.driver) return;
+        const k = normalizeDriverKey(d.driver);
+        if (!driversMap.has(k)) {
+            driversMap.set(k, {
+                id: getPilotDocId(d.driver),
+                driver: d.driver,
+                team: getDriverTeam(d.driver) || d.team || "Independent",
+                pts: 0
+            });
+            finishesMap.set(k, {});
+        }
+    });
+
+    if (Array.isArray(baseDriverList)) {
+        baseDriverList.forEach(d => {
+            if (!d.driver) return;
+            const k = normalizeDriverKey(d.driver);
+            if (!driversMap.has(k)) {
+                driversMap.set(k, {
+                    id: d.id || getPilotDocId(d.driver),
+                    driver: d.driver,
+                    team: getDriverTeam(d.driver) || d.team || "Independent",
+                    pts: 0
+                });
+                finishesMap.set(k, {});
+            }
+        });
+    }
+
+    // 2. Iterate through all completed races and calculate official points
+    Object.values(racesMap).forEach(race => {
+        if (!race || !Array.isArray(race.drivers) || race.drivers.length === 0) return;
+        const isCompleted = race.status === "COMPLETED" || (race.winner && race.winner !== "TBA");
+        if (!isCompleted) return;
+
+        // Position points: 1º: 25, 2º: 18, 3º: 15, 4º: 12, 5º: 10, 6º: 8, 7º: 6, 8º: 4, 9º: 2, 10º: 1
+        race.drivers.forEach((d, idx) => {
+            if (!d || !d.driver) return;
+            const k = normalizeDriverKey(d.driver);
+            if (!driversMap.has(k)) {
+                driversMap.set(k, {
+                    id: getPilotDocId(d.driver),
+                    driver: d.driver,
+                    team: getDriverTeam(d.driver) || d.team || "Independent",
+                    pts: 0
+                });
+                finishesMap.set(k, {});
+            }
+
+            const pos = Number(d.pos) || (idx + 1);
+            if (d.status !== "DSQ") {
+                const f = finishesMap.get(k) || {};
+                f[pos] = (f[pos] || 0) + 1;
+                finishesMap.set(k, f);
+
+                if (pos >= 1 && pos <= 10) {
+                    const pts = F1_POINTS_MAP[pos] || 0;
+                    driversMap.get(k).pts += pts;
+                }
+            }
+        });
+
+        // Fastest Lap (Vuelta Rápida): +1 PT
+        if (race.fastest && race.fastest !== "TBA") {
+            const rawName = race.fastest.split("·")[0].trim();
+            if (rawName) {
+                const k = normalizeDriverKey(rawName);
+                if (driversMap.has(k)) {
+                    driversMap.get(k).pts += F1_FASTEST_LAP_PTS;
+                }
+            }
+        }
+    });
+
+    // 3. Sort drivers: points descending, then tiebreakers (most 1st places, 2nd places...), then alphabetically
+    const list = Array.from(driversMap.values());
+    list.sort((a, b) => {
+        const ptsA = Number(a.pts) || 0;
+        const ptsB = Number(b.pts) || 0;
+        if (ptsB !== ptsA) return ptsB - ptsA;
+
+        const kA = normalizeDriverKey(a.driver);
+        const kB = normalizeDriverKey(b.driver);
+        const fA = finishesMap.get(kA) || {};
+        const fB = finishesMap.get(kB) || {};
+        for (let p = 1; p <= 15; p++) {
+            const cA = fA[p] || 0;
+            const cB = fB[p] || 0;
+            if (cB !== cA) return cB - cA;
+        }
+
+        return a.driver.localeCompare(b.driver, undefined, { sensitivity: "base" });
+    });
+
+    return list.map((d, idx) => ({ ...d, pos: idx + 1 }));
+}
+
+async function recalculateAndSyncStandings(racesMap = raceResults) {
+    const baseList = (currentPilotos && currentPilotos.length > 0) ? currentPilotos : defaultStandings;
+    const newStandings = calculateAllStandingsFromRaces(racesMap, baseList);
+
+    try {
+        const batch = writeBatch(db);
+        newStandings.forEach(p => {
+            const docRef = doc(db, "pilotos", p.id || getPilotDocId(p.driver));
+            batch.set(docRef, {
+                driver: p.driver,
+                team: p.team || getDriverTeam(p.driver) || "Independent",
+                pts: Number(p.pts) || 0
+            }, { merge: true });
+        });
+        await batch.commit();
+    } catch (err) {
+        console.error("Error batch saving recalculated standings to Firestore:", err);
+    }
+
+    currentPilotos = newStandings;
+    renderStandingsOnPage(currentPilotos);
+
+    if (typeof updateStandingsToggleUI === "function") {
+        updateStandingsToggleUI(currentPilotos.length);
+    }
+
+    if (adminStandingsTableBody) {
+        renderAdminStandingsEditor(currentPilotos);
+    }
+    if (adminDriversTableBody) {
+        renderAdminDriversTab(adminSearchPilotInput ? adminSearchPilotInput.value : "");
+    }
+
+    return newStandings;
 }
 
 if (raceResultsForm) {
@@ -3182,7 +4022,7 @@ if (raceResultsForm) {
 
         try {
             if (raceResultsSaveNotice) {
-                raceResultsSaveNotice.textContent = "Guardando resultados en Firestore...";
+                raceResultsSaveNotice.textContent = "Guardando resultados y recalculando clasificación...";
                 raceResultsSaveNotice.style.color = "var(--gold)";
             }
             await setDoc(doc(db, "carreras", raceKey), updatedRace);
@@ -3190,10 +4030,13 @@ if (raceResultsForm) {
             raceResults[raceKey] = updatedRace;
             updateCalendarCardForRace(raceKey, updatedRace);
 
+            // Automatically recalculate points & standings for drivers and teams
+            await recalculateAndSyncStandings(raceResults);
+
             if (raceResultsSaveNotice) {
-                raceResultsSaveNotice.textContent = `✓ Resultados de ${meta.title} sincronizados en Firestore`;
+                raceResultsSaveNotice.textContent = `✓ Resultados de ${meta.title} guardados. Puntos y standings (pilotos y equipos) actualizados.`;
                 raceResultsSaveNotice.style.color = "#3fb950";
-                setTimeout(() => { raceResultsSaveNotice.textContent = ""; }, 3500);
+                setTimeout(() => { raceResultsSaveNotice.textContent = ""; }, 4000);
             }
         } catch (err) {
             console.error("Error saving race to Firestore:", err);
@@ -3205,10 +4048,114 @@ if (raceResultsForm) {
     });
 }
 
+// Reset Race Results Logic
+async function resetCurrentRace() {
+    const raceKey = (adminSelectRace && adminSelectRace.value) ? adminSelectRace.value : "australia";
+    if (!raceKey) return;
+
+    const meta = seasonRacesMeta[raceKey] || {
+        round: "ROUND",
+        title: raceKey.toUpperCase(),
+        location: raceKey.toUpperCase(),
+        date: "TBA"
+    };
+
+    const confirmMsg = `¿Deseas restablecer los resultados oficiales de ${meta.title}?\n\n• Se borrarán los tiempos de vuelta rápida y pole position.\n• Se vaciará el orden de llegada de los pilotos.\n• La carrera pasará a estado PRÓXIMA / UPCOMING en el calendario.\n• Los puntos y clasificaciones (pilotos y escuderías) se recalcularán automáticamente en tiempo real sin esta carrera.`;
+
+    const confirmed = await showAppConfirm(`Restablecer ${meta.title}`, confirmMsg, "Sí, Restablecer Carrera", "Cancelar");
+    if (!confirmed) return;
+
+    const resetRaceData = {
+        round: meta.round,
+        title: meta.title,
+        location: meta.location,
+        date: (adminRaceDateInput && adminRaceDateInput.value.trim()) || meta.date || "TBA",
+        status: "UPCOMING",
+        winner: "TBA",
+        pole: "TBA",
+        fastest: "TBA",
+        driverDay: "TBA",
+        p2: "TBA",
+        p3: "TBA",
+        weather: "",
+        drivers: []
+    };
+
+    // 1. Instant local update (no lag in UI)
+    raceResults[raceKey] = resetRaceData;
+    updateCalendarCardForRace(raceKey, resetRaceData);
+    populateRaceResultsEditor(raceKey);
+
+    if (raceResultsSaveNotice) {
+        raceResultsSaveNotice.textContent = `Restableciendo resultados de ${meta.title} y actualizando clasificación...`;
+        raceResultsSaveNotice.style.color = "var(--gold)";
+    }
+
+    try {
+        // 2. Persist reset race in Firestore
+        await setDoc(doc(db, "carreras", raceKey), resetRaceData);
+
+        // 3. Recalculate standings and sync to Firestore
+        await recalculateAndSyncStandings(raceResults);
+
+        if (raceResultsSaveNotice) {
+            raceResultsSaveNotice.textContent = `✓ Resultados de ${meta.title} restablecidos con éxito. Standings actualizados.`;
+            raceResultsSaveNotice.style.color = "#3fb950";
+            setTimeout(() => { if (raceResultsSaveNotice) raceResultsSaveNotice.textContent = ""; }, 4000);
+        }
+    } catch (err) {
+        console.error("Error resetting race:", err);
+        if (raceResultsSaveNotice) {
+            raceResultsSaveNotice.textContent = "Error al restablecer carrera: " + err.message;
+            raceResultsSaveNotice.style.color = "#f85149";
+        }
+    }
+}
+
+if (adminResetRaceBtn) {
+    adminResetRaceBtn.addEventListener("click", (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        resetCurrentRace();
+    });
+}
+if (adminResetRaceBtnBottom) {
+    adminResetRaceBtnBottom.addEventListener("click", (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        resetCurrentRace();
+    });
+}
+
+// Manual Standings Recalculation Button
+if (adminRecalcStandingsBtn) {
+    adminRecalcStandingsBtn.addEventListener("click", async () => {
+        try {
+            if (standingsSaveNotice) {
+                standingsSaveNotice.textContent = "Recalculando puntos desde todas las carreras...";
+                standingsSaveNotice.style.color = "var(--gold)";
+            }
+            await recalculateAndSyncStandings(raceResults);
+            if (standingsSaveNotice) {
+                standingsSaveNotice.textContent = "✓ Puntos y clasificaciones recalculados exitosamente";
+                standingsSaveNotice.style.color = "#3fb950";
+                setTimeout(() => { standingsSaveNotice.textContent = ""; }, 3500);
+            }
+        } catch (err) {
+            console.error("Error recalculating standings:", err);
+            if (standingsSaveNotice) {
+                standingsSaveNotice.textContent = "Error al recalcular: " + err.message;
+                standingsSaveNotice.style.color = "#f85149";
+            }
+        }
+    });
+}
+
 // Reset to Defaults
 if (adminResetDefaultBtn) {
     adminResetDefaultBtn.addEventListener("click", async () => {
-        if (!confirm("¿Seguro que deseas restablecer los datos de fábrica en la base de datos Firestore?")) return;
+        const confirmed = await showAppConfirm("Restablecer Todo", "¿Seguro que deseas restablecer todos los datos de fábrica en la base de datos Firestore?\n\nEsta acción reiniciará los pilotos, carreras y configuración a sus valores iniciales.", "Sí, Restablecer Todo", "Cancelar");
+        if (!confirmed) return;
 
         try {
             if (settingsSaveNotice) {
@@ -3256,6 +4203,7 @@ if (adminResetDefaultBtn) {
             renderStandingsOnPage(defaultStandings);
             renderSettingsOnPage(defaultSettings);
             initRaceResults();
+            renderFfcMatrixTable();
             populateAdminForms();
 
             if (settingsSaveNotice) {

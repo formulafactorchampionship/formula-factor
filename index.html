@@ -41,10 +41,12 @@
             <div class="custom-dropdown lang-dropdown" id="langDropdown">
                 <button type="button" class="dropdown-trigger lang-trigger" id="langDropdownBtn" aria-haspopup="listbox" aria-expanded="false" title="Cambiar idioma / Change language">
                     <span class="trigger-flag" id="currentLangFlag">
-                        <svg viewBox="0 0 20 14" width="18" height="12.6" class="flag-svg" aria-hidden="true">
-                            <rect width="20" height="14" fill="#AA151B"/>
-                            <rect y="3.5" width="20" height="7" fill="#F1BF00"/>
-                            <circle cx="5" cy="7" r="1.8" fill="#AA151B" opacity="0.85"/>
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 17" width="22" height="15" class="flag-svg" aria-hidden="true">
+                            <rect width="24" height="17" fill="#c60b1e"/>
+                            <rect y="4.25" width="24" height="8.5" fill="#ffc400"/>
+                            <circle cx="6.5" cy="8.5" r="2.2" fill="#c60b1e"/>
+                            <rect x="5.8" y="7" width="1.4" height="3" fill="#ffc400"/>
+                            <circle cx="6.5" cy="6.2" r="0.8" fill="#c60b1e"/>
                         </svg>
                     </span>
                     <span class="trigger-code" id="currentLangCode">ES</span>
@@ -55,10 +57,12 @@
                 <div class="dropdown-menu lang-menu" id="langDropdownMenu" role="listbox" aria-label="Cambiar idioma">
                     <button type="button" class="dropdown-option active" id="langOptEs" data-lang="es" role="option" aria-selected="true">
                         <span class="option-flag">
-                            <svg viewBox="0 0 20 14" width="18" height="12.6" class="flag-svg" aria-hidden="true">
-                                <rect width="20" height="14" fill="#AA151B"/>
-                                <rect y="3.5" width="20" height="7" fill="#F1BF00"/>
-                                <circle cx="5" cy="7" r="1.8" fill="#AA151B" opacity="0.85"/>
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 17" width="22" height="15" class="flag-svg" aria-hidden="true">
+                                <rect width="24" height="17" fill="#c60b1e"/>
+                                <rect y="4.25" width="24" height="8.5" fill="#ffc400"/>
+                                <circle cx="6.5" cy="8.5" r="2.2" fill="#c60b1e"/>
+                                <rect x="5.8" y="7" width="1.4" height="3" fill="#ffc400"/>
+                                <circle cx="6.5" cy="6.2" r="0.8" fill="#c60b1e"/>
                             </svg>
                         </span>
                         <span class="option-label">Español</span>
@@ -67,7 +71,7 @@
                     </button>
                     <button type="button" class="dropdown-option" id="langOptEn" data-lang="en" role="option" aria-selected="false">
                         <span class="option-flag">
-                            <svg viewBox="0 0 60 30" width="18" height="12" class="flag-svg" aria-hidden="true" style="border-radius:2px;overflow:hidden;">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 60 30" width="22" height="15" class="flag-svg" aria-hidden="true" style="border-radius:2px;overflow:hidden;">
                                 <rect width="60" height="30" fill="#012169"/>
                                 <path d="M0 0 L60 30 M60 0 L0 30" stroke="#FFFFFF" stroke-width="6"/>
                                 <path d="M0 0 L30 15 M60 30 L30 15" stroke="#C8102E" stroke-width="2"/>
@@ -86,10 +90,13 @@
             <!-- Desplegable de Zona Horaria (Hora base: Madrid) -->
             <div class="custom-dropdown tz-dropdown" id="tzDropdown">
                 <button type="button" class="dropdown-trigger tz-trigger" id="tzDropdownBtn" aria-haspopup="listbox" aria-expanded="false" title="Zona horaria (Hora base: Madrid)">
-                    <span class="trigger-icon" aria-hidden="true">
-                        <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <circle cx="12" cy="12" r="10"/>
-                            <polyline points="12 6 12 12 16 14"/>
+                    <span class="trigger-flag" id="currentTzFlag">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 17" width="22" height="15" class="flag-svg" aria-hidden="true">
+                            <rect width="24" height="17" fill="#c60b1e"/>
+                            <rect y="4.25" width="24" height="8.5" fill="#ffc400"/>
+                            <circle cx="6.5" cy="8.5" r="2.2" fill="#c60b1e"/>
+                            <rect x="5.8" y="7" width="1.4" height="3" fill="#ffc400"/>
+                            <circle cx="6.5" cy="6.2" r="0.8" fill="#c60b1e"/>
                         </svg>
                     </span>
                     <span class="trigger-code" id="currentTzCode">MADRID</span>
@@ -281,6 +288,76 @@
 
     </div>
 
+    <div class="standings-view-selector" id="standingsViewSelector">
+        <button type="button" class="standings-view-tab active" id="tabStandingsMatrix" data-view="matrix">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M3 3v18h18V3H3zm8 16H5v-4h6v4zm0-6H5V9h6v4zm0-6H5V5h6v2zm8 12h-6v-4h6v4zm0-6h-6V9h6v4zm0-6h-6V5h6v2z"/></svg>
+            <span id="tabLabelMatrix">TABLA OFICIAL FFC 2010 SEASON</span>
+        </button>
+        <button type="button" class="standings-view-tab" id="tabStandingsCards" data-view="cards">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V5h14v14zM7 10h2v7H7zm4-3h2v10h-2zm4 6h2v4h-2z"/></svg>
+            <span id="tabLabelCards">VISTA RESUMEN &amp; PODIO</span>
+        </button>
+    </div>
+
+    <!-- Official Matrix Table View (Direct Match with Screenshot) -->
+    <div class="ffc-matrix-wrapper" id="standingsMatrixView">
+        <div class="ffc-matrix-header-banner">
+            <span class="ffc-matrix-banner-text">FORMULA FACTOR CHAMPIONSHIP - FFC 2010 SEASON</span>
+        </div>
+
+        <div class="ffc-matrix-toolbar">
+            <div class="ffc-matrix-search-box">
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+                <input type="text" id="matrixSearchInput" placeholder="Filtrar piloto o equipo..." class="ffc-matrix-search-input" autocomplete="off" />
+            </div>
+            <div class="ffc-matrix-badges">
+                <span class="matrix-badge-info">44 Pilotos</span>
+                <span class="matrix-badge-info">15 Rondas</span>
+            </div>
+        </div>
+
+        <div class="ffc-matrix-table-container">
+            <table class="ffc-matrix-table" id="ffcMatrixTable">
+                <thead>
+                    <tr>
+                        <th class="th-pos">Pos.</th>
+                        <th class="th-driver">Driver</th>
+                        <th class="th-team">Team</th>
+                        <th class="th-race" title="Round 1: Australia">🇦🇺<br><small>R1</small></th>
+                        <th class="th-race" title="Round 2: Malaysia">🇲🇾<br><small>R2</small></th>
+                        <th class="th-race" title="Round 3: Bahrain">🇧🇭<br><small>R3</small></th>
+                        <th class="th-race" title="Round 4: Turkey">🇹🇷<br><small>R4</small></th>
+                        <th class="th-race" title="Round 5: Spain">🇪🇸<br><small>R5</small></th>
+                        <th class="th-race" title="Round 6: Italy">🇮🇹<br><small>R6</small></th>
+                        <th class="th-race" title="Round 7: Austria">🇦🇹<br><small>R7</small></th>
+                        <th class="th-race" title="Round 8: Great Britain">🇬🇧<br><small>R8</small></th>
+                        <th class="th-race" title="Round 9: Germany">🇩🇪<br><small>R9</small></th>
+                        <th class="th-race" title="Round 10: Europe">🇪🇺<br><small>R10</small></th>
+                        <th class="th-race" title="Round 11: Hungary">🇭🇺<br><small>R11</small></th>
+                        <th class="th-race" title="Round 12: Belgium">🇧🇪<br><small>R12</small></th>
+                        <th class="th-race" title="Round 13: Singapore">🇸🇬<br><small>R13</small></th>
+                        <th class="th-race" title="Round 14: USA">🇺🇸<br><small>R14</small></th>
+                        <th class="th-race" title="Round 15: Brazil">🇧🇷<br><small>R15</small></th>
+                        <th class="th-points">Points:</th>
+                        <th class="th-dif">Dif.</th>
+                    </tr>
+                </thead>
+                <tbody id="ffcMatrixTableBody">
+                    <!-- Loaded dynamically from ffc2010SeasonDrivers -->
+                </tbody>
+            </table>
+        </div>
+
+        <div class="ffc-matrix-legend">
+            <div class="legend-item"><span class="legend-chip chip-pole">O</span><span>Pole Position (Círculo)</span></div>
+            <div class="legend-item"><span class="legend-chip chip-fl">Puntos*</span><span>Vuelta Rápida (+1 pt)</span></div>
+            <div class="legend-item"><span class="legend-chip chip-win">25</span><span>Victoria</span></div>
+            <div class="legend-item"><span class="legend-chip chip-out">OUT</span><span>Abandono / DNF</span></div>
+        </div>
+    </div>
+
+    <!-- Cards & Podium View (Alternative Toggle View) -->
+    <div class="standings-cards-container" id="standingsCardsView" style="display: none;">
 
     <div class="standings-block">
 
@@ -295,69 +372,89 @@
 
         </div>
 
-        <div class="table-wrapper">
+        <div class="ranking-board" id="driverRankingBoard">
 
-            <table class="standings-table">
+            <!-- P1: Leader Hero Row -->
+            <div class="ranking-leader-row" id="driverLeaderRow">
+                <div class="ranking-leader-left">
+                    <span class="ranking-leader-pos">1.</span>
+                    <div class="ranking-leader-info">
+                        <span class="ranking-leader-name">Dlegulosk</span>
+                        <div class="ranking-leader-meta">
+                            <span class="ranking-team-pill team-hrt">HRT</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="ranking-leader-right">
+                    <div class="ranking-pts-tag">
+                        <strong class="pts-num">153</strong>
+                        <small class="pts-label">PTS</small>
+                    </div>
+                    <div class="leader-badge-pill" id="driverLeaderBadge">
+                        <span class="leader-badge-text">LÍDER</span>
+                        <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" class="leader-trophy-icon" aria-hidden="true">
+                            <path d="M19 5h-2V3H7v2H5c-1.1 0-2 .9-2 2v1c0 2.55 1.92 4.63 4.39 4.94A5.01 5.01 0 0 0 11 15.9V19H8v2h8v-2h-3v-3.1c1.84-.36 3.28-1.78 3.61-3.96C19.08 11.63 21 9.55 21 8V7c0-1.1-.9-2-2-2zM5 8V7h2v3.82C5.84 10.4 5 9.3 5 8zm14 0c0 1.3-.84 2.4-2 2.82V7h2v1z"/>
+                        </svg>
+                    </div>
+                </div>
+            </div>
 
-                <thead>
-                    <tr>
-                        <th id="thDriverPos">POS.</th>
-                        <th id="thDriverName">PILOTO</th>
-                        <th id="thDriverTeam">EQUIPO</th>
-                        <th id="thDriverPts">PTS</th>
-                    </tr>
-                </thead>
+            <!-- P2 & P3: Split Podium Columns -->
+            <div class="ranking-podium-split" id="driverPodiumSplit">
+                <div class="ranking-podium-col ranking-p2" id="driverP2Col">
+                    <div class="ranking-podium-left">
+                        <span class="ranking-podium-pos">2.</span>
+                        <div class="ranking-podium-info">
+                            <span class="ranking-podium-name">Muntii</span>
+                            <div class="ranking-podium-meta">
+                                <span class="ranking-team-pill team-redbull">Red Bull</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="ranking-podium-right">
+                        <div class="ranking-pts-tag">
+                            <strong class="pts-num">125</strong>
+                            <small class="pts-label">PTS</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="ranking-podium-col ranking-p3" id="driverP3Col">
+                    <div class="ranking-podium-left">
+                        <span class="ranking-podium-pos">3.</span>
+                        <div class="ranking-podium-info">
+                            <span class="ranking-podium-name">Novitaa</span>
+                            <div class="ranking-podium-meta">
+                                <span class="ranking-team-pill team-redbull">Red Bull</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="ranking-podium-right">
+                        <div class="ranking-pts-tag">
+                            <strong class="pts-num">88</strong>
+                            <small class="pts-label">PTS</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
-                <tbody id="standingsTableBody">
+            <!-- P4+: Rows Header -->
+            <div class="ranking-rows-header">
+                <span id="thDriverPos">POS.</span>
+                <span id="thDriverName">PILOTO</span>
+                <span id="thDriverTeam" class="header-team">EQUIPO</span>
+                <span id="thDriverPts" class="header-pts">PTS</span>
+            </div>
 
-                    <tr class="leader"><td>1</td><td>Dieguiosk</td><td class="team-hrt">HRT</td><td>153</td></tr>
-                    <tr><td>2</td><td>Muntii</td><td class="team-redbull">Red Bull</td><td>125</td></tr>
-                    <tr><td>3</td><td>Novitaa</td><td class="team-redbull">Red Bull</td><td>88</td></tr>
-                    <tr><td>4</td><td>BigTheo</td><td class="team-ferrari">Ferrari</td><td>64</td></tr>
-                    <tr><td>5</td><td>Suforr</td><td class="team-mercedes">Mercedes</td><td>53</td></tr>
-                    <tr><td>6</td><td>IvánR</td><td class="team-hrt">HRT</td><td>52</td></tr>
-                    <tr><td>7</td><td>Sbinn</td><td class="team-tororosso">Toro Rosso</td><td>35</td></tr>
-                    <tr><td>8</td><td>Licha</td><td class="team-ferrari">Ferrari</td><td>33</td></tr>
-                    <tr><td>9</td><td>TheWereGH</td><td class="team-sauber">Sauber</td><td>32</td></tr>
-                    <tr><td>10</td><td>Victor</td><td class="team-mclaren">McLaren</td><td>22</td></tr>
-                    <tr><td>11</td><td>Gold</td><td class="team-williams">Williams</td><td>20</td></tr>
-                    <tr><td>12</td><td>Viktolo</td><td class="team-tororosso">Toro Rosso</td><td>20</td></tr>
-                    <tr><td>13</td><td>Farlonso</td><td class="team-lotus">Lotus</td><td>20</td></tr>
-                    <tr><td>14</td><td>AMF</td><td class="team-williams">Williams</td><td>20</td></tr>
-                    <tr><td>15</td><td>ElMamut</td><td class="team-virgin">Virgin</td><td>18</td></tr>
-                    <tr><td>16</td><td>Baena</td><td class="team-mercedes">Mercedes</td><td>16</td></tr>
-                    <tr><td>17</td><td>Sir Galactic</td><td class="team-renault">Renault</td><td>16</td></tr>
-                    <tr><td>18</td><td>DiegoSniper69</td><td class="team-sauber">Sauber</td><td>15</td></tr>
-                    <tr><td>19</td><td>Erik Brenna</td><td class="team-forceindia">Force India</td><td>15</td></tr>
-                    <tr><td>20</td><td>CarlosUre</td><td class="team-forceindia">Force India</td><td>15</td></tr>
-                    <tr><td>21</td><td>Dericcc</td><td class="team-virgin">Virgin</td><td>13</td></tr>
-                    <tr><td>22</td><td>Lil</td><td class="team-lotus">Lotus</td><td>12</td></tr>
-                    <tr><td>23</td><td>Kri</td><td class="team-renault">Renault</td><td>12</td></tr>
-                    <tr><td>24</td><td>Novi</td><td class="team-ferrari">Ferrari</td><td>11</td></tr>
-                    <tr><td>25</td><td>Dadaaliro</td><td class="team-lotus">Lotus</td><td>9</td></tr>
-                    <tr><td>26</td><td>Nando_FA14</td><td class="team-hrt">HRT</td><td>8</td></tr>
-                    <tr><td>27</td><td>Krisdemur</td><td class="team-williams">Williams</td><td>8</td></tr>
-                    <tr><td>28</td><td>Rafale</td><td class="team-mclaren">McLaren</td><td>6</td></tr>
-                    <tr><td>29</td><td>TheAgus60</td><td class="team-mclaren">McLaren</td><td>5</td></tr>
-                    <tr><td>30</td><td>J-DOT</td><td class="team-mclaren">McLaren</td><td>2</td></tr>
-                    <tr><td>31</td><td>N. Duro</td><td class="team-ferrari">Ferrari</td><td>1</td></tr>
-                    <tr><td>32</td><td>TucnakCZE</td><td class="team-forceindia">Force India</td><td>0</td></tr>
-                    <tr><td>33</td><td>ElNando</td><td class="team-forceindia">Force India</td><td>0</td></tr>
-                    <tr><td>34</td><td>Oscar Soria</td><td class="team-williams">Williams</td><td>0</td></tr>
-                    <tr><td>35</td><td>RikiDorsa</td><td class="team-virgin">Virgin</td><td>0</td></tr>
-                    <tr><td>36</td><td>Drips</td><td class="team-mclaren">McLaren</td><td>0</td></tr>
-                    <tr><td>37</td><td>Y6NJ</td><td class="team-redbull">Red Bull</td><td>0</td></tr>
-                    <tr><td>38</td><td>Zenthix</td><td class="team-williams">Williams</td><td>0</td></tr>
-                    <tr><td>39</td><td>VGXEmi</td><td class="team-forceindia">Force India</td><td>0</td></tr>
-                    <tr><td>40</td><td>Zukini</td><td class="team-tororosso">Toro Rosso</td><td>0</td></tr>
-                    <tr><td>41</td><td>SkyFall</td><td class="team-tororosso">Toro Rosso</td><td>0</td></tr>
-                    <tr><td>42</td><td>Bartus</td><td class="team-renault">Renault</td><td>0</td></tr>
-                    <tr><td>43</td><td>Hpdypro27</td><td class="team-redbull">Red Bull</td><td>0</td></tr>
-                    <tr><td>44</td><td>Galogb</td><td class="team-lotus">Lotus</td><td>0</td></tr>
-
-                </tbody>
-
-            </table>
+            <!-- P4+: Rows List -->
+            <div class="ranking-rows-list" id="driverRowsList">
+                <div class="ranking-row"><span class="ranking-row-pos">4</span><span class="ranking-row-name">BigTheo</span><span class="ranking-row-team team-ferrari">Ferrari</span><span class="ranking-row-pts">64</span></div>
+                <div class="ranking-row"><span class="ranking-row-pos">5</span><span class="ranking-row-name">Suforr</span><span class="ranking-row-team team-mercedes">Mercedes</span><span class="ranking-row-pts">53</span></div>
+                <div class="ranking-row"><span class="ranking-row-pos">6</span><span class="ranking-row-name">IvánR</span><span class="ranking-row-team team-hrt">HRT</span><span class="ranking-row-pts">52</span></div>
+                <div class="ranking-row"><span class="ranking-row-pos">7</span><span class="ranking-row-name">Sbinn</span><span class="ranking-row-team team-tororosso">Toro Rosso</span><span class="ranking-row-pts">35</span></div>
+                <div class="ranking-row"><span class="ranking-row-pos">8</span><span class="ranking-row-name">Licha</span><span class="ranking-row-team team-ferrari">Ferrari</span><span class="ranking-row-pts">33</span></div>
+                <div class="ranking-row"><span class="ranking-row-pos">9</span><span class="ranking-row-name">TheWereGH</span><span class="ranking-row-team team-sauber">Sauber</span><span class="ranking-row-pts">32</span></div>
+                <div class="ranking-row"><span class="ranking-row-pos">10</span><span class="ranking-row-name">Victor</span><span class="ranking-row-team team-mclaren">McLaren</span><span class="ranking-row-pts">22</span></div>
+            </div>
 
         </div>
 
@@ -384,41 +481,67 @@
 
         </div>
 
-        <div class="table-wrapper">
+        <div class="ranking-board team-rankings-board" id="teamRankingBoard">
 
-            <table class="standings-table">
+            <!-- P1: Constructor Leader Row (Tied Leaders Layout from sketch) -->
+            <div class="ranking-leader-row is-tied" id="teamLeaderRow">
+                <div class="ranking-tied-badge" id="teamTiedBadge">
+                    <span>EMPATE</span>
+                </div>
+                <div class="ranking-tied-left">
+                    <span class="ranking-leader-pos">1.</span>
+                    <div class="ranking-tied-team">
+                        <span class="ranking-leader-name team-hrt">HRT</span>
+                        <span class="ranking-team-pill team-hrt">HRT</span>
+                    </div>
+                </div>
+                <div class="ranking-tied-center">
+                    <div class="ranking-pts-tag ranking-tied-pts">
+                        <strong class="pts-num">213</strong>
+                        <small class="pts-label">PTS</small>
+                    </div>
+                </div>
+                <div class="ranking-tied-right">
+                    <div class="ranking-tied-team">
+                        <span class="ranking-leader-name team-redbull">Red Bull</span>
+                        <span class="ranking-team-pill team-redbull">Red Bull</span>
+                    </div>
+                </div>
+            </div>
 
-                <thead>
-                    <tr>
-                        <th id="thTeamPos">POS.</th>
-                        <th id="thTeamName">EQUIPO</th>
-                        <th id="thTeamPoints">PUNTOS</th>
-                        <th id="thTeamDiff">DIF.</th>
-                    </tr>
-                </thead>
+            <!-- P2 & P3: Constructor Podium Split (Hidden when P1 is tied) -->
+            <div class="ranking-podium-split" id="teamPodiumSplit" style="display: none;">
+                <div class="ranking-podium-col ranking-p2" id="teamP2Col"></div>
+                <div class="ranking-podium-col ranking-p3" id="teamP3Col"></div>
+            </div>
 
-                <tbody id="constructorsTableBody">
+            <!-- P3+: Rows Header -->
+            <div class="ranking-rows-header">
+                <span id="thTeamPos">POS.</span>
+                <span id="thTeamName">EQUIPO</span>
+                <span id="thTeamPoints" class="header-pts">PUNTOS</span>
+                <span id="thTeamDiff" class="header-pts">DIF.</span>
+            </div>
 
-                    <tr class="leader"><td>1</td><td class="team-hrt">HRT</td><td>213</td><td>—</td></tr>
-                    <tr><td>2</td><td class="team-redbull">Red Bull</td><td>213</td><td>0</td></tr>
-                    <tr><td>3</td><td class="team-ferrari">Ferrari</td><td>108</td><td>-105</td></tr>
-                    <tr><td>4</td><td class="team-tororosso">Toro Rosso</td><td>70</td><td>-143</td></tr>
-                    <tr><td>5</td><td class="team-mercedes">Mercedes</td><td>69</td><td>-144</td></tr>
-                    <tr><td>6</td><td class="team-williams">Williams</td><td>48</td><td>-165</td></tr>
-                    <tr><td>7</td><td class="team-sauber">Sauber</td><td>47</td><td>-166</td></tr>
-                    <tr><td>8</td><td class="team-lotus">Lotus</td><td>41</td><td>-172</td></tr>
-                    <tr><td>9</td><td class="team-mclaren">McLaren</td><td>36</td><td>-177</td></tr>
-                    <tr><td>10</td><td class="team-virgin">Virgin</td><td>31</td><td>-182</td></tr>
-                    <tr><td>11</td><td class="team-renault">Renault</td><td>28</td><td>-185</td></tr>
-                    <tr><td>12</td><td class="team-forceindia">Force India</td><td>15</td><td>-198</td></tr>
-
-                </tbody>
-
-            </table>
+            <!-- P3+: Rows List -->
+            <div class="ranking-rows-list" id="teamRowsList">
+                <div class="ranking-row"><span class="ranking-row-pos">3</span><span class="ranking-row-name team-ferrari">Ferrari</span><span class="ranking-row-pts">108</span><span class="ranking-row-diff">-105</span></div>
+                <div class="ranking-row"><span class="ranking-row-pos">4</span><span class="ranking-row-name team-tororosso">Toro Rosso</span><span class="ranking-row-pts">70</span><span class="ranking-row-diff">-143</span></div>
+                <div class="ranking-row"><span class="ranking-row-pos">5</span><span class="ranking-row-name team-mercedes">Mercedes</span><span class="ranking-row-pts">69</span><span class="ranking-row-diff">-144</span></div>
+                <div class="ranking-row"><span class="ranking-row-pos">6</span><span class="ranking-row-name team-williams">Williams</span><span class="ranking-row-pts">48</span><span class="ranking-row-diff">-165</span></div>
+                <div class="ranking-row"><span class="ranking-row-pos">7</span><span class="ranking-row-name team-sauber">Sauber</span><span class="ranking-row-pts">47</span><span class="ranking-row-diff">-166</span></div>
+                <div class="ranking-row"><span class="ranking-row-pos">8</span><span class="ranking-row-name team-lotus">Lotus</span><span class="ranking-row-pts">41</span><span class="ranking-row-diff">-172</span></div>
+                <div class="ranking-row"><span class="ranking-row-pos">9</span><span class="ranking-row-name team-mclaren">McLaren</span><span class="ranking-row-pts">36</span><span class="ranking-row-diff">-177</span></div>
+                <div class="ranking-row"><span class="ranking-row-pos">10</span><span class="ranking-row-name team-virgin">Virgin</span><span class="ranking-row-pts">31</span><span class="ranking-row-diff">-182</span></div>
+                <div class="ranking-row"><span class="ranking-row-pos">11</span><span class="ranking-row-name team-renault">Renault</span><span class="ranking-row-pts">28</span><span class="ranking-row-diff">-185</span></div>
+                <div class="ranking-row"><span class="ranking-row-pos">12</span><span class="ranking-row-name team-forceindia">Force India</span><span class="ranking-row-pts">30</span><span class="ranking-row-diff">-183</span></div>
+            </div>
 
         </div>
 
     </div>
+
+    </div> <!-- End standings-cards-container -->
 
 </section>
 
@@ -1035,11 +1158,20 @@
                         </div>
                     </div>
 
+                    <div class="admin-scoring-info-box">
+                        <div class="admin-scoring-title">
+                            <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg>
+                            <strong>Sistema Oficial de Puntuación F1</strong>
+                        </div>
+                        <p>Al guardar o modificar los resultados de carrera, los <strong>puntos y standings de pilotos y equipos se recalculan y actualizan automáticamente</strong>: 1º (25 pts), 2º (18), 3º (15), 4º (12), 5º (10), 6º (8), 7º (6), 8º (4), 9º (2), 10º (1) y Vuelta Rápida (1 pt).</p>
+                    </div>
+
                     <div class="admin-standings-toolbar">
                         <h4>ORDEN DE LLEGADA (PILOTOS POR DESPLEGABLE)</h4>
                         <div class="admin-toolbar-btns">
                             <button type="button" id="adminAddRacePosBtn" class="btn btn-secondary btn-sm">+ Añadir Posición</button>
                             <button type="button" id="adminLoadDefaultPosBtn" class="btn btn-secondary btn-sm">Cargar Top 10</button>
+                            <button type="button" id="adminResetRaceBtn" class="btn btn-danger-outline btn-sm" title="Restablecer resultados y tiempos de esta carrera">↺ Restablecer Carrera</button>
                         </div>
                     </div>
 
@@ -1051,6 +1183,7 @@
                                     <th style="min-width: 220px;">PILOTO (DESPLEGABLE)</th>
                                     <th style="min-width: 150px;">EQUIPO (OFICIAL · BLOQUEADO)</th>
                                     <th style="min-width: 130px;">ESTADO</th>
+                                    <th style="min-width: 95px; text-align: center;">PUNTOS F1</th>
                                     <th style="width: 50px;"></th>
                                 </tr>
                             </thead>
@@ -1062,7 +1195,10 @@
 
                     <div class="admin-save-bar">
                         <span class="admin-save-notice" id="raceResultsSaveNotice"></span>
-                        <button type="submit" class="btn btn-primary">Guardar Resultados de Carrera</button>
+                        <div class="admin-save-actions">
+                            <button type="button" id="adminResetRaceBtnBottom" class="btn btn-danger-outline btn-sm" title="Quitar resultados, tiempos y orden de llegada de este Gran Premio">↺ Restablecer Carrera</button>
+                            <button type="submit" class="btn btn-primary" id="adminSaveRaceResultsBtn">Guardar Resultados de Carrera</button>
+                        </div>
                     </div>
                 </form>
             </div>
@@ -1072,9 +1208,12 @@
                 <div class="admin-standings-toolbar">
                     <div>
                         <h4>Tabla de Pilotos y Puntos</h4>
-                        <p class="admin-field-hint">Modifica los puntos acumulados de cada piloto. El equipo está bloqueado aquí y se gestiona en la pestaña <strong>«Pilotos &amp; Equipos»</strong>.</p>
+                        <p class="admin-field-hint">Modifica los puntos acumulados de cada piloto o usa el recálculo automático basado en los resultados de carrera oficiales.</p>
                     </div>
-                    <button type="button" class="btn btn-secondary" id="adminAddDriverBtn">+ Añadir Piloto a Tabla</button>
+                    <div class="admin-toolbar-btns">
+                        <button type="button" class="btn btn-secondary btn-sm" id="adminRecalcStandingsBtn" title="Recalcular puntos automáticamente según los resultados de todas las carreras">⚡ Recalcular desde Carreras</button>
+                        <button type="button" class="btn btn-secondary btn-sm" id="adminAddDriverBtn">+ Añadir Piloto a Tabla</button>
+                    </div>
                 </div>
 
                 <div class="admin-table-wrapper">
