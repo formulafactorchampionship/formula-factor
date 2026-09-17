@@ -1102,6 +1102,9 @@ function setLanguage(lang) {
     if (typeof currentOpenModalTeam !== "undefined" && currentOpenModalTeam) {
         openTeamStatsModal(currentOpenModalTeam);
     }
+    if (typeof activeUserAuth !== "undefined" && typeof renderUserAuthState === "function") {
+        renderUserAuthState(activeUserAuth);
+    }
 }
 
 
@@ -6264,8 +6267,14 @@ function renderUserAuthState(user) {
         if (userProfileName) userProfileName.textContent = displayName;
         if (userProfileEmail) userProfileEmail.textContent = user.email || "";
 
+        const userEmailLower = (user.email || "").toLowerCase().trim();
+        const isIsraelUser = userEmailLower === "formularinuno8@gmail.com";
+
         if (userProfileStatusVal) {
-            if (isAdmin) {
+            if (isIsraelUser) {
+                userProfileStatusVal.textContent = "ISRAEL";
+                userProfileStatusVal.className = "user-profile-badge user-badge-israel";
+            } else if (isAdmin) {
                 userProfileStatusVal.textContent = dict.auth && dict.auth.statusAdmin ? dict.auth.statusAdmin : "ADMINISTRADOR";
                 userProfileStatusVal.className = "user-profile-badge user-badge-admin";
             } else {

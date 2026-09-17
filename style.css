@@ -717,6 +717,13 @@ button {
     color: #ff3333;
 }
 
+.user-badge-israel {
+    background: rgba(30, 144, 255, 0.2);
+    border: 1px solid rgba(56, 189, 248, 0.6);
+    color: #38bdf8;
+    box-shadow: 0 0 10px rgba(56, 189, 248, 0.2);
+}
+
 .user-admin-panel-btn {
     background: linear-gradient(135deg, #e10600, #b30000) !important;
     border-color: #ff3333 !important;
