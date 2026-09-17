@@ -149,73 +149,102 @@
 
                 <!-- Menú desplegable cuando el usuario ha iniciado sesión -->
                 <div class="dropdown-menu user-profile-menu" id="userProfileMenu" role="menu" aria-label="Perfil de usuario">
-                    <div class="user-profile-header">
-                        <div class="user-profile-avatar" id="userProfileAvatar">U</div>
-                        <div class="user-profile-meta">
-                            <span class="user-profile-name" id="userProfileName">Piloto</span>
-                            <span class="user-profile-email" id="userProfileEmail">usuario@email.com</span>
+                    <!-- Top Header: Circular Avatar & User Info -->
+                    <div class="user-profile-header-card">
+                        <div class="user-profile-avatar-large" id="userProfileAvatar">U</div>
+                        <div class="user-profile-meta-card">
+                            <strong class="user-profile-name-card" id="userProfileName">Piloto</strong>
+                            <span class="user-profile-email-card" id="userProfileEmail">usuario@email.com</span>
+                            <span class="user-profile-status-pill" id="userProfileStatusVal">CONECTADO</span>
                         </div>
                     </div>
-                    <div class="user-profile-divider"></div>
-                    <div class="user-profile-body">
-                        <div class="user-profile-row">
-                            <span class="user-profile-label" id="userProfileStatusLabel">Estado</span>
-                            <span class="user-profile-badge user-badge-connected" id="userProfileStatusVal">CONECTADO</span>
-                        </div>
 
-                        <!-- Reclamar / Vincular Piloto -->
-                        <div class="user-claim-box" id="userClaimBox">
-                            <!-- Estado NO Verificado -->
-                            <div id="userClaimUnverified" class="user-claim-unverified">
-                                <div class="claim-notice-banner">
-                                    <span class="claim-icon">🔑</span>
-                                    <div class="claim-notice-info">
-                                        <strong>Reclamar perfil de piloto</strong>
-                                        <p>Solicita el código de verificación a un admin por Discord: <strong>hermesalo</strong> o <strong>adriii.lr</strong></p>
-                                    </div>
-                                </div>
-                                <form id="userClaimForm" class="user-claim-form">
-                                    <div class="claim-input-group">
-                                        <input type="text" id="userClaimCodeInput" placeholder="Código (ej: FF-8A9201)" required autocomplete="off">
-                                        <button type="submit" class="btn btn-primary btn-sm" id="userClaimSubmitBtn">Vincular</button>
-                                    </div>
-                                    <span id="userClaimNotice" class="claim-notice-msg"></span>
-                                </form>
+                    <div class="user-profile-blocks">
+                        <!-- BOX 1: PROFILE -->
+                        <div class="profile-section-box">
+                            <div class="box-header-tag">
+                                <span class="box-header-icon">👤</span>
+                                <span class="box-header-title">PROFILE</span>
                             </div>
 
-                            <!-- Estado Verificado -->
-                            <div id="userClaimVerified" class="user-claim-verified" style="display: none;">
-                                <div class="verified-card-inner">
-                                    <span class="verified-check">✅</span>
-                                    <div class="verified-info">
-                                        <span class="verified-tag">PILOTO VERIFICADO</span>
-                                        <strong id="userClaimedDriverName" class="verified-name">Dieguiosk</strong>
-                                        <span id="userClaimedTeamName" class="verified-team">HRT</span>
+                            <!-- Driver Claim / Verification Card -->
+                            <div class="user-claim-box" id="userClaimBox">
+                                <!-- Estado NO Verificado -->
+                                <div id="userClaimUnverified" class="user-claim-unverified">
+                                    <div class="claim-notice-banner">
+                                        <span class="claim-icon">🔑</span>
+                                        <div class="claim-notice-info">
+                                            <strong>Vincular perfil de piloto</strong>
+                                            <p>Solicita el código a un admin por Discord: <strong>hermesalo</strong> o <strong>adriii.lr</strong></p>
+                                        </div>
                                     </div>
-                                    <button type="button" id="userUnlinkDriverBtn" class="btn-unlink-icon" title="Desvincular perfil de piloto">✕</button>
+                                    <form id="userClaimForm" class="user-claim-form">
+                                        <div class="claim-input-group">
+                                            <input type="text" id="userClaimCodeInput" placeholder="Código (ej: FF-8A9201)" required autocomplete="off">
+                                            <button type="submit" class="btn btn-primary btn-sm" id="userClaimSubmitBtn">Vincular</button>
+                                        </div>
+                                        <span id="userClaimNotice" class="claim-notice-msg"></span>
+                                    </form>
                                 </div>
 
-                                <div id="userCardCustomizeBtnWrap" style="margin-top: 8px;">
-                                    <button type="button" class="btn-customize-card-trigger" id="openCardCustomizerPopupBtn">
-                                        🎨 Personalizar Tarjeta
-                                    </button>
+                                <!-- Estado Verificado -->
+                                <div id="userClaimVerified" class="user-claim-verified" style="display: none;">
+                                    <div class="verified-card-inner">
+                                        <span class="verified-check">✅</span>
+                                        <div class="verified-info">
+                                            <span class="verified-tag">PILOTO VERIFICADO</span>
+                                            <strong id="userClaimedDriverName" class="verified-name">Dieguiosk</strong>
+                                            <span id="userClaimedTeamName" class="verified-team">HRT</span>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                        <div class="user-admin-shortcut" id="userAdminShortcut" style="display: none; margin-top: 10px;">
-                            <button type="button" class="btn btn-primary btn-sm user-admin-panel-btn" id="userOpenAdminPanelBtn" style="width: 100%; font-size: 11px; padding: 7px 12px; letter-spacing: 0.05em; display: flex; align-items: center; justify-content: center; gap: 6px;">
-                                <svg viewBox="0 0 24 24" width="13" height="13" fill="currentColor"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg>
-                                <span id="userAdminBtnText">PANEL DE CONTROL</span>
+
+                            <!-- Customize Driver Card Button (ALWAYS visible inside Profile section) -->
+                            <button type="button" class="btn-customize-card-trigger" id="openCardCustomizerPopupBtn">
+                                🎨 Personalizar Tarjeta
                             </button>
                         </div>
-                    </div>
-                    <div class="user-profile-footer">
-                        <button type="button" class="user-logout-btn" id="userLogoutBtn">
-                            <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor" aria-hidden="true">
-                                <path d="M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.58L17 17l5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z"/>
-                            </svg>
-                            <span id="userLogoutBtnText">Cerrar Sesión</span>
-                        </button>
+
+                        <!-- BOX 2: SETTINGS -->
+                        <div class="profile-section-box settings-section-box">
+                            <div class="box-header-tag">
+                                <span class="box-header-icon">⚙️</span>
+                                <span class="box-header-title">SETTINGS</span>
+                            </div>
+
+                            <div class="settings-items-list">
+                                <!-- Botón Desvincular Piloto (visible si está verificado) -->
+                                <button type="button" id="userUnlinkDriverBtn" class="setting-row-btn unlink-btn" style="display: none;">
+                                    <span>🔓 Desvincular Piloto</span>
+                                </button>
+
+                                <!-- Acceso directo Admin Panel (visible si es admin) -->
+                                <div class="user-admin-shortcut" id="userAdminShortcut" style="display: none;">
+                                    <button type="button" class="setting-row-btn admin-btn" id="userOpenAdminPanelBtn">
+                                        <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6-3.6z"/></svg>
+                                        <span id="userAdminBtnText">Panel de Control Admin</span>
+                                    </button>
+                                </div>
+
+                                <!-- Preferencia de Idioma -->
+                                <div class="setting-row-item">
+                                    <span>🌐 Idioma / Language</span>
+                                    <div class="setting-lang-opts">
+                                        <button type="button" class="lang-mini-btn active" id="profileLangEsBtn">ES 🇪🇸</button>
+                                        <button type="button" class="lang-mini-btn" id="profileLangEnBtn">EN 🇬🇧</button>
+                                    </div>
+                                </div>
+
+                                <!-- Cerrar Sesión -->
+                                <button type="button" class="setting-row-btn logout-btn" id="userLogoutBtn">
+                                    <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor" aria-hidden="true">
+                                        <path d="M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.58L17 17l5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z"/>
+                                    </svg>
+                                    <span id="userLogoutBtnText">Cerrar Sesión (Log Out)</span>
+                                </button>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>

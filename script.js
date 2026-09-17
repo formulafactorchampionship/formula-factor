@@ -6846,6 +6846,7 @@ function renderUserClaimState(uData) {
     if (uData && uData.isVerified && uData.claimedDriver) {
         if (userClaimUnverified) userClaimUnverified.style.display = "none";
         if (userClaimVerified) userClaimVerified.style.display = "block";
+        if (userUnlinkDriverBtn) userUnlinkDriverBtn.style.display = "flex";
         if (userClaimedDriverName) userClaimedDriverName.textContent = uData.claimedDriver;
         if (userClaimedTeamName) userClaimedTeamName.textContent = uData.claimedTeam || "Equipo Oficial";
         if (authBtnLabel && authBtnLabel.dataset.customName) {
@@ -6855,6 +6856,7 @@ function renderUserClaimState(uData) {
     } else {
         if (userClaimUnverified) userClaimUnverified.style.display = "block";
         if (userClaimVerified) userClaimVerified.style.display = "none";
+        if (userUnlinkDriverBtn) userUnlinkDriverBtn.style.display = "none";
         if (userClaimNotice) {
             userClaimNotice.textContent = "";
             userClaimNotice.style.color = "";
@@ -7272,9 +7274,30 @@ function closeCardEditorModal() {
 }
 
 if (openCardCustomizerPopupBtn) {
-    openCardCustomizerPopupBtn.addEventListener("click", () => {
+    openCardCustomizerPopupBtn.addEventListener("click", (e) => {
+        if (e) e.stopPropagation();
         closeAllDropdowns();
         openCardEditorModal();
+    });
+}
+
+const profileLangEsBtn = document.getElementById("profileLangEsBtn");
+const profileLangEnBtn = document.getElementById("profileLangEnBtn");
+
+if (profileLangEsBtn) {
+    profileLangEsBtn.addEventListener("click", (e) => {
+        if (e) e.stopPropagation();
+        setLanguage("es");
+        if (profileLangEsBtn) profileLangEsBtn.classList.add("active");
+        if (profileLangEnBtn) profileLangEnBtn.classList.remove("active");
+    });
+}
+if (profileLangEnBtn) {
+    profileLangEnBtn.addEventListener("click", (e) => {
+        if (e) e.stopPropagation();
+        setLanguage("en");
+        if (profileLangEnBtn) profileLangEnBtn.classList.add("active");
+        if (profileLangEsBtn) profileLangEsBtn.classList.remove("active");
     });
 }
 
