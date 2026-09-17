@@ -919,6 +919,84 @@ const defaultRaceResults = {
 
         ]
 
+    },
+
+    nurburgring: {
+        round: "ROUND 10",
+        title: "NÜRBURGRING GP",
+        location: "NÜRBURGRING · EUROPE",
+        date: "20 SEP",
+        status: "NEXT RACE",
+        winner: "TBA",
+        pole: "TBA",
+        fastest: "TBA",
+        driverDay: "TBA",
+        drivers: []
+    },
+
+    hungary: {
+        round: "ROUND 11",
+        title: "HUNGARORING",
+        location: "BUDAPEST · HUNGARY",
+        date: "TBA",
+        status: "UPCOMING",
+        winner: "TBA",
+        pole: "TBA",
+        fastest: "TBA",
+        driverDay: "TBA",
+        drivers: []
+    },
+
+    belgium: {
+        round: "ROUND 12",
+        title: "SPA-FRANCORCHAMPS",
+        location: "SPA · BELGIUM",
+        date: "TBA",
+        status: "UPCOMING",
+        winner: "TBA",
+        pole: "TBA",
+        fastest: "TBA",
+        driverDay: "TBA",
+        drivers: []
+    },
+
+    singapore: {
+        round: "ROUND 13",
+        title: "SINGAPORE",
+        location: "MARINA BAY · SINGAPORE",
+        date: "TBA",
+        status: "UPCOMING",
+        winner: "TBA",
+        pole: "TBA",
+        fastest: "TBA",
+        driverDay: "TBA",
+        drivers: []
+    },
+
+    cota: {
+        round: "ROUND 14",
+        title: "COTA",
+        location: "AUSTIN · USA",
+        date: "TBA",
+        status: "UPCOMING",
+        winner: "TBA",
+        pole: "TBA",
+        fastest: "TBA",
+        driverDay: "TBA",
+        drivers: []
+    },
+
+    brazil: {
+        round: "ROUND 15",
+        title: "BRAZIL",
+        location: "INTERLAGOS · BRAZIL",
+        date: "TBA",
+        status: "FINAL ROUND",
+        winner: "TBA",
+        pole: "TBA",
+        fastest: "TBA",
+        driverDay: "TBA",
+        drivers: []
     }
 
 };
@@ -1688,11 +1766,23 @@ function updateCalendarCardForRace(raceKey, raceData) {
         }
     }
 
-    if (card) {
-        card.setAttribute("data-race", raceKey);
+    if (!card) return;
+
+    card.setAttribute("data-race", raceKey);
+    const isCompleted = raceData && (
+        raceData.status === "COMPLETED" || 
+        (raceData.drivers && raceData.drivers.length > 0 && raceData.winner && raceData.winner !== "TBA")
+    );
+
+    const statusEl = card.querySelector(".calendar-status");
+    const dateEl = card.querySelector(".calendar-date");
+    if (raceData && raceData.date && dateEl) {
+        dateEl.textContent = raceData.date;
+    }
+
+    if (isCompleted) {
         card.classList.remove("upcoming", "next");
         card.classList.add("completed", "race-link");
-        const statusEl = card.querySelector(".calendar-status");
         if (statusEl) statusEl.textContent = "COMPLETED";
 
         let hint = card.querySelector(".click-hint");
@@ -1704,6 +1794,23 @@ function updateCalendarCardForRace(raceKey, raceData) {
         }
 
         card.onclick = () => openRace(raceKey);
+    } else {
+        card.classList.remove("completed", "race-link");
+        let hint = card.querySelector(".click-hint");
+        if (hint) hint.remove();
+        card.onclick = null;
+
+        const roundNumber = card.querySelector(".calendar-number")?.textContent?.trim();
+        if (roundNumber === "10") {
+            card.classList.add("next");
+            if (statusEl) statusEl.textContent = "NEXT RACE";
+        } else if (roundNumber === "15") {
+            card.classList.add("upcoming");
+            if (statusEl) statusEl.textContent = "FINAL ROUND";
+        } else {
+            card.classList.add("upcoming");
+            if (statusEl) statusEl.textContent = "UPCOMING";
+        }
     }
 }
 
@@ -2139,27 +2246,31 @@ function initFirestoreListeners() {
 
     // 4. Synchronize race results from carreras collection in real time
     onSnapshot(collection(db, "carreras"), async (snapshot) => {
-        if (snapshot.empty && !isCarrerasInitialLoaded) {
-            isCarrerasInitialLoaded = true;
-            try {
-                const batch = writeBatch(db);
-                Object.keys(defaultRaceResults).forEach(raceKey => {
-                    const docRef = doc(db, "carreras", raceKey);
-                    batch.set(docRef, defaultRaceResults[raceKey]);
-                });
-                await batch.commit();
-            } catch (err) {
-                console.error("Error auto-seeding 'carreras' into Firestore:", err);
-            }
-            return;
-        }
-
         isCarrerasInitialLoaded = true;
+        const existingKeys = new Set();
+
         snapshot.forEach(docSnap => {
+            existingKeys.add(docSnap.id);
             const rData = docSnap.data();
             raceResults[docSnap.id] = rData;
             updateCalendarCardForRace(docSnap.id, rData);
         });
+
+        // Ensure ALL 15 calendar races exist in Firestore
+        const missingKeys = Object.keys(defaultRaceResults).filter(k => !existingKeys.has(k));
+        if (missingKeys.length > 0) {
+            try {
+                const batch = writeBatch(db);
+                missingKeys.forEach(key => {
+                    const docRef = doc(db, "carreras", key);
+                    batch.set(docRef, defaultRaceResults[key]);
+                });
+                await batch.commit();
+            } catch (err) {
+                console.error("Error auto-seeding missing calendar races into Firestore:", err);
+            }
+        }
+
         if (currentOpenRaceKey && raceResults[currentOpenRaceKey] && raceOverlay && raceOverlay.classList.contains("active")) {
             openRace(currentOpenRaceKey);
         }
@@ -2702,6 +2813,7 @@ if (raceResultsForm) {
             title: meta.title,
             location: meta.location,
             date: raceDate || meta.date,
+            status: "COMPLETED",
             winner: winnerDriver || drivers[0].driver,
             pole: poleDriver && poleTime ? `${poleDriver} · ${poleTime}` : (poleDriver || "TBA"),
             fastest: `${fastestDriver} · ${fastestTime}`,
