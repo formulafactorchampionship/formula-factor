@@ -44,15 +44,61 @@ function getPilotDocId(driverName) {
 }
 
 /* =========================================================
-   FFC — COUNTDOWN
+   TIMEZONE & COUNTDOWN (MADRID BASE TIME)
 ========================================================= */
+
+// Compute epoch milliseconds for a date/time assumed to be in Europe/Madrid timezone
+function getMadridEpochMs(dateTimeStr) {
+    if (!dateTimeStr) return NaN;
+    if (dateTimeStr.includes('Z') || /[+-]\d{2}:?\d{2}$/.test(dateTimeStr)) {
+        return new Date(dateTimeStr).getTime();
+    }
+    const cleanStr = dateTimeStr.replace(' ', 'T');
+    const [datePart, timePart = "00:00"] = cleanStr.split('T');
+    const parts = datePart.split('-').map(Number);
+    if (parts.length < 3) return new Date(dateTimeStr).getTime();
+    const year = parts[0];
+    const month = parts[1];
+    const day = parts[2];
+    const [hour = 0, minute = 0] = timePart.split(':').map(Number);
+
+    let guess = Date.UTC(year, month - 1, day, hour, minute);
+
+    const formatter = new Intl.DateTimeFormat('en-US', {
+        timeZone: 'Europe/Madrid',
+        year: 'numeric',
+        month: 'numeric',
+        day: 'numeric',
+        hour: 'numeric',
+        minute: 'numeric',
+        hour12: false
+    });
+
+    for (let i = 0; i < 3; i++) {
+        const pArr = formatter.formatToParts(new Date(guess));
+        const m = {};
+        for (const p of pArr) m[p.type] = p.value;
+        const mYear = parseInt(m.year, 10);
+        const mMonth = parseInt(m.month, 10);
+        const mDay = parseInt(m.day, 10);
+        const mHour = parseInt(m.hour, 10) % 24;
+        const mMin = parseInt(m.minute, 10);
+
+        const targetDays = Date.UTC(year, month - 1, day) / 86400000;
+        const actualDays = Date.UTC(mYear, mMonth - 1, mDay) / 86400000;
+        const diffMinutes = (targetDays - actualDays) * 1440 + (hour * 60 + minute) - (mHour * 60 + mMin);
+        if (diffMinutes === 0) break;
+        guess += diffMinutes * 60000;
+    }
+    return guess;
+}
 
 function getSavedRaceTimestamp() {
     if (currentNextRace && currentNextRace.dateTime) {
-        const parsed = new Date(currentNextRace.dateTime).getTime();
+        const parsed = getMadridEpochMs(currentNextRace.dateTime);
         if (!isNaN(parsed)) return parsed;
     }
-    return new Date("2026-09-20T16:30:00+02:00").getTime();
+    return getMadridEpochMs("2026-09-20T16:30");
 }
 
 let raceDate = getSavedRaceTimestamp();
@@ -261,6 +307,12 @@ const translations = {
             thTeam: "EQUIPO",
             thStatus: "ESTADO",
             backBtn: "← VOLVER AL CALENDARIO"
+        },
+        tz: {
+            title: "ZONAS HORARIAS",
+            baseTag: "BASE: MADRID",
+            desc: "Selecciona tu zona horaria para ver la hora local",
+            btnTitle: "Zona horaria (Hora base: Madrid)"
         }
     },
     en: {
@@ -369,6 +421,12 @@ const translations = {
             thTeam: "TEAM",
             thStatus: "STATUS",
             backBtn: "← BACK TO CALENDAR"
+        },
+        tz: {
+            title: "TIME ZONES",
+            baseTag: "BASE: MADRID",
+            desc: "Select your timezone to view local times",
+            btnTitle: "Time zone (Base: Madrid time)"
         }
     }
 };
@@ -556,6 +614,14 @@ function applyTranslations(lang) {
     const bkBtn = document.getElementById("backToCalendar");
     if (bkBtn) bkBtn.textContent = dict.modal.backBtn;
 
+    // Timezone Dropdown Texts
+    const tzTitleEl = document.getElementById("tzMenuTitle");
+    if (tzTitleEl && dict.tz) tzTitleEl.textContent = dict.tz.title;
+    const tzDescEl = document.getElementById("tzMenuDesc");
+    if (tzDescEl && dict.tz) tzDescEl.textContent = dict.tz.desc;
+    const tzBtnEl = document.getElementById("tzDropdownBtn");
+    if (tzBtnEl && dict.tz) tzBtnEl.setAttribute("title", dict.tz.btnTitle);
+
     // Calendar cards status & country
     updateCalendarCards(lang);
 
@@ -564,6 +630,266 @@ function applyTranslations(lang) {
         const drivers = getSavedStandings();
         updateStandingsToggleUI(drivers.length);
     }
+}
+
+/* =========================================================
+   FLAGS & TIMEZONES CONFIGURATION
+========================================================= */
+
+const FLAG_SVGS = {
+    es: `<svg viewBox="0 0 20 14" width="20" height="14" class="flag-svg" aria-hidden="true"><rect width="20" height="14" fill="#AA151B"/><rect y="3.5" width="20" height="7" fill="#F1BF00"/><circle cx="5.5" cy="7" r="1.8" fill="#AA151B" opacity="0.9"/></svg>`,
+    uk: `<svg viewBox="0 0 60 30" width="20" height="14" class="flag-svg" aria-hidden="true"><rect width="60" height="30" fill="#012169"/><path d="M0 0 L60 30 M60 0 L0 30" stroke="#FFFFFF" stroke-width="6"/><path d="M0 0 L30 15 M60 30 L30 15" stroke="#C8102E" stroke-width="2"/><path d="M60 0 L30 15 M0 30 L30 15" stroke="#C8102E" stroke-width="2"/><path d="M30 0 v30 M0 15 h60" stroke="#FFFFFF" stroke-width="10"/><path d="M30 0 v30 M0 15 h60" stroke="#C8102E" stroke-width="6"/></svg>`,
+    ar: `<svg viewBox="0 0 20 14" width="20" height="14" class="flag-svg" aria-hidden="true"><rect width="20" height="14" fill="#74ACDF"/><rect y="4.66" width="20" height="4.68" fill="#FFFFFF"/><circle cx="10" cy="7" r="1.6" fill="#F6B40E"/><circle cx="10" cy="7" r="0.9" fill="#843511"/></svg>`,
+    mx: `<svg viewBox="0 0 20 14" width="20" height="14" class="flag-svg" aria-hidden="true"><rect width="6.66" height="14" fill="#006847"/><rect x="6.66" width="6.68" height="14" fill="#FFFFFF"/><rect x="13.34" width="6.66" height="14" fill="#CE1126"/><circle cx="10" cy="7" r="1.3" fill="#8A6430"/></svg>`,
+    co: `<svg viewBox="0 0 20 14" width="20" height="14" class="flag-svg" aria-hidden="true"><rect width="20" height="7" fill="#FCD116"/><rect y="7" width="20" height="3.5" fill="#003893"/><rect y="10.5" width="20" height="3.5" fill="#CE1126"/></svg>`,
+    cl: `<svg viewBox="0 0 20 14" width="20" height="14" class="flag-svg" aria-hidden="true"><rect y="7" width="20" height="7" fill="#D52B1E"/><rect width="20" height="7" fill="#FFFFFF"/><rect width="7" height="7" fill="#0039A6"/><polygon points="3.5,1.5 4.1,3.4 5.9,3.4 4.5,4.5 5,6.3 3.5,5.1 2,6.3 2.5,4.5 1.1,3.4 2.9,3.4" fill="#FFFFFF"/></svg>`,
+    br: `<svg viewBox="0 0 20 14" width="20" height="14" class="flag-svg" aria-hidden="true"><rect width="20" height="14" fill="#009739"/><polygon points="10,1.8 18.2,7 10,12.2 1.8,7" fill="#FEDD00"/><circle cx="10" cy="7" r="3.2" fill="#012169"/><path d="M7 6.8 Q10 5.6 13 7.2" stroke="#FFFFFF" stroke-width="0.7" fill="none"/></svg>`,
+    us: `<svg viewBox="0 0 20 14" width="20" height="14" class="flag-svg" aria-hidden="true"><rect width="20" height="14" fill="#B22234"/><path d="M0 1.08h20 M0 3.23h20 M0 5.38h20 M0 7.54h20 M0 9.69h20 M0 11.85h20" stroke="#FFFFFF" stroke-width="1.08"/><rect width="8" height="7.54" fill="#3C3B6E"/><circle cx="2" cy="2" r="0.45" fill="#FFFFFF"/><circle cx="4" cy="2" r="0.45" fill="#FFFFFF"/><circle cx="6" cy="2" r="0.45" fill="#FFFFFF"/><circle cx="3" cy="3.77" r="0.45" fill="#FFFFFF"/><circle cx="5" cy="3.77" r="0.45" fill="#FFFFFF"/><circle cx="2" cy="5.54" r="0.45" fill="#FFFFFF"/><circle cx="4" cy="5.54" r="0.45" fill="#FFFFFF"/><circle cx="6" cy="5.54" r="0.45" fill="#FFFFFF"/></svg>`,
+    jp: `<svg viewBox="0 0 20 14" width="20" height="14" class="flag-svg" aria-hidden="true"><rect width="20" height="14" fill="#FFFFFF"/><circle cx="10" cy="7" r="4.2" fill="#BC002D"/></svg>`,
+    au: `<svg viewBox="0 0 20 14" width="20" height="14" class="flag-svg" aria-hidden="true"><rect width="20" height="14" fill="#00008B"/><g transform="scale(0.33, 0.45)"><rect width="20" height="14" fill="#012169"/><path d="M0 0 L20 14 M20 0 L0 14" stroke="#FFFFFF" stroke-width="2"/><path d="M0 0 L10 7 M20 14 L10 7" stroke="#C8102E" stroke-width="0.8"/><path d="M20 0 L10 7 M0 14 L10 7" stroke="#C8102E" stroke-width="0.8"/><path d="M10 0 v14 M0 7 h20" stroke="#FFFFFF" stroke-width="3"/><path d="M10 0 v14 M0 7 h20" stroke="#C8102E" stroke-width="1.8"/></g><polygon points="4,10 4.3,10.8 5.1,10.6 4.6,11.3 5,12 4.2,11.7 3.8,12.4 3.7,11.6 2.9,11.7 3.5,11.1 3.1,10.4 3.8,10.7" fill="#FFFFFF"/><circle cx="15" cy="3.5" r="0.6" fill="#FFFFFF"/><circle cx="17" cy="5" r="0.6" fill="#FFFFFF"/><circle cx="16" cy="8" r="0.6" fill="#FFFFFF"/><circle cx="13" cy="7" r="0.6" fill="#FFFFFF"/><circle cx="14.5" cy="11" r="0.8" fill="#FFFFFF"/></svg>`,
+    utc: `<svg viewBox="0 0 20 14" width="20" height="14" class="flag-svg" aria-hidden="true"><rect width="20" height="14" fill="#141c28"/><circle cx="10" cy="7" r="5.2" fill="none" stroke="#60a5fa" stroke-width="1.1"/><ellipse cx="10" cy="7" rx="2.5" ry="5.2" fill="none" stroke="#60a5fa" stroke-width="0.9"/><line x1="4.8" y1="7" x2="15.2" y2="7" stroke="#60a5fa" stroke-width="0.9"/><line x1="6" y1="4.2" x2="14" y2="4.2" stroke="#60a5fa" stroke-width="0.75"/><line x1="6" y1="9.8" x2="14" y2="9.8" stroke="#60a5fa" stroke-width="0.75"/></svg>`
+};
+
+const FLAG_SVG_ES = FLAG_SVGS.es;
+const FLAG_SVG_UK = FLAG_SVGS.uk;
+
+const TIMEZONES = [
+    { id: "Europe/Madrid", city: "Madrid", country: "España", flagSvg: FLAG_SVGS.es, short: "MADRID", tzCode: "CET/CEST", note: "Hora oficial (Base)" },
+    { id: "Europe/London", city: "Londres", country: "Reino Unido", flagSvg: FLAG_SVGS.uk, short: "LONDRES", tzCode: "GMT/BST", note: "UK / Irlanda" },
+    { id: "America/Argentina/Buenos_Aires", city: "Buenos Aires", country: "Argentina", flagSvg: FLAG_SVGS.ar, short: "BS. AIRES", tzCode: "ART", note: "UTC-3" },
+    { id: "America/Mexico_City", city: "Ciudad de México", country: "México", flagSvg: FLAG_SVGS.mx, short: "CDMX", tzCode: "CST", note: "UTC-6" },
+    { id: "America/Bogota", city: "Bogotá", country: "Colombia", flagSvg: FLAG_SVGS.co, short: "BOGOTÁ", tzCode: "COT", note: "UTC-5" },
+    { id: "America/Santiago", city: "Santiago", country: "Chile", flagSvg: FLAG_SVGS.cl, short: "SANTIAGO", tzCode: "CLT", note: "Chile" },
+    { id: "America/Sao_Paulo", city: "São Paulo", country: "Brasil", flagSvg: FLAG_SVGS.br, short: "SÃO PAULO", tzCode: "BRT", note: "UTC-3" },
+    { id: "America/New_York", city: "Nueva York", country: "EE.UU. (Este)", flagSvg: FLAG_SVGS.us, short: "NUEVA YORK", tzCode: "EDT/EST", note: "Miami / NY" },
+    { id: "America/Los_Angeles", city: "Los Ángeles", country: "EE.UU. (Oeste)", flagSvg: FLAG_SVGS.us, short: "LOS ÁNGELES", tzCode: "PDT/PST", note: "California" },
+    { id: "Asia/Tokyo", city: "Tokio", country: "Japón", flagSvg: FLAG_SVGS.jp, short: "TOKIO", tzCode: "JST", note: "UTC+9" },
+    { id: "Australia/Sydney", city: "Sídney", country: "Australia", flagSvg: FLAG_SVGS.au, short: "SÍDNEY", tzCode: "AEST/AEDT", note: "Oceanía" },
+    { id: "UTC", city: "Tiempo Universal", country: "UTC / GMT", flagSvg: FLAG_SVGS.utc, short: "UTC", tzCode: "UTC", note: "Universal" }
+];
+
+let selectedTimezone = (() => {
+    try {
+        const saved = localStorage.getItem("ffc_timezone");
+        if (saved && TIMEZONES.some(t => t.id === saved)) return saved;
+    } catch (e) {}
+    return "Europe/Madrid";
+})();
+
+// Format race date/time from Europe/Madrid to any target timezone
+function formatRaceForTimezone(dateTimeStr, targetTz, lang = currentLanguage) {
+    const epochMs = getMadridEpochMs(dateTimeStr);
+    if (isNaN(epochMs)) return null;
+
+    const dateObj = new Date(epochMs);
+    const locale = lang === "es" ? "es-ES" : "en-US";
+
+    const partsFormatter = new Intl.DateTimeFormat(locale, {
+        timeZone: targetTz,
+        day: 'numeric',
+        month: 'short',
+        hour: '2-digit',
+        minute: '2-digit',
+        timeZoneName: 'short',
+        hour12: false
+    });
+
+    const parts = partsFormatter.formatToParts(dateObj);
+    const p = {};
+    for (const part of parts) p[part.type] = part.value;
+
+    const day = p.day || "";
+    const month = (p.month || "").replace('.', '').toUpperCase();
+    const hour = p.hour || "00";
+    const minute = p.minute || "00";
+    let tzName = p.timeZoneName || "";
+
+    if (targetTz === "Europe/Madrid") {
+        tzName = tzName.includes("CEST") ? "CEST" : (tzName.includes("CET") ? "CET" : tzName);
+    } else if (targetTz === "UTC") {
+        tzName = "UTC";
+    }
+
+    return {
+        epochMs,
+        day,
+        month,
+        time: `${hour}:${minute}`,
+        tzName,
+        dateTextCard: `${day} ${month} · ${hour}:${minute}<br><span>${tzName}</span>`,
+        fullTimeStr: `${hour}:${minute} ${tzName}`
+    };
+}
+
+function getTimezoneOffsetHours(timeZone, dateObj = new Date()) {
+    try {
+        const utcDate = new Date(dateObj.toLocaleString('en-US', { timeZone: 'UTC' }));
+        const tzDate = new Date(dateObj.toLocaleString('en-US', { timeZone }));
+        return (tzDate.getTime() - utcDate.getTime()) / (60 * 60 * 1000);
+    } catch (e) {
+        return 0;
+    }
+}
+
+function getTimezoneBadge(targetTz, dateObj = new Date()) {
+    const offsetHours = getTimezoneOffsetHours(targetTz, dateObj);
+    const sign = offsetHours >= 0 ? "+" : "-";
+    const abs = Math.abs(offsetHours);
+    const wholeHours = Math.floor(abs);
+    const minutes = Math.round((abs - wholeHours) * 60);
+    if (offsetHours === 0) return "UTC";
+    return minutes > 0 
+        ? `GMT${sign}${wholeHours}:${String(minutes).padStart(2, '0')}`
+        : `GMT${sign}${wholeHours}`;
+}
+
+function renderTimezoneOptions() {
+    const listEl = document.getElementById("tzOptionsList");
+    if (!listEl) return;
+
+    const race = getSavedNextRace();
+    const raceDateTime = race?.dateTime || "2026-09-20T16:30";
+    const epochMs = getMadridEpochMs(raceDateTime);
+    const raceDateObj = !isNaN(epochMs) ? new Date(epochMs) : new Date();
+
+    listEl.innerHTML = "";
+
+    // Sort timezones from greatest to least ("de más a menos", e.g. +10 down to -7)
+    const sortedTimezones = [...TIMEZONES].sort((a, b) => {
+        const offsetA = getTimezoneOffsetHours(a.id, raceDateObj);
+        const offsetB = getTimezoneOffsetHours(b.id, raceDateObj);
+        if (offsetB !== offsetA) {
+            return offsetB - offsetA; // Descending: de más a menos
+        }
+        return a.city.localeCompare(b.city);
+    });
+
+    sortedTimezones.forEach(tz => {
+        const isActive = tz.id === selectedTimezone;
+        const tzBadge = getTimezoneBadge(tz.id, raceDateObj);
+
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = `tz-option${isActive ? " active" : ""}`;
+        btn.setAttribute("role", "option");
+        btn.setAttribute("aria-selected", isActive ? "true" : "false");
+        btn.dataset.tz = tz.id;
+
+        btn.innerHTML = `
+            <span class="tz-flag">${tz.flagSvg}</span>
+            <div class="tz-info">
+                <span class="tz-city">${escapeHtml(tz.city)} <small style="opacity:0.75; font-size:10.5px;">(${escapeHtml(tz.country)})</small></span>
+                <span class="tz-sub">${escapeHtml(tz.note)}</span>
+            </div>
+            <span class="tz-time-preview">${escapeHtml(tzBadge)}</span>
+            <span class="tz-check" aria-hidden="true">✓</span>
+        `;
+
+        btn.addEventListener("click", () => {
+            setTimezone(tz.id);
+            closeAllDropdowns();
+        });
+
+        listEl.appendChild(btn);
+    });
+
+    const currentTzCodeEl = document.getElementById("currentTzCode");
+    const activeTz = TIMEZONES.find(t => t.id === selectedTimezone) || TIMEZONES[0];
+    if (currentTzCodeEl) {
+        currentTzCodeEl.textContent = activeTz.short;
+    }
+}
+
+function setTimezone(tzId) {
+    const found = TIMEZONES.find(t => t.id === tzId);
+    if (!found) tzId = "Europe/Madrid";
+    selectedTimezone = tzId;
+    try {
+        localStorage.setItem("ffc_timezone", tzId);
+    } catch (e) {
+        console.error("Error saving timezone preference:", e);
+    }
+
+    const currentTzCodeEl = document.getElementById("currentTzCode");
+    const activeTz = TIMEZONES.find(t => t.id === tzId) || TIMEZONES[0];
+    if (currentTzCodeEl) {
+        currentTzCodeEl.textContent = activeTz.short;
+    }
+
+    renderNextRaceOnPage(getSavedNextRace());
+}
+
+function closeAllDropdowns() {
+    const langDd = document.getElementById("langDropdown");
+    const tzDd = document.getElementById("tzDropdown");
+    const langBtn = document.getElementById("langDropdownBtn");
+    const tzBtn = document.getElementById("tzDropdownBtn");
+
+    if (langDd) langDd.classList.remove("is-open");
+    if (tzDd) tzDd.classList.remove("is-open");
+    if (langBtn) langBtn.setAttribute("aria-expanded", "false");
+    if (tzBtn) tzBtn.setAttribute("aria-expanded", "false");
+}
+
+function initCustomDropdowns() {
+    const langDropdown = document.getElementById("langDropdown");
+    const langDropdownBtn = document.getElementById("langDropdownBtn");
+    const tzDropdown = document.getElementById("tzDropdown");
+    const tzDropdownBtn = document.getElementById("tzDropdownBtn");
+
+    if (langDropdownBtn && langDropdown) {
+        langDropdownBtn.addEventListener("click", (e) => {
+            e.stopPropagation();
+            const isOpen = langDropdown.classList.contains("is-open");
+            closeAllDropdowns();
+            if (!isOpen) {
+                langDropdown.classList.add("is-open");
+                langDropdownBtn.setAttribute("aria-expanded", "true");
+            }
+        });
+    }
+
+    const optEs = document.getElementById("langOptEs");
+    const optEn = document.getElementById("langOptEn");
+    if (optEs) {
+        optEs.addEventListener("click", (e) => {
+            e.stopPropagation();
+            setLanguage("es");
+            closeAllDropdowns();
+        });
+    }
+    if (optEn) {
+        optEn.addEventListener("click", (e) => {
+            e.stopPropagation();
+            setLanguage("en");
+            closeAllDropdowns();
+        });
+    }
+
+    if (tzDropdownBtn && tzDropdown) {
+        tzDropdownBtn.addEventListener("click", (e) => {
+            e.stopPropagation();
+            const isOpen = tzDropdown.classList.contains("is-open");
+            closeAllDropdowns();
+            if (!isOpen) {
+                renderTimezoneOptions();
+                tzDropdown.classList.add("is-open");
+                tzDropdownBtn.setAttribute("aria-expanded", "true");
+            }
+        });
+    }
+
+    document.addEventListener("click", (e) => {
+        if (!e.target.closest(".custom-dropdown")) {
+            closeAllDropdowns();
+        }
+    });
+
+    document.addEventListener("keydown", (e) => {
+        if (e.key === "Escape") {
+            closeAllDropdowns();
+        }
+    });
 }
 
 function setLanguage(lang) {
@@ -577,17 +903,32 @@ function setLanguage(lang) {
 
     document.documentElement.lang = lang;
 
-    const btnEs = document.getElementById("langBtnEs");
-    const btnEn = document.getElementById("langBtnEn");
-    if (btnEs && btnEn) {
+    // Update Dropdown Trigger UI
+    const currentLangFlag = document.getElementById("currentLangFlag");
+    const currentLangCode = document.getElementById("currentLangCode");
+    if (currentLangFlag) {
+        currentLangFlag.innerHTML = lang === "es" ? FLAG_SVG_ES : FLAG_SVG_UK;
+    }
+    if (currentLangCode) {
+        currentLangCode.textContent = lang.toUpperCase();
+    }
+
+    // Update Options State
+    const optEs = document.getElementById("langOptEs");
+    const optEn = document.getElementById("langOptEn");
+    if (optEs) {
         const isEs = lang === "es";
-        btnEs.classList.toggle("active", isEs);
-        btnEs.setAttribute("aria-pressed", isEs ? "true" : "false");
-        btnEn.classList.toggle("active", !isEs);
-        btnEn.setAttribute("aria-pressed", !isEs ? "true" : "false");
+        optEs.classList.toggle("active", isEs);
+        optEs.setAttribute("aria-selected", isEs ? "true" : "false");
+    }
+    if (optEn) {
+        const isEn = lang === "en";
+        optEn.classList.toggle("active", isEn);
+        optEn.setAttribute("aria-selected", isEn ? "true" : "false");
     }
 
     applyTranslations(lang);
+    renderNextRaceOnPage(getSavedNextRace());
 }
 
 
@@ -1519,20 +1860,45 @@ function renderNextRaceOnPage(race) {
             nextRaceLocationEl.textContent = race.location || "";
         }
     }
-    if (nextRaceDateTextEl) {
+
+    // Convert date and time to the selected timezone
+    const raceDateTime = race.dateTime || "2026-09-20T16:30";
+    const converted = formatRaceForTimezone(raceDateTime, selectedTimezone, currentLanguage);
+
+    if (converted) {
+        if (nextRaceDateTextEl) {
+            nextRaceDateTextEl.innerHTML = converted.dateTextCard;
+        }
+        raceDate = converted.epochMs;
+        updateCountdown();
+
+        // Update race feature card in Races section
+        const rfDay = document.getElementById("raceFeatureDay");
+        const rfMonth = document.getElementById("raceFeatureMonth");
+        const rfTime = document.getElementById("raceFeatureTime");
+        const rfTitle = document.getElementById("raceFeatureTitle");
+        const rfLocation = document.getElementById("raceFeatureLocation");
+        const rfRoundNum = document.getElementById("raceFeatureRoundNum");
+
+        if (rfDay) rfDay.textContent = converted.day;
+        if (rfMonth) rfMonth.textContent = converted.month;
+        if (rfTime) rfTime.textContent = `${converted.time} ${converted.tzName}`;
+        if (rfTitle && race.title) rfTitle.textContent = race.title;
+        if (rfLocation && race.location) rfLocation.textContent = race.location;
+        if (rfRoundNum && race.round) {
+            const cleanRound = race.round.replace(/ROUND\s*/i, "").trim();
+            rfRoundNum.textContent = cleanRound || race.round;
+        }
+    } else if (nextRaceDateTextEl) {
         if (race.dateText && race.dateText.includes(" CEST")) {
             nextRaceDateTextEl.innerHTML = `${race.dateText.replace(" CEST", "")}<br><span>CEST</span>`;
         } else {
             nextRaceDateTextEl.textContent = race.dateText || "";
         }
     }
-    if (race.dateTime) {
-        const parsed = new Date(race.dateTime).getTime();
-        if (!isNaN(parsed)) {
-            raceDate = parsed;
-            updateCountdown();
-        }
-    }
+
+    // Update timezone dropdown options preview
+    renderTimezoneOptions();
 }
 
 // --- Standings Logic ---
@@ -2292,16 +2658,9 @@ function initFirestoreListeners() {
     // Start real-time Firestore synchronization
     initFirestoreListeners();
 
-    // Language switcher setup
-    const langBtnEs = document.getElementById("langBtnEs");
-    const langBtnEn = document.getElementById("langBtnEn");
-
-    if (langBtnEs) {
-        langBtnEs.addEventListener("click", () => setLanguage("es"));
-    }
-    if (langBtnEn) {
-        langBtnEn.addEventListener("click", () => setLanguage("en"));
-    }
+    // Initialize custom dropdowns (Language & Timezone)
+    initCustomDropdowns();
+    renderTimezoneOptions();
 
     const initialLang = (() => {
         try {
