@@ -6294,6 +6294,215 @@ footer {
     letter-spacing: 0.5px;
 }
 
+/* =========================================================
+   DRIVER CARD CUSTOMIZER (PROFILE MENU & MODAL)
+========================================================= */
+
+.user-driver-card-editor {
+    background: rgba(10, 15, 24, 0.95);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 6px;
+    padding: 12px;
+}
+
+.card-editor-header strong {
+    font-family: "Barlow Condensed", sans-serif;
+    font-size: 12px;
+    font-weight: 800;
+    color: var(--gold, #d6b45c);
+    letter-spacing: 0.8px;
+    display: block;
+}
+
+.card-editor-header p {
+    font-size: 10.5px;
+    color: #8c929c;
+    margin: 2px 0 8px 0;
+    line-height: 1.3;
+}
+
+.card-edit-form {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.card-edit-field label {
+    font-family: "Barlow Condensed", sans-serif;
+    font-size: 10px;
+    font-weight: 800;
+    color: #a0a6b2;
+    letter-spacing: 0.8px;
+    display: block;
+    margin-bottom: 3px;
+}
+
+.claim-input {
+    width: 100%;
+    background: #06090e;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    color: #ffffff;
+    padding: 5px 8px;
+    font-size: 12px;
+    border-radius: 4px;
+    box-sizing: border-box;
+}
+
+.claim-input:focus,
+.claim-textarea:focus {
+    outline: none;
+    border-color: #e10600;
+    box-shadow: 0 0 6px rgba(225, 6, 0, 0.3);
+}
+
+.claim-textarea {
+    width: 100%;
+    background: #06090e;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    color: #ffffff;
+    padding: 6px 8px;
+    font-size: 12px;
+    border-radius: 4px;
+    resize: vertical;
+    box-sizing: border-box;
+    font-family: inherit;
+}
+
+.card-edit-row-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+}
+
+.color-picker-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: #06090e;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    padding: 3px 6px;
+    border-radius: 4px;
+}
+
+.color-picker-wrapper input[type="color"] {
+    -webkit-appearance: none;
+    border: none;
+    width: 22px;
+    height: 22px;
+    border-radius: 3px;
+    cursor: pointer;
+    background: transparent;
+}
+
+.color-hex-label {
+    font-family: "Barlow Condensed", monospace, sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    color: #ffffff;
+}
+
+.social-input-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6px;
+}
+
+/* Modal Extensions */
+.driver-modal-avatar-box {
+    width: 54px;
+    height: 54px;
+    border-radius: 50%;
+    overflow: hidden;
+    border: 2px solid var(--gold, #d6b45c);
+    box-shadow: 0 0 12px rgba(214, 180, 92, 0.3);
+    flex-shrink: 0;
+}
+
+.driver-modal-avatar-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.driver-modal-bio-box {
+    background: rgba(255, 255, 255, 0.03);
+    border-left: 3px solid var(--gold, #d6b45c);
+    border-radius: 0 6px 6px 0;
+    padding: 8px 12px;
+    margin-bottom: 12px;
+}
+
+.modal-sub-label {
+    font-family: "Barlow Condensed", sans-serif;
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 1px;
+    color: var(--gold, #d6b45c);
+    display: block;
+    margin-bottom: 2px;
+}
+
+.driver-bio-text {
+    font-size: 12px;
+    color: #e2e8f0;
+    margin: 0;
+    line-height: 1.4;
+    white-space: pre-wrap;
+}
+
+.driver-modal-social-box {
+    margin-bottom: 12px;
+}
+
+.driver-social-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+.social-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    padding: 3px 8px;
+    border-radius: 12px;
+    font-family: "Barlow Condensed", sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    color: #ffffff;
+    text-decoration: none;
+    transition: all 0.2s ease;
+}
+
+.social-pill:hover {
+    background: rgba(255, 255, 255, 0.15);
+    border-color: #ffffff;
+    transform: translateY(-1px);
+}
+
+.social-pill-twitch {
+    border-color: rgba(145, 70, 255, 0.4);
+    color: #a970ff;
+}
+
+.social-pill-youtube {
+    border-color: rgba(255, 0, 0, 0.4);
+    color: #ff4d4d;
+}
+
+.social-pill-twitter {
+    border-color: rgba(29, 161, 242, 0.4);
+    color: #1da1f2;
+}
+
+.social-pill-discord {
+    border-color: rgba(88, 101, 242, 0.4);
+    color: #7289da;
+}
+
+
 
 
 

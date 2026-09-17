@@ -2641,13 +2641,24 @@ function getDynamicSeasonMatrixData() {
 
         return {
             pos,
-            number: meta.number || pos,
-            flag: meta.flag || "🏁",
+            id: driverObj.id || null,
+            number: driverObj.customNumber || meta.number || pos,
+            flag: driverObj.customFlag || meta.flag || "🏁",
             driver: driverName,
             team,
             r: rounds,
             pts,
-            dif
+            dif,
+            avatarUrl: driverObj.avatarUrl || null,
+            cardColor: driverObj.cardColor || null,
+            customNumber: driverObj.customNumber || null,
+            customFlag: driverObj.customFlag || null,
+            bio: driverObj.bio || null,
+            socialTwitch: driverObj.socialTwitch || null,
+            socialYoutube: driverObj.socialYoutube || null,
+            socialTwitter: driverObj.socialTwitter || null,
+            socialDiscord: driverObj.socialDiscord || null,
+            isVerified: !!driverObj.isVerified
         };
     });
 }
@@ -2843,24 +2854,127 @@ function openDriverStatsModal(driverName) {
     // Team styling class
     const teamCls = getTeamClass(data.team);
 
-    // Modal strip
+    // Custom Card Color Accent & Border
+    const cardEl = document.getElementById("driverModalCard");
     const strip = document.getElementById("driverModalStrip");
     if (strip) {
         strip.className = `driver-modal-strip ${teamCls}`;
+        if (data.cardColor) {
+            strip.style.backgroundColor = data.cardColor;
+            strip.style.boxShadow = `0 0 15px ${data.cardColor}`;
+        } else {
+            strip.style.backgroundColor = "";
+            strip.style.boxShadow = "";
+        }
+    }
+    if (cardEl) {
+        if (data.cardColor) {
+            cardEl.style.borderColor = `${data.cardColor}aa`;
+        } else {
+            cardEl.style.borderColor = "";
+        }
+    }
+
+    // Avatar / Profile Photo
+    const avatarBox = document.getElementById("driverModalAvatarBox");
+    const avatarImg = document.getElementById("driverModalAvatarImg");
+    if (avatarBox && avatarImg) {
+        if (data.avatarUrl) {
+            avatarImg.src = data.avatarUrl;
+            avatarBox.style.display = "block";
+            if (data.cardColor) avatarBox.style.borderColor = data.cardColor;
+        } else {
+            avatarBox.style.display = "none";
+            avatarImg.src = "";
+        }
     }
 
     // Dorsal
     const dorsalEl = document.getElementById("driverModalDorsal");
     if (dorsalEl) {
-        dorsalEl.textContent = data.number ? `#${data.number}` : `#${data.pos}`;
+        const dorsalVal = data.customNumber ? `#${data.customNumber}` : (data.number ? `#${data.number}` : `#${data.pos}`);
+        dorsalEl.textContent = dorsalVal;
     }
 
     // Flag & Name
     const flagEl = document.getElementById("driverModalFlag");
-    if (flagEl) flagEl.textContent = data.flag || "🏁";
+    if (flagEl) flagEl.textContent = data.customFlag || data.flag || "🏁";
 
     const nameEl = document.getElementById("driverModalName");
     if (nameEl) nameEl.textContent = data.driver;
+
+    const verifiedBadge = document.getElementById("driverModalVerifiedBadge");
+    if (verifiedBadge) {
+        verifiedBadge.style.display = data.isVerified ? "inline-block" : "none";
+    }
+
+    // Bio / Description
+    const bioBox = document.getElementById("driverModalBioBox");
+    const bioText = document.getElementById("driverModalBioText");
+    if (bioBox && bioText) {
+        if (data.bio && data.bio.trim()) {
+            bioText.textContent = data.bio.trim();
+            bioBox.style.display = "block";
+            if (data.cardColor) bioBox.style.borderLeftColor = data.cardColor;
+        } else {
+            bioBox.style.display = "none";
+            bioText.textContent = "";
+        }
+    }
+
+    // Social Links
+    const socialBox = document.getElementById("driverModalSocialBox");
+    const socialGrid = document.getElementById("driverModalSocialGrid");
+    if (socialBox && socialGrid) {
+        socialGrid.innerHTML = "";
+        let count = 0;
+
+        if (data.socialTwitch) {
+            count++;
+            const a = document.createElement("a");
+            a.className = "social-pill social-pill-twitch";
+            a.target = "_blank";
+            a.rel = "noopener noreferrer";
+            const userStr = data.socialTwitch.replace("https://twitch.tv/", "").replace("https://www.twitch.tv/", "").replace("@", "");
+            a.href = data.socialTwitch.startsWith("http") ? data.socialTwitch : `https://twitch.tv/${userStr}`;
+            a.innerHTML = `👾 Twitch: ${userStr}`;
+            socialGrid.appendChild(a);
+        }
+
+        if (data.socialYoutube) {
+            count++;
+            const a = document.createElement("a");
+            a.className = "social-pill social-pill-youtube";
+            a.target = "_blank";
+            a.rel = "noopener noreferrer";
+            const ytStr = data.socialYoutube.replace("https://youtube.com/", "").replace("https://www.youtube.com/", "");
+            a.href = data.socialYoutube.startsWith("http") ? data.socialYoutube : `https://youtube.com/${ytStr}`;
+            a.innerHTML = `📺 YouTube: ${ytStr}`;
+            socialGrid.appendChild(a);
+        }
+
+        if (data.socialTwitter) {
+            count++;
+            const a = document.createElement("a");
+            a.className = "social-pill social-pill-twitter";
+            a.target = "_blank";
+            a.rel = "noopener noreferrer";
+            const twStr = data.socialTwitter.replace("https://x.com/", "").replace("https://twitter.com/", "").replace("@", "");
+            a.href = data.socialTwitter.startsWith("http") ? data.socialTwitter : `https://x.com/${twStr}`;
+            a.innerHTML = `🐦 @${twStr}`;
+            socialGrid.appendChild(a);
+        }
+
+        if (data.socialDiscord) {
+            count++;
+            const span = document.createElement("span");
+            span.className = "social-pill social-pill-discord";
+            span.innerHTML = `💬 Discord: ${data.socialDiscord}`;
+            socialGrid.appendChild(span);
+        }
+
+        socialBox.style.display = count > 0 ? "block" : "none";
+    }
 
     // Team Pill
     const teamEl = document.getElementById("driverModalTeam");
@@ -4673,7 +4787,16 @@ function initFirestoreListeners() {
                 verificationCode: data.verificationCode || null,
                 claimedByEmail: data.claimedByEmail || null,
                 claimedByUid: data.claimedByUid || null,
-                isVerified: !!data.isVerified
+                isVerified: !!data.isVerified,
+                avatarUrl: data.avatarUrl || null,
+                cardColor: data.cardColor || null,
+                customNumber: data.customNumber || null,
+                customFlag: data.customFlag || null,
+                bio: data.bio || null,
+                socialTwitch: data.socialTwitch || null,
+                socialYoutube: data.socialYoutube || null,
+                socialTwitter: data.socialTwitter || null,
+                socialDiscord: data.socialDiscord || null
             });
         });
 
@@ -6661,6 +6784,7 @@ function renderUserClaimState(uData) {
         if (authBtnLabel && authBtnLabel.dataset.customName) {
             authBtnLabel.textContent = `${uData.claimedDriver.toUpperCase()} (VERIFICADO)`;
         }
+        populateUserCardEditor(uData);
     } else {
         if (userClaimUnverified) userClaimUnverified.style.display = "block";
         if (userClaimVerified) userClaimVerified.style.display = "none";
@@ -7017,6 +7141,142 @@ if (adminCopyCodeBtn) {
 if (adminSearchVerifyPilotInput) {
     adminSearchVerifyPilotInput.addEventListener("input", () => {
         renderAdminVerifyTab(adminSearchVerifyPilotInput.value);
+    });
+}
+
+/* =========================================================
+   USER DRIVER CARD CUSTOMIZER (FIREBASE SYNC)
+========================================================= */
+
+const toggleDriverCardEditorBtn = document.getElementById("toggleDriverCardEditorBtn");
+const userDriverCardEditor = document.getElementById("userDriverCardEditor");
+const userCardEditForm = document.getElementById("userCardEditForm");
+const editCardAvatar = document.getElementById("editCardAvatar");
+const editCardColor = document.getElementById("editCardColor");
+const editCardColorHex = document.getElementById("editCardColorHex");
+const editCardNumber = document.getElementById("editCardNumber");
+const editCardFlag = document.getElementById("editCardFlag");
+const editCardBio = document.getElementById("editCardBio");
+const editCardTwitch = document.getElementById("editCardTwitch");
+const editCardYoutube = document.getElementById("editCardYoutube");
+const editCardTwitter = document.getElementById("editCardTwitter");
+const editCardDiscord = document.getElementById("editCardDiscord");
+const editCardNotice = document.getElementById("editCardNotice");
+
+if (toggleDriverCardEditorBtn && userDriverCardEditor) {
+    toggleDriverCardEditorBtn.addEventListener("click", () => {
+        const isHidden = userDriverCardEditor.style.display === "none";
+        userDriverCardEditor.style.display = isHidden ? "block" : "none";
+        toggleDriverCardEditorBtn.textContent = isHidden ? "🔼 Ocultar Personalizador" : "🎨 Personalizar Tarjeta de Piloto";
+    });
+}
+
+if (editCardColor && editCardColorHex) {
+    editCardColor.addEventListener("input", () => {
+        editCardColorHex.textContent = editCardColor.value.toUpperCase();
+    });
+}
+
+// Populate User Customizer Form
+function populateUserCardEditor(data) {
+    if (!data) return;
+    if (editCardAvatar) editCardAvatar.value = data.avatarUrl || "";
+    if (editCardColor) {
+        editCardColor.value = data.cardColor || "#e10600";
+        if (editCardColorHex) editCardColorHex.textContent = (data.cardColor || "#e10600").toUpperCase();
+    }
+    if (editCardNumber) editCardNumber.value = data.customNumber || "";
+    if (editCardFlag) editCardFlag.value = data.customFlag || "";
+    if (editCardBio) editCardBio.value = data.bio || "";
+    if (editCardTwitch) editCardTwitch.value = data.socialTwitch || "";
+    if (editCardYoutube) editCardYoutube.value = data.socialYoutube || "";
+    if (editCardTwitter) editCardTwitter.value = data.socialTwitter || "";
+    if (editCardDiscord) editCardDiscord.value = data.socialDiscord || "";
+}
+
+// Save Custom Card Data to Firebase
+if (userCardEditForm) {
+    userCardEditForm.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        if (!activeUserAuth || !activeUserData || !activeUserData.isVerified) {
+            if (editCardNotice) {
+                editCardNotice.textContent = "Debes tener tu perfil de piloto verificado para personalizar tu tarjeta.";
+                editCardNotice.style.color = "#f85149";
+            }
+            return;
+        }
+
+        const pilotName = activeUserData.claimedDriver;
+        const pilotDocId = activeUserData.claimedDriverId || (pilotName ? getPilotDocId(pilotName) : null);
+
+        if (!pilotDocId) {
+            if (editCardNotice) {
+                editCardNotice.textContent = "Error: No se encontró la ID de tu piloto en la base de datos.";
+                editCardNotice.style.color = "#f85149";
+            }
+            return;
+        }
+
+        const customPayload = {
+            avatarUrl: editCardAvatar ? editCardAvatar.value.trim() : null,
+            cardColor: editCardColor ? editCardColor.value : "#e10600",
+            customNumber: editCardNumber ? editCardNumber.value.trim() : null,
+            customFlag: editCardFlag ? editCardFlag.value.trim() : null,
+            bio: editCardBio ? editCardBio.value.trim() : null,
+            socialTwitch: editCardTwitch ? editCardTwitch.value.trim() : null,
+            socialYoutube: editCardYoutube ? editCardYoutube.value.trim() : null,
+            socialTwitter: editCardTwitter ? editCardTwitter.value.trim() : null,
+            socialDiscord: editCardDiscord ? editCardDiscord.value.trim() : null,
+            updatedAt: new Date().toISOString()
+        };
+
+        if (editCardNotice) {
+            editCardNotice.textContent = "Guardando en Firebase...";
+            editCardNotice.style.color = "#8b949e";
+        }
+
+        try {
+            const batch = writeBatch(db);
+
+            // 1. Update document in 'pilotos' collection
+            batch.update(doc(db, "pilotos", pilotDocId), customPayload);
+
+            // 2. Update document in 'usuarios' collection
+            batch.set(doc(db, "usuarios", activeUserAuth.uid), customPayload, { merge: true });
+
+            await batch.commit();
+
+            if (editCardNotice) {
+                editCardNotice.textContent = "✓ ¡Tarjeta de piloto actualizada en Firebase!";
+                editCardNotice.style.color = "#10b981";
+            }
+
+            // Update in-memory pilot data in currentPilotos
+            const targetP = (currentPilotos || []).find(p => (p.id || getPilotDocId(p.driver)) === pilotDocId || normalizeDriverKey(p.driver) === normalizeDriverKey(pilotName));
+            if (targetP) {
+                Object.assign(targetP, customPayload);
+            }
+
+            activeUserData = {
+                ...activeUserData,
+                ...customPayload
+            };
+
+            // Refresh open driver stats modal if viewing own card
+            if (currentOpenModalDriver && normalizeDriverKey(currentOpenModalDriver) === normalizeDriverKey(pilotName)) {
+                openDriverStatsModal(pilotName);
+            }
+
+            // Refresh matrix & standings
+            renderFfcMatrixTable();
+
+        } catch (err) {
+            console.error("Error al guardar tarjeta de piloto:", err);
+            if (editCardNotice) {
+                editCardNotice.textContent = "Error al guardar en Firebase.";
+                editCardNotice.style.color = "#f85149";
+            }
+        }
     });
 }
 
