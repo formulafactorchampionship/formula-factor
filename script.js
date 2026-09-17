@@ -32,9 +32,11 @@ const db = getFirestore(app);
 // In-Memory live Firestore synchronized state
 let currentPilotos = [];
 let isPilotosInitialLoaded = false;
+let isCarrerasInitialLoaded = false;
 let currentNextRace = null;
 let currentSettings = null;
 let currentOpenRaceKey = null;
+const pendingTeamChanges = new Map();
 
 function getPilotDocId(driverName) {
     if (!driverName) return "pilot_" + Date.now();
@@ -1748,9 +1750,13 @@ function renderAdminDriversTab(filterText = "") {
         tr.dataset.index = actualIndex;
         tr.dataset.pilotId = pilotId;
 
+        const effectiveTeam = pendingTeamChanges.has(pilotId)
+            ? pendingTeamChanges.get(pilotId).team
+            : item.team;
+
         let teamOptions = "";
         F1_TEAMS.forEach(team => {
-            const isSelected = item.team && item.team.toLowerCase() === team.toLowerCase();
+            const isSelected = effectiveTeam && effectiveTeam.toLowerCase() === team.toLowerCase();
             teamOptions += `<option value="${escapeHtml(team)}" ${isSelected ? "selected" : ""}>${escapeHtml(team)}</option>`;
         });
 
@@ -1766,6 +1772,13 @@ function renderAdminDriversTab(filterText = "") {
                 <button type="button" class="admin-remove-btn admin-pilot-remove-btn" data-pilot-id="${pilotId}" data-driver="${escapeHtml(item.driver)}" title="Eliminar piloto de Firestore">🗑</button>
             </td>
         `;
+
+        const select = tr.querySelector(".admin-pilot-team-select");
+        if (select) {
+            select.addEventListener("change", () => {
+                pendingTeamChanges.set(pilotId, { pilotId, driver: item.driver, team: select.value });
+            });
+        }
 
         adminDriversTableBody.appendChild(tr);
     });
@@ -2124,8 +2137,24 @@ function initFirestoreListeners() {
         console.error("Error subscribing to 'general' settings:", error);
     });
 
-    // 4. Synchronize race results from carreras collection
-    onSnapshot(collection(db, "carreras"), (snapshot) => {
+    // 4. Synchronize race results from carreras collection in real time
+    onSnapshot(collection(db, "carreras"), async (snapshot) => {
+        if (snapshot.empty && !isCarrerasInitialLoaded) {
+            isCarrerasInitialLoaded = true;
+            try {
+                const batch = writeBatch(db);
+                Object.keys(defaultRaceResults).forEach(raceKey => {
+                    const docRef = doc(db, "carreras", raceKey);
+                    batch.set(docRef, defaultRaceResults[raceKey]);
+                });
+                await batch.commit();
+            } catch (err) {
+                console.error("Error auto-seeding 'carreras' into Firestore:", err);
+            }
+            return;
+        }
+
+        isCarrerasInitialLoaded = true;
         snapshot.forEach(docSnap => {
             const rData = docSnap.data();
             raceResults[docSnap.id] = rData;
@@ -2425,24 +2454,38 @@ if (generalSettingsForm) {
 if (adminSaveDriversBtn) {
     adminSaveDriversBtn.addEventListener("click", async () => {
         const selects = document.querySelectorAll(".admin-pilot-team-select");
+        selects.forEach(sel => {
+            const pilotId = sel.dataset.pilotId || getPilotDocId(sel.dataset.driver);
+            const driverName = sel.dataset.driver;
+            const newTeam = sel.value;
+            if (pilotId && driverName) {
+                pendingTeamChanges.set(pilotId, { pilotId, driver: driverName, team: newTeam });
+            }
+        });
+
+        if (pendingTeamChanges.size === 0) {
+            if (driversSaveNotice) {
+                driversSaveNotice.textContent = "No hay cambios de equipo pendientes.";
+                driversSaveNotice.style.color = "var(--gold)";
+                setTimeout(() => { driversSaveNotice.textContent = ""; }, 2500);
+            }
+            return;
+        }
+
         if (driversSaveNotice) {
             driversSaveNotice.textContent = "Actualizando equipos en Firestore...";
             driversSaveNotice.style.color = "var(--gold)";
         }
         try {
             const batch = writeBatch(db);
-            selects.forEach(sel => {
-                const pilotId = sel.dataset.pilotId || getPilotDocId(sel.dataset.driver);
-                const driverName = sel.dataset.driver;
-                const newTeam = sel.value;
-                if (pilotId && driverName) {
-                    batch.set(doc(db, "pilotos", pilotId), {
-                        driver: driverName,
-                        team: newTeam
-                    }, { merge: true });
-                }
+            pendingTeamChanges.forEach(({ pilotId, driver, team }) => {
+                batch.set(doc(db, "pilotos", pilotId), {
+                    driver: driver,
+                    team: team
+                }, { merge: true });
             });
             await batch.commit();
+            pendingTeamChanges.clear();
 
             if (driversSaveNotice) {
                 driversSaveNotice.textContent = "✓ Equipos actualizados en Firestore en tiempo real";
@@ -2709,6 +2752,17 @@ if (adminResetDefaultBtn) {
 
             // Reset drivers
             const batch = writeBatch(db);
+            const defaultDriverIds = new Set(defaultStandings.map(d => getPilotDocId(d.driver)));
+
+            // Delete any drivers not in default roster
+            if (currentPilotos && currentPilotos.length > 0) {
+                currentPilotos.forEach(cp => {
+                    if (!defaultDriverIds.has(cp.id)) {
+                        batch.delete(doc(db, "pilotos", cp.id));
+                    }
+                });
+            }
+
             defaultStandings.forEach(d => {
                 const docRef = doc(db, "pilotos", getPilotDocId(d.driver));
                 batch.set(docRef, {
@@ -2717,6 +2771,13 @@ if (adminResetDefaultBtn) {
                     pts: Number(d.pts) || 0
                 });
             });
+
+            // Reset carreras collection in Firestore
+            Object.keys(defaultRaceResults).forEach(raceKey => {
+                const docRef = doc(db, "carreras", raceKey);
+                batch.set(docRef, defaultRaceResults[raceKey]);
+            });
+
             await batch.commit();
 
             raceResults = { ...defaultRaceResults };
