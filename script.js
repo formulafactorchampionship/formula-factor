@@ -2212,7 +2212,7 @@ function renderStandingsOnPage(drivers) {
                     <span class="ranking-leader-pos">1.</span>
                     <div class="ranking-tied-team">
                         <span class="ranking-leader-name driver-clickable" data-driver="${escapeHtml(d1.driver)}" title="Ver estadísticas de ${escapeHtml(d1.driver)}">${escapeHtml(d1.driver)}</span>
-                        <span class="ranking-team-pill ${getTeamClass(d1.team)} team-clickable" data-team="${escapeHtml(d1.team)}" title="Ver equipo ${escapeHtml(d1.team)}">${escapeHtml(d1.team)}</span>
+                        <span class="ranking-team-pill ${getTeamClass(d1.team)} team-clickable" data-team="${escapeHtml(d1.team)}" title="Ver equipo ${escapeHtml(d1.team)}"><span class="team-dot"></span>${escapeHtml(d1.team)}</span>
                     </div>
                 </div>
                 <div class="ranking-tied-center">
@@ -2224,7 +2224,7 @@ function renderStandingsOnPage(drivers) {
                 <div class="ranking-tied-right">
                     <div class="ranking-tied-team">
                         <span class="ranking-leader-name driver-clickable" data-driver="${escapeHtml(d2 ? d2.driver : '')}" title="Ver estadísticas de ${escapeHtml(d2 ? d2.driver : '')}">${escapeHtml(d2 ? d2.driver : '')}</span>
-                        <span class="ranking-team-pill ${getTeamClass(d2 ? d2.team : '')} team-clickable" data-team="${escapeHtml(d2 ? d2.team : '')}" title="Ver equipo ${escapeHtml(d2 ? d2.team : '')}">${escapeHtml(d2 ? d2.team : '')}</span>
+                        <span class="ranking-team-pill ${getTeamClass(d2 ? d2.team : '')} team-clickable" data-team="${escapeHtml(d2 ? d2.team : '')}" title="Ver equipo ${escapeHtml(d2 ? d2.team : '')}"><span class="team-dot"></span>${escapeHtml(d2 ? d2.team : '')}</span>
                     </div>
                 </div>
             `;
@@ -2256,7 +2256,7 @@ function renderStandingsOnPage(drivers) {
                 rowDiv.innerHTML = `
                     <span class="ranking-row-pos">${idx + 1}</span>
                     <span class="ranking-row-name driver-clickable" data-driver="${escapeHtml(d.driver)}">${escapeHtml(d.driver)}</span>
-                    <span class="ranking-row-team ${getTeamClass(d.team)} team-clickable" data-team="${escapeHtml(d.team)}" title="Ver equipo ${escapeHtml(d.team)}">${escapeHtml(d.team)}</span>
+                    <span class="ranking-team-cell"><span class="ranking-team-pill ${getTeamClass(d.team)} team-clickable" data-team="${escapeHtml(d.team)}" title="Ver equipo ${escapeHtml(d.team)}"><span class="team-dot"></span>${escapeHtml(d.team)}</span></span>
                     <span class="ranking-row-pts">${Number(d.pts)}</span>
                 `;
                 driverRowsList.appendChild(rowDiv);
@@ -2277,7 +2277,7 @@ function renderStandingsOnPage(drivers) {
                         <div class="ranking-leader-info">
                             <span class="ranking-leader-name driver-clickable" data-driver="${escapeHtml(d1.driver)}">${escapeHtml(d1.driver)}</span>
                             <div class="ranking-leader-meta">
-                                <span class="ranking-team-pill ${getTeamClass(d1.team)} team-clickable" data-team="${escapeHtml(d1.team)}" title="Ver equipo ${escapeHtml(d1.team)}">${escapeHtml(d1.team)}</span>
+                                <span class="ranking-team-pill ${getTeamClass(d1.team)} team-clickable" data-team="${escapeHtml(d1.team)}" title="Ver equipo ${escapeHtml(d1.team)}"><span class="team-dot"></span>${escapeHtml(d1.team)}</span>
                             </div>
                         </div>
                     </div>
@@ -2311,7 +2311,7 @@ function renderStandingsOnPage(drivers) {
                             <div class="ranking-podium-info">
                                 <span class="ranking-podium-name driver-clickable" data-driver="${escapeHtml(d2.driver)}">${escapeHtml(d2.driver)}</span>
                                 <div class="ranking-podium-meta">
-                                    <span class="ranking-team-pill ${getTeamClass(d2.team)} team-clickable" data-team="${escapeHtml(d2.team)}" title="Ver equipo ${escapeHtml(d2.team)}">${escapeHtml(d2.team)}</span>
+                                    <span class="ranking-team-pill ${getTeamClass(d2.team)} team-clickable" data-team="${escapeHtml(d2.team)}" title="Ver equipo ${escapeHtml(d2.team)}"><span class="team-dot"></span>${escapeHtml(d2.team)}</span>
                                 </div>
                             </div>
                         </div>
@@ -2333,7 +2333,7 @@ function renderStandingsOnPage(drivers) {
                             <div class="ranking-podium-info">
                                 <span class="ranking-podium-name driver-clickable" data-driver="${escapeHtml(d3.driver)}">${escapeHtml(d3.driver)}</span>
                                 <div class="ranking-podium-meta">
-                                    <span class="ranking-team-pill ${getTeamClass(d3.team)} team-clickable" data-team="${escapeHtml(d3.team)}" title="Ver equipo ${escapeHtml(d3.team)}">${escapeHtml(d3.team)}</span>
+                                    <span class="ranking-team-pill ${getTeamClass(d3.team)} team-clickable" data-team="${escapeHtml(d3.team)}" title="Ver equipo ${escapeHtml(d3.team)}"><span class="team-dot"></span>${escapeHtml(d3.team)}</span>
                                 </div>
                             </div>
                         </div>
@@ -2371,7 +2371,7 @@ function renderStandingsOnPage(drivers) {
                 rowDiv.innerHTML = `
                     <span class="ranking-row-pos">${idx + 1}</span>
                     <span class="ranking-row-name driver-clickable" data-driver="${escapeHtml(d.driver)}">${escapeHtml(d.driver)}</span>
-                    <span class="ranking-row-team ${getTeamClass(d.team)} team-clickable" data-team="${escapeHtml(d.team)}" title="Ver equipo ${escapeHtml(d.team)}">${escapeHtml(d.team)}</span>
+                    <span class="ranking-team-cell"><span class="ranking-team-pill ${getTeamClass(d.team)} team-clickable" data-team="${escapeHtml(d.team)}" title="Ver equipo ${escapeHtml(d.team)}"><span class="team-dot"></span>${escapeHtml(d.team)}</span></span>
                     <span class="ranking-row-pts">${Number(d.pts)}</span>
                 `;
                 driverRowsList.appendChild(rowDiv);
@@ -3528,8 +3528,7 @@ function updateConstructorStandings(driverList) {
                 <div class="ranking-tied-left team-clickable" data-team="${escapeHtml(t1.team)}" title="${isEn ? 'View ' + escapeHtml(t1.team) + ' stats' : 'Ver estadísticas de ' + escapeHtml(t1.team)}">
                     <span class="ranking-leader-pos">1.</span>
                     <div class="ranking-tied-team">
-                        <span class="ranking-leader-name ${getTeamClass(t1.team)}">${escapeHtml(t1.team)}</span>
-                        <span class="ranking-team-pill ${getTeamClass(t1.team)}">${escapeHtml(t1.team)}</span>
+                        <span class="ranking-team-pill ${getTeamClass(t1.team)}"><span class="team-dot"></span>${escapeHtml(t1.team)}</span>
                     </div>
                 </div>
                 <div class="ranking-tied-center">
@@ -3540,8 +3539,7 @@ function updateConstructorStandings(driverList) {
                 </div>
                 <div class="ranking-tied-right team-clickable" data-team="${escapeHtml(t2 ? t2.team : '')}" title="${isEn ? 'View ' + escapeHtml(t2 ? t2.team : '') + ' stats' : 'Ver estadísticas de ' + escapeHtml(t2 ? t2.team : '')}">
                     <div class="ranking-tied-team">
-                        <span class="ranking-leader-name ${getTeamClass(t2 ? t2.team : '')}">${escapeHtml(t2 ? t2.team : '')}</span>
-                        <span class="ranking-team-pill ${getTeamClass(t2 ? t2.team : '')}">${escapeHtml(t2 ? t2.team : '')}</span>
+                        <span class="ranking-team-pill ${getTeamClass(t2 ? t2.team : '')}"><span class="team-dot"></span>${escapeHtml(t2 ? t2.team : '')}</span>
                     </div>
                 </div>
             `;
@@ -3564,7 +3562,7 @@ function updateConstructorStandings(driverList) {
                 rowDiv.setAttribute("title", isEn ? `View ${row.team} stats` : `Ver estadísticas de ${row.team}`);
                 rowDiv.innerHTML = `
                     <span class="ranking-row-pos">${idx + 1}</span>
-                    <span class="ranking-row-name ${getTeamClass(row.team)}">${escapeHtml(row.team)}</span>
+                    <span class="ranking-team-cell"><span class="ranking-team-pill ${getTeamClass(row.team)}"><span class="team-dot"></span>${escapeHtml(row.team)}</span></span>
                     <span class="ranking-row-pts">${row.pts}</span>
                     <span class="ranking-row-diff">${diff}</span>
                 `;
@@ -3586,7 +3584,7 @@ function updateConstructorStandings(driverList) {
                         <div class="ranking-leader-info">
                             <span class="ranking-leader-name ${getTeamClass(t1.team)}">${escapeHtml(t1.team)}</span>
                             <div class="ranking-leader-meta">
-                                <span class="ranking-team-pill ${getTeamClass(t1.team)}">CONSTRUCTOR</span>
+                                <span class="ranking-team-pill ${getTeamClass(t1.team)}"><span class="team-dot"></span>${escapeHtml(t1.team)}</span>
                             </div>
                         </div>
                     </div>
@@ -3672,7 +3670,7 @@ function updateConstructorStandings(driverList) {
                 rowDiv.setAttribute("title", isEn ? `View ${row.team} stats` : `Ver estadísticas de ${row.team}`);
                 rowDiv.innerHTML = `
                     <span class="ranking-row-pos">${idx + 1}</span>
-                    <span class="ranking-row-name ${getTeamClass(row.team)}">${escapeHtml(row.team)}</span>
+                    <span class="ranking-team-cell"><span class="ranking-team-pill ${getTeamClass(row.team)}"><span class="team-dot"></span>${escapeHtml(row.team)}</span></span>
                     <span class="ranking-row-pts">${row.pts}</span>
                     <span class="ranking-row-diff">${diff}</span>
                 `;
