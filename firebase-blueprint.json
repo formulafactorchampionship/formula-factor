@@ -1,0 +1,100 @@
+{
+  "entities": {
+    "Pilot": {
+      "title": "Pilot",
+      "description": "Championship driver registered in the official roster",
+      "type": "object",
+      "properties": {
+        "driver": {
+          "type": "string",
+          "description": "Name or handle of the driver"
+        },
+        "team": {
+          "type": "string",
+          "description": "Formula 1 constructor team"
+        },
+        "pts": {
+          "type": "number",
+          "description": "Championship points accumulated"
+        },
+        "pos": {
+          "type": "number",
+          "description": "Current position in standings"
+        }
+      },
+      "required": ["driver", "team", "pts"]
+    },
+    "RaceResult": {
+      "title": "RaceResult",
+      "description": "Official results for a Grand Prix event",
+      "type": "object",
+      "properties": {
+        "round": {
+          "type": "string",
+          "description": "Round identifier (e.g. ROUND 01)"
+        },
+        "title": {
+          "type": "string",
+          "description": "Grand Prix name"
+        },
+        "location": {
+          "type": "string",
+          "description": "Circuit location and country"
+        },
+        "date": {
+          "type": "string",
+          "description": "Race date text"
+        },
+        "winner": {
+          "type": "string",
+          "description": "Race winner"
+        },
+        "pole": {
+          "type": "string",
+          "description": "Pole position driver and lap time"
+        },
+        "fastest": {
+          "type": "string",
+          "description": "Fastest lap driver and time"
+        },
+        "driverDay": {
+          "type": "string",
+          "description": "Driver of the Day"
+        }
+      },
+      "required": ["round", "title"]
+    },
+    "AppConfig": {
+      "title": "AppConfig",
+      "description": "Application settings and countdown target",
+      "type": "object",
+      "properties": {
+        "round": { "type": "string" },
+        "title": { "type": "string" },
+        "location": { "type": "string" },
+        "dateText": { "type": "string" },
+        "dateTime": { "type": "string" }
+      }
+    }
+  },
+  "firestore": {
+    "/pilotos/{pilotId}": {
+      "schema": {
+        "$ref": "#/entities/Pilot"
+      },
+      "description": "Collection storing all championship drivers and points in real time"
+    },
+    "/carreras/{raceId}": {
+      "schema": {
+        "$ref": "#/entities/RaceResult"
+      },
+      "description": "Collection of Grand Prix results"
+    },
+    "/configuracion/{configId}": {
+      "schema": {
+        "$ref": "#/entities/AppConfig"
+      },
+      "description": "General settings and upcoming race details"
+    }
+  }
+}

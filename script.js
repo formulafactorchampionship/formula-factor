@@ -1,19 +1,54 @@
 /* =========================================================
+   FIREBASE FIRESTORE SETUP (MODULAR SDK v10 VIA CDN)
+========================================================= */
+
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import {
+    getFirestore,
+    collection,
+    doc,
+    getDocs,
+    getDoc,
+    setDoc,
+    updateDoc,
+    deleteDoc,
+    onSnapshot,
+    writeBatch
+} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyAS4RecsGAS4JWUn1d-9_VyqFRKmkF_CNs",
+  authDomain: "formula-factor.firebaseapp.com",
+  projectId: "formula-factor",
+  storageBucket: "formula-factor.firebasestorage.app",
+  messagingSenderId: "91130346513",
+  appId: "1:91130346513:web:7be9ef155980eba95045b0",
+  measurementId: "G-GHEET6HXNY"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+// In-Memory live Firestore synchronized state
+let currentPilotos = [];
+let isPilotosInitialLoaded = false;
+let currentNextRace = null;
+let currentSettings = null;
+let currentOpenRaceKey = null;
+
+function getPilotDocId(driverName) {
+    if (!driverName) return "pilot_" + Date.now();
+    return driverName.trim().toLowerCase().replace(/[^a-z0-9_-]/g, '_') || ("pilot_" + Date.now());
+}
+
+/* =========================================================
    FFC — COUNTDOWN
 ========================================================= */
 
 function getSavedRaceTimestamp() {
-    try {
-        const saved = localStorage.getItem("ffc_next_race");
-        if (saved) {
-            const data = JSON.parse(saved);
-            if (data.dateTime) {
-                const parsed = new Date(data.dateTime).getTime();
-                if (!isNaN(parsed)) return parsed;
-            }
-        }
-    } catch (e) {
-        console.error("Error loading saved race date:", e);
+    if (currentNextRace && currentNextRace.dateTime) {
+        const parsed = new Date(currentNextRace.dateTime).getTime();
+        if (!isNaN(parsed)) return parsed;
     }
     return new Date("2026-09-20T16:30:00+02:00").getTime();
 }
@@ -955,6 +990,7 @@ const resultRows = document.getElementById("resultRows");
 
 function openRace(raceKey) {
 
+    currentOpenRaceKey = raceKey;
     const race = raceResults[raceKey];
 
     if (!race || !raceOverlay) return;
@@ -1004,6 +1040,7 @@ function openRace(raceKey) {
 
 function closeRaceModal() {
 
+    currentOpenRaceKey = null;
     if (!raceOverlay) return;
 
     raceOverlay.classList.remove("active");
@@ -1378,37 +1415,35 @@ function closeAdminPanel() {
 
 // --- Next Race Logic ---
 function getSavedNextRace() {
-    try {
-        const saved = localStorage.getItem("ffc_next_race");
-        if (saved) return JSON.parse(saved);
-    } catch (e) {
-        console.error("Error reading saved next race:", e);
+    if (currentNextRace && currentNextRace.round) {
+        return currentNextRace;
     }
     return defaultNextRace;
 }
 
 function renderNextRaceOnPage(race) {
+    if (!race) race = defaultNextRace;
     if (nextRaceRoundEl) nextRaceRoundEl.textContent = race.round;
     if (nextRaceTitleEl) {
-        if (race.title.includes(" GP")) {
+        if (race.title && race.title.includes(" GP")) {
             nextRaceTitleEl.innerHTML = `${race.title.replace(" GP", "")}<br>GP`;
         } else {
-            nextRaceTitleEl.textContent = race.title;
+            nextRaceTitleEl.textContent = race.title || "";
         }
     }
     if (nextRaceLocationEl) {
-        if (race.location.includes(" · ")) {
+        if (race.location && race.location.includes(" · ")) {
             const parts = race.location.split(" · ");
             nextRaceLocationEl.innerHTML = `${parts[0]} ·<br>${parts[1]}`;
         } else {
-            nextRaceLocationEl.textContent = race.location;
+            nextRaceLocationEl.textContent = race.location || "";
         }
     }
     if (nextRaceDateTextEl) {
-        if (race.dateText.includes(" CEST")) {
+        if (race.dateText && race.dateText.includes(" CEST")) {
             nextRaceDateTextEl.innerHTML = `${race.dateText.replace(" CEST", "")}<br><span>CEST</span>`;
         } else {
-            nextRaceDateTextEl.textContent = race.dateText;
+            nextRaceDateTextEl.textContent = race.dateText || "";
         }
     }
     if (race.dateTime) {
@@ -1422,40 +1457,10 @@ function renderNextRaceOnPage(race) {
 
 // --- Standings Logic ---
 function getSavedStandings() {
-    let list = defaultStandings;
-    try {
-        const saved = localStorage.getItem("ffc_standings");
-        if (saved) {
-            const parsed = JSON.parse(saved);
-            if (Array.isArray(parsed) && parsed.length > 0) {
-                list = parsed;
-            }
-        }
-    } catch (e) {
-        console.error("Error reading saved standings:", e);
+    if (currentPilotos && currentPilotos.length > 0) {
+        return currentPilotos;
     }
-
-    // Ensure all 44 default drivers exist if user had a previous truncated version
-    const existingNames = new Set(list.map(d => d.driver.trim().toLowerCase()));
-    const merged = [...list];
-    defaultStandings.forEach(d => {
-        if (!existingNames.has(d.driver.trim().toLowerCase())) {
-            merged.push(d);
-        }
-    });
-
-    // Synchronize teams with official master driver roster
-    const roster = getOfficialDriverRoster();
-    const rosterMap = new Map();
-    roster.forEach(r => rosterMap.set(r.driver.trim().toLowerCase(), r.team));
-
-    return merged.map(item => {
-        const key = item.driver.trim().toLowerCase();
-        if (rosterMap.has(key)) {
-            return { ...item, team: rosterMap.get(key) };
-        }
-        return item;
-    });
+    return defaultStandings;
 }
 
 function renderStandingsOnPage(drivers) {
@@ -1556,8 +1561,10 @@ function renderAdminStandingsEditor(drivers) {
 
     sorted.forEach((d, idx) => {
         const officialTeam = getDriverTeam(d.driver) || d.team || "Independent";
+        const pilotId = d.id || getPilotDocId(d.driver);
         const tr = document.createElement("tr");
         tr.dataset.index = idx;
+        tr.dataset.pilotId = pilotId;
         tr.innerHTML = `
             <td style="font-weight: bold; color: var(--gold); text-align: center;">${idx + 1}</td>
             <td><input type="text" class="driver-name-input" value="${escapeHtml(d.driver)}" required></td>
@@ -1566,7 +1573,7 @@ function renderAdminStandingsEditor(drivers) {
                 <input type="hidden" class="driver-team-input" value="${escapeHtml(officialTeam)}">
             </td>
             <td><input type="number" class="driver-pts-input" value="${Number(d.pts)}" min="0" required></td>
-            <td style="text-align: center;"><button type="button" class="admin-remove-btn" title="Eliminar de clasificación">🗑</button></td>
+            <td style="text-align: center;"><button type="button" class="admin-remove-btn" data-pilot-id="${pilotId}" title="Eliminar de clasificación">🗑</button></td>
         `;
 
         const nameInput = tr.querySelector(".driver-name-input");
@@ -1583,27 +1590,40 @@ function renderAdminStandingsEditor(drivers) {
         adminStandingsTableBody.appendChild(tr);
     });
 
-    // Wire remove buttons
+    // Wire remove buttons with Firestore real-time deletion
     adminStandingsTableBody.querySelectorAll(".admin-remove-btn").forEach(btn => {
-        btn.addEventListener("click", (e) => {
+        btn.addEventListener("click", async (e) => {
             const row = e.target.closest("tr");
-            if (row) row.remove();
+            const pilotId = btn.dataset.pilotId || (row ? row.dataset.pilotId : "");
+            const nameInput = row ? row.querySelector(".driver-name-input") : null;
+            const driverName = nameInput ? nameInput.value.trim() : "este piloto";
+            if (!pilotId) {
+                if (row) row.remove();
+                return;
+            }
+            if (confirm(`¿Deseas eliminar a "${driverName}" de Firestore?`)) {
+                try {
+                    await deleteDoc(doc(db, "pilotos", pilotId));
+                    if (row) row.remove();
+                } catch (err) {
+                    console.error("Error deleting driver from Firestore:", err);
+                    alert("Error al eliminar de Firestore: " + err.message);
+                }
+            }
         });
     });
 }
 
 // --- Settings Logic ---
 function getSavedSettings() {
-    try {
-        const saved = localStorage.getItem("ffc_settings");
-        if (saved) return JSON.parse(saved);
-    } catch (e) {
-        console.error("Error reading saved settings:", e);
+    if (currentSettings && (currentSettings.discordUrl !== undefined || currentSettings.season !== undefined)) {
+        return currentSettings;
     }
     return defaultSettings;
 }
 
 function renderSettingsOnPage(settings) {
+    if (!settings) settings = defaultSettings;
     if (settings.discordUrl) {
         document.querySelectorAll(".discord-btn").forEach(btn => {
             btn.href = settings.discordUrl;
@@ -1640,18 +1660,11 @@ function escapeHtml(str) {
 
 // --- Race Results Logic ---
 function getCustomRaceResults() {
-    try {
-        const saved = localStorage.getItem("ffc_race_results");
-        if (saved) return JSON.parse(saved);
-    } catch (e) {
-        console.error("Error reading saved race results:", e);
-    }
-    return {};
+    return raceResults || {};
 }
 
 function initRaceResults() {
-    const custom = getCustomRaceResults();
-    raceResults = { ...defaultRaceResults, ...custom };
+    raceResults = { ...defaultRaceResults };
     Object.keys(raceResults).forEach(raceKey => {
         updateCalendarCardForRace(raceKey, raceResults[raceKey]);
     });
@@ -1694,43 +1707,25 @@ function updateCalendarCardForRace(raceKey, raceData) {
 
 // --- Official Driver Roster Management ---
 function getOfficialDriverRoster() {
-    try {
-        const saved = localStorage.getItem("ffc_driver_roster");
-        if (saved) {
-            const list = JSON.parse(saved);
-            if (Array.isArray(list) && list.length > 0) return list;
-        }
-    } catch (e) {
-        console.error("Error reading saved driver roster:", e);
+    if (currentPilotos && currentPilotos.length > 0) {
+        return currentPilotos.map(p => ({
+            id: p.id,
+            driver: p.driver,
+            team: p.team
+        }));
     }
     return defaultDriverRoster;
 }
 
-function saveOfficialDriverRoster(roster) {
-    localStorage.setItem("ffc_driver_roster", JSON.stringify(roster));
-    // Synchronize teams in saved standings
-    const standings = getSavedStandings();
-    const rosterMap = new Map();
-    roster.forEach(r => rosterMap.set(r.driver.trim().toLowerCase(), r.team));
-    const updatedStandings = standings.map(d => {
-        const key = d.driver.trim().toLowerCase();
-        if (rosterMap.has(key)) {
-            return { ...d, team: rosterMap.get(key) };
-        }
-        return d;
-    });
-    localStorage.setItem("ffc_standings", JSON.stringify(updatedStandings));
-
-    renderStandingsOnPage(updatedStandings);
-    renderAdminStandingsEditor(updatedStandings);
-    if (adminSelectRace) populateRaceResultsEditor(adminSelectRace.value);
-}
-
 function getDriverTeam(driverName) {
     if (!driverName) return "Independent";
-    const roster = getOfficialDriverRoster();
-    const found = roster.find(r => r.driver.trim().toLowerCase() === driverName.trim().toLowerCase());
-    if (found && found.team) return found.team;
+    const key = driverName.trim().toLowerCase();
+    if (currentPilotos && currentPilotos.length > 0) {
+        const found = currentPilotos.find(p => p.driver.trim().toLowerCase() === key);
+        if (found && found.team) return found.team;
+    }
+    const defaultFound = defaultStandings.find(p => p.driver.trim().toLowerCase() === key);
+    if (defaultFound && defaultFound.team) return defaultFound.team;
     return "Independent";
 }
 
@@ -1748,8 +1743,10 @@ function renderAdminDriversTab(filterText = "") {
 
     filtered.forEach((item, index) => {
         const actualIndex = roster.indexOf(item);
+        const pilotId = item.id || getPilotDocId(item.driver);
         const tr = document.createElement("tr");
         tr.dataset.index = actualIndex;
+        tr.dataset.pilotId = pilotId;
 
         let teamOptions = "";
         F1_TEAMS.forEach(team => {
@@ -1761,28 +1758,30 @@ function renderAdminDriversTab(filterText = "") {
             <td style="font-weight: bold; color: var(--gold); text-align: center;">${actualIndex + 1}</td>
             <td style="font-weight: 600; color: #fff;">${escapeHtml(item.driver)}</td>
             <td>
-                <select class="admin-pilot-team-select" data-driver="${escapeHtml(item.driver)}">
+                <select class="admin-pilot-team-select" data-pilot-id="${pilotId}" data-driver="${escapeHtml(item.driver)}">
                     ${teamOptions}
                 </select>
             </td>
             <td style="text-align: center;">
-                <button type="button" class="admin-remove-btn admin-pilot-remove-btn" data-index="${actualIndex}" title="Eliminar piloto del censo">🗑</button>
+                <button type="button" class="admin-remove-btn admin-pilot-remove-btn" data-pilot-id="${pilotId}" data-driver="${escapeHtml(item.driver)}" title="Eliminar piloto de Firestore">🗑</button>
             </td>
         `;
 
         adminDriversTableBody.appendChild(tr);
     });
 
-    // Wire remove buttons
+    // Wire remove buttons with Firestore deletion
     adminDriversTableBody.querySelectorAll(".admin-pilot-remove-btn").forEach(btn => {
-        btn.addEventListener("click", () => {
-            const idx = Number(btn.dataset.index);
-            const currentRoster = getOfficialDriverRoster();
-            if (idx >= 0 && idx < currentRoster.length) {
-                const removed = currentRoster[idx];
-                currentRoster.splice(idx, 1);
-                saveOfficialDriverRoster(currentRoster);
-                renderAdminDriversTab(adminSearchPilotInput ? adminSearchPilotInput.value : "");
+        btn.addEventListener("click", async () => {
+            const pilotId = btn.dataset.pilotId;
+            const driverName = btn.dataset.driver;
+            if (pilotId && confirm(`¿Deseas eliminar a "${driverName}" de la base de datos en Firestore?`)) {
+                try {
+                    await deleteDoc(doc(db, "pilotos", pilotId));
+                } catch (err) {
+                    console.error("Error deleting driver from Firestore:", err);
+                    alert("Error al eliminar de Firestore: " + err.message);
+                }
             }
         });
     });
@@ -2026,12 +2025,132 @@ function populateAdminForms() {
     }
 }
 
+// --- Firestore Real-Time Synchronizers ---
+function initFirestoreListeners() {
+    // 1. Synchronize 'pilotos' collection in real-time
+    onSnapshot(collection(db, "pilotos"), async (snapshot) => {
+        if (snapshot.empty && !isPilotosInitialLoaded) {
+            isPilotosInitialLoaded = true;
+            try {
+                const batch = writeBatch(db);
+                defaultStandings.forEach(d => {
+                    const docRef = doc(db, "pilotos", getPilotDocId(d.driver));
+                    batch.set(docRef, {
+                        driver: d.driver,
+                        team: d.team,
+                        pts: Number(d.pts) || 0
+                    });
+                });
+                await batch.commit();
+            } catch (err) {
+                console.error("Error auto-seeding 'pilotos' into Firestore:", err);
+            }
+            return;
+        }
+
+        isPilotosInitialLoaded = true;
+        const list = [];
+        snapshot.forEach(docSnap => {
+            const data = docSnap.data();
+            list.push({
+                id: docSnap.id,
+                driver: data.driver || docSnap.id,
+                team: data.team || "Independent",
+                pts: Number(data.pts) || 0
+            });
+        });
+
+        list.sort((a, b) => b.pts - a.pts);
+        currentPilotos = list;
+
+        renderStandingsOnPage(currentPilotos);
+        if (typeof updateStandingsToggleUI === "function") {
+            updateStandingsToggleUI(currentPilotos.length);
+        }
+
+        if (adminPanelOverlay && adminPanelOverlay.classList.contains("active")) {
+            renderAdminStandingsEditor(currentPilotos);
+            renderAdminDriversTab(adminSearchPilotInput ? adminSearchPilotInput.value : "");
+            if (adminSelectRace) populateRaceResultsEditor(adminSelectRace.value);
+        }
+    }, (error) => {
+        console.error("Error subscribing to 'pilotos' collection:", error);
+    });
+
+    // 2. Synchronize next race in real-time from configuracion/proxima_carrera
+    onSnapshot(doc(db, "configuracion", "proxima_carrera"), async (docSnap) => {
+        if (docSnap.exists()) {
+            currentNextRace = docSnap.data();
+            renderNextRaceOnPage(currentNextRace);
+            if (adminPanelOverlay && adminPanelOverlay.classList.contains("active")) {
+                if (adminRaceRound) adminRaceRound.value = currentNextRace.round || "";
+                if (adminRaceTitle) adminRaceTitle.value = currentNextRace.title || "";
+                if (adminRaceLocation) adminRaceLocation.value = currentNextRace.location || "";
+                if (adminRaceDateText) adminRaceDateText.value = currentNextRace.dateText || "";
+                if (adminRaceDateTime) adminRaceDateTime.value = currentNextRace.dateTime || "";
+            }
+        } else {
+            try {
+                await setDoc(doc(db, "configuracion", "proxima_carrera"), defaultNextRace);
+            } catch (err) {
+                console.error("Error creating default next race in Firestore:", err);
+            }
+        }
+    }, (error) => {
+        console.error("Error subscribing to 'proxima_carrera':", error);
+    });
+
+    // 3. Synchronize general settings in real-time from configuracion/general
+    onSnapshot(doc(db, "configuracion", "general"), async (docSnap) => {
+        if (docSnap.exists()) {
+            currentSettings = docSnap.data();
+            renderSettingsOnPage(currentSettings);
+            if (adminPanelOverlay && adminPanelOverlay.classList.contains("active")) {
+                if (adminDiscordUrl) adminDiscordUrl.value = currentSettings.discordUrl || "";
+                if (adminXUrl) adminXUrl.value = currentSettings.xUrl || "";
+                if (adminInstagramUrl) adminInstagramUrl.value = currentSettings.instagramUrl || "";
+                if (adminStatSeason) adminStatSeason.value = currentSettings.season || "";
+                if (adminStatRounds) adminStatRounds.value = currentSettings.rounds || "";
+                if (adminStatDrivers) adminStatDrivers.value = currentSettings.drivers || "";
+            }
+        } else {
+            try {
+                await setDoc(doc(db, "configuracion", "general"), defaultSettings);
+            } catch (err) {
+                console.error("Error creating default settings in Firestore:", err);
+            }
+        }
+    }, (error) => {
+        console.error("Error subscribing to 'general' settings:", error);
+    });
+
+    // 4. Synchronize race results from carreras collection
+    onSnapshot(collection(db, "carreras"), (snapshot) => {
+        snapshot.forEach(docSnap => {
+            const rData = docSnap.data();
+            raceResults[docSnap.id] = rData;
+            updateCalendarCardForRace(docSnap.id, rData);
+        });
+        if (currentOpenRaceKey && raceResults[currentOpenRaceKey] && raceOverlay && raceOverlay.classList.contains("active")) {
+            openRace(currentOpenRaceKey);
+        }
+        if (adminPanelOverlay && adminPanelOverlay.classList.contains("active") && adminSelectRace) {
+            populateRaceResultsEditor(adminSelectRace.value);
+        }
+    }, (error) => {
+        console.error("Error subscribing to 'carreras' collection:", error);
+    });
+}
+
 // Initialize on page load
 (function initializeSavedData() {
     renderNextRaceOnPage(getSavedNextRace());
     renderStandingsOnPage(getSavedStandings());
     renderSettingsOnPage(getSavedSettings());
     initRaceResults();
+
+    // Start real-time Firestore synchronization
+    initFirestoreListeners();
 
     // Language switcher setup
     const langBtnEs = document.getElementById("langBtnEs");
@@ -2136,7 +2255,7 @@ adminTabButtons.forEach(btn => {
 
 // Save Next Race
 if (nextRaceForm) {
-    nextRaceForm.addEventListener("submit", (e) => {
+    nextRaceForm.addEventListener("submit", async (e) => {
         e.preventDefault();
         const updated = {
             round: adminRaceRound.value.trim(),
@@ -2146,12 +2265,26 @@ if (nextRaceForm) {
             dateTime: adminRaceDateTime.value
         };
 
-        localStorage.setItem("ffc_next_race", JSON.stringify(updated));
-        renderNextRaceOnPage(updated);
+        try {
+            if (raceSaveNotice) {
+                raceSaveNotice.textContent = "Guardando en Firestore...";
+                raceSaveNotice.style.color = "var(--gold)";
+            }
+            await setDoc(doc(db, "configuracion", "proxima_carrera"), updated);
+            currentNextRace = updated;
+            renderNextRaceOnPage(updated);
 
-        if (raceSaveNotice) {
-            raceSaveNotice.textContent = "✓ Próxima carrera guardada con éxito";
-            setTimeout(() => { raceSaveNotice.textContent = ""; }, 3000);
+            if (raceSaveNotice) {
+                raceSaveNotice.textContent = "✓ Próxima carrera guardada en Firestore";
+                raceSaveNotice.style.color = "#3fb950";
+                setTimeout(() => { raceSaveNotice.textContent = ""; }, 3000);
+            }
+        } catch (err) {
+            console.error("Error saving next race to Firestore:", err);
+            if (raceSaveNotice) {
+                raceSaveNotice.textContent = "Error al guardar en Firestore: " + err.message;
+                raceSaveNotice.style.color = "#f85149";
+            }
         }
     });
 }
@@ -2192,7 +2325,7 @@ if (adminAddDriverBtn) {
 
 // Save Standings
 if (adminSaveStandingsBtn) {
-    adminSaveStandingsBtn.addEventListener("click", () => {
+    adminSaveStandingsBtn.addEventListener("click", async () => {
         if (!adminStandingsTableBody) return;
         const rows = adminStandingsTableBody.querySelectorAll("tr");
         const list = [];
@@ -2206,8 +2339,9 @@ if (adminSaveStandingsBtn) {
                 const name = nameInput.value.trim();
                 const officialTeam = getDriverTeam(name) || (teamInput ? teamInput.value.trim() : "") || "Independent";
                 const pts = Number(ptsInput.value) || 0;
+                const pilotId = row.dataset.pilotId || getPilotDocId(name);
                 if (name) {
-                    list.push({ driver: name, team: officialTeam, pts });
+                    list.push({ id: pilotId, driver: name, team: officialTeam, pts });
                 }
             }
         });
@@ -2215,20 +2349,44 @@ if (adminSaveStandingsBtn) {
         // Sort descending by points
         list.sort((a, b) => b.pts - a.pts);
 
-        localStorage.setItem("ffc_standings", JSON.stringify(list));
-        renderStandingsOnPage(list);
-        renderAdminStandingsEditor(list);
+        try {
+            if (standingsSaveNotice) {
+                standingsSaveNotice.textContent = "Guardando en Firestore...";
+                standingsSaveNotice.style.color = "var(--gold)";
+            }
+            const batch = writeBatch(db);
+            list.forEach(p => {
+                const docRef = doc(db, "pilotos", p.id || getPilotDocId(p.driver));
+                batch.set(docRef, {
+                    driver: p.driver,
+                    team: p.team,
+                    pts: Number(p.pts) || 0
+                }, { merge: true });
+            });
+            await batch.commit();
 
-        if (standingsSaveNotice) {
-            standingsSaveNotice.textContent = "✓ Clasificación actualizada y ordenada";
-            setTimeout(() => { standingsSaveNotice.textContent = ""; }, 3000);
+            currentPilotos = list;
+            renderStandingsOnPage(list);
+            renderAdminStandingsEditor(list);
+
+            if (standingsSaveNotice) {
+                standingsSaveNotice.textContent = "✓ Clasificación actualizada en tiempo real en Firestore";
+                standingsSaveNotice.style.color = "#3fb950";
+                setTimeout(() => { standingsSaveNotice.textContent = ""; }, 3000);
+            }
+        } catch (err) {
+            console.error("Error saving standings to Firestore:", err);
+            if (standingsSaveNotice) {
+                standingsSaveNotice.textContent = "Error al guardar en Firestore: " + err.message;
+                standingsSaveNotice.style.color = "#f85149";
+            }
         }
     });
 }
 
 // Save General Settings
 if (generalSettingsForm) {
-    generalSettingsForm.addEventListener("submit", (e) => {
+    generalSettingsForm.addEventListener("submit", async (e) => {
         e.preventDefault();
         const settings = {
             discordUrl: adminDiscordUrl ? adminDiscordUrl.value.trim() : "",
@@ -2239,44 +2397,70 @@ if (generalSettingsForm) {
             drivers: adminStatDrivers ? adminStatDrivers.value.trim() : "44"
         };
 
-        localStorage.setItem("ffc_settings", JSON.stringify(settings));
-        renderSettingsOnPage(settings);
+        try {
+            if (settingsSaveNotice) {
+                settingsSaveNotice.textContent = "Guardando en Firestore...";
+                settingsSaveNotice.style.color = "var(--gold)";
+            }
+            await setDoc(doc(db, "configuracion", "general"), settings, { merge: true });
+            currentSettings = settings;
+            renderSettingsOnPage(settings);
 
-        if (settingsSaveNotice) {
-            settingsSaveNotice.textContent = "✓ Ajustes guardados correctamente";
-            setTimeout(() => { settingsSaveNotice.textContent = ""; }, 3000);
+            if (settingsSaveNotice) {
+                settingsSaveNotice.textContent = "✓ Ajustes guardados en Firestore";
+                settingsSaveNotice.style.color = "#3fb950";
+                setTimeout(() => { settingsSaveNotice.textContent = ""; }, 3000);
+            }
+        } catch (err) {
+            console.error("Error saving settings to Firestore:", err);
+            if (settingsSaveNotice) {
+                settingsSaveNotice.textContent = "Error al guardar en Firestore: " + err.message;
+                settingsSaveNotice.style.color = "#f85149";
+            }
         }
     });
 }
 
 // --- Pilotos & Equipos Tab Events ---
 if (adminSaveDriversBtn) {
-    adminSaveDriversBtn.addEventListener("click", () => {
+    adminSaveDriversBtn.addEventListener("click", async () => {
         const selects = document.querySelectorAll(".admin-pilot-team-select");
-        const currentRoster = getOfficialDriverRoster();
-        const rosterMap = new Map();
-        currentRoster.forEach(r => rosterMap.set(r.driver.trim().toLowerCase(), r));
-
-        selects.forEach(sel => {
-            const driverName = sel.dataset.driver;
-            const newTeam = sel.value;
-            if (driverName && rosterMap.has(driverName.trim().toLowerCase())) {
-                rosterMap.get(driverName.trim().toLowerCase()).team = newTeam;
-            }
-        });
-
-        saveOfficialDriverRoster(currentRoster);
-        renderAdminDriversTab(adminSearchPilotInput ? adminSearchPilotInput.value : "");
-
         if (driversSaveNotice) {
-            driversSaveNotice.textContent = "✓ Equipos actualizados en todo el campeonato";
-            setTimeout(() => { driversSaveNotice.textContent = ""; }, 3000);
+            driversSaveNotice.textContent = "Actualizando equipos en Firestore...";
+            driversSaveNotice.style.color = "var(--gold)";
+        }
+        try {
+            const batch = writeBatch(db);
+            selects.forEach(sel => {
+                const pilotId = sel.dataset.pilotId || getPilotDocId(sel.dataset.driver);
+                const driverName = sel.dataset.driver;
+                const newTeam = sel.value;
+                if (pilotId && driverName) {
+                    batch.set(doc(db, "pilotos", pilotId), {
+                        driver: driverName,
+                        team: newTeam
+                    }, { merge: true });
+                }
+            });
+            await batch.commit();
+
+            if (driversSaveNotice) {
+                driversSaveNotice.textContent = "✓ Equipos actualizados en Firestore en tiempo real";
+                driversSaveNotice.style.color = "#3fb950";
+                setTimeout(() => { driversSaveNotice.textContent = ""; }, 3000);
+            }
+        } catch (err) {
+            console.error("Error saving driver teams to Firestore:", err);
+            if (driversSaveNotice) {
+                driversSaveNotice.textContent = "Error al guardar: " + err.message;
+                driversSaveNotice.style.color = "#f85149";
+            }
         }
     });
 }
 
 if (adminNewPilotForm) {
-    adminNewPilotForm.addEventListener("submit", (e) => {
+    adminNewPilotForm.addEventListener("submit", async (e) => {
         e.preventDefault();
         const nameInput = document.getElementById("newPilotName");
         const teamSelect = document.getElementById("newPilotTeam");
@@ -2292,24 +2476,30 @@ if (adminNewPilotForm) {
             return;
         }
 
-        currentRoster.push({ driver: name, team });
-        saveOfficialDriverRoster(currentRoster);
+        const pilotId = getPilotDocId(name);
+        try {
+            if (driversSaveNotice) {
+                driversSaveNotice.textContent = `Registrando a ${name} en Firestore...`;
+                driversSaveNotice.style.color = "var(--gold)";
+            }
+            await setDoc(doc(db, "pilotos", pilotId), {
+                driver: name,
+                team: team,
+                pts: 0
+            });
 
-        // Also add to standings with 0 pts if not present
-        const standings = getSavedStandings();
-        if (!standings.some(d => d.driver.trim().toLowerCase() === name.toLowerCase())) {
-            standings.push({ pos: standings.length + 1, driver: name, team, pts: 0 });
-            localStorage.setItem("ffc_standings", JSON.stringify(standings));
-            renderStandingsOnPage(standings);
-            renderAdminStandingsEditor(standings);
-        }
-
-        nameInput.value = "";
-        renderAdminDriversTab(adminSearchPilotInput ? adminSearchPilotInput.value : "");
-
-        if (driversSaveNotice) {
-            driversSaveNotice.textContent = `✓ Piloto ${name} registrado correctamente`;
-            setTimeout(() => { driversSaveNotice.textContent = ""; }, 3000);
+            nameInput.value = "";
+            if (driversSaveNotice) {
+                driversSaveNotice.textContent = `✓ Piloto ${name} guardado en Firestore en tiempo real`;
+                driversSaveNotice.style.color = "#3fb950";
+                setTimeout(() => { driversSaveNotice.textContent = ""; }, 3000);
+            }
+        } catch (err) {
+            console.error("Error adding pilot to Firestore:", err);
+            if (driversSaveNotice) {
+                driversSaveNotice.textContent = "Error al añadir a Firestore: " + err.message;
+                driversSaveNotice.style.color = "#f85149";
+            }
         }
     });
 }
@@ -2405,7 +2595,7 @@ if (adminLoadDefaultPosBtn) {
 }
 
 if (raceResultsForm) {
-    raceResultsForm.addEventListener("submit", (e) => {
+    raceResultsForm.addEventListener("submit", async (e) => {
         e.preventDefault();
         const raceKey = adminSelectRace ? adminSelectRace.value : "";
         if (!raceKey) return;
@@ -2476,40 +2666,77 @@ if (raceResultsForm) {
             drivers: drivers
         };
 
-        const custom = getCustomRaceResults();
-        custom[raceKey] = updatedRace;
-        localStorage.setItem("ffc_race_results", JSON.stringify(custom));
-        raceResults[raceKey] = updatedRace;
+        try {
+            if (raceResultsSaveNotice) {
+                raceResultsSaveNotice.textContent = "Guardando resultados en Firestore...";
+                raceResultsSaveNotice.style.color = "var(--gold)";
+            }
+            await setDoc(doc(db, "carreras", raceKey), updatedRace);
 
-        updateCalendarCardForRace(raceKey, updatedRace);
+            raceResults[raceKey] = updatedRace;
+            updateCalendarCardForRace(raceKey, updatedRace);
 
-        if (raceResultsSaveNotice) {
-            raceResultsSaveNotice.textContent = `✓ Resultados de ${meta.title} guardados correctamente`;
-            raceResultsSaveNotice.style.color = "#3fb950";
-            setTimeout(() => { raceResultsSaveNotice.textContent = ""; }, 3500);
+            if (raceResultsSaveNotice) {
+                raceResultsSaveNotice.textContent = `✓ Resultados de ${meta.title} sincronizados en Firestore`;
+                raceResultsSaveNotice.style.color = "#3fb950";
+                setTimeout(() => { raceResultsSaveNotice.textContent = ""; }, 3500);
+            }
+        } catch (err) {
+            console.error("Error saving race to Firestore:", err);
+            if (raceResultsSaveNotice) {
+                raceResultsSaveNotice.textContent = "Error al guardar en Firestore: " + err.message;
+                raceResultsSaveNotice.style.color = "#f85149";
+            }
         }
     });
 }
 
 // Reset to Defaults
 if (adminResetDefaultBtn) {
-    adminResetDefaultBtn.addEventListener("click", () => {
-        localStorage.removeItem("ffc_next_race");
-        localStorage.removeItem("ffc_standings");
-        localStorage.removeItem("ffc_settings");
-        localStorage.removeItem("ffc_race_results");
-        localStorage.removeItem("ffc_driver_roster");
+    adminResetDefaultBtn.addEventListener("click", async () => {
+        if (!confirm("¿Seguro que deseas restablecer los datos de fábrica en la base de datos Firestore?")) return;
 
-        raceResults = { ...defaultRaceResults };
-        renderNextRaceOnPage(defaultNextRace);
-        renderStandingsOnPage(defaultStandings);
-        renderSettingsOnPage(defaultSettings);
-        initRaceResults();
-        populateAdminForms();
+        try {
+            if (settingsSaveNotice) {
+                settingsSaveNotice.textContent = "Restableciendo datos en Firestore...";
+                settingsSaveNotice.style.color = "var(--gold)";
+            }
 
-        if (settingsSaveNotice) {
-            settingsSaveNotice.textContent = "✓ Datos restablecidos de fábrica";
-            setTimeout(() => { settingsSaveNotice.textContent = ""; }, 3000);
+            // Reset next race
+            await setDoc(doc(db, "configuracion", "proxima_carrera"), defaultNextRace);
+            // Reset settings
+            await setDoc(doc(db, "configuracion", "general"), defaultSettings);
+
+            // Reset drivers
+            const batch = writeBatch(db);
+            defaultStandings.forEach(d => {
+                const docRef = doc(db, "pilotos", getPilotDocId(d.driver));
+                batch.set(docRef, {
+                    driver: d.driver,
+                    team: d.team,
+                    pts: Number(d.pts) || 0
+                });
+            });
+            await batch.commit();
+
+            raceResults = { ...defaultRaceResults };
+            renderNextRaceOnPage(defaultNextRace);
+            renderStandingsOnPage(defaultStandings);
+            renderSettingsOnPage(defaultSettings);
+            initRaceResults();
+            populateAdminForms();
+
+            if (settingsSaveNotice) {
+                settingsSaveNotice.textContent = "✓ Datos restablecidos en Firestore con éxito";
+                settingsSaveNotice.style.color = "#3fb950";
+                setTimeout(() => { settingsSaveNotice.textContent = ""; }, 3000);
+            }
+        } catch (err) {
+            console.error("Error resetting defaults in Firestore:", err);
+            if (settingsSaveNotice) {
+                settingsSaveNotice.textContent = "Error al restablecer en Firestore: " + err.message;
+                settingsSaveNotice.style.color = "#f85149";
+            }
         }
     });
 }
