@@ -474,18 +474,29 @@ button {
 }
 
 .discord-btn {
-    padding: 11px 18px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 9px 14px;
     border: 1px solid var(--gold);
     color: var(--gold-light);
     font-family: "Barlow Condensed", sans-serif;
     font-weight: 800;
+    font-size: 13.5px;
     letter-spacing: 1px;
-    transition: 0.2s ease;
+    text-transform: uppercase;
+    white-space: nowrap;
+    line-height: 1;
+    text-decoration: none;
+    border-radius: 0;
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .discord-btn:hover {
     background: var(--gold);
     color: #05070a;
+    box-shadow: 0 0 16px rgba(214, 180, 92, 0.35);
 }
 
 /* User Auth Header Button (Right of Discord) */
