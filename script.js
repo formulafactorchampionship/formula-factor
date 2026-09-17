@@ -2406,13 +2406,136 @@ function renderStandingsOnPage(drivers) {
     renderFfcMatrixTable();
 }
 
+// ==============================================
+// OFFICIAL FFC 2010 SEASON MATRIX & STATS ENGINE
+// ==============================================
+
+const FFC_SEASON_GPS = [
+    { r: 1, flag: "🇦🇺", code: "AUS", name: "Australia", raceKey: "australia" },
+    { r: 2, flag: "🇲🇾", code: "MAL", name: "Malasia", raceKey: "malaysia" },
+    { r: 3, flag: "🇧🇭", code: "BAH", name: "Bahréin", raceKey: "bahrain" },
+    { r: 4, flag: "🇹🇷", code: "TUR", name: "Turquía", raceKey: "turkey" },
+    { r: 5, flag: "🇪🇸", code: "ESP", name: "España", raceKey: "spain" },
+    { r: 6, flag: "🇮🇹", code: "ITA", name: "Italia", raceKey: "italy" },
+    { r: 7, flag: "🇦🇹", code: "AUT", name: "Austria", raceKey: "austria" },
+    { r: 8, flag: "🇬🇧", code: "GBR", name: "Gran Bretaña", raceKey: "silverstone" },
+    { r: 9, flag: "🇩🇪", code: "GER", name: "Alemania", raceKey: "hockenheim" },
+    { r: 10, flag: "🇪🇺", code: "EUR", name: "Europa", raceKey: "nurburgring" },
+    { r: 11, flag: "🇭🇺", code: "HUN", name: "Hungría", raceKey: "hungary" },
+    { r: 12, flag: "🇧🇪", code: "BEL", name: "Bélgica", raceKey: "belgium" },
+    { r: 13, flag: "🇸🇬", code: "SIN", name: "Singapur", raceKey: "singapore" },
+    { r: 14, flag: "🇺🇸", code: "USA", name: "Estados Unidos", raceKey: "cota" },
+    { r: 15, flag: "🇧🇷", code: "BRA", name: "Brasil", raceKey: "brazil" }
+];
+
+function getDynamicSeasonMatrixData() {
+    const rawStandings = (currentPilotos && currentPilotos.length > 0) ? currentPilotos : getSavedStandings();
+    const sorted = sortDriversStandings(rawStandings);
+
+    // Build metadata dictionary (dorsal number, flag, team)
+    const metaMap = new Map();
+    if (typeof ffc2010SeasonDrivers !== "undefined" && Array.isArray(ffc2010SeasonDrivers)) {
+        ffc2010SeasonDrivers.forEach(d => {
+            if (d && d.driver) {
+                const k = normalizeDriverKey(d.driver);
+                metaMap.set(k, {
+                    number: d.number,
+                    flag: d.flag,
+                    team: d.team
+                });
+            }
+        });
+    }
+
+    const leaderPts = sorted.length > 0 ? (Number(sorted[0].pts) || 0) : 0;
+
+    return sorted.map((driverObj, idx) => {
+        const driverName = driverObj.driver;
+        const normKey = normalizeDriverKey(driverName);
+        const meta = metaMap.get(normKey) || {};
+        const team = driverObj.team || meta.team || getDriverTeam(driverName) || "Independent";
+        const pts = Number(driverObj.pts) || 0;
+        const pos = idx + 1;
+        const dif = pos === 1 ? "--" : `-${Math.max(0, leaderPts - pts)}`;
+
+        // Calculate 15 race cells dynamically from raceResults
+        const rounds = FFC_SEASON_GPS.map(gp => {
+            const race = raceResults[gp.raceKey];
+            if (!race || !Array.isArray(race.drivers) || race.drivers.length === 0) {
+                return "--";
+            }
+            const isCompleted = race.status === "COMPLETED" || (race.winner && race.winner !== "TBA");
+            if (!isCompleted) {
+                return "--";
+            }
+
+            const driverEntry = race.drivers.find(d => d && d.driver && normalizeDriverKey(d.driver) === normKey);
+            if (!driverEntry) {
+                return "--";
+            }
+
+            if (driverEntry.status === "DNF") {
+                return "OUT";
+            }
+            if (driverEntry.status === "DSQ") {
+                return "DSQ";
+            }
+
+            const racePos = Number(driverEntry.pos) || 0;
+            const basePts = F1_POINTS_MAP[racePos] || 0;
+
+            // Check Fastest Lap (+1 pt bonus)
+            let isFL = false;
+            if (race.fastest && race.fastest !== "TBA") {
+                const flName = race.fastest.split("·")[0].trim();
+                if (flName && normalizeDriverKey(flName) === normKey) {
+                    isFL = true;
+                }
+            }
+
+            // Check Pole Position (circled)
+            let isPole = false;
+            if (race.pole && race.pole !== "TBA") {
+                const poleName = race.pole.split("·")[0].trim();
+                if (poleName && normalizeDriverKey(poleName) === normKey) {
+                    isPole = true;
+                }
+            }
+
+            const totalRoundPts = basePts + (isFL ? F1_FASTEST_LAP_PTS : 0);
+
+            if (isPole) {
+                return isFL ? `(${totalRoundPts}*)` : `(${totalRoundPts})`;
+            } else if (isFL) {
+                return `${totalRoundPts}*`;
+            } else {
+                return `${totalRoundPts}`;
+            }
+        });
+
+        return {
+            pos,
+            number: meta.number || pos,
+            flag: meta.flag || "🏁",
+            driver: driverName,
+            team,
+            r: rounds,
+            pts,
+            dif
+        };
+    });
+}
+
 // --- Official FFC 2010 Season Matrix Spreadsheet Renderer ---
 function renderFfcMatrixTable(filterText = "") {
     const tbody = document.getElementById("ffcMatrixTableBody");
-    if (!tbody || typeof ffc2010SeasonDrivers === "undefined") return;
+    if (!tbody) return;
 
-    const query = (filterText || "").trim().toLowerCase();
-    const rows = ffc2010SeasonDrivers.filter(d => {
+    const dynamicDrivers = getDynamicSeasonMatrixData();
+    const searchInput = document.getElementById("matrixSearchInput");
+    const query = (filterText !== "" ? filterText : (searchInput ? searchInput.value : "")).trim().toLowerCase();
+
+    const rows = dynamicDrivers.filter(d => {
         if (!query) return true;
         return d.driver.toLowerCase().includes(query) || (d.team && d.team.toLowerCase().includes(query));
     });
@@ -2497,6 +2620,7 @@ function initStandingsViewTabs() {
             tabCards.classList.remove("active");
             viewMatrix.style.display = "block";
             viewCards.style.display = "none";
+            renderFfcMatrixTable();
         });
 
         tabCards.addEventListener("click", () => {
@@ -2520,57 +2644,14 @@ function initStandingsViewTabs() {
 // ==============================================
 let currentOpenModalDriver = null;
 
-const FFC_SEASON_GPS = [
-    { r: 1, flag: "🇦🇺", code: "AUS", name: "Australia", raceKey: "australia" },
-    { r: 2, flag: "🇲🇾", code: "MAL", name: "Malasia", raceKey: "malaysia" },
-    { r: 3, flag: "🇧🇭", code: "BAH", name: "Bahréin", raceKey: "bahrain" },
-    { r: 4, flag: "🇹🇷", code: "TUR", name: "Turquía", raceKey: "turkey" },
-    { r: 5, flag: "🇪🇸", code: "ESP", name: "España", raceKey: "spain" },
-    { r: 6, flag: "🇮🇹", code: "ITA", name: "Italia", raceKey: "italy" },
-    { r: 7, flag: "🇦🇹", code: "AUT", name: "Austria", raceKey: "austria" },
-    { r: 8, flag: "🇬🇧", code: "GBR", name: "Gran Bretaña", raceKey: "silverstone" },
-    { r: 9, flag: "🇩🇪", code: "GER", name: "Alemania", raceKey: "hockenheim" },
-    { r: 10, flag: "🇪🇺", code: "EUR", name: "Europa", raceKey: "nurburgring" },
-    { r: 11, flag: "🇭🇺", code: "HUN", name: "Hungría", raceKey: "hungary" },
-    { r: 12, flag: "🇧🇪", code: "BEL", name: "Bélgica", raceKey: "belgium" },
-    { r: 13, flag: "🇸🇬", code: "SIN", name: "Singapur", raceKey: "singapore" },
-    { r: 14, flag: "🇺🇸", code: "USA", name: "Estados Unidos", raceKey: "cota" },
-    { r: 15, flag: "🇧🇷", code: "BRA", name: "Brasil", raceKey: "brazil" }
-];
-
 function findDriverStats(driverName) {
     if (!driverName) return null;
     const clean = normalizeDriverKey(driverName);
+    const dynamicData = getDynamicSeasonMatrixData();
+    const match = dynamicData.find(d => normalizeDriverKey(d.driver) === clean);
+    if (!match) return null;
 
-    // 1. Look up in official FFC season drivers dataset
-    let match = null;
-    if (typeof ffc2010SeasonDrivers !== "undefined") {
-        match = ffc2010SeasonDrivers.find(d => normalizeDriverKey(d.driver) === clean);
-    }
-
-    // 2. Check if live currentPilotos has updated points or details
-    let liveDriver = null;
-    if (typeof currentPilotos !== "undefined" && Array.isArray(currentPilotos)) {
-        liveDriver = currentPilotos.find(d => normalizeDriverKey(d.driver) === clean);
-    }
-
-    // 3. Compute live ranking position
-    let rankPos = match ? match.pos : 1;
-    if (typeof currentPilotos !== "undefined" && Array.isArray(currentPilotos) && currentPilotos.length > 0) {
-        const sorted = sortDriversStandings(currentPilotos);
-        const idx = sorted.findIndex(d => normalizeDriverKey(d.driver) === clean);
-        if (idx !== -1) rankPos = idx + 1;
-    }
-
-    const officialDriver = match ? match.driver : (liveDriver ? liveDriver.driver : driverName);
-    const officialTeam = (liveDriver && liveDriver.team) ? liveDriver.team : (match ? match.team : "Independent");
-    const officialPts = (liveDriver && liveDriver.pts !== undefined) ? Number(liveDriver.pts) : (match ? Number(match.pts) : 0);
-    const officialNumber = match ? match.number : "";
-    const officialFlag = match ? match.flag : "🏁";
-    const officialRounds = match ? match.r : [];
-    const officialDif = match ? match.dif : "--";
-
-    // 4. Parse rounds breakdown
+    // Parse rounds breakdown
     let wins = 0;
     let podiums = 0;
     let poles = 0;
@@ -2578,12 +2659,15 @@ function findDriverStats(driverName) {
     let races = 0;
     let dnfs = 0;
 
-    if (Array.isArray(officialRounds)) {
-        officialRounds.forEach(val => {
+    if (Array.isArray(match.r)) {
+        match.r.forEach(val => {
             if (!val || val === "--") return;
             races++;
             if (val === "OUT") {
                 dnfs++;
+                return;
+            }
+            if (val === "DSQ") {
                 return;
             }
             if (val.includes("(") && val.includes(")")) poles++;
@@ -2601,14 +2685,14 @@ function findDriverStats(driverName) {
     }
 
     return {
-        driver: officialDriver,
-        team: officialTeam,
-        pos: rankPos,
-        pts: officialPts,
-        number: officialNumber,
-        flag: officialFlag,
-        dif: officialDif,
-        rounds: officialRounds,
+        driver: match.driver,
+        team: match.team,
+        pos: match.pos,
+        pts: match.pts,
+        number: match.number,
+        flag: match.flag,
+        dif: match.dif,
+        rounds: match.r,
         stats: {
             wins,
             podiums,
@@ -4055,6 +4139,15 @@ function initFirestoreListeners() {
         }
         if (adminPanelOverlay && adminPanelOverlay.classList.contains("active") && adminSelectRace) {
             populateRaceResultsEditor(adminSelectRace.value);
+        }
+
+        // Keep season matrix spreadsheet and driver modal synchronized with latest race results
+        renderFfcMatrixTable();
+        if (currentOpenModalDriver) {
+            const overlay = document.getElementById("driverModalOverlay");
+            if (overlay && overlay.classList.contains("active")) {
+                openDriverStatsModal(currentOpenModalDriver);
+            }
         }
     }, (error) => {
         console.error("Error subscribing to 'carreras' collection:", error);
