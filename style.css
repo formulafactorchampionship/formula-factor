@@ -6455,8 +6455,81 @@ footer {
 }
 
 /* =========================================================
-   DRIVER CARD CUSTOMIZER (PROFILE MENU & MODAL)
+   DRIVER CARD CUSTOMIZER (PROFILE MENU & POPUP MODAL)
 ========================================================= */
+
+.card-editor-modal-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 2500;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    background: rgba(3, 6, 11, 0.88);
+    backdrop-filter: blur(12px);
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transition: opacity 0.24s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.24s ease;
+}
+
+.card-editor-modal-overlay.active {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+}
+
+.card-editor-modal-card {
+    width: min(500px, 100%);
+    max-height: calc(100vh - 40px);
+    overflow-y: auto;
+    background: #080c14;
+    border: 1px solid rgba(214, 180, 92, 0.4);
+    border-radius: 12px;
+    padding: 24px;
+    box-shadow: 0 25px 70px rgba(0, 0, 0, 0.9), 0 0 30px rgba(214, 180, 92, 0.15);
+    position: relative;
+    transform: translateY(14px) scale(0.98);
+    transition: transform 0.26s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.card-editor-modal-overlay.active .card-editor-modal-card {
+    transform: translateY(0) scale(1);
+}
+
+.card-editor-modal-close {
+    position: absolute;
+    top: 14px;
+    right: 16px;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    color: #a0a6b2;
+    font-size: 20px;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+}
+
+.card-editor-modal-close:hover {
+    background: #e10600;
+    color: #ffffff;
+    border-color: #e10600;
+}
+
+.card-editor-title {
+    font-family: "Barlow Condensed", sans-serif;
+    font-size: 18px;
+    font-weight: 900;
+    color: var(--gold, #d6b45c);
+    letter-spacing: 1px;
+    margin: 0 0 4px 0;
+}
 
 .user-driver-card-editor {
     background: rgba(10, 15, 24, 0.95);
