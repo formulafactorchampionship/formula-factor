@@ -1806,15 +1806,20 @@ if ("IntersectionObserver" in window) {
 
 
 /* =========================================================
-   ADMIN AUTHENTICATION & PANEL SYSTEM (RESTRICTED TO ENZO)
+   ADMIN AUTHENTICATION & PANEL SYSTEM (AUTHORIZED ADMINS)
 ========================================================= */
 
-const ADMIN_EMAIL = "enzo.castillo.lomb@gmail.com";
+const ADMIN_EMAILS = [
+    "enzo.castillo.lomb@gmail.com",
+    "formulafactorchampionship@gmail.com"
+];
+const ADMIN_EMAIL = ADMIN_EMAILS[0];
 
 function isUserAdmin(user) {
     const u = user !== undefined ? user : (typeof activeUserAuth !== "undefined" && activeUserAuth ? activeUserAuth : (typeof LocalAuthStore !== "undefined" ? LocalAuthStore.getCurrentUser() : null));
     if (!u || !u.email) return false;
-    return u.email.trim().toLowerCase() === ADMIN_EMAIL.toLowerCase();
+    const cleanEmail = u.email.trim().toLowerCase();
+    return ADMIN_EMAILS.some(adminEmail => adminEmail.toLowerCase().trim() === cleanEmail);
 }
 
 // Default configuration datasets
@@ -2104,14 +2109,14 @@ function openAdminPanel() {
             openUserAuthModal("login");
             showAuthAlert(
                 currentLanguage === "en"
-                    ? `Please log in with the administrator account (${ADMIN_EMAIL}) to access the admin panel.`
-                    : `Inicia sesión con la cuenta de administrador (${ADMIN_EMAIL}) para acceder al panel.`
+                    ? `Please log in with an administrator account to access the admin panel.`
+                    : `Inicia sesión con una cuenta de administrador para acceder al panel.`
             );
         } else {
             alert(
                 currentLanguage === "en"
-                    ? `Access restricted: Only ${ADMIN_EMAIL} has administrator privileges.`
-                    : `Acceso restringido: Solo la cuenta ${ADMIN_EMAIL} tiene permisos de administración.`
+                    ? `Access restricted: Only authorized administrator accounts have access.`
+                    : `Acceso restringido: Solo las cuentas de administración autorizadas tienen acceso.`
             );
         }
         return;
