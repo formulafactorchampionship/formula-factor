@@ -4842,6 +4842,467 @@ footer {
     text-decoration: underline;
 }
 
+/* ==============================================
+   TEAM INTERACTION & CLICKABLE STYLES
+   ============================================== */
+.team-clickable,
+[data-team],
+.team-row-clickable {
+    cursor: pointer;
+    transition: color 0.15s ease, transform 0.15s ease, opacity 0.15s ease, text-decoration 0.15s ease;
+}
+
+.team-clickable:hover {
+    filter: brightness(1.25);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+}
+
+.ranking-row.team-row-clickable:hover {
+    background: rgba(214, 180, 92, 0.08) !important;
+    transform: translateX(2px);
+}
+
+.ranking-leader-row.team-clickable:hover,
+.ranking-podium-col.team-clickable:hover,
+.ranking-tied-left.team-clickable:hover,
+.ranking-tied-right.team-clickable:hover {
+    filter: brightness(1.12);
+    cursor: pointer;
+}
+
+.ranking-tied-left.team-clickable,
+.ranking-tied-right.team-clickable {
+    border-radius: 8px;
+    padding: 6px 10px;
+    transition: background 0.18s ease;
+}
+
+.ranking-tied-left.team-clickable:hover,
+.ranking-tied-right.team-clickable:hover {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+/* ==============================================
+   MINI TARJETA DE ESTADÍSTICAS DE EQUIPO (MODAL)
+============================================== */
+.team-modal-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 2200;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    background: rgba(3, 6, 11, 0.88);
+    backdrop-filter: blur(12px);
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transition: opacity 0.24s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.24s ease;
+}
+
+.team-modal-overlay.active {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+}
+
+.team-modal-card {
+    width: min(540px, 100%);
+    max-height: calc(100vh - 40px);
+    overflow-y: auto;
+    background: #080c13;
+    border: 1px solid rgba(214, 180, 92, 0.32);
+    border-radius: 12px;
+    box-shadow: 0 25px 70px rgba(0, 0, 0, 0.85);
+    position: relative;
+    transform: translateY(14px) scale(0.98);
+    transition: transform 0.26s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.team-modal-overlay.active .team-modal-card {
+    transform: translateY(0) scale(1);
+}
+
+.team-modal-strip {
+    height: 4px;
+    width: 100%;
+    border-radius: 12px 12px 0 0;
+    background: linear-gradient(90deg, #d6b45c, #f3d483);
+}
+
+/* Team Accent Strips */
+.team-modal-strip.team-hrt { background: linear-gradient(90deg, #d5c299, #b89b58); }
+.team-modal-strip.team-redbull { background: linear-gradient(90deg, #0600ef, #d90429); }
+.team-modal-strip.team-ferrari { background: linear-gradient(90deg, #dc0000, #ff4d4d); }
+.team-modal-strip.team-mercedes { background: linear-gradient(90deg, #00d2be, #c0c0c0); }
+.team-modal-strip.team-tororosso { background: linear-gradient(90deg, #4c00be, #002288); }
+.team-modal-strip.team-sauber { background: linear-gradient(90deg, #ffffff, #7f8897); }
+.team-modal-strip.team-mclaren { background: linear-gradient(90deg, #ff8000, #c0c0c0); }
+.team-modal-strip.team-williams { background: linear-gradient(90deg, #0082fa, #ffffff); }
+.team-modal-strip.team-lotus { background: linear-gradient(90deg, #2b8220, #d4af37); }
+.team-modal-strip.team-virgin { background: linear-gradient(90deg, #7a0000, #000000); }
+.team-modal-strip.team-renault { background: linear-gradient(90deg, #fff500, #111111); }
+.team-modal-strip.team-forceindia { background: linear-gradient(90deg, #ff5f0f, #ffffff, #008000); }
+
+.team-modal-close {
+    position: absolute;
+    top: 14px;
+    right: 16px;
+    width: 34px;
+    height: 34px;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 6px;
+    background: rgba(255, 255, 255, 0.04);
+    color: #fff;
+    font-size: 24px;
+    line-height: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: 0.18s ease;
+    z-index: 10;
+}
+
+.team-modal-close:hover {
+    border-color: var(--gold);
+    color: var(--gold-light);
+    background: rgba(214, 180, 92, 0.12);
+}
+
+.team-modal-header {
+    padding: 24px 24px 18px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.team-modal-logo-badge {
+    font-family: "Barlow Condensed", sans-serif;
+    font-size: 26px;
+    font-weight: 900;
+    line-height: 1;
+    color: var(--gold, #d6b45c);
+    padding: 10px 14px;
+    background: rgba(214, 180, 92, 0.08);
+    border: 1px solid rgba(214, 180, 92, 0.22);
+    border-radius: 8px;
+    min-width: 68px;
+    text-align: center;
+    box-shadow: inset 0 0 15px rgba(214, 180, 92, 0.05);
+    letter-spacing: 1px;
+}
+
+.team-modal-identity {
+    flex: 1;
+    min-width: 0;
+}
+
+.team-modal-name-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 6px;
+}
+
+.team-modal-flag {
+    font-size: 24px;
+    line-height: 1;
+}
+
+.team-modal-name {
+    font-family: "Barlow Condensed", sans-serif;
+    font-size: 32px;
+    font-weight: 900;
+    letter-spacing: 0.5px;
+    color: #fff;
+    line-height: 1;
+    margin: 0;
+    text-transform: uppercase;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.team-modal-meta-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.team-modal-team-pill {
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    padding: 3px 9px;
+    border-radius: 4px;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    color: #fff;
+}
+
+.team-modal-role-badge {
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+    padding: 3px 8px;
+    border-radius: 4px;
+    background: rgba(214, 180, 92, 0.12);
+    color: #fce79a;
+    border: 1px solid rgba(214, 180, 92, 0.32);
+}
+
+/* KPI Bento Grid */
+.team-modal-kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+    padding: 16px 24px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.team-kpi-item {
+    background: rgba(255, 255, 255, 0.025);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 8px;
+    padding: 10px 8px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    gap: 3px;
+    transition: background 0.18s ease;
+}
+
+.team-kpi-item:hover {
+    background: rgba(255, 255, 255, 0.04);
+}
+
+.team-kpi-label {
+    font-size: 9.5px;
+    font-weight: 800;
+    letter-spacing: 0.8px;
+    color: #7f8897;
+    text-transform: uppercase;
+}
+
+.team-kpi-val {
+    font-family: "Barlow Condensed", sans-serif;
+    font-size: 22px;
+    font-weight: 900;
+    color: #fff;
+    line-height: 1;
+}
+
+.team-kpi-item.kpi-gold .team-kpi-val {
+    color: #fce79a;
+    text-shadow: 0 0 10px rgba(245, 158, 11, 0.25);
+}
+
+.team-kpi-item.kpi-highlight-pts .team-kpi-val {
+    color: #6ee7b7;
+}
+
+/* Team Squad Section */
+.team-modal-squad-section {
+    padding: 16px 24px 14px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.team-modal-squad-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 10px;
+}
+
+.squad-section-title {
+    font-size: 12px;
+    font-weight: 900;
+    letter-spacing: 1px;
+    color: var(--gold, #d6b45c);
+    text-transform: uppercase;
+}
+
+.squad-section-sub {
+    font-size: 10px;
+    color: #7f8897;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+}
+
+.team-modal-squad-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 8px;
+}
+
+.team-squad-card {
+    background: rgba(255, 255, 255, 0.025);
+    border: 1px solid rgba(255, 255, 255, 0.07);
+    border-radius: 8px;
+    padding: 8px 12px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    cursor: pointer;
+    transition: all 0.18s ease;
+}
+
+.team-squad-card:hover {
+    background: rgba(214, 180, 92, 0.1);
+    border-color: rgba(214, 180, 92, 0.35);
+    transform: translateY(-1px);
+}
+
+.team-squad-card-left {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-width: 0;
+}
+
+.team-squad-dorsal {
+    font-family: "Barlow Condensed", sans-serif;
+    font-size: 16px;
+    font-weight: 800;
+    color: var(--gold);
+    min-width: 24px;
+}
+
+.team-squad-flag {
+    font-size: 16px;
+    line-height: 1;
+}
+
+.team-squad-name {
+    font-size: 13.5px;
+    font-weight: 700;
+    color: #ffffff;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.team-squad-card-right {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 2px;
+}
+
+.team-squad-pos {
+    font-size: 10px;
+    font-weight: 800;
+    color: #94a3b8;
+    letter-spacing: 0.5px;
+}
+
+.team-squad-pts {
+    font-family: "Barlow Condensed", sans-serif;
+    font-size: 15px;
+    font-weight: 800;
+    color: #6ee7b7;
+    line-height: 1;
+}
+
+/* Rounds Breakdown for Team */
+.team-modal-rounds-section {
+    padding: 16px 24px 22px;
+}
+
+.team-modal-rounds-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 12px;
+}
+
+.team-modal-rounds-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 6px;
+}
+
+@media (max-width: 600px) {
+    .team-modal-header {
+        padding: 20px 16px 14px;
+        gap: 12px;
+    }
+    .team-modal-logo-badge {
+        font-size: 20px;
+        min-width: 52px;
+        padding: 6px 8px;
+    }
+    .team-modal-name {
+        font-size: 26px;
+    }
+    .team-modal-kpi-grid {
+        grid-template-columns: repeat(2, 1fr);
+        padding: 12px 16px;
+    }
+    .team-modal-squad-section {
+        padding: 14px 16px 12px;
+    }
+    .team-modal-rounds-section {
+        padding: 14px 16px 18px;
+    }
+    .team-modal-rounds-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+/* Team Clickable Elements */
+.team-clickable {
+    cursor: pointer !important;
+    transition: all 0.18s ease;
+}
+
+.team-clickable:hover {
+    filter: brightness(1.25);
+    text-shadow: 0 0 8px currentColor;
+}
+
+.ranking-team-pill.team-clickable:hover,
+.driver-modal-team-pill.team-clickable:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+    filter: brightness(1.2);
+}
+
+.team-card-clickable {
+    cursor: pointer !important;
+    transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+.team-card-clickable:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+    border-color: rgba(214, 180, 92, 0.4);
+}
+
+.team-row-clickable {
+    cursor: pointer !important;
+    transition: all 0.15s ease;
+}
+
+.team-row-clickable:hover {
+    background: rgba(255, 255, 255, 0.05);
+    transform: translateX(3px);
+}
+
+.team-row-clickable:hover .ranking-row-name {
+    color: var(--gold, #d6b45c);
+}
+
+
 
 
 

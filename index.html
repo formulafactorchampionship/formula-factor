@@ -1223,6 +1223,95 @@
 </div>
 
 
+<!-- ==============================================
+     MINI TARJETA DE ESTADÍSTICAS DE EQUIPO (MODAL)
+============================================== -->
+<div class="team-modal-overlay" id="teamModalOverlay" aria-hidden="true" role="dialog" aria-modal="true">
+    <div class="team-modal-card" id="teamModalCard">
+        <!-- Team color top accent strip -->
+        <div class="team-modal-strip" id="teamModalStrip"></div>
+
+        <!-- Close button -->
+        <button type="button" class="team-modal-close" id="closeTeamModal" aria-label="Cerrar tarjeta de equipo">&times;</button>
+
+        <!-- Team Hero Header -->
+        <div class="team-modal-header">
+            <div class="team-modal-logo-badge" id="teamModalLogoBadge">
+                <span id="teamModalLogoText">HRT</span>
+            </div>
+            <div class="team-modal-identity">
+                <div class="team-modal-name-row">
+                    <span class="team-modal-flag" id="teamModalFlag">🇪🇸</span>
+                    <h3 class="team-modal-name" id="teamModalName">HRT</h3>
+                </div>
+                <div class="team-modal-meta-row">
+                    <span class="team-modal-team-pill team-hrt" id="teamModalPill">HRT F1 TEAM</span>
+                    <span class="team-modal-role-badge" id="teamModalRoleBadge">LÍDER DE CONSTRUCTORES</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Key Championship KPIs Bento Grid -->
+        <div class="team-modal-kpi-grid">
+            <div class="team-kpi-item kpi-gold">
+                <span class="team-kpi-label" id="lblTeamKpiPos">POSICIÓN</span>
+                <strong class="team-kpi-val" id="teamKpiPos">P1</strong>
+            </div>
+            <div class="team-kpi-item kpi-highlight-pts">
+                <span class="team-kpi-label" id="lblTeamKpiPts">PUNTOS</span>
+                <strong class="team-kpi-val" id="teamKpiPts">213</strong>
+            </div>
+            <div class="team-kpi-item">
+                <span class="team-kpi-label" id="lblTeamKpiGap">DIFERENCIA</span>
+                <strong class="team-kpi-val" id="teamKpiGap">LÍDER</strong>
+            </div>
+            <div class="team-kpi-item">
+                <span class="team-kpi-label" id="lblTeamKpiWins">VICTORIAS</span>
+                <strong class="team-kpi-val" id="teamKpiWins">3</strong>
+            </div>
+            <div class="team-kpi-item">
+                <span class="team-kpi-label" id="lblTeamKpiPodiums">PODIOS</span>
+                <strong class="team-kpi-val" id="teamKpiPodiums">6</strong>
+            </div>
+            <div class="team-kpi-item">
+                <span class="team-kpi-label" id="lblTeamKpiPoles">POLES</span>
+                <strong class="team-kpi-val" id="teamKpiPoles">0</strong>
+            </div>
+            <div class="team-kpi-item">
+                <span class="team-kpi-label" id="lblTeamKpiFastest">V. RÁPIDAS</span>
+                <strong class="team-kpi-val" id="teamKpiFastest">2</strong>
+            </div>
+            <div class="team-kpi-item">
+                <span class="team-kpi-label" id="lblTeamKpiDrivers">PILOTOS</span>
+                <strong class="team-kpi-val" id="teamKpiDrivers">2</strong>
+            </div>
+        </div>
+
+        <!-- Team Squad / Drivers Section -->
+        <div class="team-modal-squad-section">
+            <div class="team-modal-squad-header">
+                <span class="squad-section-title" id="lblSquadTitle">ALINEACIÓN DE PILOTOS</span>
+                <small class="squad-section-sub" id="lblSquadSub">PUNTOS Y CLASIFICACIÓN</small>
+            </div>
+            <div class="team-modal-squad-grid" id="teamModalSquadGrid">
+                <!-- Dynamically populated per team -->
+            </div>
+        </div>
+
+        <!-- Season Rounds Breakdown (R1 to R15) -->
+        <div class="team-modal-rounds-section">
+            <div class="team-modal-rounds-header">
+                <span class="rounds-section-title" id="lblTeamRoundsTitle">TRAYECTORIA FFC 2010 (R1 - R15)</span>
+                <small class="rounds-section-sub" id="lblTeamRoundsSub">PUNTOS COMBINADOS POR CARRERA</small>
+            </div>
+            <div class="team-modal-rounds-grid" id="teamModalRoundsGrid">
+                <!-- Dynamically populated per team -->
+            </div>
+        </div>
+    </div>
+</div>
+
+
 <footer>
 
     <div class="footer-inner">

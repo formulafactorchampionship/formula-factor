@@ -994,6 +994,9 @@ function setLanguage(lang) {
     if (typeof currentOpenModalDriver !== "undefined" && currentOpenModalDriver) {
         openDriverStatsModal(currentOpenModalDriver);
     }
+    if (typeof currentOpenModalTeam !== "undefined" && currentOpenModalTeam) {
+        openTeamStatsModal(currentOpenModalTeam);
+    }
 }
 
 
@@ -2209,7 +2212,7 @@ function renderStandingsOnPage(drivers) {
                     <span class="ranking-leader-pos">1.</span>
                     <div class="ranking-tied-team">
                         <span class="ranking-leader-name driver-clickable" data-driver="${escapeHtml(d1.driver)}" title="Ver estadísticas de ${escapeHtml(d1.driver)}">${escapeHtml(d1.driver)}</span>
-                        <span class="ranking-team-pill ${getTeamClass(d1.team)}">${escapeHtml(d1.team)}</span>
+                        <span class="ranking-team-pill ${getTeamClass(d1.team)} team-clickable" data-team="${escapeHtml(d1.team)}" title="Ver equipo ${escapeHtml(d1.team)}">${escapeHtml(d1.team)}</span>
                     </div>
                 </div>
                 <div class="ranking-tied-center">
@@ -2221,7 +2224,7 @@ function renderStandingsOnPage(drivers) {
                 <div class="ranking-tied-right">
                     <div class="ranking-tied-team">
                         <span class="ranking-leader-name driver-clickable" data-driver="${escapeHtml(d2 ? d2.driver : '')}" title="Ver estadísticas de ${escapeHtml(d2 ? d2.driver : '')}">${escapeHtml(d2 ? d2.driver : '')}</span>
-                        <span class="ranking-team-pill ${getTeamClass(d2 ? d2.team : '')}">${escapeHtml(d2 ? d2.team : '')}</span>
+                        <span class="ranking-team-pill ${getTeamClass(d2 ? d2.team : '')} team-clickable" data-team="${escapeHtml(d2 ? d2.team : '')}" title="Ver equipo ${escapeHtml(d2 ? d2.team : '')}">${escapeHtml(d2 ? d2.team : '')}</span>
                     </div>
                 </div>
             `;
@@ -2253,7 +2256,7 @@ function renderStandingsOnPage(drivers) {
                 rowDiv.innerHTML = `
                     <span class="ranking-row-pos">${idx + 1}</span>
                     <span class="ranking-row-name driver-clickable" data-driver="${escapeHtml(d.driver)}">${escapeHtml(d.driver)}</span>
-                    <span class="ranking-row-team ${getTeamClass(d.team)}">${escapeHtml(d.team)}</span>
+                    <span class="ranking-row-team ${getTeamClass(d.team)} team-clickable" data-team="${escapeHtml(d.team)}" title="Ver equipo ${escapeHtml(d.team)}">${escapeHtml(d.team)}</span>
                     <span class="ranking-row-pts">${Number(d.pts)}</span>
                 `;
                 driverRowsList.appendChild(rowDiv);
@@ -2274,7 +2277,7 @@ function renderStandingsOnPage(drivers) {
                         <div class="ranking-leader-info">
                             <span class="ranking-leader-name driver-clickable" data-driver="${escapeHtml(d1.driver)}">${escapeHtml(d1.driver)}</span>
                             <div class="ranking-leader-meta">
-                                <span class="ranking-team-pill ${getTeamClass(d1.team)}">${escapeHtml(d1.team)}</span>
+                                <span class="ranking-team-pill ${getTeamClass(d1.team)} team-clickable" data-team="${escapeHtml(d1.team)}" title="Ver equipo ${escapeHtml(d1.team)}">${escapeHtml(d1.team)}</span>
                             </div>
                         </div>
                     </div>
@@ -2308,7 +2311,7 @@ function renderStandingsOnPage(drivers) {
                             <div class="ranking-podium-info">
                                 <span class="ranking-podium-name driver-clickable" data-driver="${escapeHtml(d2.driver)}">${escapeHtml(d2.driver)}</span>
                                 <div class="ranking-podium-meta">
-                                    <span class="ranking-team-pill ${getTeamClass(d2.team)}">${escapeHtml(d2.team)}</span>
+                                    <span class="ranking-team-pill ${getTeamClass(d2.team)} team-clickable" data-team="${escapeHtml(d2.team)}" title="Ver equipo ${escapeHtml(d2.team)}">${escapeHtml(d2.team)}</span>
                                 </div>
                             </div>
                         </div>
@@ -2330,7 +2333,7 @@ function renderStandingsOnPage(drivers) {
                             <div class="ranking-podium-info">
                                 <span class="ranking-podium-name driver-clickable" data-driver="${escapeHtml(d3.driver)}">${escapeHtml(d3.driver)}</span>
                                 <div class="ranking-podium-meta">
-                                    <span class="ranking-team-pill ${getTeamClass(d3.team)}">${escapeHtml(d3.team)}</span>
+                                    <span class="ranking-team-pill ${getTeamClass(d3.team)} team-clickable" data-team="${escapeHtml(d3.team)}" title="Ver equipo ${escapeHtml(d3.team)}">${escapeHtml(d3.team)}</span>
                                 </div>
                             </div>
                         </div>
@@ -2368,7 +2371,7 @@ function renderStandingsOnPage(drivers) {
                 rowDiv.innerHTML = `
                     <span class="ranking-row-pos">${idx + 1}</span>
                     <span class="ranking-row-name driver-clickable" data-driver="${escapeHtml(d.driver)}">${escapeHtml(d.driver)}</span>
-                    <span class="ranking-row-team ${getTeamClass(d.team)}">${escapeHtml(d.team)}</span>
+                    <span class="ranking-row-team ${getTeamClass(d.team)} team-clickable" data-team="${escapeHtml(d.team)}" title="Ver equipo ${escapeHtml(d.team)}">${escapeHtml(d.team)}</span>
                     <span class="ranking-row-pts">${Number(d.pts)}</span>
                 `;
                 driverRowsList.appendChild(rowDiv);
@@ -2599,7 +2602,7 @@ function renderFfcMatrixTable(filterText = "") {
         tr.innerHTML = `
             <td class="col-pos">${posContent}</td>
             <td class="col-driver">${driverContent}</td>
-            <td class="col-team ${getTeamClass(row.team)}">${escapeHtml(row.team)}</td>
+            <td class="col-team ${getTeamClass(row.team)} team-clickable" data-team="${escapeHtml(row.team)}" title="Ver equipo ${escapeHtml(row.team)}">${escapeHtml(row.team)}</td>
             ${raceCellsHtml}
             <td class="col-points">${row.pts}</td>
             <td class="col-dif">${row.dif}</td>
@@ -2740,7 +2743,9 @@ function openDriverStatsModal(driverName) {
     const teamEl = document.getElementById("driverModalTeam");
     if (teamEl) {
         teamEl.textContent = data.team;
-        teamEl.className = `driver-modal-team-pill ${teamCls}`;
+        teamEl.className = `driver-modal-team-pill team-clickable ${teamCls}`;
+        teamEl.setAttribute("data-team", data.team);
+        teamEl.setAttribute("title", isEn ? `View ${data.team} stats` : `Ver estadísticas de ${data.team}`);
     }
 
     // Role / Championship badge
@@ -2947,6 +2952,24 @@ function initDriverStatsModal() {
             }
         }
 
+        // Check if user clicked a team-specific trigger first (which takes priority if explicitly clicked)
+        const teamTrigger = e.target.closest(".team-clickable, [data-team]:not([data-driver])");
+        if (teamTrigger) {
+            const teamName = teamTrigger.getAttribute("data-team") || teamTrigger.textContent.trim();
+            if (teamName && teamName !== "Independent" && teamName !== "TBA") {
+                e.preventDefault();
+                e.stopPropagation();
+                if (typeof closeRaceModal === "function") {
+                    closeRaceModal();
+                }
+                if (typeof closeDriverStatsModal === "function") {
+                    closeDriverStatsModal();
+                }
+                openTeamStatsModal(teamName);
+                return;
+            }
+        }
+
         // Prevent opening if clicking an interactive control like a button or input inside
         if (e.target.closest("button, input, select, a, textarea")) {
             const btn = e.target.closest("button, a");
@@ -2963,10 +2986,491 @@ function initDriverStatsModal() {
                 if (typeof closeRaceModal === "function") {
                     closeRaceModal();
                 }
+                if (typeof closeTeamStatsModal === "function") {
+                    closeTeamStatsModal();
+                }
                 openDriverStatsModal(driverName);
             }
         }
     });
+}
+
+// ==============================================
+// MINI TARJETA DE ESTADÍSTICAS DE EQUIPO (MODAL)
+// ==============================================
+const F1_TEAM_META = {
+    "HRT": { fullName: "HRT F1 Team", code: "HRT", flag: "🇪🇸", country: "España", countryEn: "Spain" },
+    "Red Bull": { fullName: "Red Bull Racing", code: "RBR", flag: "🇦🇹", country: "Austria", countryEn: "Austria" },
+    "Ferrari": { fullName: "Scuderia Ferrari", code: "FER", flag: "🇮🇹", country: "Italia", countryEn: "Italy" },
+    "Mercedes": { fullName: "Mercedes GP Petronas", code: "MER", flag: "🇩🇪", country: "Alemania", countryEn: "Germany" },
+    "Toro Rosso": { fullName: "Scuderia Toro Rosso", code: "STR", flag: "🇮🇹", country: "Italia", countryEn: "Italy" },
+    "Williams": { fullName: "AT&T Williams F1", code: "WIL", flag: "🇬🇧", country: "Reino Unido", countryEn: "United Kingdom" },
+    "Sauber": { fullName: "BMW Sauber F1 Team", code: "SAU", flag: "🇨🇭", country: "Suiza", countryEn: "Switzerland" },
+    "Lotus": { fullName: "Lotus Racing", code: "LOT", flag: "🇬🇧", country: "Reino Unido", countryEn: "United Kingdom" },
+    "McLaren": { fullName: "Vodafone McLaren Mercedes", code: "MCL", flag: "🇬🇧", country: "Reino Unido", countryEn: "United Kingdom" },
+    "Virgin": { fullName: "Virgin Racing", code: "VRG", flag: "🇬🇧", country: "Reino Unido", countryEn: "United Kingdom" },
+    "Force India": { fullName: "Force India F1 Team", code: "FOR", flag: "🇮🇳", country: "India", countryEn: "India" },
+    "Renault": { fullName: "Renault F1 Team", code: "REN", flag: "🇫🇷", country: "Francia", countryEn: "France" }
+};
+
+let currentOpenModalTeam = null;
+
+function findTeamStats(teamName) {
+    if (!teamName) return null;
+    const clean = teamName.trim().toLowerCase();
+    const matchedTeam = F1_TEAMS.find(t => t.toLowerCase() === clean) || teamName.trim();
+    const meta = F1_TEAM_META[matchedTeam] || {
+        fullName: matchedTeam,
+        code: matchedTeam.slice(0, 3).toUpperCase(),
+        flag: "🏁",
+        country: "Competición",
+        countryEn: "Racing"
+    };
+
+    // 1. Get Live Standings to compute team positions and points
+    const rawStandings = (currentPilotos && currentPilotos.length > 0) ? currentPilotos : getSavedStandings();
+    const sortedDrivers = sortDriversStandings(rawStandings);
+
+    // Calculate sum of points per team
+    const teamPointsMap = {};
+    F1_TEAMS.forEach(t => { teamPointsMap[t] = 0; });
+    sortedDrivers.forEach(d => {
+        if (!d.team) return;
+        const cTeam = d.team.trim().toLowerCase();
+        const m = F1_TEAMS.find(t => t.toLowerCase() === cTeam);
+        if (m) {
+            teamPointsMap[m] += Number(d.pts) || 0;
+        }
+    });
+
+    const constructorRows = F1_TEAMS.map(team => ({
+        team,
+        pts: teamPointsMap[team] || 0
+    }));
+    const officialTeamOrder = ["HRT", "Red Bull", "Ferrari", "Mercedes", "Toro Rosso", "Williams", "Sauber", "Lotus", "McLaren", "Virgin", "Force India", "Renault"];
+    constructorRows.sort((a, b) => {
+        const diff = b.pts - a.pts;
+        if (diff !== 0) return diff;
+        return officialTeamOrder.indexOf(a.team) - officialTeamOrder.indexOf(b.team);
+    });
+
+    const leaderPts = constructorRows[0] ? constructorRows[0].pts : 0;
+    const teamRankIdx = constructorRows.findIndex(t => t.team.toLowerCase() === matchedTeam.toLowerCase());
+    const rankPos = teamRankIdx !== -1 ? teamRankIdx + 1 : 1;
+    const teamPts = teamPointsMap[matchedTeam] || 0;
+    const diffWithLeader = rankPos === 1 ? "--" : `-${Math.max(0, leaderPts - teamPts)}`;
+
+    // 2. Find all drivers of this team
+    const teamDriversMap = new Map();
+    // From official roster
+    const roster = getOfficialDriverRoster();
+    roster.forEach(r => {
+        if (r.team && r.team.trim().toLowerCase() === clean && r.driver) {
+            const k = normalizeDriverKey(r.driver);
+            teamDriversMap.set(k, { driver: r.driver.trim(), dorsal: r.dorsal || "" });
+        }
+    });
+    // From current standings
+    sortedDrivers.forEach((d, idx) => {
+        const dTeam = getDriverTeam(d.driver) || d.team || "";
+        if (dTeam.trim().toLowerCase() === clean && d.driver) {
+            const k = normalizeDriverKey(d.driver);
+            const existing = teamDriversMap.get(k) || {};
+            teamDriversMap.set(k, {
+                driver: d.driver.trim(),
+                dorsal: existing.dorsal || "",
+                pts: Number(d.pts) || 0,
+                pos: idx + 1
+            });
+        }
+    });
+
+    // Merge metadata (flag, number)
+    if (typeof ffc2010SeasonDrivers !== "undefined" && Array.isArray(ffc2010SeasonDrivers)) {
+        ffc2010SeasonDrivers.forEach(fd => {
+            const k = normalizeDriverKey(fd.driver);
+            if (teamDriversMap.has(k)) {
+                const cur = teamDriversMap.get(k);
+                if (!cur.dorsal && fd.number) cur.dorsal = fd.number;
+                if (!cur.flag && fd.flag) cur.flag = fd.flag;
+            }
+        });
+    }
+
+    const teamDrivers = Array.from(teamDriversMap.values()).map(d => {
+        const stats = findDriverStats(d.driver);
+        return {
+            driver: d.driver,
+            dorsal: d.dorsal || (stats ? stats.number : ""),
+            flag: d.flag || (stats ? stats.flag : "🏁"),
+            pos: d.pos || (stats ? stats.pos : "--"),
+            pts: d.pts !== undefined ? d.pts : (stats ? stats.pts : 0)
+        };
+    });
+    teamDrivers.sort((a, b) => (b.pts || 0) - (a.pts || 0));
+
+    // 3. Compute Round-by-Round Breakdown for Team (R1 to R15)
+    let wins = 0;
+    let podiums = 0;
+    let poles = 0;
+    let fastestLaps = 0;
+    let racesParticipated = 0;
+
+    const teamDriverKeys = new Set(teamDrivers.map(d => normalizeDriverKey(d.driver)));
+
+    const dynamicMatrix = getDynamicSeasonMatrixData();
+    const teamMatrixDrivers = dynamicMatrix.filter(d => {
+        const t = d.team || "";
+        return t.trim().toLowerCase() === clean || teamDriverKeys.has(normalizeDriverKey(d.driver));
+    });
+
+    const rounds = FFC_SEASON_GPS.map((gp, idx) => {
+        const race = raceResults[gp.raceKey];
+        const isCompleted = race && (race.status === "COMPLETED" || (race.winner && race.winner !== "TBA"));
+
+        // Check if pole / fast lap belong to this team
+        let hasPole = false;
+        let hasFL = false;
+        if (race) {
+            if (race.pole && race.pole !== "TBA") {
+                const poleName = race.pole.split("·")[0].trim();
+                if (teamDriverKeys.has(normalizeDriverKey(poleName))) {
+                    hasPole = true;
+                    poles++;
+                }
+            }
+            if (race.fastest && race.fastest !== "TBA") {
+                const flName = race.fastest.split("·")[0].trim();
+                if (teamDriverKeys.has(normalizeDriverKey(flName))) {
+                    hasFL = true;
+                    fastestLaps++;
+                }
+            }
+        }
+
+        // Sum points and check best finishes from dynamic matrix
+        let roundPts = 0;
+        let bestPos = 999;
+        let hadActivity = false;
+        let allOut = true;
+
+        teamMatrixDrivers.forEach(d => {
+            const val = (d.r && d.r[idx]) ? String(d.r[idx]) : "--";
+            if (val === "--") return;
+
+            hadActivity = true;
+            if (val === "OUT" || val === "DSQ") {
+                return;
+            }
+            allOut = false;
+
+            if (val.includes("(") && val.includes(")")) {
+                if (!hasPole) { hasPole = true; poles++; }
+            }
+            if (val.includes("*")) {
+                if (!hasFL) { hasFL = true; fastestLaps++; }
+            }
+
+            const numStr = val.replace(/[\(\)\*]/g, "");
+            const pts = parseInt(numStr, 10) || 0;
+            roundPts += pts;
+            if (pts >= 25) {
+                if (bestPos > 1) bestPos = 1;
+            } else if (pts >= 18) {
+                if (bestPos > 2) bestPos = 2;
+            } else if (pts >= 15) {
+                if (bestPos > 3) bestPos = 3;
+            } else if (pts > 0) {
+                if (bestPos > 10) bestPos = 10;
+            }
+        });
+
+        if (hadActivity || isCompleted) {
+            racesParticipated++;
+        }
+
+        let isWin = bestPos === 1;
+        let isPodium = bestPos <= 3;
+        if (isWin) wins++;
+        else if (isPodium) podiums++;
+
+        return {
+            raw: (hadActivity || isCompleted) ? (roundPts > 0 ? `${roundPts}` : (allOut && hadActivity ? "OUT" : "0")) : "--",
+            pts: roundPts,
+            bestPos: bestPos === 999 ? null : bestPos,
+            hasPole,
+            hasFL,
+            isWin,
+            isPodium,
+            allDnf: allOut && hadActivity,
+            completed: hadActivity || isCompleted
+        };
+    });
+
+    return {
+        team: matchedTeam,
+        meta,
+        pos: rankPos,
+        pts: teamPts,
+        dif: diffWithLeader,
+        drivers: teamDrivers,
+        rounds,
+        stats: {
+            wins,
+            podiums,
+            poles,
+            fastestLaps,
+            driverCount: teamDrivers.length,
+            races: racesParticipated
+        }
+    };
+}
+
+function openTeamStatsModal(teamName) {
+    const data = findTeamStats(teamName);
+    if (!data) return;
+
+    currentOpenModalTeam = data.team;
+    const overlay = document.getElementById("teamModalOverlay");
+    if (!overlay) return;
+
+    const isEn = typeof currentLanguage !== "undefined" && currentLanguage === "en";
+    const teamCls = getTeamClass(data.team);
+
+    // Modal strip
+    const strip = document.getElementById("teamModalStrip");
+    if (strip) strip.className = `team-modal-strip ${teamCls}`;
+
+    // Logo / Monogram
+    const logoText = document.getElementById("teamModalLogoText");
+    if (logoText) logoText.textContent = data.meta.code || data.team.slice(0, 3).toUpperCase();
+
+    // Flag & Name
+    const flagEl = document.getElementById("teamModalFlag");
+    if (flagEl) flagEl.textContent = data.meta.flag || "🏁";
+
+    const nameEl = document.getElementById("teamModalName");
+    if (nameEl) nameEl.textContent = data.team;
+
+    // Full Name Pill
+    const pillEl = document.getElementById("teamModalPill");
+    if (pillEl) {
+        pillEl.textContent = data.meta.fullName || data.team;
+        pillEl.className = `team-modal-team-pill ${teamCls}`;
+    }
+
+    // Role badge
+    const roleBadgeEl = document.getElementById("teamModalRoleBadge");
+    if (roleBadgeEl) {
+        if (data.pos === 1) {
+            roleBadgeEl.textContent = isEn ? "CONSTRUCTOR LEADER" : "LÍDER DE CONSTRUCTORES";
+        } else if (data.pos <= 3) {
+            roleBadgeEl.textContent = isEn ? "PODIUM CONTENDER" : "PODIO DE CONSTRUCTORES";
+        } else if (data.pos <= 6) {
+            roleBadgeEl.textContent = isEn ? "TOP 6 CONSTRUCTOR" : "TOP 6 DE CONSTRUCTORES";
+        } else {
+            roleBadgeEl.textContent = isEn ? "OFFICIAL CONSTRUCTOR" : "CONSTRUCTOR FFC 2010";
+        }
+    }
+
+    // KPIs
+    const kpiPos = document.getElementById("teamKpiPos");
+    if (kpiPos) kpiPos.textContent = `P${data.pos}`;
+
+    const kpiPts = document.getElementById("teamKpiPts");
+    if (kpiPts) kpiPts.textContent = `${data.pts}`;
+
+    const kpiGap = document.getElementById("teamKpiGap");
+    if (kpiGap) {
+        if (data.pos === 1 || data.dif === "--" || data.dif === "0") {
+            kpiGap.textContent = isEn ? "LEADER" : "LÍDER";
+        } else {
+            kpiGap.textContent = data.dif.startsWith("-") ? `${data.dif} PTS` : `-${data.dif} PTS`;
+        }
+    }
+
+    const kpiWins = document.getElementById("teamKpiWins");
+    if (kpiWins) kpiWins.textContent = `${data.stats.wins}`;
+
+    const kpiPodiums = document.getElementById("teamKpiPodiums");
+    if (kpiPodiums) kpiPodiums.textContent = `${data.stats.podiums}`;
+
+    const kpiPoles = document.getElementById("teamKpiPoles");
+    if (kpiPoles) kpiPoles.textContent = `${data.stats.poles}`;
+
+    const kpiFastest = document.getElementById("teamKpiFastest");
+    if (kpiFastest) kpiFastest.textContent = `${data.stats.fastestLaps}`;
+
+    const kpiDrivers = document.getElementById("teamKpiDrivers");
+    if (kpiDrivers) kpiDrivers.textContent = `${data.stats.driverCount}`;
+
+    // Bilingual labels
+    const lblPos = document.getElementById("lblTeamKpiPos");
+    if (lblPos) lblPos.textContent = isEn ? "POSITION" : "POSICIÓN";
+    const lblPts = document.getElementById("lblTeamKpiPts");
+    if (lblPts) lblPts.textContent = isEn ? "POINTS" : "PUNTOS";
+    const lblGap = document.getElementById("lblTeamKpiGap");
+    if (lblGap) lblGap.textContent = isEn ? "GAP" : "DIFERENCIA";
+    const lblWins = document.getElementById("lblTeamKpiWins");
+    if (lblWins) lblWins.textContent = isEn ? "WINS" : "VICTORIAS";
+    const lblPodiums = document.getElementById("lblTeamKpiPodiums");
+    if (lblPodiums) lblPodiums.textContent = isEn ? "PODIUMS" : "PODIOS";
+    const lblPoles = document.getElementById("lblTeamKpiPoles");
+    if (lblPoles) lblPoles.textContent = isEn ? "POLES" : "POLES";
+    const lblFastest = document.getElementById("lblTeamKpiFastest");
+    if (lblFastest) lblFastest.textContent = isEn ? "F. LAPS" : "V. RÁPIDAS";
+    const lblDrivers = document.getElementById("lblTeamKpiDrivers");
+    if (lblDrivers) lblDrivers.textContent = isEn ? "DRIVERS" : "PILOTOS";
+
+    const lblSquadTitle = document.getElementById("lblSquadTitle");
+    if (lblSquadTitle) lblSquadTitle.textContent = isEn ? "DRIVER SQUAD" : "ALINEACIÓN DE PILOTOS";
+    const lblSquadSub = document.getElementById("lblSquadSub");
+    if (lblSquadSub) lblSquadSub.textContent = isEn ? "POINTS & STANDINGS" : "PUNTOS Y CLASIFICACIÓN";
+
+    const lblTeamRoundsTitle = document.getElementById("lblTeamRoundsTitle");
+    if (lblTeamRoundsTitle) lblTeamRoundsTitle.textContent = isEn ? "FFC 2010 CAMPAIGN (R1 - R15)" : "TRAYECTORIA FFC 2010 (R1 - R15)";
+    const lblTeamRoundsSub = document.getElementById("lblTeamRoundsSub");
+    if (lblTeamRoundsSub) lblTeamRoundsSub.textContent = isEn ? "COMBINED POINTS PER RACE" : "PUNTOS COMBINADOS POR CARRERA";
+
+    // Squad Drivers List
+    const squadGrid = document.getElementById("teamModalSquadGrid");
+    if (squadGrid) {
+        squadGrid.innerHTML = "";
+        if (data.drivers.length === 0) {
+            squadGrid.innerHTML = `<div style="font-size: 12px; color: #7f8897; padding: 6px 0;">${isEn ? "No drivers registered yet" : "Sin pilotos asignados aún"}</div>`;
+        } else {
+            data.drivers.forEach(d => {
+                const card = document.createElement("div");
+                card.className = "team-squad-card driver-clickable";
+                card.setAttribute("data-driver", d.driver);
+                card.setAttribute("title", isEn ? `View ${d.driver}'s stats` : `Ver estadísticas de ${d.driver}`);
+                card.innerHTML = `
+                    <div class="team-squad-card-left">
+                        <span class="team-squad-dorsal">${d.dorsal ? '#' + d.dorsal : ''}</span>
+                        <span class="team-squad-flag">${d.flag || '🏁'}</span>
+                        <span class="team-squad-name">${escapeHtml(d.driver)}</span>
+                    </div>
+                    <div class="team-squad-card-right">
+                        <span class="team-squad-pos">${d.pos ? 'P' + d.pos : ''}</span>
+                        <span class="team-squad-pts">${d.pts} PTS</span>
+                    </div>
+                `;
+                squadGrid.appendChild(card);
+            });
+        }
+    }
+
+    // Populate Rounds Grid for Team
+    const roundsGrid = document.getElementById("teamModalRoundsGrid");
+    if (roundsGrid) {
+        roundsGrid.innerHTML = "";
+        FFC_SEASON_GPS.forEach((gp, idx) => {
+            const rData = (data.rounds && data.rounds[idx]) ? data.rounds[idx] : { raw: "--", pts: 0, hasPole: false, hasFL: false, isWin: false, isPodium: false, allDnf: false, completed: false };
+            const card = document.createElement("div");
+            card.className = "round-card-mini round-card-clickable";
+            card.setAttribute("data-race", gp.raceKey);
+            card.setAttribute("data-round", gp.r);
+            card.setAttribute("role", "button");
+            card.setAttribute("tabindex", "0");
+            const gpTitle = isEn
+                ? `Round ${gp.r} - ${gp.name} GP (Click to view race)`
+                : `Ronda ${gp.r} - GP de ${gp.name} (Clic para ir a la carrera)`;
+            card.setAttribute("title", gpTitle);
+            card.setAttribute("aria-label", gpTitle);
+
+            let pillClass = "res-none";
+            let pillText = rData.raw;
+
+            if (rData.completed) {
+                if (rData.isWin) {
+                    pillClass = "res-win";
+                    pillText = `🏆 ${rData.pts}`;
+                } else if (rData.isPodium) {
+                    pillClass = "res-podium";
+                    pillText = `${rData.pts}`;
+                } else if (rData.pts > 0) {
+                    pillClass = "res-pts";
+                    pillText = `${rData.pts}`;
+                } else if (rData.allDnf) {
+                    pillClass = "res-out";
+                    pillText = "DNF";
+                } else {
+                    pillClass = "res-none";
+                    pillText = "0";
+                }
+            } else {
+                pillClass = "res-none";
+                pillText = "--";
+            }
+
+            let badgesHtml = "";
+            if (rData.hasPole) badgesHtml += `<span class="extra-badge badge-pole" title="Pole Position">P</span>`;
+            if (rData.hasFL) badgesHtml += `<span class="extra-badge badge-fl" title="Vuelta Rápida">FL</span>`;
+
+            card.innerHTML = `
+                <div class="round-card-mini-top">
+                    <span class="round-card-mini-flag">${gp.flag}</span>
+                    <span>R${gp.r}</span>
+                </div>
+                <div class="round-res-pill ${pillClass}">${pillText}</div>
+                <div class="round-card-badges">${badgesHtml}</div>
+            `;
+
+            roundsGrid.appendChild(card);
+        });
+    }
+
+    overlay.classList.add("active");
+    overlay.setAttribute("aria-hidden", "false");
+    document.body.style.overflow = "hidden";
+}
+
+function closeTeamStatsModal() {
+    currentOpenModalTeam = null;
+    const overlay = document.getElementById("teamModalOverlay");
+    if (!overlay) return;
+    overlay.classList.remove("active");
+    overlay.setAttribute("aria-hidden", "true");
+    document.body.style.overflow = "";
+}
+
+function initTeamStatsModal() {
+    const overlay = document.getElementById("teamModalOverlay");
+    const closeBtn = document.getElementById("closeTeamModal");
+
+    if (closeBtn) {
+        closeBtn.addEventListener("click", (e) => {
+            e.stopPropagation();
+            closeTeamStatsModal();
+        });
+    }
+
+    if (overlay) {
+        overlay.addEventListener("click", (e) => {
+            if (e.target === overlay) {
+                closeTeamStatsModal();
+            }
+        });
+    }
+
+    document.addEventListener("keydown", (e) => {
+        if (e.key === "Escape" && overlay && overlay.classList.contains("active")) {
+            closeTeamStatsModal();
+        }
+    });
+}
+
+// Initialize modals on script load / DOM ready
+if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", () => {
+        initStandingsViewTabs();
+        initDriverStatsModal();
+        initTeamStatsModal();
+    });
+} else {
+    initStandingsViewTabs();
+    initDriverStatsModal();
+    initTeamStatsModal();
 }
 
 function updateConstructorStandings(driverList) {
@@ -3012,6 +3516,8 @@ function updateConstructorStandings(driverList) {
         // Tied P1 Hero Row: Empate badge top-center, Left: "1." + Team 1, Center: Points, Right: Team 2
         if (teamLeaderRow) {
             teamLeaderRow.classList.add("is-tied");
+            teamLeaderRow.classList.remove("team-card-clickable");
+            teamLeaderRow.removeAttribute("data-team");
             const t1 = tiedLeaders[0];
             const t2 = tiedLeaders[1];
             const tieBadgeText = isEn ? "TIE" : "EMPATE";
@@ -3019,7 +3525,7 @@ function updateConstructorStandings(driverList) {
                 <div class="ranking-tied-badge" id="teamTiedBadge">
                     <span>${tieBadgeText}</span>
                 </div>
-                <div class="ranking-tied-left">
+                <div class="ranking-tied-left team-clickable" data-team="${escapeHtml(t1.team)}" title="${isEn ? 'View ' + escapeHtml(t1.team) + ' stats' : 'Ver estadísticas de ' + escapeHtml(t1.team)}">
                     <span class="ranking-leader-pos">1.</span>
                     <div class="ranking-tied-team">
                         <span class="ranking-leader-name ${getTeamClass(t1.team)}">${escapeHtml(t1.team)}</span>
@@ -3032,7 +3538,7 @@ function updateConstructorStandings(driverList) {
                         <small class="pts-label">PTS</small>
                     </div>
                 </div>
-                <div class="ranking-tied-right">
+                <div class="ranking-tied-right team-clickable" data-team="${escapeHtml(t2 ? t2.team : '')}" title="${isEn ? 'View ' + escapeHtml(t2 ? t2.team : '') + ' stats' : 'Ver estadísticas de ' + escapeHtml(t2 ? t2.team : '')}">
                     <div class="ranking-tied-team">
                         <span class="ranking-leader-name ${getTeamClass(t2 ? t2.team : '')}">${escapeHtml(t2 ? t2.team : '')}</span>
                         <span class="ranking-team-pill ${getTeamClass(t2 ? t2.team : '')}">${escapeHtml(t2 ? t2.team : '')}</span>
@@ -3053,7 +3559,9 @@ function updateConstructorStandings(driverList) {
                 const row = constructorRows[idx];
                 const diff = row.pts - leaderPts === 0 ? "0" : `${row.pts - leaderPts}`;
                 const rowDiv = document.createElement("div");
-                rowDiv.className = "ranking-row";
+                rowDiv.className = "ranking-row team-row-clickable";
+                rowDiv.setAttribute("data-team", row.team);
+                rowDiv.setAttribute("title", isEn ? `View ${row.team} stats` : `Ver estadísticas de ${row.team}`);
                 rowDiv.innerHTML = `
                     <span class="ranking-row-pos">${idx + 1}</span>
                     <span class="ranking-row-name ${getTeamClass(row.team)}">${escapeHtml(row.team)}</span>
@@ -3067,8 +3575,11 @@ function updateConstructorStandings(driverList) {
         // Standard Single Leader Flow
         if (teamLeaderRow) {
             teamLeaderRow.classList.remove("is-tied");
+            teamLeaderRow.classList.add("team-card-clickable");
             if (constructorRows[0]) {
                 const t1 = constructorRows[0];
+                teamLeaderRow.setAttribute("data-team", t1.team);
+                teamLeaderRow.setAttribute("title", isEn ? `View ${t1.team} stats` : `Ver estadísticas de ${t1.team}`);
                 teamLeaderRow.innerHTML = `
                     <div class="ranking-leader-left">
                         <span class="ranking-leader-pos">1.</span>
@@ -3105,7 +3616,7 @@ function updateConstructorStandings(driverList) {
 
             if (t2) {
                 p2Html = `
-                    <div class="ranking-podium-col ranking-p2" id="teamP2Col">
+                    <div class="ranking-podium-col ranking-p2 team-card-clickable" id="teamP2Col" data-team="${escapeHtml(t2.team)}" title="${isEn ? 'View ' + escapeHtml(t2.team) + ' stats' : 'Ver estadísticas de ' + escapeHtml(t2.team)}">
                         <div class="ranking-podium-left">
                             <span class="ranking-podium-pos">2.</span>
                             <div class="ranking-podium-info">
@@ -3127,7 +3638,7 @@ function updateConstructorStandings(driverList) {
 
             if (t3) {
                 p3Html = `
-                    <div class="ranking-podium-col ranking-p3" id="teamP3Col">
+                    <div class="ranking-podium-col ranking-p3 team-card-clickable" id="teamP3Col" data-team="${escapeHtml(t3.team)}" title="${isEn ? 'View ' + escapeHtml(t3.team) + ' stats' : 'Ver estadísticas de ' + escapeHtml(t3.team)}">
                         <div class="ranking-podium-left">
                             <span class="ranking-podium-pos">3.</span>
                             <div class="ranking-podium-info">
@@ -3156,7 +3667,9 @@ function updateConstructorStandings(driverList) {
                 const row = constructorRows[idx];
                 const diff = row.pts - leaderPts === 0 ? "0" : `${row.pts - leaderPts}`;
                 const rowDiv = document.createElement("div");
-                rowDiv.className = "ranking-row";
+                rowDiv.className = "ranking-row team-row-clickable";
+                rowDiv.setAttribute("data-team", row.team);
+                rowDiv.setAttribute("title", isEn ? `View ${row.team} stats` : `Ver estadísticas de ${row.team}`);
                 rowDiv.innerHTML = `
                     <span class="ranking-row-pos">${idx + 1}</span>
                     <span class="ranking-row-name ${getTeamClass(row.team)}">${escapeHtml(row.team)}</span>
@@ -3177,7 +3690,7 @@ function updateConstructorStandings(driverList) {
             const diff = idx === 0 ? "—" : (row.pts - leaderPts === 0 ? "0" : `${row.pts - leaderPts}`);
             tr.innerHTML = `
                 <td>${idx + 1}</td>
-                <td class="${getTeamClass(row.team)}">${escapeHtml(row.team)}</td>
+                <td class="${getTeamClass(row.team)} team-clickable" data-team="${escapeHtml(row.team)}" title="Ver estadísticas de ${escapeHtml(row.team)}">${escapeHtml(row.team)}</td>
                 <td>${row.pts}</td>
                 <td>${diff}</td>
             `;
