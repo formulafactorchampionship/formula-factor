@@ -1993,7 +1993,9 @@ const defaultNextRace = {
     title: "NÜRBURGRING GP",
     location: "NÜRBURGRING · EUROPE",
     dateText: "20 SEP · 16:30 CEST",
-    dateTime: "2026-09-20T16:30"
+    dateTime: "2026-09-20T16:30",
+    weatherTemp: "22°C",
+    weatherCondition: "sunny"
 };
 
 const defaultStandings = [
@@ -2178,6 +2180,8 @@ const adminRaceRound = document.getElementById("adminRaceRound");
 const adminRaceTitle = document.getElementById("adminRaceTitle");
 const adminRaceLocation = document.getElementById("adminRaceLocation");
 const adminRaceDateText = document.getElementById("adminRaceDateText");
+const adminRaceTemp = document.getElementById("adminRaceTemp");
+const adminRaceWeather = document.getElementById("adminRaceWeather");
 const adminRaceDateTime = document.getElementById("adminRaceDateTime");
 const raceSaveNotice = document.getElementById("raceSaveNotice");
 
@@ -2333,6 +2337,53 @@ function renderNextRaceOnPage(race) {
     }
     if (nextRaceLocationEl) {
         nextRaceLocationEl.textContent = race.location || "";
+    }
+
+    // Render Weather Widget
+    const weatherIconEl = document.getElementById("nextRaceWeatherIcon");
+    const weatherTempEl = document.getElementById("nextRaceWeatherTemp");
+    const weatherCondEl = document.getElementById("nextRaceWeatherCond");
+    const weatherPillEl = document.getElementById("nextRaceWeatherPill");
+
+    const weatherCond = race.weatherCondition || "sunny";
+    let rawTemp = race.weatherTemp || "22°C";
+    if (rawTemp && !rawTemp.includes("°")) {
+        rawTemp = `${rawTemp.trim()}°C`;
+    }
+
+    let icon = "☀️";
+    let condLabel = "SOLEADO";
+    let themeClass = "weather-sunny";
+
+    const isEn = typeof currentLanguage !== "undefined" && currentLanguage === "en";
+
+    if (weatherCond === "sunny") {
+        icon = "☀️";
+        condLabel = isEn ? "SUNNY" : "SOLEADO";
+        themeClass = "weather-sunny";
+    } else if (weatherCond === "partly-cloudy") {
+        icon = "⛅";
+        condLabel = isEn ? "PARTLY CLOUDY" : "PARCIALMENTE NUBLADO";
+        themeClass = "weather-partly-cloudy";
+    } else if (weatherCond === "cloudy") {
+        icon = "☁️";
+        condLabel = isEn ? "CLOUDY" : "NUBLADO";
+        themeClass = "weather-cloudy";
+    } else if (weatherCond === "rainy") {
+        icon = "🌧️";
+        condLabel = isEn ? "WET / RAIN" : "LLUVIA / PISTA MOJADA";
+        themeClass = "weather-rainy";
+    } else if (weatherCond === "storm") {
+        icon = "🌩️";
+        condLabel = isEn ? "HEAVY STORM" : "TORMENTA INTENSA";
+        themeClass = "weather-storm";
+    }
+
+    if (weatherIconEl) weatherIconEl.textContent = icon;
+    if (weatherTempEl) weatherTempEl.textContent = rawTemp;
+    if (weatherCondEl) weatherCondEl.textContent = condLabel;
+    if (weatherPillEl) {
+        weatherPillEl.className = `next-race-weather-pill ${themeClass}`;
     }
 
     // Convert date and time to the selected timezone
@@ -5161,6 +5212,8 @@ function populateAdminForms() {
     if (adminRaceTitle) adminRaceTitle.value = race.title || "";
     if (adminRaceLocation) adminRaceLocation.value = race.location || "";
     if (adminRaceDateText) adminRaceDateText.value = race.dateText || "";
+    if (adminRaceTemp) adminRaceTemp.value = race.weatherTemp || "22°C";
+    if (adminRaceWeather) adminRaceWeather.value = race.weatherCondition || "sunny";
     if (adminRaceDateTime) adminRaceDateTime.value = race.dateTime || "";
 
     const standings = getSavedStandings();
@@ -5337,6 +5390,8 @@ function initFirestoreListeners() {
                 if (adminRaceTitle) adminRaceTitle.value = currentNextRace.title || "";
                 if (adminRaceLocation) adminRaceLocation.value = currentNextRace.location || "";
                 if (adminRaceDateText) adminRaceDateText.value = currentNextRace.dateText || "";
+                if (adminRaceTemp) adminRaceTemp.value = currentNextRace.weatherTemp || "22°C";
+                if (adminRaceWeather) adminRaceWeather.value = currentNextRace.weatherCondition || "sunny";
                 if (adminRaceDateTime) adminRaceDateTime.value = currentNextRace.dateTime || "";
             }
         } else {
@@ -5571,6 +5626,8 @@ if (nextRaceForm) {
             title: adminRaceTitle.value.trim(),
             location: adminRaceLocation.value.trim(),
             dateText: adminRaceDateText.value.trim(),
+            weatherTemp: adminRaceTemp ? adminRaceTemp.value.trim() : "22°C",
+            weatherCondition: adminRaceWeather ? adminRaceWeather.value : "sunny",
             dateTime: adminRaceDateTime.value
         };
 

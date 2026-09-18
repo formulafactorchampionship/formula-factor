@@ -439,6 +439,17 @@
                 <p class="location" id="nextRaceLocation">
                     NÜRBURGRING · EUROPE
                 </p>
+
+                <!-- Track Weather Condition Badge -->
+                <div class="next-race-weather-block" id="nextRaceWeatherBlock">
+                    <span class="weather-label-kicker">CLIMA DEL CIRCUITO:</span>
+                    <div class="next-race-weather-pill" id="nextRaceWeatherPill">
+                        <span class="weather-icon" id="nextRaceWeatherIcon">☀️</span>
+                        <span class="weather-temp" id="nextRaceWeatherTemp">22°C</span>
+                        <span class="weather-divider">•</span>
+                        <span class="weather-cond" id="nextRaceWeatherCond">SOLEADO</span>
+                    </div>
+                </div>
             </div>
 
             <div class="countdown">
@@ -2309,6 +2320,20 @@
                         <div class="admin-field">
                             <label for="adminRaceDateText">Texto de Fecha Visible</label>
                             <input type="text" id="adminRaceDateText" placeholder="Ej: 20 SEP · 16:30 CEST" required>
+                        </div>
+                        <div class="admin-field">
+                            <label for="adminRaceTemp">Temperatura del Circuito (°C)</label>
+                            <input type="text" id="adminRaceTemp" placeholder="Ej: 22°C o 22" value="22°C" required>
+                        </div>
+                        <div class="admin-field admin-field-full">
+                            <label for="adminRaceWeather">Previsión Meteorológica / Clima</label>
+                            <select id="adminRaceWeather" class="admin-select" required>
+                                <option value="sunny">☀️ Soleado / Despejado</option>
+                                <option value="partly-cloudy">⛅ Parcialmente Nublado</option>
+                                <option value="cloudy">☁️ Nublado</option>
+                                <option value="rainy">🌧️ Lluvia / Pista Mojada</option>
+                                <option value="storm">🌩️ Tormenta Intensa</option>
+                            </select>
                         </div>
                         <div class="admin-field admin-field-full">
                             <label for="adminRaceDateTime">Fecha y Hora de la Carrera (Cuenta Regresiva)</label>
