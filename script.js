@@ -2357,6 +2357,11 @@ function renderNextRaceOnPage(race) {
 
     const isEn = typeof currentLanguage !== "undefined" && currentLanguage === "en";
 
+    const weatherKickerEl = document.getElementById("weatherLabelKicker");
+    if (weatherKickerEl) {
+        weatherKickerEl.textContent = isEn ? "RACE WEATHER FORECAST:" : "EL TIEMPO PARA LA CARRERA:";
+    }
+
     if (weatherCond === "sunny") {
         icon = "☀️";
         condLabel = isEn ? "SUNNY" : "SOLEADO";
