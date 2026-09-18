@@ -2,6 +2,20 @@
    FIREBASE FIRESTORE SETUP (MODULAR SDK v10 VIA CDN)
 ========================================================= */
 
+import { initShapeWavesBackground } from "./ShapeWaves.js";
+import { initCalendarBorderGlow } from "./BorderGlow.js";
+
+// Initialize ShapeWaves interactive background canvas & Calendar BorderGlow
+if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", () => {
+        initShapeWavesBackground();
+        initCalendarBorderGlow();
+    });
+} else {
+    initShapeWavesBackground();
+    initCalendarBorderGlow();
+}
+
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import {
     getFirestore,
@@ -2938,6 +2952,12 @@ const officialDriverOrder = {
 function getOfficialDriverFlag(driverName) {
     if (!driverName) return "🏁";
     const clean = driverName.trim().toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+    if (typeof currentPilotos !== "undefined" && Array.isArray(currentPilotos) && currentPilotos.length > 0) {
+        const found = currentPilotos.find(d => 
+            d.driver && d.driver.trim().toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "") === clean
+        );
+        if (found && (found.flag || found.customFlag)) return found.flag || found.customFlag;
+    }
     if (typeof ffc2010SeasonDrivers !== "undefined" && Array.isArray(ffc2010SeasonDrivers)) {
         const found = ffc2010SeasonDrivers.find(d => 
             d.driver && d.driver.trim().toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "") === clean
@@ -2946,6 +2966,37 @@ function getOfficialDriverFlag(driverName) {
     }
     return "🏁";
 }
+
+const OFFICIAL_COUNTRY_FLAGS = [
+    { name: "España", flag: "🇪🇸" },
+    { name: "Argentina", flag: "🇦🇷" },
+    { name: "México", flag: "🇲🇽" },
+    { name: "Chile", flag: "🇨🇱" },
+    { name: "Colombia", flag: "🇨🇴" },
+    { name: "Perú", flag: "🇵🇪" },
+    { name: "Uruguay", flag: "🇺🇾" },
+    { name: "Venezuela", flag: "🇻🇪" },
+    { name: "Portugal", flag: "🇵🇹" },
+    { name: "Reino Unido", flag: "🇬🇧" },
+    { name: "Escocia", flag: "🏴󠁧󠁢󠁳󠁣󠁴󠁿" },
+    { name: "Francia", flag: "🇫🇷" },
+    { name: "Alemania", flag: "🇩🇪" },
+    { name: "Italia", flag: "🇮🇹" },
+    { name: "Países Bajos", flag: "🇳🇱" },
+    { name: "Mónaco", flag: "🇲🇨" },
+    { name: "Australia", flag: "🇦🇺" },
+    { name: "Brasil", flag: "🇧🇷" },
+    { name: "Estados Unidos", flag: "🇺🇸" },
+    { name: "Canadá", flag: "🇨🇦" },
+    { name: "Japón", flag: "🇯🇵" },
+    { name: "Suiza", flag: "🇨🇭" },
+    { name: "Austria", flag: "🇦🇹" },
+    { name: "Bélgica", flag: "🇧🇪" },
+    { name: "Finlandia", flag: "🇫🇮" },
+    { name: "Dinamarca", flag: "🇩🇰" },
+    { name: "Polonia", flag: "🇵🇱" },
+    { name: "Sin Bandera / Genérico", flag: "🏁" }
+];
 
 function getCountryCodeFromEmoji(emoji) {
     if (!emoji || emoji === "🏁") return null;
@@ -5308,10 +5359,14 @@ function getOfficialDriverRoster() {
         return currentPilotos.map(p => ({
             id: p.id,
             driver: p.driver,
-            team: p.team
+            team: p.team,
+            flag: p.flag || p.customFlag || getOfficialDriverFlag(p.driver)
         }));
     }
-    return defaultDriverRoster;
+    return defaultDriverRoster.map(p => ({
+        ...p,
+        flag: p.flag || getOfficialDriverFlag(p.driver)
+    }));
 }
 
 function getDriverTeam(driverName) {
@@ -5345,9 +5400,15 @@ function renderAdminDriversTab(filterText = "") {
         tr.dataset.index = actualIndex;
         tr.dataset.pilotId = pilotId;
 
-        const effectiveTeam = pendingTeamChanges.has(pilotId)
-            ? pendingTeamChanges.get(pilotId).team
+        const pendingObj = pendingTeamChanges.get(pilotId) || {};
+
+        const effectiveTeam = pendingObj.team !== undefined
+            ? pendingObj.team
             : item.team;
+
+        const effectiveFlag = pendingObj.flag !== undefined
+            ? pendingObj.flag
+            : (item.flag || getOfficialDriverFlag(item.driver));
 
         let teamOptions = "";
         F1_TEAMS.forEach(team => {
@@ -5355,9 +5416,25 @@ function renderAdminDriversTab(filterText = "") {
             teamOptions += `<option value="${escapeHtml(team)}" ${isSelected ? "selected" : ""}>${escapeHtml(team)}</option>`;
         });
 
+        let flagOptions = "";
+        let matchedFlag = false;
+        OFFICIAL_COUNTRY_FLAGS.forEach(c => {
+            const isSelected = effectiveFlag === c.flag;
+            if (isSelected) matchedFlag = true;
+            flagOptions += `<option value="${c.flag}" ${isSelected ? "selected" : ""}>${c.flag} ${escapeHtml(c.name)}</option>`;
+        });
+        if (!matchedFlag && effectiveFlag && effectiveFlag !== "🏁") {
+            flagOptions = `<option value="${escapeHtml(effectiveFlag)}" selected>${escapeHtml(effectiveFlag)} Personalizada</option>` + flagOptions;
+        }
+
         tr.innerHTML = `
             <td style="font-weight: bold; color: var(--gold); text-align: center;">${actualIndex + 1}</td>
             <td style="font-weight: 600; color: #fff;">${escapeHtml(item.driver)}</td>
+            <td>
+                <select class="admin-pilot-flag-select" data-pilot-id="${pilotId}" data-driver="${escapeHtml(item.driver)}">
+                    ${flagOptions}
+                </select>
+            </td>
             <td>
                 <select class="admin-pilot-team-select" data-pilot-id="${pilotId}" data-driver="${escapeHtml(item.driver)}">
                     ${teamOptions}
@@ -5368,12 +5445,20 @@ function renderAdminDriversTab(filterText = "") {
             </td>
         `;
 
-        const select = tr.querySelector(".admin-pilot-team-select");
-        if (select) {
-            select.addEventListener("change", () => {
-                pendingTeamChanges.set(pilotId, { pilotId, driver: item.driver, team: select.value });
+        const teamSelect = tr.querySelector(".admin-pilot-team-select");
+        const flagSelect = tr.querySelector(".admin-pilot-flag-select");
+
+        const syncPending = () => {
+            pendingTeamChanges.set(pilotId, {
+                pilotId,
+                driver: item.driver,
+                team: teamSelect ? teamSelect.value : effectiveTeam,
+                flag: flagSelect ? flagSelect.value : effectiveFlag
             });
-        }
+        };
+
+        if (teamSelect) teamSelect.addEventListener("change", syncPending);
+        if (flagSelect) flagSelect.addEventListener("change", syncPending);
 
         adminDriversTableBody.appendChild(tr);
     });
@@ -6411,19 +6496,24 @@ if (generalSettingsForm) {
 // --- Pilotos & Equipos Tab Events ---
 if (adminSaveDriversBtn) {
     adminSaveDriversBtn.addEventListener("click", async () => {
-        const selects = document.querySelectorAll(".admin-pilot-team-select");
-        selects.forEach(sel => {
-            const pilotId = sel.dataset.pilotId || getPilotDocId(sel.dataset.driver);
-            const driverName = sel.dataset.driver;
-            const newTeam = sel.value;
-            if (pilotId && driverName) {
-                pendingTeamChanges.set(pilotId, { pilotId, driver: driverName, team: newTeam });
+        const rows = adminDriversTableBody ? adminDriversTableBody.querySelectorAll("tr") : [];
+        rows.forEach(tr => {
+            const teamSel = tr.querySelector(".admin-pilot-team-select");
+            const flagSel = tr.querySelector(".admin-pilot-flag-select");
+            if (teamSel) {
+                const pilotId = teamSel.dataset.pilotId || getPilotDocId(teamSel.dataset.driver);
+                const driverName = teamSel.dataset.driver;
+                const newTeam = teamSel.value;
+                const newFlag = flagSel ? flagSel.value : "🏁";
+                if (pilotId && driverName) {
+                    pendingTeamChanges.set(pilotId, { pilotId, driver: driverName, team: newTeam, flag: newFlag });
+                }
             }
         });
 
         if (pendingTeamChanges.size === 0) {
             if (driversSaveNotice) {
-                driversSaveNotice.textContent = "No hay cambios de equipo pendientes.";
+                driversSaveNotice.textContent = "No hay cambios de pilotos pendientes.";
                 driversSaveNotice.style.color = "var(--gold)";
                 setTimeout(() => { driversSaveNotice.textContent = ""; }, 2500);
             }
@@ -6431,27 +6521,49 @@ if (adminSaveDriversBtn) {
         }
 
         if (driversSaveNotice) {
-            driversSaveNotice.textContent = "Actualizando equipos en Firestore...";
+            driversSaveNotice.textContent = "Actualizando datos de pilotos en Firestore...";
             driversSaveNotice.style.color = "var(--gold)";
         }
         try {
             const batch = writeBatch(db);
-            pendingTeamChanges.forEach(({ pilotId, driver, team }) => {
-                batch.set(doc(db, "pilotos", pilotId), {
+            pendingTeamChanges.forEach(({ pilotId, driver, team, flag }) => {
+                const updateData = {
                     driver: driver,
                     team: team
-                }, { merge: true });
+                };
+                if (flag) {
+                    updateData.flag = flag;
+                    updateData.customFlag = flag;
+                }
+                batch.set(doc(db, "pilotos", pilotId), updateData, { merge: true });
+
+                // Also update local currentPilotos if available
+                if (typeof currentPilotos !== "undefined" && Array.isArray(currentPilotos)) {
+                    const match = currentPilotos.find(p => p.id === pilotId || p.driver === driver);
+                    if (match) {
+                        match.team = team;
+                        if (flag) {
+                            match.flag = flag;
+                            match.customFlag = flag;
+                        }
+                    }
+                }
             });
             await batch.commit();
             pendingTeamChanges.clear();
 
             if (driversSaveNotice) {
-                driversSaveNotice.textContent = "✓ Equipos actualizados en Firestore en tiempo real";
+                driversSaveNotice.textContent = "✓ Pilotos (equipo y país/bandera) actualizados en Firestore";
                 driversSaveNotice.style.color = "#3fb950";
                 setTimeout(() => { driversSaveNotice.textContent = ""; }, 3000);
             }
+
+            if (typeof currentPilotos !== "undefined" && typeof renderStandingsOnPage === "function") {
+                renderStandingsOnPage(currentPilotos);
+            }
+            renderAdminDriversTab(adminSearchPilotInput ? adminSearchPilotInput.value : "");
         } catch (err) {
-            console.error("Error saving driver teams to Firestore:", err);
+            console.error("Error saving driver changes to Firestore:", err);
             if (driversSaveNotice) {
                 driversSaveNotice.textContent = "Error al guardar: " + err.message;
                 driversSaveNotice.style.color = "#f85149";
@@ -6465,8 +6577,10 @@ if (adminNewPilotForm) {
         e.preventDefault();
         const nameInput = document.getElementById("newPilotName");
         const teamSelect = document.getElementById("newPilotTeam");
+        const flagSelect = document.getElementById("newPilotFlag");
         const name = nameInput ? nameInput.value.trim() : "";
         const team = teamSelect ? teamSelect.value : "HRT";
+        const flag = flagSelect ? flagSelect.value : "🇪🇸";
 
         if (!name) return;
 
@@ -6486,19 +6600,21 @@ if (adminNewPilotForm) {
             await setDoc(doc(db, "pilotos", pilotId), {
                 driver: name,
                 team: team,
+                flag: flag,
+                customFlag: flag,
                 pts: 0
             });
 
-            nameInput.value = "";
+            if (nameInput) nameInput.value = "";
             if (driversSaveNotice) {
-                driversSaveNotice.textContent = `✓ Piloto ${name} guardado en Firestore en tiempo real`;
+                driversSaveNotice.textContent = `✓ Piloto ${name} (${flag}) guardado en Firestore en tiempo real`;
                 driversSaveNotice.style.color = "#3fb950";
                 setTimeout(() => { driversSaveNotice.textContent = ""; }, 3000);
             }
         } catch (err) {
             console.error("Error adding pilot to Firestore:", err);
             if (driversSaveNotice) {
-                driversSaveNotice.textContent = "Error al añadir a Firestore: " + err.message;
+                driversSaveNotice.textContent = "Error al registrar piloto: " + err.message;
                 driversSaveNotice.style.color = "#f85149";
             }
         }
@@ -12052,6 +12168,53 @@ if (document.readyState === "loading") {
     document.addEventListener("DOMContentLoaded", initDriverComparator);
 } else {
     initDriverComparator();
+}
+
+
+/* =========================================================
+   PRIVACY POLICY MODAL HANDLER
+========================================================= */
+function initPrivacyModal() {
+    const openBtn = document.getElementById("footerPrivacyBtn");
+    const overlay = document.getElementById("privacyModalOverlay");
+    const closeBtn = document.getElementById("privacyModalClose");
+    const acceptBtn = document.getElementById("privacyModalAcceptBtn");
+
+    if (!overlay) return;
+
+    function openPrivacyModal() {
+        overlay.style.display = "flex";
+        overlay.setAttribute("aria-hidden", "false");
+    }
+
+    function closePrivacyModal() {
+        overlay.style.display = "none";
+        overlay.setAttribute("aria-hidden", "true");
+    }
+
+    if (openBtn) {
+        openBtn.addEventListener("click", openPrivacyModal);
+    }
+
+    if (closeBtn) {
+        closeBtn.addEventListener("click", closePrivacyModal);
+    }
+
+    if (acceptBtn) {
+        acceptBtn.addEventListener("click", closePrivacyModal);
+    }
+
+    overlay.addEventListener("click", (e) => {
+        if (e.target === overlay) {
+            closePrivacyModal();
+        }
+    });
+}
+
+if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", initPrivacyModal);
+} else {
+    initPrivacyModal();
 }
 
 

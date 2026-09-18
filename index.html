@@ -12,6 +12,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;500;600;700;800;900&family=Inter:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
 
     <link rel="stylesheet" href="style.css?v=20260918_v3">
+    <link rel="stylesheet" href="BorderGlow.css">
     <script>
         // Early instant hook for FFC Fantasy Portal
         window.openFantasyPortal = function() {
@@ -307,6 +308,8 @@
 ========================= -->
 
 <section class="hero" id="home">
+    <!-- ShapeWaves Background Canvas for Hero -->
+    <div id="hero-shape-waves-bg" class="hero-waves-bg"></div>
 
     <!-- STANDARD HERO CONTENT -->
     <div class="hero-content" id="heroContentStandard">
@@ -1287,6 +1290,25 @@
 
 </section>
 
+<!-- =========================================================
+     SITE FOOTER
+========================================================= -->
+<footer class="site-footer">
+    <div class="footer-inner">
+        <div class="footer-brand-col">
+            <div class="footer-logo">FORMULA FACTOR // FFC</div>
+            <p class="footer-copy">© 2026 Formula Factor Championship. Todos los derechos reservados. Campeonato de Sim Racing Oficial.</p>
+        </div>
+        <div class="footer-links-col">
+            <button type="button" class="footer-link-btn" id="footerPrivacyBtn">Política de Privacidad</button>
+            <span class="footer-dot">•</span>
+            <a href="https://discord.gg/NXFPWd6eg" target="_blank" rel="noopener noreferrer" class="footer-link-a">Discord Oficial</a>
+            <span class="footer-dot">•</span>
+            <a href="#info" class="footer-link-a">Reglamento FFC</a>
+        </div>
+    </div>
+</footer>
+
 </main>
 
 
@@ -1294,6 +1316,8 @@
      FFC FANTASY LEAGUE PORTAL VIEW (PESTAÑA EXTRA)
 ========================================================= -->
 <div id="fantasyView" class="fantasy-portal-view" style="display: none;">
+    <!-- ShapeWaves Background Canvas for Fantasy View -->
+    <div id="fantasy-shape-waves-bg" class="fantasy-waves-bg"></div>
 
     <div class="fantasy-container">
 
@@ -2524,6 +2548,39 @@
                                 <input type="text" id="newPilotName" placeholder="Ej: Fernando Alonso" required autocomplete="off">
                             </div>
                             <div class="admin-field">
+                                <label for="newPilotFlag">País / Bandera</label>
+                                <select id="newPilotFlag" required>
+                                    <option value="🇪🇸">🇪🇸 España</option>
+                                    <option value="🇦🇷">🇦🇷 Argentina</option>
+                                    <option value="🇲🇽">🇲🇽 México</option>
+                                    <option value="🇨🇱">🇨🇱 Chile</option>
+                                    <option value="🇨🇴">🇨🇴 Colombia</option>
+                                    <option value="🇵🇪">🇵🇪 Perú</option>
+                                    <option value="🇺🇾">🇺🇾 Uruguay</option>
+                                    <option value="🇻🇪">🇻🇪 Venezuela</option>
+                                    <option value="🇵🇹">🇵🇹 Portugal</option>
+                                    <option value="🇬🇧">🇬🇧 Reino Unido</option>
+                                    <option value="🏴󠁧󠁢󠁳󠁣󠁴󠁿">🏴󠁧󠁢󠁳󠁣󠁴󠁿 Escocia</option>
+                                    <option value="🇫🇷">🇫🇷 Francia</option>
+                                    <option value="🇩🇪">🇩🇪 Alemania</option>
+                                    <option value="🇮🇹">🇮🇹 Italia</option>
+                                    <option value="🇳🇱">🇳🇱 Países Bajos</option>
+                                    <option value="🇲🇨">🇲🇨 Mónaco</option>
+                                    <option value="🇦🇺">🇦🇺 Australia</option>
+                                    <option value="🇧🇷">🇧🇷 Brasil</option>
+                                    <option value="🇺🇸">🇺🇸 Estados Unidos</option>
+                                    <option value="🇨🇦">🇨🇦 Canadá</option>
+                                    <option value="🇯🇵">🇯🇵 Japón</option>
+                                    <option value="🇨🇭">🇨🇭 Suiza</option>
+                                    <option value="🇦🇹">🇦🇹 Austria</option>
+                                    <option value="🇧🇪">🇧🇪 Bélgica</option>
+                                    <option value="🇫🇮">🇫🇮 Finlandia</option>
+                                    <option value="🇩🇰">🇩🇰 Dinamarca</option>
+                                    <option value="🇵🇱">🇵🇱 Polonia</option>
+                                    <option value="🏁">🏁 Genérico</option>
+                                </select>
+                            </div>
+                            <div class="admin-field">
                                 <label for="newPilotTeam">Equipo Asignado</label>
                                 <select id="newPilotTeam" required>
                                     <option value="HRT">HRT</option>
@@ -2547,12 +2604,12 @@
                     </form>
                 </div>
 
-                <!-- LISTADO Y EDICIÓN DE EQUIPOS -->
+                <!-- LISTADO Y EDICIÓN DE EQUIPOS Y PAÍS -->
                 <div class="admin-drivers-list-section">
                     <div class="admin-drivers-header">
                         <div>
                             <h4>PILOTOS REGISTRADOS (<span id="adminPilotTotalCount">44</span>)</h4>
-                            <p class="admin-field-hint">Selecciona el equipo correspondiente en el desplegable para cambiar de escudería a cualquier piloto.</p>
+                            <p class="admin-field-hint">Selecciona la bandera o el equipo correspondiente en los desplegables para cambiar el país o escudería de cualquier piloto.</p>
                         </div>
                         <div class="admin-drivers-search">
                             <input type="text" id="adminSearchPilotInput" placeholder="🔍 Buscar piloto..." autocomplete="off">
@@ -2563,21 +2620,22 @@
                         <table class="admin-table admin-drivers-table">
                             <thead>
                                 <tr>
-                                    <th style="width: 50px;">#</th>
+                                    <th style="width: 45px;">#</th>
                                     <th>PILOTO</th>
-                                    <th>EQUIPO ASIGNADO (CAMBIAR AQUÍ)</th>
-                                    <th style="width: 80px; text-align: center;">ELIMINAR</th>
+                                    <th style="min-width: 150px;">PAÍS / BANDERA</th>
+                                    <th style="min-width: 170px;">EQUIPO ASIGNADO</th>
+                                    <th style="width: 70px; text-align: center;">ELIMINAR</th>
                                 </tr>
                             </thead>
                             <tbody id="adminDriversTableBody">
-                                <!-- Populated dynamically with team dropdowns -->
+                                <!-- Populated dynamically with country & team dropdowns -->
                             </tbody>
                         </table>
                     </div>
 
                     <div class="admin-save-bar">
                         <span class="admin-save-notice" id="driversSaveNotice"></span>
-                        <button type="button" class="btn btn-primary" id="adminSaveDriversBtn">Guardar Cambios de Equipos</button>
+                        <button type="button" class="btn btn-primary" id="adminSaveDriversBtn">Guardar Cambios de Pilotos</button>
                     </div>
                 </div>
             </div>
@@ -2978,6 +3036,69 @@
             </div>
             <span id="editCardNotice" class="claim-notice-msg" style="text-align: center; margin-top: 8px; display: block;"></span>
         </form>
+    </div>
+</div>
+
+
+<!-- =========================================================
+     PRIVACY POLICY MODAL
+========================================================= -->
+<div class="user-auth-overlay" id="privacyModalOverlay" aria-hidden="true" style="display: none;">
+    <div class="privacy-modal-card">
+        <button class="admin-modal-close-btn" id="privacyModalClose" aria-label="Cerrar política de privacidad">&times;</button>
+        
+        <header class="privacy-modal-header">
+            <div class="privacy-badge">FFC // LEGAL & PRIVACIDAD</div>
+            <h2 class="privacy-title">POLÍTICA DE PRIVACIDAD</h2>
+            <p class="privacy-subtitle">Última actualización: Septiembre 2026</p>
+        </header>
+
+        <div class="privacy-modal-body">
+            <section class="privacy-section">
+                <h3>1. Información que Recopilamos</h3>
+                <p>En <strong>Formula Factor Championship (FFC)</strong> recopilamos exclusivamente la información necesaria para el funcionamiento de la liga, la gestión de clasificaciones y la interacción en la comunidad:</p>
+                <ul>
+                    <li><strong>Perfil y Cuenta:</strong> Nombre de piloto / apodo y correo electrónico para la autenticación en la plataforma.</li>
+                    <li><strong>Tarjeta de Piloto (FFC Driver Card):</strong> Redes sociales opcionales (Twitch, YouTube, X/Twitter, Discord), avatar o foto de perfil, nacionalidad oficial e información de estilo de conducción.</li>
+                    <li><strong>Estadísticas e Historial:</strong> Datos deportivos de carreras, puntos en el campeonato y equipos seleccionados en FFC Fantasy.</li>
+                </ul>
+            </section>
+
+            <section class="privacy-section">
+                <h3>2. Uso de la Información</h3>
+                <p>Tus datos se emplean únicamente para los siguientes fines legítimos de la organización:</p>
+                <ul>
+                    <li>Gestionar las tablas de posiciones oficiales y el control de sanciones administrativas.</li>
+                    <li>Permitir la participación interactiva en la Liga Fantasy de FFC.</li>
+                    <li>Mostrar tu tarjeta pública de piloto durante las transmisiones en directo y listas oficiales.</li>
+                    <li>Mantener la seguridad de la cuenta y la autenticación de usuarios.</li>
+                </ul>
+            </section>
+
+            <section class="privacy-section">
+                <h3>3. Seguridad y Almacenamiento</h3>
+                <p>Utilizamos la infraestructura en la nube de <strong>Google Firebase (Firestore y Auth)</strong>, garantizando el cifrado en tránsito y en reposo de las credenciales de los usuarios. FFC no vende ni comercializa ningún dato personal con terceros.</p>
+            </section>
+
+            <section class="privacy-section">
+                <h3>4. Cookies y Almacenamiento Local</h3>
+                <p>Esta plataforma hace uso exclusivo de la memoria local del navegador (<code>localStorage</code>) para guardar la sesión iniciada y preferencias de navegación de forma rápida y segura, sin utilizar cookies de rastreo publicitario.</p>
+            </section>
+
+            <section class="privacy-section">
+                <h3>5. Tus Derechos y Gestión de Datos</h3>
+                <p>Puedes editar tus datos de perfil en cualquier momento desde el panel de edición de tu tarjeta. Si deseas darte de baja o eliminar permanentemente tu cuenta y datos asociados, puedes solicitarlo directamente a la administración a través de nuestro Discord oficial.</p>
+            </section>
+
+            <section class="privacy-section">
+                <h3>6. Contacto</h3>
+                <p>Para cualquier consulta respecto a la privacidad, puedes contactar con la administración de Formula Factor Championship a través del canal de soporte oficial en Discord.</p>
+            </section>
+        </div>
+
+        <footer class="privacy-modal-footer">
+            <button type="button" class="btn btn-primary" id="privacyModalAcceptBtn">ENTENDIDO</button>
+        </footer>
     </div>
 </div>
 
