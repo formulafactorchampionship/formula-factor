@@ -1,0 +1,15 @@
+[
+  {
+    "userId": "test_user",
+    "teamName": "Test Racing",
+    "managerName": "Tester",
+    "email": "test@example.com",
+    "driver1": "Iñaki",
+    "driver2": "Alonso",
+    "driver3": "Guti",
+    "team": "Red Bull",
+    "totalPoints": 150,
+    "teamValue": 98.5,
+    "updatedAt": "2026-09-18T08:30:09.071Z"
+  }
+]

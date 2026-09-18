@@ -147,6 +147,61 @@ app.post('/api/auth/sync', (req, res) => {
   return res.json({ success: true, count: currentUsers.length });
 });
 
+const FANTASY_TEAMS_FILE = path.join(__dirname, 'fantasy_teams_db.json');
+
+function getFantasyTeams() {
+  try {
+    if (fs.existsSync(FANTASY_TEAMS_FILE)) {
+      const data = fs.readFileSync(FANTASY_TEAMS_FILE, 'utf8');
+      return JSON.parse(data);
+    }
+  } catch (e) {
+    console.error('Error reading fantasy teams file:', e);
+  }
+  return [];
+}
+
+function saveFantasyTeams(teams) {
+  try {
+    fs.writeFileSync(FANTASY_TEAMS_FILE, JSON.stringify(teams, null, 2), 'utf8');
+  } catch (e) {
+    console.error('Error saving fantasy teams file:', e);
+  }
+}
+
+app.get('/api/fantasy/teams', (req, res) => {
+  const teams = getFantasyTeams();
+  return res.json({ success: true, teams });
+});
+
+app.post('/api/fantasy/teams', (req, res) => {
+  const teamData = req.body;
+  if (!teamData || (!teamData.userId && !teamData.email)) {
+    return res.status(400).json({ error: 'Missing team identifier' });
+  }
+
+  const teams = getFantasyTeams();
+  const idToMatch = (teamData.userId || teamData.email).toLowerCase().trim();
+  const idx = teams.findIndex(t => 
+    (t.userId && t.userId.toLowerCase().trim() === idToMatch) ||
+    (t.email && t.email.toLowerCase().trim() === idToMatch)
+  );
+
+  const updatedEntry = {
+    ...teamData,
+    updatedAt: new Date().toISOString()
+  };
+
+  if (idx >= 0) {
+    teams[idx] = { ...teams[idx], ...updatedEntry };
+  } else {
+    teams.push(updatedEntry);
+  }
+
+  saveFantasyTeams(teams);
+  return res.json({ success: true, team: updatedEntry, total: teams.length });
+});
+
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, 'index.html'));
 });

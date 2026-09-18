@@ -88,6 +88,26 @@
         "createdAt": { "type": "string" }
       },
       "required": ["uid", "email"]
+    },
+    "FantasyTeam": {
+      "title": "FantasyTeam",
+      "description": "User created FFC Fantasy team with chosen drivers, constructor, and real-time points",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string" },
+        "managerName": { "type": "string" },
+        "email": { "type": "string" },
+        "teamName": { "type": "string" },
+        "driver1": { "type": "string" },
+        "driver2": { "type": "string" },
+        "driver3": { "type": "string" },
+        "team": { "type": "string" },
+        "turboDriver": { "type": "string" },
+        "totalPoints": { "type": "number" },
+        "teamValue": { "type": "number" },
+        "updatedAt": { "type": "string" }
+      },
+      "required": ["userId", "teamName"]
     }
   },
   "firestore": {
@@ -114,6 +134,12 @@
         "$ref": "#/entities/UserAccount"
       },
       "description": "User accounts cloud collection synchronized for multi-device login"
+    },
+    "/fantasy_leaderboard/{teamId}": {
+      "schema": {
+        "$ref": "#/entities/FantasyTeam"
+      },
+      "description": "Public fantasy league leaderboard containing all user created teams with synchronized points"
     }
   }
 }

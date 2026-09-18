@@ -13,6 +13,12 @@ service cloud.firestore {
     match /usuarios/{userId} {
       allow read, write: if true;
     }
+    match /fantasy_leaderboard/{teamId} {
+      allow read, write: if true;
+    }
+    match /fantasy_teams/{teamId} {
+      allow read, write: if true;
+    }
     match /{document=**} {
       allow read, write: if true;
     }

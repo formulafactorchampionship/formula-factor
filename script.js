@@ -15,7 +15,9 @@ import {
     onSnapshot,
     writeBatch,
     query,
-    where
+    where,
+    limit,
+    orderBy
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 import {
     getAuth,
@@ -5041,6 +5043,11 @@ function initFirestoreListeners() {
             updateStandingsToggleUI(currentPilotos.length);
         }
 
+        // Automatically update fantasy prices and fantasy scores when driver points change
+        if (typeof updateFantasyWithNewStandings === "function") {
+            updateFantasyWithNewStandings();
+        }
+
         if (adminPanelOverlay && adminPanelOverlay.classList.contains("active")) {
             renderAdminStandingsEditor(currentPilotos);
             renderAdminDriversTab(adminSearchPilotInput ? adminSearchPilotInput.value : "");
@@ -5150,6 +5157,17 @@ function initFirestoreListeners() {
             populateRaceResultsEditor(adminSelectRace.value);
         }
 
+        // Automatically recalculate standings from all completed races (including Nürburgring and onwards)
+        const hasCompletedRaces = Object.values(raceResults).some(r => r && (r.status === "COMPLETED" || (r.winner && r.winner !== "TBA")));
+        if (hasCompletedRaces) {
+            const updatedStandings = calculateAllStandingsFromRaces(raceResults, currentPilotos);
+            currentPilotos = updatedStandings;
+            renderStandingsOnPage(currentPilotos);
+            if (typeof updateStandingsToggleUI === "function") {
+                updateStandingsToggleUI(currentPilotos.length);
+            }
+        }
+
         // Keep season matrix spreadsheet and driver modal synchronized with latest race results
         renderFfcMatrixTable();
         if (currentOpenModalDriver) {
@@ -5158,9 +5176,19 @@ function initFirestoreListeners() {
                 openDriverStatsModal(currentOpenModalDriver);
             }
         }
+
+        // Automatically update fantasy prices and fantasy scores when race results change
+        if (typeof updateFantasyWithNewStandings === "function") {
+            updateFantasyWithNewStandings();
+        }
     }, (error) => {
         console.error("Error subscribing to 'carreras' collection:", error);
     });
+
+    // 5. Synchronize public fantasy leaderboard in real-time across all sessions
+    if (typeof initFantasyLeaderboardRealtime === "function") {
+        initFantasyLeaderboardRealtime();
+    }
 }
 
 // Initialize on page load
@@ -5172,6 +5200,9 @@ function initFirestoreListeners() {
 
     // Start real-time Firestore synchronization
     initFirestoreListeners();
+    if (typeof initFantasyLeaderboardRealtime === "function") {
+        initFantasyLeaderboardRealtime();
+    }
 
     // Initialize custom dropdowns (Language & Timezone)
     initCustomDropdowns();
@@ -6677,13 +6708,11 @@ function renderUserAuthState(user) {
         if (headerAdminBtn) {
             headerAdminBtn.style.display = isAdmin ? "inline-flex" : "none";
         }
-        if (isFantasyModuleInitialized) {
-            if (typeof syncUserFantasyTeamFromCloud === "function") {
-                syncUserFantasyTeamFromCloud(user);
-            }
-            if (typeof renderFantasyPortal === "function") {
-                renderFantasyPortal();
-            }
+        if (typeof syncUserFantasyTeamFromCloud === "function") {
+            syncUserFantasyTeamFromCloud(user);
+        }
+        if (isFantasyModuleInitialized && typeof renderFantasyPortal === "function") {
+            renderFantasyPortal();
         }
 
     } else {
@@ -8062,19 +8091,23 @@ function getFantasyDriverData(driverName) {
 function getDriverFantasyPrice(driverName) {
     const d = getFantasyDriverData(driverName);
     const pts = d ? (Number(d.pts) || 0) : 0;
-    // Balanced scale: Base 8.0M€ (0 pts) to ~31.0M€ (153 pts)
-    let price = 8.0 + (pts * 0.15);
-    price = Math.max(8.0, Math.min(32.0, price));
+    // Driver scale: Base 6.0M€ (0 pts) to ~29.7M€ (153 pts)
+    // An individual driver is always valued lower than a full constructor
+    let price = 6.0 + (pts * 0.155);
+    price = Math.max(6.0, Math.min(30.0, price));
     return Math.round(price * 10) / 10;
 }
 
 // Calculate Balanced Dynamic Constructor Fantasy Price
 function getConstructorFantasyPrice(teamName) {
-    if (!teamName) return 15.0;
+    if (!teamName) return 16.0;
     const pts = getTeamCurrentPoints(teamName);
-    // Balanced scale: Base 11.0M€ (28 pts) to 28.5M€ (213 pts)
-    let price = 11.0 + (pts * 0.082);
-    price = Math.max(11.0, Math.min(30.0, price));
+    // Constructors represent two race cars and engineering package:
+    // They are always worth more than individual drivers (Base 14.0M€ to 38.5M€ for 213 pts).
+    // Purchasing the top constructor (38.5M€) + the 3 best drivers (74.7M€) totals 113.2M€,
+    // which is strictly impossible within the 100.0M€ budget and requires strategic trade-offs.
+    let price = 14.0 + (pts * 0.115);
+    price = Math.max(14.0, Math.min(40.0, price));
     return Math.round(price * 10) / 10;
 }
 
@@ -8198,11 +8231,83 @@ function loadFantasyTeamFromStorage() {
     }
 }
 
+// In-memory cache of community fantasy teams synced from Firestore/Server
+let cloudFantasyTeams = [];
+let isFantasyLeaderboardListening = false;
+
+function initFantasyLeaderboardRealtime() {
+    if (isFantasyLeaderboardListening) return;
+    isFantasyLeaderboardListening = true;
+
+    // 1. Initial preload from server API backup
+    fetch('/api/fantasy/teams')
+        .then(r => r.json())
+        .then(data => {
+            if (data && Array.isArray(data.teams) && data.teams.length > 0) {
+                cloudFantasyTeams = data.teams;
+                if (ffcFantasyState.activeSubTab === "leaderboard") {
+                    renderFantasyLeaderboard();
+                }
+            }
+        })
+        .catch(() => {});
+
+    // 2. Real-time Firebase Firestore synchronization
+    if (typeof db !== "undefined") {
+        try {
+            onSnapshot(collection(db, "fantasy_leaderboard"), (snapshot) => {
+                const list = [];
+                snapshot.forEach(docSnap => {
+                    const data = docSnap.data();
+                    if (data && (data.teamName || data.managerName)) {
+                        list.push({ ...data, id: docSnap.id });
+                    }
+                });
+                if (list.length > 0) {
+                    cloudFantasyTeams = list;
+                }
+                if (ffcFantasyState.activeSubTab === "leaderboard") {
+                    renderFantasyLeaderboard();
+                }
+            }, (err) => {
+                console.warn("Firestore error on fantasy_leaderboard snapshot:", err);
+            });
+        } catch (e) {
+            console.warn("Error setting up fantasy_leaderboard listener:", e);
+        }
+    }
+}
+window.initFantasyLeaderboardRealtime = initFantasyLeaderboardRealtime;
+
+function updateFantasyWithNewStandings() {
+    // 1. Refresh user team HUD and slots with latest driver values and points
+    if (typeof renderFantasyHUD === "function") {
+        renderFantasyHUD();
+    }
+    if (typeof renderFantasySlots === "function") {
+        renderFantasySlots();
+    }
+
+    // 2. If market sub-tab is open, update driver cards with updated prices & points
+    if (ffcFantasyState.activeSubTab === "market" && typeof renderFantasyMarketGrid === "function") {
+        renderFantasyMarketGrid();
+    }
+
+    // 3. Re-calculate and render all teams on the leaderboard dynamically
+    if (typeof renderFantasyLeaderboard === "function") {
+        renderFantasyLeaderboard();
+    }
+}
+window.updateFantasyWithNewStandings = updateFantasyWithNewStandings;
+
 async function saveFantasyTeamToStorage() {
     try {
         const user = getFantasyCurrentUser();
-        const userKey = user && user.email 
-            ? ("ffc_fantasy_team_" + user.email.toLowerCase().trim().replace(/[^a-z0-9_]/g, "_")) 
+        const cleanDocId = user && user.email 
+            ? user.email.toLowerCase().trim().replace(/[^a-z0-9_]/g, "_")
+            : null;
+        const userKey = cleanDocId 
+            ? ("ffc_fantasy_team_" + cleanDocId) 
             : FANTASY_LOCAL_STORAGE_KEY;
 
         const dataToSave = {
@@ -8217,39 +8322,64 @@ async function saveFantasyTeamToStorage() {
         localStorage.setItem(userKey, JSON.stringify(dataToSave));
         localStorage.setItem(FANTASY_LOCAL_STORAGE_KEY, JSON.stringify(dataToSave));
 
-        // Sync with Cloud Firestore if user is authenticated
-        if (user && user.email && typeof db !== "undefined") {
-            const cleanDocId = user.email.toLowerCase().trim().replace(/[^a-z0-9_]/g, "_");
-            const metrics = calculateFantasyMetrics();
-            
-            // 1. Update user profile document
-            try {
-                await setDoc(doc(db, "usuarios", cleanDocId), {
-                    fantasyTeam: {
-                        ...dataToSave,
-                        totalPoints: metrics.totalPts,
-                        teamValue: metrics.spent
-                    }
-                }, { merge: true });
-            } catch (errUser) {}
+        const metrics = calculateFantasyMetrics();
 
-            // 2. Update fantasy leaderboard document
-            try {
-                await setDoc(doc(db, "fantasy_leaderboard", cleanDocId), {
-                    userId: cleanDocId,
-                    managerName: user.displayName || user.email.split("@")[0],
-                    email: user.email,
-                    teamName: ffcFantasyState.teamName,
-                    driver1: ffcFantasyState.driver1,
-                    driver2: ffcFantasyState.driver2,
-                    driver3: ffcFantasyState.driver3,
-                    team: ffcFantasyState.team,
-                    turboDriver: ffcFantasyState.turboDriver,
-                    totalPoints: metrics.totalPts,
-                    teamValue: metrics.spent,
-                    updatedAt: new Date().toISOString()
-                }, { merge: true });
-            } catch (errLb) {}
+        // Immediately update in-memory cloudFantasyTeams for live UI reactivity
+        if (user && user.email) {
+            const teamPayload = {
+                userId: cleanDocId,
+                managerName: user.displayName || user.email.split("@")[0],
+                email: user.email,
+                teamName: ffcFantasyState.teamName,
+                driver1: ffcFantasyState.driver1,
+                driver2: ffcFantasyState.driver2,
+                driver3: ffcFantasyState.driver3,
+                team: ffcFantasyState.team,
+                turboDriver: ffcFantasyState.turboDriver,
+                totalPoints: metrics.totalPts,
+                teamValue: metrics.spent,
+                updatedAt: new Date().toISOString()
+            };
+
+            const existingIdx = cloudFantasyTeams.findIndex(t => 
+                (t.userId && t.userId === cleanDocId) ||
+                (t.email && t.email.toLowerCase() === user.email.toLowerCase())
+            );
+            if (existingIdx >= 0) {
+                cloudFantasyTeams[existingIdx] = { ...cloudFantasyTeams[existingIdx], ...teamPayload };
+            } else {
+                cloudFantasyTeams.push(teamPayload);
+            }
+
+            // Dual persistence: Server REST API
+            fetch('/api/fantasy/teams', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(teamPayload)
+            }).catch(e => console.warn("Failed saving team to server backup:", e));
+
+            // Sync with Cloud Firestore
+            if (typeof db !== "undefined") {
+                // 1. Update user profile document
+                try {
+                    await setDoc(doc(db, "usuarios", cleanDocId), {
+                        fantasyTeam: {
+                            ...dataToSave,
+                            totalPoints: metrics.totalPts,
+                            teamValue: metrics.spent
+                        }
+                    }, { merge: true });
+                } catch (errUser) {
+                    console.warn("Firestore error updating user fantasy team:", errUser);
+                }
+
+                // 2. Update fantasy leaderboard document
+                try {
+                    await setDoc(doc(db, "fantasy_leaderboard", cleanDocId), teamPayload, { merge: true });
+                } catch (errLb) {
+                    console.warn("Firestore error updating fantasy leaderboard:", errLb);
+                }
+            }
         }
     } catch (e) {
         console.warn("Error saving fantasy team:", e);
@@ -8258,29 +8388,88 @@ async function saveFantasyTeamToStorage() {
 
 // Load cloud fantasy team if available when user logs in
 async function syncUserFantasyTeamFromCloud(user) {
-    if (!user || !user.email || typeof db === "undefined") return;
+    if (!user || !user.email) return;
     try {
         const cleanDocId = user.email.toLowerCase().trim().replace(/[^a-z0-9_]/g, "_");
-        const snap = await getDoc(doc(db, "usuarios", cleanDocId));
-        if (snap.exists()) {
-            const cloudData = snap.data();
-            if (cloudData.fantasyTeam) {
-                ffcFantasyState.teamName = cloudData.fantasyTeam.teamName || ffcFantasyState.teamName;
-                ffcFantasyState.driver1 = cloudData.fantasyTeam.driver1 || null;
-                ffcFantasyState.driver2 = cloudData.fantasyTeam.driver2 || null;
-                ffcFantasyState.driver3 = cloudData.fantasyTeam.driver3 || null;
-                ffcFantasyState.team = cloudData.fantasyTeam.team || null;
-                ffcFantasyState.turboDriver = cloudData.fantasyTeam.turboDriver || null;
-                saveFantasyTeamToStorage();
-                renderFantasyPortal();
+        let teamData = null;
+
+        // 1. Try Firestore usuarios collection
+        if (typeof db !== "undefined") {
+            try {
+                const snap = await getDoc(doc(db, "usuarios", cleanDocId));
+                if (snap.exists() && snap.data().fantasyTeam) {
+                    teamData = snap.data().fantasyTeam;
+                }
+            } catch (e) {}
+
+            // 2. Try Firestore fantasy_leaderboard collection
+            if (!teamData) {
+                try {
+                    const snapLb = await getDoc(doc(db, "fantasy_leaderboard", cleanDocId));
+                    if (snapLb.exists()) {
+                        teamData = snapLb.data();
+                    }
+                } catch (e) {}
             }
         }
-    } catch (e) {}
+
+        // 3. Try Server REST API backup
+        if (!teamData) {
+            try {
+                const res = await fetch('/api/fantasy/teams');
+                if (res.ok) {
+                    const sData = await res.json();
+                    if (sData && Array.isArray(sData.teams)) {
+                        const found = sData.teams.find(t => 
+                            (t.userId && t.userId === cleanDocId) ||
+                            (t.email && t.email.toLowerCase() === user.email.toLowerCase())
+                        );
+                        if (found) teamData = found;
+                    }
+                }
+            } catch (e) {}
+        }
+
+        if (teamData) {
+            ffcFantasyState.teamName = teamData.teamName || ffcFantasyState.teamName;
+            ffcFantasyState.driver1 = teamData.driver1 || null;
+            ffcFantasyState.driver2 = teamData.driver2 || null;
+            ffcFantasyState.driver3 = teamData.driver3 || null;
+            ffcFantasyState.team = teamData.team || null;
+            ffcFantasyState.turboDriver = teamData.turboDriver || null;
+            
+            const userKey = "ffc_fantasy_team_" + cleanDocId;
+            const dataToSave = {
+                teamName: ffcFantasyState.teamName,
+                driver1: ffcFantasyState.driver1,
+                driver2: ffcFantasyState.driver2,
+                driver3: ffcFantasyState.driver3,
+                team: ffcFantasyState.team,
+                turboDriver: ffcFantasyState.turboDriver,
+                updatedAt: new Date().toISOString()
+            };
+            try {
+                localStorage.setItem(userKey, JSON.stringify(dataToSave));
+                localStorage.setItem(FANTASY_LOCAL_STORAGE_KEY, JSON.stringify(dataToSave));
+            } catch (e) {}
+
+            renderFantasyPortal();
+        }
+    } catch (e) {
+        console.warn("Error syncing user fantasy team from cloud:", e);
+    }
 }
 
 // Navigation Functions
 function openFantasyPortal() {
     isFantasyModuleInitialized = true;
+    initFantasyLeaderboardRealtime();
+
+    const currentUser = getFantasyCurrentUser();
+    if (currentUser) {
+        syncUserFantasyTeamFromCloud(currentUser);
+    }
+
     const mainContent = document.getElementById("mainSiteContent");
     const fantasyView = document.getElementById("fantasyView");
     const navFantasy = document.getElementById("navFantasy");
@@ -8417,7 +8606,11 @@ function renderFantasyHUD() {
         budgetCard.classList.toggle("is-over", metrics.remaining < 0);
     }
     if (budgetSub) {
-        budgetSub.textContent = `Gastados: ${metrics.spent.toFixed(1)}M € de ${FANTASY_INITIAL_BUDGET.toFixed(1)}M €`;
+        if (metrics.remaining < 0) {
+            budgetSub.innerHTML = `<span style="color:#ef4444; font-weight:700;">⚠️ Exceso: -${Math.abs(metrics.remaining).toFixed(1)}M € (Vende fichajes)</span>`;
+        } else {
+            budgetSub.textContent = `Gastados: ${metrics.spent.toFixed(1)}M € de ${FANTASY_INITIAL_BUDGET.toFixed(1)}M €`;
+        }
     }
 
     const valueEl = document.getElementById("fantasyTeamValue");
@@ -8860,23 +9053,42 @@ async function renderFantasyLeaderboard() {
     const isLogged = isFantasyUserLoggedIn();
     const currentUser = getFantasyCurrentUser();
 
-    let teamsList = [];
+    // 1. Gather all community teams from our real-time cloud cache
+    let teamsList = Array.isArray(cloudFantasyTeams) ? [...cloudFantasyTeams] : [];
 
-    // Attempt to fetch live registered community teams from Firestore
-    if (typeof db !== "undefined") {
-        try {
-            const q = query(collection(db, "fantasy_leaderboard"), limit(50));
-            const snap = await getDocs(q);
-            if (!snap.empty) {
-                snap.forEach(d => {
-                    const data = d.data();
-                    if (data && data.teamName) {
-                        teamsList.push(data);
+    // 2. If cloud cache is empty (e.g. initial cold load in incognito), fetch from Firestore or server
+    if (teamsList.length === 0) {
+        if (typeof db !== "undefined") {
+            try {
+                const snap = await getDocs(collection(db, "fantasy_leaderboard"));
+                if (!snap.empty) {
+                    snap.forEach(d => {
+                        const data = d.data();
+                        if (data && (data.teamName || data.managerName)) {
+                            teamsList.push({ ...data, id: d.id });
+                        }
+                    });
+                    if (teamsList.length > 0) {
+                        cloudFantasyTeams = [...teamsList];
                     }
-                });
+                }
+            } catch (e) {
+                console.warn("Could not load fantasy leaderboard from cloud:", e);
             }
-        } catch (e) {
-            console.warn("Could not load fantasy leaderboard from cloud:", e);
+        }
+
+        // 3. Fallback to server REST API backup if still empty
+        if (teamsList.length === 0) {
+            try {
+                const resp = await fetch('/api/fantasy/teams');
+                if (resp.ok) {
+                    const sData = await resp.json();
+                    if (sData && Array.isArray(sData.teams) && sData.teams.length > 0) {
+                        teamsList = [...sData.teams];
+                        cloudFantasyTeams = [...teamsList];
+                    }
+                }
+            } catch (e) {}
         }
     }
 
@@ -9124,6 +9336,8 @@ function initFantasyLeague() {
                 saveTeamName();
             }
         });
+        teamNameInput.addEventListener("blur", saveTeamName);
+        teamNameInput.addEventListener("change", saveTeamName);
     }
 
     const resetBtn = document.getElementById("fantasyResetTeamBtn");
