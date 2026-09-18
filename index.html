@@ -34,6 +34,10 @@
             <a href="#calendar" id="navCalendar">CALENDARIO</a>
             <a href="#races" id="navRaces">CARRERAS</a>
             <a href="#info" id="navInfo">INFORMACIÓN</a>
+            <a href="#fantasy" class="nav-fantasy-link" id="navFantasy" title="FFC Fantasy League">
+                <span class="fantasy-nav-badge">100M€</span>
+                <span id="navFantasyText">FANTASY</span>
+            </a>
         </nav>
 
         <div class="nav-actions">
@@ -206,6 +210,15 @@
                                     </button>
                                 </div>
 
+                                <!-- Acceso directo FFC Fantasy -->
+                                <div class="user-fantasy-shortcut">
+                                    <button type="button" class="setting-row-btn fantasy-btn" id="userOpenFantasyBtn">
+                                        <span style="font-size: 14px;">🏎️</span>
+                                        <span id="userFantasyBtnText">Mi Escudería FFC Fantasy</span>
+                                        <span class="setting-tz-badge" style="background: rgba(214, 180, 92, 0.15); color: var(--gold); border-color: rgba(214, 180, 92, 0.3);">100M€</span>
+                                    </button>
+                                </div>
+
                                 <!-- Preferencia de Idioma -->
                                 <div class="setting-row-item">
                                     <span id="profileLangLabel">🌐 Idioma / Language</span>
@@ -250,7 +263,7 @@
 </header>
 
 
-<main>
+<main id="mainSiteContent">
 
 <!-- =========================
      HERO
@@ -1157,6 +1170,297 @@
 </section>
 
 </main>
+
+
+<!-- =========================================================
+     FFC FANTASY LEAGUE PORTAL VIEW (PESTAÑA EXTRA)
+========================================================= -->
+<div id="fantasyView" class="fantasy-portal-view" style="display: none;">
+
+    <div class="fantasy-container">
+
+        <!-- Barra superior de regreso a la web principal -->
+        <div class="fantasy-top-bar">
+            <button type="button" class="fantasy-back-btn" id="fantasyBackBtn" title="Regresar al sitio web oficial">
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true">
+                    <path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/>
+                </svg>
+                <span id="fantasyBackBtnText">Volver a la Web Principal</span>
+            </button>
+            <div class="fantasy-top-badges">
+                <span class="fantasy-status-live">● EN VIVO</span>
+                <span class="fantasy-season-badge">TEMPORADA 1 · OFICIAL</span>
+            </div>
+        </div>
+
+        <!-- Encabezado Hero de Fantasy -->
+        <div class="fantasy-hero-header">
+            <div class="fantasy-hero-titles">
+                <div class="fantasy-hero-eyebrow" id="fantasyHeroEyebrow">
+                    <span>🏆</span> FFC FANTASY LEAGUE · OFICIAL
+                </div>
+                <h1 class="fantasy-hero-title" id="fantasyHeroTitle">
+                    CREA TU <span class="gold-gradient">ESCUDERÍA</span>
+                </h1>
+                <p class="fantasy-hero-desc" id="fantasyHeroDesc">
+                    Administra tu presupuesto de 100.0M€, ficha a 3 pilotos de la parrilla oficial y 1 constructor, y compite contra la comunidad sumando los puntos reales de cada Gran Premio disputado.
+                </p>
+            </div>
+        </div>
+
+        <!-- HUD de métricas globales del equipo -->
+        <div class="fantasy-hud-grid">
+            <div class="fantasy-hud-card hud-budget">
+                <div class="hud-label-row">
+                    <span class="hud-icon">💰</span>
+                    <span class="hud-label" id="hudBudgetLabel">PRESUPUESTO DISPONIBLE</span>
+                </div>
+                <div class="hud-value" id="fantasyBudgetRemaining">100.0M €</div>
+                <div class="hud-sub">
+                    <div class="hud-bar-track">
+                        <div class="hud-bar-fill" id="fantasyBudgetBar" style="width: 100%;"></div>
+                    </div>
+                    <span id="hudBudgetSub">de 100.0M € iniciales</span>
+                </div>
+            </div>
+
+            <div class="fantasy-hud-card hud-value-card">
+                <div class="hud-label-row">
+                    <span class="hud-icon">🏎️</span>
+                    <span class="hud-label" id="hudTeamValLabel">VALOR DEL EQUIPO</span>
+                </div>
+                <div class="hud-value" id="fantasyTeamValue">0.0M €</div>
+                <div class="hud-sub">
+                    <span id="fantasySlotsCount">0 / 4 Fichajes completados</span>
+                </div>
+            </div>
+
+            <div class="fantasy-hud-card hud-points">
+                <div class="hud-label-row">
+                    <span class="hud-icon">⭐</span>
+                    <span class="hud-label" id="hudPointsLabel">PUNTOS FANTASY</span>
+                </div>
+                <div class="hud-value" id="fantasyTotalPts">0 <span class="pts-unit">PTS</span></div>
+                <div class="hud-sub">
+                    <span id="hudTurboSub">Incluye Turbo Driver (x2)</span>
+                </div>
+            </div>
+
+            <div class="fantasy-hud-card hud-rank">
+                <div class="hud-label-row">
+                    <span class="hud-icon">🏅</span>
+                    <span class="hud-label" id="hudRankLabel">RANGO EN LIGA</span>
+                </div>
+                <div class="hud-value" id="fantasyRankPosition">-</div>
+                <div class="hud-sub">
+                    <span id="fantasyRankSub">Clasificación Comunitaria</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Barra de navegación de pestañas internas del Fantasy -->
+        <div class="fantasy-subtabs-nav" role="tablist">
+            <button type="button" class="fantasy-subtab-btn active" id="tabBtnFantasyTeam" role="tab" aria-selected="true">
+                <span>🏎️</span> <span id="tabLabelTeam">Mi Escudería</span>
+            </button>
+            <button type="button" class="fantasy-subtab-btn" id="tabBtnFantasyMarket" role="tab" aria-selected="false">
+                <span>🏪</span> <span id="tabLabelMarket">Mercado de Fichajes</span>
+                <span class="tab-counter-pill" id="marketCountPill">44</span>
+            </button>
+            <button type="button" class="fantasy-subtab-btn" id="tabBtnFantasyLeaderboard" role="tab" aria-selected="false">
+                <span>🏆</span> <span id="tabLabelLeaderboard">Clasificación Fantasy</span>
+            </button>
+            <button type="button" class="fantasy-subtab-btn" id="tabBtnFantasyRules" role="tab" aria-selected="false">
+                <span>📜</span> <span id="tabLabelRules">Reglamento & Puntos</span>
+            </button>
+        </div>
+
+        <!-- ==========================================
+             SUB-TAB 1: MI ESCUDERÍA (GARAJE)
+        ========================================== -->
+        <div class="fantasy-subtab-content active" id="subtabContentTeam">
+
+            <!-- Barra de nombre de escudería y acciones -->
+            <div class="fantasy-team-name-bar">
+                <div class="team-name-input-wrap">
+                    <label for="fantasyTeamNameInput" class="team-name-label" id="teamNameLabel">Nombre de tu Escudería:</label>
+                    <div class="team-name-input-group">
+                        <input type="text" id="fantasyTeamNameInput" class="fantasy-team-name-input" placeholder="Ej. Apex Factor Racing" maxlength="28" value="Mi Escudería FFC">
+                        <button type="button" class="fantasy-btn-gold" id="fantasySaveTeamNameBtn">
+                            <span id="saveTeamNameBtnText">Guardar</span>
+                        </button>
+                    </div>
+                    <span class="team-save-hint" id="fantasySaveHint">Sincronizado con tu perfil</span>
+                </div>
+                <div class="fantasy-team-actions">
+                    <button type="button" class="fantasy-btn-ghost" id="fantasyResetTeamBtn">
+                        <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor" aria-hidden="true"><path d="M12 5V1L7 6l5 5V7c3.31 0 6 2.69 6 6s-2.69 6-6 6-6-2.69-6-6H4c0 4.42 3.58 8 8 8s8-3.58 8-8-3.58-8-8-8z"/></svg>
+                        <span id="fantasyResetBtnText">Reiniciar Equipo</span>
+                    </button>
+                    <button type="button" class="fantasy-btn-gold-primary" id="fantasyGoToMarketBtn">
+                        <span>+ Fichar en el Mercado</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Parrilla de los 4 Slots (3 Pilotos + 1 Constructor) -->
+            <div class="fantasy-slots-grid">
+                <!-- Slot 1: Piloto 1 -->
+                <div class="fantasy-slot-card" id="fantasySlotDriver1" data-slot="driver1">
+                    <!-- Generado dinámicamente -->
+                </div>
+
+                <!-- Slot 2: Piloto 2 -->
+                <div class="fantasy-slot-card" id="fantasySlotDriver2" data-slot="driver2">
+                    <!-- Generado dinámicamente -->
+                </div>
+
+                <!-- Slot 3: Piloto 3 -->
+                <div class="fantasy-slot-card" id="fantasySlotDriver3" data-slot="driver3">
+                    <!-- Generado dinámicamente -->
+                </div>
+
+                <!-- Slot 4: Constructor -->
+                <div class="fantasy-slot-card" id="fantasySlotConstructor" data-slot="team">
+                    <!-- Generado dinámicamente -->
+                </div>
+            </div>
+
+            <!-- Banner explicativo del Turbo Driver -->
+            <div class="fantasy-info-strip">
+                <div class="info-strip-icon">💡</div>
+                <div class="info-strip-text" id="fantasyInfoStripText">
+                    <strong>Regla FFC Fantasy:</strong> Tu alineación debe incluir exactamente 3 pilotos y 1 constructor dentro del tope de 100.0M€. Pulsa el botón <strong>⭐ Turbo Driver</strong> en cualquiera de tus 3 pilotos para duplicar (x2) sus puntos en cada Gran Premio oficial.
+                </div>
+            </div>
+
+        </div>
+
+        <!-- ==========================================
+             SUB-TAB 2: MERCADO DE FICHAJES
+        ========================================== -->
+        <div class="fantasy-subtab-content" id="subtabContentMarket" style="display: none;">
+
+            <!-- Controles y Filtros del Mercado -->
+            <div class="fantasy-market-controls">
+                <div class="market-filters-group">
+                    <button type="button" class="market-filter-pill active" id="marketFilterAll" data-filter="all">Todos</button>
+                    <button type="button" class="market-filter-pill" id="marketFilterDrivers" data-filter="drivers">Pilotos</button>
+                    <button type="button" class="market-filter-pill" id="marketFilterTeams" data-filter="teams">Constructores</button>
+                    <button type="button" class="market-filter-pill" id="marketFilterAffordable" data-filter="affordable">Asequibles (≤ Presupuesto)</button>
+                </div>
+                <div class="market-search-sort">
+                    <div class="market-search-wrap">
+                        <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor" class="market-search-icon" aria-hidden="true"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+                        <input type="text" id="marketSearchInput" class="market-search-input" placeholder="Buscar por nombre o escudería...">
+                    </div>
+                    <select id="marketSortSelect" class="market-sort-select" aria-label="Ordenar mercado">
+                        <option value="price-desc">Precio: Mayor a Menor</option>
+                        <option value="price-asc">Precio: Menor a Mayor</option>
+                        <option value="pts-desc">Puntos: Más a Menos</option>
+                        <option value="name-asc">Nombre: A-Z</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Parrilla de Tarjetas del Mercado -->
+            <div class="fantasy-market-grid" id="fantasyMarketGrid">
+                <!-- Se rellena dinámicamente con las tarjetas de pilotos y escuderías -->
+            </div>
+
+        </div>
+
+        <!-- ==========================================
+             SUB-TAB 3: CLASIFICACIÓN FANTASY
+        ========================================== -->
+        <div class="fantasy-subtab-content" id="subtabContentLeaderboard" style="display: none;">
+
+            <div class="fantasy-leaderboard-header">
+                <h2 class="fantasy-section-heading" id="fantasyLeaderboardHeading">Clasificación General FFC Fantasy</h2>
+                <p class="fantasy-section-sub" id="fantasyLeaderboardSub">Ranking de directores de equipo y puntos acumulados en la Temporada 1 oficial.</p>
+            </div>
+
+            <div class="fantasy-leaderboard-wrap">
+                <table class="fantasy-leaderboard-table">
+                    <thead>
+                        <tr>
+                            <th style="width: 55px;">POS</th>
+                            <th>ESCUDERÍA / MANAGER</th>
+                            <th>ALINEACIÓN (3 PILOTOS + 1 CONSTRUCTOR)</th>
+                            <th style="text-align: right; width: 120px;">VALOR</th>
+                            <th style="text-align: right; width: 110px;">PUNTOS</th>
+                        </tr>
+                    </thead>
+                    <tbody id="fantasyLeaderboardBody">
+                        <!-- Generado dinámicamente -->
+                    </tbody>
+                </table>
+            </div>
+
+        </div>
+
+        <!-- ==========================================
+             SUB-TAB 4: REGLAMENTO & PUNTOS
+        ========================================== -->
+        <div class="fantasy-subtab-content" id="subtabContentRules" style="display: none;">
+
+            <div class="fantasy-rules-grid">
+
+                <div class="fantasy-rule-card">
+                    <div class="rule-card-icon">💰</div>
+                    <h3 class="rule-card-title">1. Presupuesto Inicial (100.0M €)</h3>
+                    <p class="rule-card-text">
+                        Dispones de 100.0M€ de presupuesto fijo para configurar tu escudería. El coste de cada piloto y constructor está fijado según su clasificación y rendimiento oficial en la Formula Factor Championship.
+                    </p>
+                </div>
+
+                <div class="fantasy-rule-card">
+                    <div class="rule-card-icon">🏎️</div>
+                    <h3 class="rule-card-title">2. Estructura de la Escudería</h3>
+                    <p class="rule-card-text">
+                        Debes fichar exactamente <strong>3 pilotos oficiales</strong> y <strong>1 constructor</strong>. No se permiten pilotos duplicados en una misma alineación.
+                    </p>
+                </div>
+
+                <div class="fantasy-rule-card">
+                    <div class="rule-card-icon">⭐</div>
+                    <h3 class="rule-card-title">3. Turbo Driver (Multiplicador x2)</h3>
+                    <p class="rule-card-text">
+                        Selecciona a uno de tus 3 pilotos como <strong>Turbo Driver</strong>. Los puntos obtenidos por este piloto se multiplicarán por 2 (x2) en la puntuación total de tu escudería.
+                    </p>
+                </div>
+
+                <div class="fantasy-rule-card">
+                    <div class="rule-card-icon">🏁</div>
+                    <h3 class="rule-card-title">4. Puntos Oficiales de Carrera</h3>
+                    <p class="rule-card-text">
+                        Cada vez que se disputa un Gran Premio oficial de la FFC y los comisarios publican el resultado, tus pilotos y tu constructor suman sus puntos reales conseguidos en pista directamente a tu marcador Fantasy.
+                    </p>
+                </div>
+
+                <div class="fantasy-rule-card">
+                    <div class="rule-card-icon">🔄</div>
+                    <h3 class="rule-card-title">5. Mercado de Traspasos Libre</h3>
+                    <p class="rule-card-text">
+                        Puedes vender y cambiar pilotos y constructores en cualquier momento entre carreras. Al vender un piloto recuperas el 100% de su valor actual para reinvertirlo en nuevos talentos.
+                    </p>
+                </div>
+
+                <div class="fantasy-rule-card">
+                    <div class="rule-card-icon">☁️</div>
+                    <h3 class="rule-card-title">6. Guardado en Tu Perfil</h3>
+                    <p class="rule-card-text">
+                        Si has iniciado sesión con tu cuenta, tu escudería se sincroniza automáticamente con la nube en Firestore, manteniéndose guardada y visible en la clasificación comunitaria.
+                    </p>
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
 
 
 <!-- =========================

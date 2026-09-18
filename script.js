@@ -237,7 +237,8 @@ const translations = {
             standings: "CLASIFICACIÓN",
             calendar: "CALENDARIO",
             races: "CARRERAS",
-            info: "INFORMACIÓN"
+            info: "INFORMACIÓN",
+            fantasy: "FANTASY"
         },
         hero: {
             eyebrow: "TEMPORADA 1 · FORMULA FACTOR CHAMPIONSHIP",
@@ -384,7 +385,8 @@ const translations = {
             standings: "STANDINGS",
             calendar: "CALENDAR",
             races: "RACES",
-            info: "INFO"
+            info: "INFO",
+            fantasy: "FANTASY"
         },
         hero: {
             eyebrow: "SEASON 1 · FORMULA FACTOR CHAMPIONSHIP",
@@ -585,6 +587,8 @@ function applyTranslations(lang) {
     if (navR) navR.textContent = dict.nav.races;
     const navI = document.getElementById("navInfo");
     if (navI) navI.textContent = dict.nav.info;
+    const navF = document.getElementById("navFantasyText");
+    if (navF && dict.nav && dict.nav.fantasy) navF.textContent = dict.nav.fantasy;
 
     // Hero
     const heroEye = document.getElementById("heroEyebrow");
@@ -6667,6 +6671,9 @@ function renderUserAuthState(user) {
         if (headerAdminBtn) {
             headerAdminBtn.style.display = isAdmin ? "inline-flex" : "none";
         }
+        if (typeof syncUserFantasyTeamFromCloud === "function") {
+            syncUserFantasyTeamFromCloud(user);
+        }
 
     } else {
         // User logged out
@@ -7954,6 +7961,1087 @@ if (userCardEditForm) {
             }
         }
     });
+}
+
+/* =========================================================
+   FFC FANTASY LEAGUE SYSTEM (OPCIÓN 2: EQUIPO & PRESUPUESTO)
+   100.0M€ de presupuesto · 3 Pilotos + 1 Constructor · Turbo Driver x2
+========================================================= */
+
+const FANTASY_INITIAL_BUDGET = 100.0;
+const FANTASY_LOCAL_STORAGE_KEY = "ffc_fantasy_team_v2";
+
+const ffcFantasyState = {
+    teamName: "Apex Factor Racing",
+    driver1: null,
+    driver2: null,
+    driver3: null,
+    team: null,
+    turboDriver: null,
+    currentFilter: "all",
+    searchQuery: "",
+    sortBy: "price-desc",
+    activeSubTab: "team"
+};
+
+// Benchmark default community teams for fantasy leaderboard
+const DEFAULT_FANTASY_LEADERBOARD = [
+    { teamName: "Scuderia Factor V8", managerName: "Carlos Alonso", driver1: "Dieguiosk", driver2: "Sbinn", driver3: "AMF", team: "HRT", turboDriver: "Dieguiosk" },
+    { teamName: "Red Line Motorsport", managerName: "Muntii SimRacing", driver1: "Muntii", driver2: "Licha", driver3: "TheWereGH", team: "Red Bull", turboDriver: "Muntii" },
+    { teamName: "V10 Apex Predators", managerName: "Lucas SimHQ", driver1: "Novitaa", driver2: "BigTheo", driver3: "Gold", team: "Ferrari", turboDriver: "Novitaa" },
+    { teamName: "Silver Arrow Factor", managerName: "Adrian GP", driver1: "Suforr", driver2: "IvánR", driver3: "Viktolo", team: "Mercedes", turboDriver: "IvánR" },
+    { teamName: "Toro SimSport", managerName: "Mateo R.", driver1: "Sbinn", driver2: "Victor", driver3: "Farlonso", team: "Toro Rosso", turboDriver: "Sbinn" },
+    { teamName: "Overcut Racing Club", managerName: "Danilo F1", driver1: "Licha", driver2: "TheWereGH", driver3: "Baena", team: "Sauber", turboDriver: "TheWereGH" },
+    { teamName: "Papaya Factor Speed", managerName: "Enzo McLaren", driver1: "Victor", driver2: "Gold", driver3: "AMF", team: "McLaren", turboDriver: "Victor" },
+    { teamName: "Williams Historic GP", managerName: "Soria Fanatic", driver1: "Gold", driver2: "AMF", driver3: "ElMamut", team: "Williams", turboDriver: "Gold" }
+];
+
+// Helper: Get Official Driver Data from live standings or dataset
+function getFantasyDriverData(driverName) {
+    if (!driverName) return null;
+    const clean = driverName.trim().toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+    
+    // 1. Search in currentStandingsData (has latest live points)
+    if (typeof currentStandingsData !== "undefined" && Array.isArray(currentStandingsData)) {
+        const found = currentStandingsData.find(d => 
+            d && d.driver && d.driver.trim().toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "") === clean
+        );
+        if (found) return found;
+    }
+    
+    // 2. Search in ffc2010SeasonDrivers
+    if (typeof ffc2010SeasonDrivers !== "undefined" && Array.isArray(ffc2010SeasonDrivers)) {
+        const found = ffc2010SeasonDrivers.find(d => 
+            d && d.driver && d.driver.trim().toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "") === clean
+        );
+        if (found) return found;
+    }
+    
+    // 3. Fallback defaultDriverRoster
+    if (typeof defaultDriverRoster !== "undefined" && Array.isArray(defaultDriverRoster)) {
+        const found = defaultDriverRoster.find(d => 
+            d && d.driver && d.driver.trim().toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "") === clean
+        );
+        if (found) return { driver: found.driver, team: found.team, pts: 0 };
+    }
+
+    return { driver: driverName, team: "FFC", pts: 0 };
+}
+
+// Calculate Dynamic Driver Fantasy Price
+function getDriverFantasyPrice(driverName) {
+    const d = getFantasyDriverData(driverName);
+    const pts = d ? (Number(d.pts) || 0) : 0;
+    // Scales smoothly from 6.0M€ (0 pts) to 28.5M€ (153 pts)
+    let price = 6.0 + (pts * 0.147);
+    return Math.round(price * 10) / 10;
+}
+
+// Calculate Dynamic Constructor Fantasy Price
+function getConstructorFantasyPrice(teamName) {
+    if (!teamName) return 15.0;
+    const pts = getTeamCurrentPoints(teamName);
+    // Scales smoothly between 9.5M€ and 30.0M€
+    let price = 8.0 + (pts * 0.103);
+    price = Math.max(9.5, Math.min(30.0, price));
+    return Math.round(price * 10) / 10;
+}
+
+// Get team's current official accumulated points
+function getTeamCurrentPoints(teamName) {
+    if (!teamName) return 0;
+    const cleanTeam = teamName.trim().toLowerCase();
+    let total = 0;
+    
+    const roster = (typeof currentStandingsData !== "undefined" && Array.isArray(currentStandingsData) && currentStandingsData.length > 0)
+        ? currentStandingsData
+        : (typeof ffc2010SeasonDrivers !== "undefined" ? ffc2010SeasonDrivers : []);
+
+    const seen = new Set();
+    roster.forEach(d => {
+        if (!d || !d.driver || !d.team) return;
+        const norm = d.driver.trim().toLowerCase();
+        if (seen.has(norm)) return;
+        seen.add(norm);
+
+        if (d.team.trim().toLowerCase() === cleanTeam) {
+            total += Number(d.pts) || 0;
+        }
+    });
+
+    return total;
+}
+
+// Calculate team budget, value and points
+function calculateFantasyMetrics(teamState = ffcFantasyState) {
+    let spent = 0;
+    let totalPts = 0;
+    let filledSlots = 0;
+
+    // Driver 1
+    let d1Pts = 0;
+    if (teamState.driver1) {
+        spent += getDriverFantasyPrice(teamState.driver1);
+        const data = getFantasyDriverData(teamState.driver1);
+        d1Pts = data ? (Number(data.pts) || 0) : 0;
+        if (teamState.turboDriver === teamState.driver1) {
+            d1Pts *= 2;
+        }
+        totalPts += d1Pts;
+        filledSlots++;
+    }
+
+    // Driver 2
+    let d2Pts = 0;
+    if (teamState.driver2) {
+        spent += getDriverFantasyPrice(teamState.driver2);
+        const data = getFantasyDriverData(teamState.driver2);
+        d2Pts = data ? (Number(data.pts) || 0) : 0;
+        if (teamState.turboDriver === teamState.driver2) {
+            d2Pts *= 2;
+        }
+        totalPts += d2Pts;
+        filledSlots++;
+    }
+
+    // Driver 3
+    let d3Pts = 0;
+    if (teamState.driver3) {
+        spent += getDriverFantasyPrice(teamState.driver3);
+        const data = getFantasyDriverData(teamState.driver3);
+        d3Pts = data ? (Number(data.pts) || 0) : 0;
+        if (teamState.turboDriver === teamState.driver3) {
+            d3Pts *= 2;
+        }
+        totalPts += d3Pts;
+        filledSlots++;
+    }
+
+    // Constructor
+    let teamPts = 0;
+    if (teamState.team) {
+        spent += getConstructorFantasyPrice(teamState.team);
+        teamPts = getTeamCurrentPoints(teamState.team);
+        totalPts += teamPts;
+        filledSlots++;
+    }
+
+    spent = Math.round(spent * 10) / 10;
+    const remaining = Math.round((FANTASY_INITIAL_BUDGET - spent) * 10) / 10;
+
+    return {
+        spent,
+        remaining,
+        totalPts,
+        filledSlots,
+        d1Pts,
+        d2Pts,
+        d3Pts,
+        teamPts
+    };
+}
+
+// Local and Cloud Persistence
+function loadFantasyTeamFromStorage() {
+    try {
+        const raw = localStorage.getItem(FANTASY_LOCAL_STORAGE_KEY);
+        if (raw) {
+            const parsed = JSON.parse(raw);
+            if (parsed && typeof parsed === "object") {
+                ffcFantasyState.teamName = parsed.teamName || "Mi Escudería FFC";
+                ffcFantasyState.driver1 = parsed.driver1 || null;
+                ffcFantasyState.driver2 = parsed.driver2 || null;
+                ffcFantasyState.driver3 = parsed.driver3 || null;
+                ffcFantasyState.team = parsed.team || null;
+                ffcFantasyState.turboDriver = parsed.turboDriver || null;
+            }
+        }
+    } catch (e) {
+        console.warn("Error loading fantasy team from local storage:", e);
+    }
+}
+
+async function saveFantasyTeamToStorage() {
+    try {
+        const dataToSave = {
+            teamName: ffcFantasyState.teamName,
+            driver1: ffcFantasyState.driver1,
+            driver2: ffcFantasyState.driver2,
+            driver3: ffcFantasyState.driver3,
+            team: ffcFantasyState.team,
+            turboDriver: ffcFantasyState.turboDriver,
+            updatedAt: new Date().toISOString()
+        };
+        localStorage.setItem(FANTASY_LOCAL_STORAGE_KEY, JSON.stringify(dataToSave));
+
+        // Sync with Cloud Firestore if user is authenticated
+        const currentUser = typeof LocalAuthStore !== "undefined" ? LocalAuthStore.getCurrentUser() : null;
+        if (currentUser && currentUser.email && typeof db !== "undefined") {
+            const cleanDocId = currentUser.email.toLowerCase().trim().replace(/[^a-z0-9_]/g, "_");
+            const metrics = calculateFantasyMetrics();
+            
+            // 1. Update user profile document
+            try {
+                await setDoc(doc(db, "usuarios", cleanDocId), {
+                    fantasyTeam: {
+                        ...dataToSave,
+                        totalPoints: metrics.totalPts,
+                        teamValue: metrics.spent
+                    }
+                }, { merge: true });
+            } catch (errUser) {}
+
+            // 2. Update fantasy leaderboard document
+            try {
+                await setDoc(doc(db, "fantasy_leaderboard", cleanDocId), {
+                    userId: cleanDocId,
+                    managerName: currentUser.displayName || currentUser.email.split("@")[0],
+                    email: currentUser.email,
+                    teamName: ffcFantasyState.teamName,
+                    driver1: ffcFantasyState.driver1,
+                    driver2: ffcFantasyState.driver2,
+                    driver3: ffcFantasyState.driver3,
+                    team: ffcFantasyState.team,
+                    turboDriver: ffcFantasyState.turboDriver,
+                    totalPoints: metrics.totalPts,
+                    teamValue: metrics.spent,
+                    updatedAt: new Date().toISOString()
+                }, { merge: true });
+            } catch (errLb) {}
+        }
+    } catch (e) {
+        console.warn("Error saving fantasy team:", e);
+    }
+}
+
+// Load cloud fantasy team if available when user logs in
+async function syncUserFantasyTeamFromCloud(user) {
+    if (!user || !user.email || typeof db === "undefined") return;
+    try {
+        const cleanDocId = user.email.toLowerCase().trim().replace(/[^a-z0-9_]/g, "_");
+        const snap = await getDoc(doc(db, "usuarios", cleanDocId));
+        if (snap.exists()) {
+            const cloudData = snap.data();
+            if (cloudData.fantasyTeam) {
+                ffcFantasyState.teamName = cloudData.fantasyTeam.teamName || ffcFantasyState.teamName;
+                ffcFantasyState.driver1 = cloudData.fantasyTeam.driver1 || null;
+                ffcFantasyState.driver2 = cloudData.fantasyTeam.driver2 || null;
+                ffcFantasyState.driver3 = cloudData.fantasyTeam.driver3 || null;
+                ffcFantasyState.team = cloudData.fantasyTeam.team || null;
+                ffcFantasyState.turboDriver = cloudData.fantasyTeam.turboDriver || null;
+                saveFantasyTeamToStorage();
+                renderFantasyPortal();
+            }
+        }
+    } catch (e) {}
+}
+
+// Navigation Functions
+function openFantasyPortal() {
+    const mainContent = document.getElementById("mainSiteContent");
+    const fantasyView = document.getElementById("fantasyView");
+    const navFantasy = document.getElementById("navFantasy");
+
+    if (mainContent) mainContent.style.display = "none";
+    if (fantasyView) {
+        fantasyView.style.display = "block";
+        window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    // Update active nav styling
+    document.querySelectorAll(".nav-links a").forEach(a => a.classList.remove("active"));
+    if (navFantasy) navFantasy.classList.add("active");
+
+    // Close mobile nav drawer if open
+    const navLinks = document.querySelector(".nav-links");
+    if (navLinks && navLinks.classList.contains("active")) {
+        navLinks.classList.remove("active");
+    }
+
+    // Set URL hash cleanly
+    if (window.location.hash !== "#fantasy") {
+        window.history.pushState(null, "", "#fantasy");
+    }
+
+    renderFantasyPortal();
+}
+
+function closeFantasyPortal(targetAnchor = null) {
+    const mainContent = document.getElementById("mainSiteContent");
+    const fantasyView = document.getElementById("fantasyView");
+    const navFantasy = document.getElementById("navFantasy");
+
+    if (fantasyView) fantasyView.style.display = "none";
+    if (mainContent) mainContent.style.display = "block";
+    if (navFantasy) navFantasy.classList.remove("active");
+
+    if (targetAnchor && targetAnchor !== "#fantasy") {
+        window.location.hash = targetAnchor;
+        const targetEl = document.querySelector(targetAnchor);
+        if (targetEl) {
+            targetEl.scrollIntoView({ behavior: "smooth" });
+        }
+    } else {
+        window.history.pushState(null, "", window.location.pathname);
+        window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+}
+
+// Fantasy Sub-Tab Switching
+function switchFantasySubTab(tabName) {
+    ffcFantasyState.activeSubTab = tabName;
+
+    const tabMap = {
+        team: { btn: "tabBtnFantasyTeam", content: "subtabContentTeam" },
+        market: { btn: "tabBtnFantasyMarket", content: "subtabContentMarket" },
+        leaderboard: { btn: "tabBtnFantasyLeaderboard", content: "subtabContentLeaderboard" },
+        rules: { btn: "tabBtnFantasyRules", content: "subtabContentRules" }
+    };
+
+    Object.keys(tabMap).forEach(key => {
+        const btn = document.getElementById(tabMap[key].btn);
+        const content = document.getElementById(tabMap[key].content);
+        const isActive = key === tabName;
+
+        if (btn) {
+            btn.classList.toggle("active", isActive);
+            btn.setAttribute("aria-selected", isActive ? "true" : "false");
+        }
+        if (content) {
+            content.style.display = isActive ? "block" : "none";
+            content.classList.toggle("active", isActive);
+        }
+    });
+
+    if (tabName === "market") {
+        renderFantasyMarketGrid();
+    } else if (tabName === "leaderboard") {
+        renderFantasyLeaderboard();
+    }
+}
+
+// Render HUD metrics
+function renderFantasyHUD() {
+    const metrics = calculateFantasyMetrics();
+
+    const budgetEl = document.getElementById("fantasyBudgetRemaining");
+    const budgetCard = document.querySelector(".fantasy-hud-card.hud-budget");
+    const budgetBar = document.getElementById("fantasyBudgetBar");
+    const budgetSub = document.getElementById("hudBudgetSub");
+
+    if (budgetEl) budgetEl.textContent = `${metrics.remaining.toFixed(1)}M €`;
+    if (budgetBar) {
+        const pct = Math.max(0, Math.min(100, (metrics.remaining / FANTASY_INITIAL_BUDGET) * 100));
+        budgetBar.style.width = `${pct}%`;
+        budgetBar.classList.toggle("warning", pct < 25 && pct >= 0);
+        budgetBar.classList.toggle("danger", pct < 0);
+    }
+    if (budgetCard) {
+        budgetCard.classList.toggle("is-low", metrics.remaining < 15 && metrics.remaining >= 0);
+        budgetCard.classList.toggle("is-over", metrics.remaining < 0);
+    }
+    if (budgetSub) {
+        budgetSub.textContent = `Gastados: ${metrics.spent.toFixed(1)}M € de ${FANTASY_INITIAL_BUDGET.toFixed(1)}M €`;
+    }
+
+    const valueEl = document.getElementById("fantasyTeamValue");
+    const slotsCountEl = document.getElementById("fantasySlotsCount");
+    if (valueEl) valueEl.textContent = `${metrics.spent.toFixed(1)}M €`;
+    if (slotsCountEl) slotsCountEl.textContent = `${metrics.filledSlots} / 4 Fichajes completados`;
+
+    const ptsEl = document.getElementById("fantasyTotalPts");
+    if (ptsEl) ptsEl.innerHTML = `${metrics.totalPts} <span class="pts-unit">PTS</span>`;
+
+    // Team name input
+    const teamNameInput = document.getElementById("fantasyTeamNameInput");
+    if (teamNameInput && document.activeElement !== teamNameInput) {
+        teamNameInput.value = ffcFantasyState.teamName;
+    }
+}
+
+// Render Slot Card
+function renderSlotCard(containerId, slotType, slotIndex, currentItem, pts, isTurbo) {
+    const container = document.getElementById(containerId);
+    if (!container) return;
+
+    if (!currentItem) {
+        // Empty Slot State
+        const label = slotType === "driver" ? `Piloto ${slotIndex}` : "Constructor";
+        const icon = slotType === "driver" ? "🏎️" : "🏭";
+        container.innerHTML = `
+            <div class="slot-empty-body" onclick="handleEmptySlotClick('${slotType}')">
+                <div class="slot-empty-icon">${icon}</div>
+                <div class="slot-empty-title">+ Fichar ${label}</div>
+                <div class="slot-empty-sub">Vacante disponible</div>
+                <button type="button" class="slot-empty-btn">Ir al Mercado</button>
+            </div>
+        `;
+    } else {
+        // Filled Slot State
+        if (slotType === "driver") {
+            const driverData = getFantasyDriverData(currentItem);
+            const flag = getOfficialDriverFlag(currentItem);
+            const team = driverData ? driverData.team : "FFC";
+            const price = getDriverFantasyPrice(currentItem);
+            const avatarUrl = driverData && driverData.avatarUrl ? driverData.avatarUrl : null;
+            const turboClass = isTurbo ? "is-active" : "";
+            const turboLabel = isTurbo ? "⭐ Turbo Activo (x2 Pts)" : "⭐ Activar Turbo (x2)";
+
+            container.innerHTML = `
+                <div class="slot-filled-card">
+                    <div class="slot-header-tag">
+                        <span class="slot-type-label">PILOTO ${slotIndex}</span>
+                        <button type="button" class="slot-sell-btn" onclick="handleSellSlot('driver${slotIndex}')">✕ Vender</button>
+                    </div>
+                    <div class="slot-avatar-wrap">
+                        ${avatarUrl 
+                            ? `<img src="${escapeHtml(avatarUrl)}" class="slot-avatar-img" alt="${escapeHtml(currentItem)}" onerror="this.outerHTML='<div class=\\'slot-team-logo-icon\\'>🏎️</div>'">`
+                            : `<div class="slot-team-logo-icon">🏎️</div>`
+                        }
+                        <div class="slot-name-block">
+                            <div class="slot-item-name" title="${escapeHtml(currentItem)}">${flag} ${escapeHtml(currentItem)}</div>
+                            <span class="ranking-team-pill ${getTeamClass(team)}"><span class="team-dot"></span>${escapeHtml(team)}</span>
+                        </div>
+                    </div>
+                    <div class="slot-meta-row">
+                        <div class="slot-meta-item">
+                            <span class="slot-meta-lbl">VALOR</span>
+                            <span class="slot-meta-val price">${price.toFixed(1)}M €</span>
+                        </div>
+                        <div class="slot-meta-item" style="text-align: right;">
+                            <span class="slot-meta-lbl">PUNTOS</span>
+                            <span class="slot-meta-val pts">${pts} PTS</span>
+                        </div>
+                    </div>
+                    <button type="button" class="slot-turbo-btn ${turboClass}" onclick="handleToggleTurbo('${escapeHtml(currentItem)}')">
+                        ${turboLabel}
+                    </button>
+                </div>
+            `;
+        } else {
+            // Constructor Slot
+            const price = getConstructorFantasyPrice(currentItem);
+            container.innerHTML = `
+                <div class="slot-filled-card">
+                    <div class="slot-header-tag">
+                        <span class="slot-type-label">ESCUDERÍA OFICIAL</span>
+                        <button type="button" class="slot-sell-btn" onclick="handleSellSlot('team')">✕ Vender</button>
+                    </div>
+                    <div class="slot-avatar-wrap">
+                        <div class="slot-team-logo-icon">🏭</div>
+                        <div class="slot-name-block">
+                            <div class="slot-item-name" title="${escapeHtml(currentItem)}">${escapeHtml(currentItem)}</div>
+                            <span class="ranking-team-pill ${getTeamClass(currentItem)}"><span class="team-dot"></span>Constructor</span>
+                        </div>
+                    </div>
+                    <div class="slot-meta-row">
+                        <div class="slot-meta-item">
+                            <span class="slot-meta-lbl">VALOR</span>
+                            <span class="slot-meta-val price">${price.toFixed(1)}M €</span>
+                        </div>
+                        <div class="slot-meta-item" style="text-align: right;">
+                            <span class="slot-meta-lbl">PUNTOS</span>
+                            <span class="slot-meta-val pts">${pts} PTS</span>
+                        </div>
+                    </div>
+                    <div style="font-size: 11px; color: #6b7280; text-align: center; margin-top: auto; padding: 6px;">
+                        Suma los puntos de todos sus monoplazas en carrera
+                    </div>
+                </div>
+            `;
+        }
+    }
+}
+
+// Render All 4 Team Slots
+function renderFantasySlots() {
+    const metrics = calculateFantasyMetrics();
+    renderSlotCard("fantasySlotDriver1", "driver", 1, ffcFantasyState.driver1, metrics.d1Pts, ffcFantasyState.turboDriver === ffcFantasyState.driver1);
+    renderSlotCard("fantasySlotDriver2", "driver", 2, ffcFantasyState.driver2, metrics.d2Pts, ffcFantasyState.turboDriver === ffcFantasyState.driver2);
+    renderSlotCard("fantasySlotDriver3", "driver", 3, ffcFantasyState.driver3, metrics.d3Pts, ffcFantasyState.turboDriver === ffcFantasyState.driver3);
+    renderSlotCard("fantasySlotConstructor", "team", 4, ffcFantasyState.team, metrics.teamPts, false);
+}
+
+// Empty Slot Click Handler
+window.handleEmptySlotClick = function(slotType) {
+    if (slotType === "driver") {
+        setMarketFilter("drivers");
+    } else {
+        setMarketFilter("teams");
+    }
+    switchFantasySubTab("market");
+};
+
+// Sell Slot Handler
+window.handleSellSlot = function(slotKey) {
+    if (slotKey === "driver1") {
+        if (ffcFantasyState.turboDriver === ffcFantasyState.driver1) ffcFantasyState.turboDriver = null;
+        ffcFantasyState.driver1 = null;
+    } else if (slotKey === "driver2") {
+        if (ffcFantasyState.turboDriver === ffcFantasyState.driver2) ffcFantasyState.turboDriver = null;
+        ffcFantasyState.driver2 = null;
+    } else if (slotKey === "driver3") {
+        if (ffcFantasyState.turboDriver === ffcFantasyState.driver3) ffcFantasyState.turboDriver = null;
+        ffcFantasyState.driver3 = null;
+    } else if (slotKey === "team") {
+        ffcFantasyState.team = null;
+    }
+
+    // Auto-reassign turbo if one driver remains and turbo was cleared
+    if (!ffcFantasyState.turboDriver) {
+        ffcFantasyState.turboDriver = ffcFantasyState.driver1 || ffcFantasyState.driver2 || ffcFantasyState.driver3 || null;
+    }
+
+    saveFantasyTeamToStorage();
+    renderFantasyHUD();
+    renderFantasySlots();
+    if (ffcFantasyState.activeSubTab === "market") {
+        renderFantasyMarketGrid();
+    }
+};
+
+// Toggle Turbo Driver Handler
+window.handleToggleTurbo = function(driverName) {
+    if (!driverName) return;
+    ffcFantasyState.turboDriver = driverName;
+    saveFantasyTeamToStorage();
+    renderFantasyHUD();
+    renderFantasySlots();
+};
+
+// Sign Driver Action
+window.handleSignDriver = function(driverName) {
+    if (!driverName) return;
+
+    // Check if already signed
+    if (ffcFantasyState.driver1 === driverName || ffcFantasyState.driver2 === driverName || ffcFantasyState.driver3 === driverName) {
+        return;
+    }
+
+    // Check open driver slot
+    let targetSlot = null;
+    if (!ffcFantasyState.driver1) targetSlot = "driver1";
+    else if (!ffcFantasyState.driver2) targetSlot = "driver2";
+    else if (!ffcFantasyState.driver3) targetSlot = "driver3";
+
+    if (!targetSlot) {
+        alert("Ya tienes los 3 pilotos fichados. Vende a uno de tus pilotos en 'Mi Escudería' para poder incorporar a otro.");
+        return;
+    }
+
+    const price = getDriverFantasyPrice(driverName);
+    const metrics = calculateFantasyMetrics();
+    if (price > metrics.remaining) {
+        alert(`Presupuesto insuficiente: necesitas ${price.toFixed(1)}M€ y dispones de ${metrics.remaining.toFixed(1)}M€.`);
+        return;
+    }
+
+    ffcFantasyState[targetSlot] = driverName;
+    if (!ffcFantasyState.turboDriver) {
+        ffcFantasyState.turboDriver = driverName;
+    }
+
+    saveFantasyTeamToStorage();
+    renderFantasyHUD();
+    renderFantasySlots();
+    renderFantasyMarketGrid();
+};
+
+// Sign Constructor Action
+window.handleSignConstructor = function(teamName) {
+    if (!teamName) return;
+
+    if (ffcFantasyState.team === teamName) return;
+
+    const price = getConstructorFantasyPrice(teamName);
+    const metrics = calculateFantasyMetrics();
+    const currentTeamRefund = ffcFantasyState.team ? getConstructorFantasyPrice(ffcFantasyState.team) : 0;
+    const effectiveRemaining = metrics.remaining + currentTeamRefund;
+
+    if (price > effectiveRemaining) {
+        alert(`Presupuesto insuficiente: necesitas ${price.toFixed(1)}M€ y dispones de ${effectiveRemaining.toFixed(1)}M€.`);
+        return;
+    }
+
+    ffcFantasyState.team = teamName;
+    saveFantasyTeamToStorage();
+    renderFantasyHUD();
+    renderFantasySlots();
+    renderFantasyMarketGrid();
+};
+
+// Market Filter Setters
+function setMarketFilter(filterKey) {
+    ffcFantasyState.currentFilter = filterKey;
+    document.querySelectorAll(".market-filter-pill").forEach(btn => {
+        btn.classList.toggle("active", btn.getAttribute("data-filter") === filterKey);
+    });
+    renderFantasyMarketGrid();
+}
+
+// Render Fantasy Market Grid
+function renderFantasyMarketGrid() {
+    const grid = document.getElementById("fantasyMarketGrid");
+    if (!grid) return;
+
+    const metrics = calculateFantasyMetrics();
+    const filter = ffcFantasyState.currentFilter;
+    const query = (ffcFantasyState.searchQuery || "").trim().toLowerCase();
+    const sortBy = ffcFantasyState.sortBy;
+
+    // Gather Drivers
+    const allDrivers = (typeof ffc2010SeasonDrivers !== "undefined" && Array.isArray(ffc2010SeasonDrivers))
+        ? ffc2010SeasonDrivers
+        : (typeof defaultStandings !== "undefined" ? defaultStandings : []);
+
+    const driverCards = allDrivers.map(d => {
+        const name = d.driver;
+        const team = d.team;
+        const pts = Number(d.pts) || 0;
+        const price = getDriverFantasyPrice(name);
+        const isOwned = (ffcFantasyState.driver1 === name || ffcFantasyState.driver2 === name || ffcFantasyState.driver3 === name);
+        const flag = getOfficialDriverFlag(name);
+        const avatarUrl = d.avatarUrl || null;
+
+        return {
+            type: "driver",
+            name,
+            team,
+            pts,
+            price,
+            isOwned,
+            flag,
+            avatarUrl
+        };
+    });
+
+    // Gather Constructors
+    const allTeams = typeof F1_TEAMS !== "undefined" ? F1_TEAMS : ["Red Bull", "Ferrari", "McLaren", "Mercedes", "Renault", "Williams", "Force India", "Sauber", "Toro Rosso", "Lotus", "HRT", "Virgin"];
+    const teamCards = allTeams.map(teamName => {
+        const pts = getTeamCurrentPoints(teamName);
+        const price = getConstructorFantasyPrice(teamName);
+        const isOwned = ffcFantasyState.team === teamName;
+
+        return {
+            type: "team",
+            name: teamName,
+            team: teamName,
+            pts,
+            price,
+            isOwned,
+            flag: "🏭",
+            avatarUrl: null
+        };
+    });
+
+    // Combine according to filter
+    let items = [];
+    if (filter === "drivers") items = driverCards;
+    else if (filter === "teams") items = teamCards;
+    else items = [...driverCards, ...teamCards];
+
+    // Filter by affordable
+    if (filter === "affordable") {
+        items = items.filter(item => item.isOwned || item.price <= metrics.remaining);
+    }
+
+    // Filter by search query
+    if (query) {
+        items = items.filter(item => 
+            item.name.toLowerCase().includes(query) || 
+            item.team.toLowerCase().includes(query)
+        );
+    }
+
+    // Sort items
+    items.sort((a, b) => {
+        if (sortBy === "price-desc") return b.price - a.price;
+        if (sortBy === "price-asc") return a.price - b.price;
+        if (sortBy === "pts-desc") return b.pts - a.pts;
+        if (sortBy === "name-asc") return a.name.localeCompare(b.name);
+        return 0;
+    });
+
+    // Update Counter
+    const counterPill = document.getElementById("marketCountPill");
+    if (counterPill) counterPill.textContent = items.length;
+
+    if (items.length === 0) {
+        grid.innerHTML = `
+            <div style="grid-column: 1/-1; text-align: center; padding: 48px 20px; color: #6b7280; font-size: 14px;">
+                No se encontraron pilotos o constructores que coincidan con la búsqueda.
+            </div>
+        `;
+        return;
+    }
+
+    const driverSlotsFull = Boolean(ffcFantasyState.driver1 && ffcFantasyState.driver2 && ffcFantasyState.driver3);
+
+    grid.innerHTML = items.map(item => {
+        const isDriver = item.type === "driver";
+        const canAfford = item.price <= metrics.remaining;
+        
+        let actionBtnHtml = "";
+        if (item.isOwned) {
+            actionBtnHtml = `<button type="button" class="market-action-btn owned-btn" onclick="handleSellFromMarket('${item.type}', '${escapeHtml(item.name)}')">Fichado ✓ (Vender)</button>`;
+        } else if (isDriver && driverSlotsFull) {
+            actionBtnHtml = `<button type="button" class="market-action-btn" disabled>3/3 Pilotos Lleno</button>`;
+        } else if (!canAfford) {
+            actionBtnHtml = `<button type="button" class="market-action-btn" disabled>Sin Presupuesto (${item.price.toFixed(1)}M)</button>`;
+        } else {
+            const clickFn = isDriver ? `handleSignDriver('${escapeHtml(item.name)}')` : `handleSignConstructor('${escapeHtml(item.name)}')`;
+            actionBtnHtml = `<button type="button" class="market-action-btn sign-btn" onclick="${clickFn}">+ Fichar por ${item.price.toFixed(1)}M €</button>`;
+        }
+
+        return `
+            <div class="market-card ${item.isOwned ? 'is-owned' : ''}">
+                <div class="market-card-top">
+                    ${isDriver 
+                        ? (item.avatarUrl 
+                            ? `<img src="${escapeHtml(item.avatarUrl)}" class="market-card-avatar" alt="${escapeHtml(item.name)}" onerror="this.outerHTML='<div class=\\'market-card-team-icon\\'>🏎️</div>'">`
+                            : `<div class="market-card-team-icon">🏎️</div>`
+                        )
+                        : `<div class="market-card-team-icon">🏭</div>`
+                    }
+                    <div class="market-card-info">
+                        <div class="market-card-name" title="${escapeHtml(item.name)}">${item.flag} ${escapeHtml(item.name)}</div>
+                        <span class="ranking-team-pill ${getTeamClass(item.team)}"><span class="team-dot"></span>${escapeHtml(item.team)}</span>
+                    </div>
+                </div>
+                <div class="market-card-stats">
+                    <div class="market-stat-item">
+                        <span class="market-stat-lbl">PRECIO</span>
+                        <span class="market-stat-val price">${item.price.toFixed(1)}M €</span>
+                    </div>
+                    <div class="market-stat-item" style="text-align: right;">
+                        <span class="market-stat-lbl">PUNTOS REALES</span>
+                        <span class="market-stat-val pts">${item.pts} PTS</span>
+                    </div>
+                </div>
+                ${actionBtnHtml}
+            </div>
+        `;
+    }).join("");
+}
+
+// Sell Item Directly from Market
+window.handleSellFromMarket = function(type, name) {
+    if (type === "driver") {
+        if (ffcFantasyState.driver1 === name) handleSellSlot("driver1");
+        else if (ffcFantasyState.driver2 === name) handleSellSlot("driver2");
+        else if (ffcFantasyState.driver3 === name) handleSellSlot("driver3");
+    } else {
+        handleSellSlot("team");
+    }
+};
+
+// Render Fantasy Leaderboard
+async function renderFantasyLeaderboard() {
+    const tbody = document.getElementById("fantasyLeaderboardBody");
+    if (!tbody) return;
+
+    let teamsList = [...DEFAULT_FANTASY_LEADERBOARD];
+
+    // Attempt to fetch live community teams from Firestore
+    if (typeof db !== "undefined") {
+        try {
+            const q = query(collection(db, "fantasy_leaderboard"), limit(25));
+            const snap = await getDocs(q);
+            if (!snap.empty) {
+                const cloudTeams = [];
+                snap.forEach(d => {
+                    const data = d.data();
+                    if (data && data.teamName) {
+                        cloudTeams.push(data);
+                    }
+                });
+                if (cloudTeams.length > 0) {
+                    teamsList = cloudTeams;
+                }
+            }
+        } catch (e) {
+            console.warn("Could not load fantasy leaderboard from cloud:", e);
+        }
+    }
+
+    // Always recalculate current user's team live
+    const currentUser = typeof LocalAuthStore !== "undefined" ? LocalAuthStore.getCurrentUser() : null;
+    const userEmail = currentUser ? currentUser.email : null;
+    const userDisplayName = currentUser ? (currentUser.displayName || currentUser.email.split("@")[0]) : "Tú (Manager)";
+    const myMetrics = calculateFantasyMetrics();
+
+    // Replace or insert current user's team in the list
+    const existingUserIndex = teamsList.findIndex(t => 
+        (userEmail && t.email && t.email.toLowerCase() === userEmail.toLowerCase()) || 
+        t.isUserTeam === true
+    );
+
+    const myTeamEntry = {
+        teamName: ffcFantasyState.teamName || "Mi Escudería FFC",
+        managerName: userDisplayName,
+        driver1: ffcFantasyState.driver1,
+        driver2: ffcFantasyState.driver2,
+        driver3: ffcFantasyState.driver3,
+        team: ffcFantasyState.team,
+        turboDriver: ffcFantasyState.turboDriver,
+        totalPoints: myMetrics.totalPts,
+        teamValue: myMetrics.spent,
+        isUserTeam: true
+    };
+
+    if (existingUserIndex >= 0) {
+        teamsList[existingUserIndex] = myTeamEntry;
+    } else {
+        teamsList.push(myTeamEntry);
+    }
+
+    // Recalculate points for benchmark teams dynamically based on current standings
+    teamsList.forEach(t => {
+        if (!t.isUserTeam) {
+            const m = calculateFantasyMetrics({
+                driver1: t.driver1,
+                driver2: t.driver2,
+                driver3: t.driver3,
+                team: t.team,
+                turboDriver: t.turboDriver
+            });
+            t.totalPoints = m.totalPts;
+            t.teamValue = m.spent;
+        }
+    });
+
+    // Sort leaderboard by points descending
+    teamsList.sort((a, b) => (b.totalPoints || 0) - (a.totalPoints || 0));
+
+    // Update User Rank HUD Card
+    const myRankIndex = teamsList.findIndex(t => t.isUserTeam);
+    const rankEl = document.getElementById("fantasyRankPosition");
+    if (rankEl) {
+        rankEl.textContent = myRankIndex >= 0 ? `#${myRankIndex + 1} / ${teamsList.length}` : "-";
+    }
+
+    // Render Table Rows
+    tbody.innerHTML = teamsList.map((t, idx) => {
+        const isMe = t.isUserTeam;
+        const pos = idx + 1;
+        let posClass = "lb-pos";
+        if (pos === 1) posClass += " pos-1";
+        else if (pos === 2) posClass += " pos-2";
+        else if (pos === 3) posClass += " pos-3";
+
+        const d1Chip = t.driver1 ? `<span class="lb-driver-chip ${t.turboDriver === t.driver1 ? 'is-turbo' : ''}">${t.turboDriver === t.driver1 ? '⭐ ' : ''}${escapeHtml(t.driver1)}</span>` : `<span class="lb-driver-chip" style="opacity:0.4;">Vacante</span>`;
+        const d2Chip = t.driver2 ? `<span class="lb-driver-chip ${t.turboDriver === t.driver2 ? 'is-turbo' : ''}">${t.turboDriver === t.driver2 ? '⭐ ' : ''}${escapeHtml(t.driver2)}</span>` : `<span class="lb-driver-chip" style="opacity:0.4;">Vacante</span>`;
+        const d3Chip = t.driver3 ? `<span class="lb-driver-chip ${t.turboDriver === t.driver3 ? 'is-turbo' : ''}">${t.turboDriver === t.driver3 ? '⭐ ' : ''}${escapeHtml(t.driver3)}</span>` : `<span class="lb-driver-chip" style="opacity:0.4;">Vacante</span>`;
+        const teamChip = t.team ? `<span class="lb-team-chip ranking-team-pill ${getTeamClass(t.team)}"><span class="team-dot"></span>${escapeHtml(t.team)}</span>` : `<span class="lb-team-chip" style="opacity:0.4;">Sin Escudería</span>`;
+
+        return `
+            <tr class="${isMe ? 'my-team-row' : ''}">
+                <td class="${posClass}">${pos}</td>
+                <td>
+                    <div class="lb-team-name">
+                        ${escapeHtml(t.teamName || "Escudería FFC")}
+                        ${isMe ? `<span class="my-team-badge">TU EQUIPO</span>` : ''}
+                    </div>
+                    <div class="lb-manager-name">Manager: ${escapeHtml(t.managerName || "Piloto FFC")}</div>
+                </td>
+                <td>
+                    <div class="lb-lineup-chips">
+                        ${d1Chip}
+                        ${d2Chip}
+                        ${d3Chip}
+                        ${teamChip}
+                    </div>
+                </td>
+                <td class="lb-val">${(t.teamValue || 0).toFixed(1)}M €</td>
+                <td class="lb-pts">${t.totalPoints || 0}</td>
+            </tr>
+        `;
+    }).join("");
+}
+
+// Master Render for Fantasy Portal
+function renderFantasyPortal() {
+    renderFantasyHUD();
+    renderFantasySlots();
+    if (ffcFantasyState.activeSubTab === "market") {
+        renderFantasyMarketGrid();
+    } else if (ffcFantasyState.activeSubTab === "leaderboard") {
+        renderFantasyLeaderboard();
+    }
+}
+
+// Initial Wire-Up for Fantasy System
+function initFantasyLeague() {
+    loadFantasyTeamFromStorage();
+
+    // 1. Navigation Button Listeners
+    const navFantasy = document.getElementById("navFantasy");
+    if (navFantasy) {
+        navFantasy.addEventListener("click", (e) => {
+            e.preventDefault();
+            openFantasyPortal();
+        });
+    }
+
+    const userOpenFantasyBtn = document.getElementById("userOpenFantasyBtn");
+    if (userOpenFantasyBtn) {
+        userOpenFantasyBtn.addEventListener("click", () => {
+            // Close profile dropdown
+            const profileMenu = document.getElementById("userProfileMenu");
+            if (profileMenu) profileMenu.style.display = "none";
+            openFantasyPortal();
+        });
+    }
+
+    const backBtn = document.getElementById("fantasyBackBtn");
+    if (backBtn) {
+        backBtn.addEventListener("click", () => {
+            closeFantasyPortal();
+        });
+    }
+
+    // Intercept other nav links to cleanly exit fantasy view if clicked
+    document.querySelectorAll(".nav-links a:not(#navFantasy)").forEach(link => {
+        link.addEventListener("click", (e) => {
+            const fantasyView = document.getElementById("fantasyView");
+            if (fantasyView && fantasyView.style.display !== "none") {
+                const href = link.getAttribute("href");
+                closeFantasyPortal(href);
+            }
+        });
+    });
+
+    const brandLogo = document.querySelector(".brand");
+    if (brandLogo) {
+        brandLogo.addEventListener("click", () => {
+            const fantasyView = document.getElementById("fantasyView");
+            if (fantasyView && fantasyView.style.display !== "none") {
+                closeFantasyPortal("#home");
+            }
+        });
+    }
+
+    // 2. Subtabs Navigation Listeners
+    const subTabTeam = document.getElementById("tabBtnFantasyTeam");
+    const subTabMarket = document.getElementById("tabBtnFantasyMarket");
+    const subTabLb = document.getElementById("tabBtnFantasyLeaderboard");
+    const subTabRules = document.getElementById("tabBtnFantasyRules");
+
+    if (subTabTeam) subTabTeam.addEventListener("click", () => switchFantasySubTab("team"));
+    if (subTabMarket) subTabMarket.addEventListener("click", () => switchFantasySubTab("market"));
+    if (subTabLb) subTabLb.addEventListener("click", () => switchFantasySubTab("leaderboard"));
+    if (subTabRules) subTabRules.addEventListener("click", () => switchFantasySubTab("rules"));
+
+    const goToMarketBtn = document.getElementById("fantasyGoToMarketBtn");
+    if (goToMarketBtn) {
+        goToMarketBtn.addEventListener("click", () => {
+            setMarketFilter("all");
+            switchFantasySubTab("market");
+        });
+    }
+
+    // 3. Team Name Save and Reset Buttons
+    const saveNameBtn = document.getElementById("fantasySaveTeamNameBtn");
+    const teamNameInput = document.getElementById("fantasyTeamNameInput");
+    const saveHint = document.getElementById("fantasySaveHint");
+
+    const saveTeamName = () => {
+        if (!teamNameInput) return;
+        const val = teamNameInput.value.trim();
+        if (val) {
+            ffcFantasyState.teamName = val;
+            saveFantasyTeamToStorage();
+            if (saveHint) {
+                saveHint.textContent = "✓ ¡Nombre guardado!";
+                saveHint.style.color = "#4ade80";
+                setTimeout(() => {
+                    saveHint.textContent = "Sincronizado con tu perfil";
+                    saveHint.style.color = "#6b7280";
+                }, 2500);
+            }
+        }
+    };
+
+    if (saveNameBtn) saveNameBtn.addEventListener("click", saveTeamName);
+    if (teamNameInput) {
+        teamNameInput.addEventListener("keydown", (e) => {
+            if (e.key === "Enter") {
+                e.preventDefault();
+                saveTeamName();
+            }
+        });
+    }
+
+    const resetBtn = document.getElementById("fantasyResetTeamBtn");
+    if (resetBtn) {
+        resetBtn.addEventListener("click", () => {
+            if (confirm("¿Estás seguro de que deseas reiniciar tu escudería y vender todos tus pilotos y constructor para recuperar los 100.0M€?")) {
+                ffcFantasyState.driver1 = null;
+                ffcFantasyState.driver2 = null;
+                ffcFantasyState.driver3 = null;
+                ffcFantasyState.team = null;
+                ffcFantasyState.turboDriver = null;
+                saveFantasyTeamToStorage();
+                renderFantasyHUD();
+                renderFantasySlots();
+                if (ffcFantasyState.activeSubTab === "market") {
+                    renderFantasyMarketGrid();
+                }
+            }
+        });
+    }
+
+    // 4. Market Filter Pills
+    document.querySelectorAll(".market-filter-pill").forEach(pill => {
+        pill.addEventListener("click", () => {
+            const filter = pill.getAttribute("data-filter");
+            setMarketFilter(filter);
+        });
+    });
+
+    // 5. Market Search and Sort Controls
+    const searchInput = document.getElementById("marketSearchInput");
+    if (searchInput) {
+        searchInput.addEventListener("input", (e) => {
+            ffcFantasyState.searchQuery = e.target.value;
+            renderFantasyMarketGrid();
+        });
+    }
+
+    const sortSelect = document.getElementById("marketSortSelect");
+    if (sortSelect) {
+        sortSelect.addEventListener("change", (e) => {
+            ffcFantasyState.sortBy = e.target.value;
+            renderFantasyMarketGrid();
+        });
+    }
+
+    // 6. Check Initial Hash on Page Load
+    if (window.location.hash === "#fantasy") {
+        openFantasyPortal();
+    }
+
+    window.addEventListener("hashchange", () => {
+        if (window.location.hash === "#fantasy") {
+            openFantasyPortal();
+        } else {
+            const fantasyView = document.getElementById("fantasyView");
+            if (fantasyView && fantasyView.style.display !== "none") {
+                closeFantasyPortal(window.location.hash);
+            }
+        }
+    });
+
+    // Initial render
+    renderFantasyHUD();
+    renderFantasySlots();
+}
+
+// Initialize on DOMContentLoaded or immediately if already loaded
+if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", initFantasyLeague);
+} else {
+    initFantasyLeague();
 }
 
 

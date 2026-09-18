@@ -7357,6 +7357,1175 @@ footer {
     color: #7289da;
 }
 
+/* =========================================================
+   FFC FANTASY LEAGUE STYLES (PESTAÑA EXTRA)
+========================================================= */
+
+/* Nav Fantasy Link */
+.nav-fantasy-link {
+    display: inline-flex !important;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    background: rgba(214, 180, 92, 0.08);
+    border: 1px solid rgba(214, 180, 92, 0.25);
+    border-radius: 20px;
+    font-size: 11.5px;
+    font-weight: 700;
+    color: var(--gold) !important;
+    letter-spacing: 0.8px;
+    transition: all 0.2s ease;
+}
+
+.nav-fantasy-link:hover,
+.nav-fantasy-link.active {
+    background: rgba(214, 180, 92, 0.18);
+    border-color: var(--gold);
+    color: #fff !important;
+    box-shadow: 0 0 14px rgba(214, 180, 92, 0.2);
+}
+
+.fantasy-nav-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 1px 6px;
+    background: var(--gold);
+    color: #05070a;
+    font-size: 9px;
+    font-weight: 900;
+    border-radius: 10px;
+    letter-spacing: 0.4px;
+}
+
+/* Profile Shortcut */
+.user-fantasy-shortcut {
+    margin-bottom: 6px;
+}
+
+.setting-row-btn.fantasy-btn {
+    border-color: rgba(214, 180, 92, 0.25);
+    background: rgba(214, 180, 92, 0.06);
+    color: var(--gold);
+}
+
+.setting-row-btn.fantasy-btn:hover {
+    background: rgba(214, 180, 92, 0.14);
+    border-color: var(--gold);
+    color: #fff;
+}
+
+/* Portal View Container */
+.fantasy-portal-view {
+    position: relative;
+    width: 100%;
+    min-height: 100vh;
+    padding-top: 84px;
+    padding-bottom: 80px;
+    background: radial-gradient(circle at 50% 10%, rgba(214, 180, 92, 0.05) 0%, transparent 60%), #05070a;
+    animation: fadeInFantasy 0.25s ease-out;
+}
+
+@keyframes fadeInFantasy {
+    from { opacity: 0; transform: translateY(6px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.fantasy-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+/* Top Navigation Bar */
+.fantasy-top-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 24px;
+    padding-bottom: 14px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+}
+
+.fantasy-back-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    color: #e0e0e0;
+    transition: all 0.2s ease;
+}
+
+.fantasy-back-btn:hover {
+    background: rgba(214, 180, 92, 0.12);
+    border-color: var(--gold);
+    color: var(--gold);
+}
+
+.fantasy-top-badges {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.fantasy-status-live {
+    display: inline-flex;
+    align-items: center;
+    font-size: 11px;
+    font-weight: 800;
+    color: #4ade80;
+    background: rgba(74, 222, 128, 0.12);
+    border: 1px solid rgba(74, 222, 128, 0.25);
+    padding: 4px 10px;
+    border-radius: 20px;
+    letter-spacing: 0.5px;
+}
+
+.fantasy-season-badge {
+    display: inline-flex;
+    align-items: center;
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--gold);
+    background: rgba(214, 180, 92, 0.1);
+    border: 1px solid rgba(214, 180, 92, 0.25);
+    padding: 4px 10px;
+    border-radius: 20px;
+    letter-spacing: 0.5px;
+}
+
+/* Hero Header */
+.fantasy-hero-header {
+    margin-bottom: 28px;
+}
+
+.fantasy-hero-eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: 1.5px;
+    color: var(--gold);
+    text-transform: uppercase;
+    margin-bottom: 8px;
+}
+
+.fantasy-hero-title {
+    font-size: 36px;
+    font-weight: 900;
+    letter-spacing: -0.5px;
+    line-height: 1.15;
+    margin-bottom: 10px;
+    color: #fff;
+}
+
+.gold-gradient {
+    background: linear-gradient(135deg, #f0d889 0%, #d6b45c 60%, #a88732 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.fantasy-hero-desc {
+    max-width: 780px;
+    font-size: 14px;
+    color: #9da3af;
+    line-height: 1.6;
+}
+
+/* Global HUD Metrics Grid */
+.fantasy-hud-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+    margin-bottom: 28px;
+}
+
+.fantasy-hud-card {
+    background: #0b0f15;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 12px;
+    padding: 16px 20px;
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.2s ease, border-color 0.2s ease;
+}
+
+.fantasy-hud-card:hover {
+    border-color: rgba(214, 180, 92, 0.35);
+    transform: translateY(-2px);
+}
+
+.hud-label-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.8px;
+    color: #8c929c;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+}
+
+.hud-value {
+    font-size: 26px;
+    font-weight: 900;
+    color: #fff;
+    letter-spacing: -0.5px;
+    line-height: 1.1;
+    margin-bottom: 6px;
+}
+
+.hud-budget .hud-value {
+    color: #4ade80;
+}
+
+.hud-budget.is-low .hud-value {
+    color: #f59e0b;
+}
+
+.hud-budget.is-over .hud-value {
+    color: #ef4444;
+}
+
+.hud-points .hud-value {
+    color: var(--gold);
+}
+
+.pts-unit {
+    font-size: 13px;
+    font-weight: 700;
+    opacity: 0.75;
+    margin-left: 2px;
+}
+
+.hud-sub {
+    font-size: 11.5px;
+    color: #717682;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.hud-bar-track {
+    width: 100%;
+    height: 4px;
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: 2px;
+    overflow: hidden;
+    margin-top: 2px;
+}
+
+.hud-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #4ade80, #22c55e);
+    border-radius: 2px;
+    transition: width 0.3s ease, background 0.3s ease;
+}
+
+.hud-bar-fill.warning {
+    background: linear-gradient(90deg, #fbbf24, #f59e0b);
+}
+
+.hud-bar-fill.danger {
+    background: linear-gradient(90deg, #f87171, #ef4444);
+}
+
+/* Subtabs Nav */
+.fantasy-subtabs-nav {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    margin-bottom: 24px;
+    overflow-x: auto;
+    scrollbar-width: none;
+}
+
+.fantasy-subtabs-nav::-webkit-scrollbar {
+    display: none;
+}
+
+.fantasy-subtab-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 18px;
+    font-size: 13px;
+    font-weight: 700;
+    color: #8c929c;
+    border-bottom: 2px solid transparent;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+}
+
+.fantasy-subtab-btn:hover {
+    color: #fff;
+    background: rgba(255, 255, 255, 0.02);
+}
+
+.fantasy-subtab-btn.active {
+    color: var(--gold);
+    border-bottom-color: var(--gold);
+}
+
+.tab-counter-pill {
+    padding: 1px 7px;
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: 12px;
+    font-size: 10.5px;
+    font-weight: 800;
+    color: #d1d5db;
+}
+
+.fantasy-subtab-btn.active .tab-counter-pill {
+    background: rgba(214, 180, 92, 0.2);
+    color: var(--gold);
+}
+
+/* Team Name & Actions Bar */
+.fantasy-team-name-bar {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 16px;
+    background: #0b0f15;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 12px;
+    padding: 18px 22px;
+    margin-bottom: 24px;
+    flex-wrap: wrap;
+}
+
+.team-name-input-wrap {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    flex: 1;
+    min-width: 260px;
+}
+
+.team-name-label {
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 0.8px;
+    color: var(--gold);
+    text-transform: uppercase;
+}
+
+.team-name-input-group {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.fantasy-team-name-input {
+    background: #10151d;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 8px;
+    padding: 8px 14px;
+    font-size: 14px;
+    font-weight: 700;
+    color: #fff;
+    width: 100%;
+    max-width: 320px;
+    outline: none;
+    transition: border-color 0.2s ease;
+}
+
+.fantasy-team-name-input:focus {
+    border-color: var(--gold);
+    box-shadow: 0 0 10px rgba(214, 180, 92, 0.2);
+}
+
+.team-save-hint {
+    font-size: 11px;
+    color: #6b7280;
+}
+
+.fantasy-team-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.fantasy-btn-gold {
+    padding: 8px 16px;
+    background: var(--gold);
+    color: #05070a;
+    font-size: 12.5px;
+    font-weight: 800;
+    border-radius: 8px;
+    transition: all 0.2s ease;
+}
+
+.fantasy-btn-gold:hover {
+    background: #f0d889;
+    transform: translateY(-1px);
+}
+
+.fantasy-btn-gold-primary {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 10px 20px;
+    background: linear-gradient(135deg, #d6b45c, #b5923b);
+    color: #05070a;
+    font-size: 13px;
+    font-weight: 800;
+    border-radius: 8px;
+    letter-spacing: 0.3px;
+    transition: all 0.2s ease;
+    box-shadow: 0 4px 14px rgba(214, 180, 92, 0.25);
+}
+
+.fantasy-btn-gold-primary:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 18px rgba(214, 180, 92, 0.35);
+}
+
+.fantasy-btn-ghost {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 9px 16px;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: #a0a6b2;
+    font-size: 12.5px;
+    font-weight: 600;
+    border-radius: 8px;
+    transition: all 0.2s ease;
+}
+
+.fantasy-btn-ghost:hover {
+    background: rgba(239, 68, 68, 0.1);
+    border-color: rgba(239, 68, 68, 0.3);
+    color: #ef4444;
+}
+
+/* 4 Slots Grid */
+.fantasy-slots-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+    margin-bottom: 24px;
+}
+
+.fantasy-slot-card {
+    background: #0b0f15;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 12px;
+    min-height: 280px;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.2s ease;
+}
+
+.fantasy-slot-card:hover {
+    border-color: rgba(214, 180, 92, 0.35);
+}
+
+/* Empty Slot */
+.slot-empty-body {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    flex: 1;
+    padding: 24px 16px;
+    text-align: center;
+    cursor: pointer;
+    border: 2px dashed rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    margin: 6px;
+    transition: all 0.2s ease;
+}
+
+.slot-empty-body:hover {
+    border-color: var(--gold);
+    background: rgba(214, 180, 92, 0.03);
+}
+
+.slot-empty-icon {
+    font-size: 32px;
+    margin-bottom: 12px;
+    opacity: 0.6;
+}
+
+.slot-empty-title {
+    font-size: 13px;
+    font-weight: 800;
+    color: #fff;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 6px;
+}
+
+.slot-empty-sub {
+    font-size: 11.5px;
+    color: #717682;
+    margin-bottom: 14px;
+}
+
+.slot-empty-btn {
+    padding: 6px 14px;
+    background: rgba(214, 180, 92, 0.12);
+    border: 1px solid rgba(214, 180, 92, 0.3);
+    color: var(--gold);
+    font-size: 12px;
+    font-weight: 700;
+    border-radius: 6px;
+    transition: all 0.2s ease;
+}
+
+.slot-empty-body:hover .slot-empty-btn {
+    background: var(--gold);
+    color: #05070a;
+}
+
+/* Filled Slot */
+.slot-filled-card {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    padding: 16px;
+}
+
+.slot-header-tag {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 12px;
+}
+
+.slot-type-label {
+    font-size: 10px;
+    font-weight: 800;
+    color: #8c929c;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+}
+
+.slot-sell-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 11px;
+    font-weight: 700;
+    color: #ef4444;
+    padding: 2px 8px;
+    border-radius: 4px;
+    background: rgba(239, 68, 68, 0.08);
+    border: 1px solid rgba(239, 68, 68, 0.2);
+    transition: all 0.2s ease;
+}
+
+.slot-sell-btn:hover {
+    background: rgba(239, 68, 68, 0.2);
+    color: #fff;
+}
+
+.slot-avatar-wrap {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 14px;
+}
+
+.slot-avatar-img {
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid var(--gold);
+    background: #151c27;
+}
+
+.slot-team-logo-icon {
+    width: 52px;
+    height: 52px;
+    border-radius: 10px;
+    background: rgba(214, 180, 92, 0.1);
+    border: 1px solid rgba(214, 180, 92, 0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+}
+
+.slot-name-block {
+    flex: 1;
+    overflow: hidden;
+}
+
+.slot-item-name {
+    font-size: 15px;
+    font-weight: 800;
+    color: #fff;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin-bottom: 4px;
+}
+
+.slot-meta-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: #10151d;
+    padding: 10px 12px;
+    border-radius: 8px;
+    margin-bottom: 12px;
+}
+
+.slot-meta-item {
+    display: flex;
+    flex-direction: column;
+}
+
+.slot-meta-lbl {
+    font-size: 9.5px;
+    font-weight: 800;
+    color: #6b7280;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+}
+
+.slot-meta-val {
+    font-size: 14px;
+    font-weight: 800;
+    color: #fff;
+}
+
+.slot-meta-val.price {
+    color: #4ade80;
+}
+
+.slot-meta-val.pts {
+    color: var(--gold);
+}
+
+/* Turbo Driver Button */
+.slot-turbo-btn {
+    margin-top: auto;
+    width: 100%;
+    padding: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    border-radius: 6px;
+    font-size: 11.5px;
+    font-weight: 800;
+    letter-spacing: 0.5px;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    color: #9da3af;
+    transition: all 0.2s ease;
+}
+
+.slot-turbo-btn:hover {
+    background: rgba(214, 180, 92, 0.12);
+    border-color: var(--gold);
+    color: var(--gold);
+}
+
+.slot-turbo-btn.is-active {
+    background: linear-gradient(135deg, rgba(214, 180, 92, 0.25), rgba(214, 180, 92, 0.1));
+    border-color: var(--gold);
+    color: var(--gold);
+    box-shadow: 0 0 12px rgba(214, 180, 92, 0.25);
+}
+
+/* Info Strip */
+.fantasy-info-strip {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    background: rgba(214, 180, 92, 0.06);
+    border: 1px solid rgba(214, 180, 92, 0.2);
+    border-radius: 10px;
+    padding: 14px 18px;
+    font-size: 12.5px;
+    color: #c9ced8;
+    line-height: 1.5;
+}
+
+.info-strip-icon {
+    font-size: 18px;
+    line-height: 1;
+}
+
+/* ==========================================
+   SUB-TAB 2: MERCADO DE FICHAJES
+========================================== */
+.fantasy-market-controls {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 24px;
+    flex-wrap: wrap;
+}
+
+.market-filters-group {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+}
+
+.market-filter-pill {
+    padding: 6px 14px;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 700;
+    color: #8c929c;
+    transition: all 0.2s ease;
+}
+
+.market-filter-pill:hover {
+    color: #fff;
+    border-color: rgba(255, 255, 255, 0.2);
+}
+
+.market-filter-pill.active {
+    background: var(--gold);
+    color: #05070a;
+    border-color: var(--gold);
+    font-weight: 800;
+}
+
+.market-search-sort {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.market-search-wrap {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.market-search-icon {
+    position: absolute;
+    left: 12px;
+    color: #6b7280;
+    pointer-events: none;
+}
+
+.market-search-input {
+    background: #0b0f15;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    padding: 8px 14px 8px 34px;
+    font-size: 13px;
+    color: #fff;
+    width: 230px;
+    outline: none;
+    transition: border-color 0.2s ease;
+}
+
+.market-search-input:focus {
+    border-color: var(--gold);
+}
+
+.market-sort-select {
+    background: #0b0f15;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    padding: 8px 12px;
+    font-size: 12.5px;
+    font-weight: 600;
+    color: #e5e7eb;
+    outline: none;
+    cursor: pointer;
+}
+
+.market-sort-select:focus {
+    border-color: var(--gold);
+}
+
+/* Market Grid */
+.fantasy-market-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 16px;
+}
+
+.market-card {
+    background: #0b0f15;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 12px;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    transition: all 0.2s ease;
+}
+
+.market-card:hover {
+    border-color: rgba(214, 180, 92, 0.35);
+    transform: translateY(-2px);
+}
+
+.market-card.is-owned {
+    border-color: rgba(74, 222, 128, 0.4);
+    background: rgba(74, 222, 128, 0.02);
+}
+
+.market-card-top {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 14px;
+}
+
+.market-card-avatar {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    object-fit: cover;
+    background: #141b24;
+    border: 2px solid rgba(255, 255, 255, 0.1);
+}
+
+.market-card-team-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 10px;
+    background: rgba(214, 180, 92, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+    border: 1px solid rgba(214, 180, 92, 0.25);
+}
+
+.market-card-info {
+    flex: 1;
+    overflow: hidden;
+}
+
+.market-card-name {
+    font-size: 15px;
+    font-weight: 800;
+    color: #fff;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin-bottom: 4px;
+}
+
+.market-card-stats {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    background: #10151d;
+    padding: 10px 12px;
+    border-radius: 8px;
+    margin-bottom: 14px;
+}
+
+.market-stat-item {
+    display: flex;
+    flex-direction: column;
+}
+
+.market-stat-lbl {
+    font-size: 9.5px;
+    font-weight: 800;
+    color: #6b7280;
+    text-transform: uppercase;
+}
+
+.market-stat-val {
+    font-size: 14px;
+    font-weight: 800;
+    color: #fff;
+}
+
+.market-stat-val.price {
+    color: #4ade80;
+}
+
+.market-stat-val.pts {
+    color: var(--gold);
+}
+
+.market-action-btn {
+    width: 100%;
+    padding: 9px;
+    font-size: 12.5px;
+    font-weight: 800;
+    border-radius: 7px;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+}
+
+.market-action-btn.sign-btn {
+    background: rgba(214, 180, 92, 0.15);
+    border: 1px solid rgba(214, 180, 92, 0.4);
+    color: var(--gold);
+}
+
+.market-action-btn.sign-btn:hover:not(:disabled) {
+    background: var(--gold);
+    color: #05070a;
+}
+
+.market-action-btn.owned-btn {
+    background: rgba(74, 222, 128, 0.12);
+    border: 1px solid rgba(74, 222, 128, 0.3);
+    color: #4ade80;
+}
+
+.market-action-btn.owned-btn:hover {
+    background: rgba(239, 68, 68, 0.15);
+    border-color: rgba(239, 68, 68, 0.35);
+    color: #ef4444;
+}
+
+.market-action-btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+    background: rgba(255, 255, 255, 0.04);
+    border-color: rgba(255, 255, 255, 0.08);
+    color: #6b7280;
+}
+
+/* ==========================================
+   SUB-TAB 3: CLASIFICACIÓN FANTASY
+========================================== */
+.fantasy-leaderboard-header {
+    margin-bottom: 20px;
+}
+
+.fantasy-section-heading {
+    font-size: 22px;
+    font-weight: 800;
+    color: #fff;
+    margin-bottom: 4px;
+}
+
+.fantasy-section-sub {
+    font-size: 13px;
+    color: #8c929c;
+}
+
+.fantasy-leaderboard-wrap {
+    background: #0b0f15;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 12px;
+    overflow-x: auto;
+}
+
+.fantasy-leaderboard-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+}
+
+.fantasy-leaderboard-table th {
+    background: #080b10;
+    padding: 12px 18px;
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 0.8px;
+    color: #8c929c;
+    text-transform: uppercase;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    text-align: left;
+}
+
+.fantasy-leaderboard-table td {
+    padding: 14px 18px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    vertical-align: middle;
+}
+
+.fantasy-leaderboard-table tr:hover {
+    background: rgba(255, 255, 255, 0.02);
+}
+
+.fantasy-leaderboard-table tr.my-team-row {
+    background: rgba(214, 180, 92, 0.08);
+    border-left: 3px solid var(--gold);
+}
+
+.lb-pos {
+    font-size: 14px;
+    font-weight: 900;
+    color: #8c929c;
+}
+
+.lb-pos.pos-1 { color: #f59e0b; }
+.lb-pos.pos-2 { color: #94a3b8; }
+.lb-pos.pos-3 { color: #d97706; }
+
+.lb-team-name {
+    font-size: 14px;
+    font-weight: 800;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.my-team-badge {
+    font-size: 9.5px;
+    font-weight: 800;
+    background: var(--gold);
+    color: #05070a;
+    padding: 2px 6px;
+    border-radius: 4px;
+}
+
+.lb-manager-name {
+    font-size: 11.5px;
+    color: #6b7280;
+    margin-top: 2px;
+}
+
+.lb-lineup-chips {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+}
+
+.lb-driver-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 11px;
+    font-weight: 700;
+    background: #10151d;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    padding: 3px 8px;
+    border-radius: 6px;
+    color: #d1d5db;
+}
+
+.lb-driver-chip.is-turbo {
+    border-color: rgba(214, 180, 92, 0.5);
+    color: var(--gold);
+    background: rgba(214, 180, 92, 0.1);
+}
+
+.lb-team-chip {
+    font-size: 11px;
+    font-weight: 800;
+    padding: 3px 8px;
+    border-radius: 6px;
+}
+
+.lb-val {
+    font-size: 13px;
+    font-weight: 700;
+    color: #4ade80;
+    text-align: right;
+}
+
+.lb-pts {
+    font-size: 15px;
+    font-weight: 900;
+    color: var(--gold);
+    text-align: right;
+}
+
+/* ==========================================
+   SUB-TAB 4: REGLAMENTO & PUNTOS
+========================================== */
+.fantasy-rules-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+}
+
+.fantasy-rule-card {
+    background: #0b0f15;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 12px;
+    padding: 22px;
+    position: relative;
+    transition: transform 0.2s ease, border-color 0.2s ease;
+}
+
+.fantasy-rule-card:hover {
+    border-color: rgba(214, 180, 92, 0.3);
+    transform: translateY(-2px);
+}
+
+.rule-card-icon {
+    font-size: 28px;
+    margin-bottom: 14px;
+}
+
+.rule-card-title {
+    font-size: 15px;
+    font-weight: 800;
+    color: #fff;
+    margin-bottom: 8px;
+}
+
+.rule-card-text {
+    font-size: 13px;
+    color: #9da3af;
+    line-height: 1.6;
+}
+
+/* Responsive Breakpoints */
+@media (max-width: 992px) {
+    .fantasy-hud-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    .fantasy-slots-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    .fantasy-rules-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 640px) {
+    .fantasy-hud-grid {
+        grid-template-columns: 1fr;
+    }
+    .fantasy-slots-grid {
+        grid-template-columns: 1fr;
+    }
+    .fantasy-rules-grid {
+        grid-template-columns: 1fr;
+    }
+    .fantasy-hero-title {
+        font-size: 28px;
+    }
+    .fantasy-team-name-bar {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    .fantasy-team-actions {
+        width: 100%;
+        justify-content: space-between;
+    }
+}
+
 
 
 
