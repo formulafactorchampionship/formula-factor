@@ -4405,11 +4405,11 @@ function renderSettingsOnPage(settings) {
     }
 
     // Trigger re-render of fantasy slots and market grid if already initialized
-    if (typeof renderFantasySlots === "function" && typeof ffcFantasyState !== "undefined") {
+    if (window.isFantasyModuleInitialized && typeof window.renderFantasySlots === "function" && window.ffcFantasyState) {
         try {
-            renderFantasySlots();
-            if (ffcFantasyState.activeSubTab === "market" && typeof renderFantasyMarketGrid === "function") {
-                renderFantasyMarketGrid();
+            window.renderFantasySlots();
+            if (window.ffcFantasyState.activeSubTab === "market" && typeof window.renderFantasyMarketGrid === "function") {
+                window.renderFantasyMarketGrid();
             }
         } catch (e) {
             // Ignore if not rendered yet
@@ -6686,6 +6686,7 @@ const resetBackBtn = document.getElementById("resetBackBtn");
 var activeUserAuth = null;
 var currentAuthTab = "login";
 var isFantasyModuleInitialized = false;
+window.isFantasyModuleInitialized = false;
 
 // Helper: Show Alert inside Auth Modal
 function showAuthAlert(message, type = "error") {
@@ -8147,6 +8148,7 @@ const ffcFantasyState = {
     sortBy: "price-desc",
     activeSubTab: "team"
 };
+window.ffcFantasyState = ffcFantasyState;
 
 // Fantasy Auth & Session Helpers
 function getFantasyCurrentUser() {
@@ -8675,6 +8677,7 @@ async function syncUserFantasyTeamFromCloud(user) {
 // Navigation Functions
 function openFantasyPortal() {
     isFantasyModuleInitialized = true;
+    window.isFantasyModuleInitialized = true;
     initFantasyLeaderboardRealtime();
 
     const currentUser = getFantasyCurrentUser();
@@ -8992,6 +8995,7 @@ function renderFantasySlots() {
     renderSlotCard("fantasySlotDriver3", "driver", 3, ffcFantasyState.driver3, metrics.d3Pts, ffcFantasyState.turboDriver === ffcFantasyState.driver3);
     renderSlotCard("fantasySlotConstructor", "team", 4, ffcFantasyState.team, metrics.teamPts, false);
 }
+window.renderFantasySlots = renderFantasySlots;
 
 // Empty Slot Click Handler
 window.handleEmptySlotClick = function(slotType) {
@@ -9290,6 +9294,7 @@ function renderFantasyMarketGrid() {
         `;
     }).join("");
 }
+window.renderFantasyMarketGrid = renderFantasyMarketGrid;
 
 // Sell Item Directly from Market
 window.handleSellFromMarket = function(type, name) {
@@ -9484,6 +9489,7 @@ function renderFantasyPortal() {
 // Initial Wire-Up for Fantasy System
 function initFantasyLeague() {
     isFantasyModuleInitialized = true;
+    window.isFantasyModuleInitialized = true;
     loadFantasyTeamFromStorage();
 
     // Fetch initial server lock state fallback
