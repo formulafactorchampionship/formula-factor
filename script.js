@@ -5184,11 +5184,6 @@ function initFirestoreListeners() {
     }, (error) => {
         console.error("Error subscribing to 'carreras' collection:", error);
     });
-
-    // 5. Synchronize public fantasy leaderboard in real-time across all sessions
-    if (typeof initFantasyLeaderboardRealtime === "function") {
-        initFantasyLeaderboardRealtime();
-    }
 }
 
 // Initialize on page load
@@ -5200,9 +5195,6 @@ function initFirestoreListeners() {
 
     // Start real-time Firestore synchronization
     initFirestoreListeners();
-    if (typeof initFantasyLeaderboardRealtime === "function") {
-        initFantasyLeaderboardRealtime();
-    }
 
     // Initialize custom dropdowns (Language & Timezone)
     initCustomDropdowns();
@@ -6562,9 +6554,9 @@ const resetEmailInput = document.getElementById("resetEmailInput");
 const resetSubmitBtn = document.getElementById("resetSubmitBtn");
 const resetBackBtn = document.getElementById("resetBackBtn");
 
-let activeUserAuth = null;
-let currentAuthTab = "login";
-let isFantasyModuleInitialized = false;
+var activeUserAuth = null;
+var currentAuthTab = "login";
+var isFantasyModuleInitialized = false;
 
 // Helper: Show Alert inside Auth Modal
 function showAuthAlert(message, type = "error") {
@@ -8029,13 +8021,17 @@ const ffcFantasyState = {
 
 // Fantasy Auth & Session Helpers
 function getFantasyCurrentUser() {
-    if (typeof activeUserAuth !== "undefined" && activeUserAuth && activeUserAuth.email) {
-        return activeUserAuth;
-    }
-    if (typeof LocalAuthStore !== "undefined") {
-        const u = LocalAuthStore.getCurrentUser();
-        if (u && u.email) return u;
-    }
+    try {
+        if (typeof activeUserAuth !== "undefined" && activeUserAuth && activeUserAuth.email) {
+            return activeUserAuth;
+        }
+    } catch (e) {}
+    try {
+        if (typeof LocalAuthStore !== "undefined") {
+            const u = LocalAuthStore.getCurrentUser();
+            if (u && u.email) return u;
+        }
+    } catch (e) {}
     return null;
 }
 
@@ -8232,8 +8228,8 @@ function loadFantasyTeamFromStorage() {
 }
 
 // In-memory cache of community fantasy teams synced from Firestore/Server
-let cloudFantasyTeams = [];
-let isFantasyLeaderboardListening = false;
+var cloudFantasyTeams = [];
+var isFantasyLeaderboardListening = false;
 
 function initFantasyLeaderboardRealtime() {
     if (isFantasyLeaderboardListening) return;
@@ -8245,7 +8241,7 @@ function initFantasyLeaderboardRealtime() {
         .then(data => {
             if (data && Array.isArray(data.teams) && data.teams.length > 0) {
                 cloudFantasyTeams = data.teams;
-                if (ffcFantasyState.activeSubTab === "leaderboard") {
+                if (typeof ffcFantasyState !== "undefined" && ffcFantasyState.activeSubTab === "leaderboard") {
                     renderFantasyLeaderboard();
                 }
             }
@@ -8266,7 +8262,7 @@ function initFantasyLeaderboardRealtime() {
                 if (list.length > 0) {
                     cloudFantasyTeams = list;
                 }
-                if (ffcFantasyState.activeSubTab === "leaderboard") {
+                if (typeof ffcFantasyState !== "undefined" && ffcFantasyState.activeSubTab === "leaderboard") {
                     renderFantasyLeaderboard();
                 }
             }, (err) => {
@@ -8280,6 +8276,8 @@ function initFantasyLeaderboardRealtime() {
 window.initFantasyLeaderboardRealtime = initFantasyLeaderboardRealtime;
 
 function updateFantasyWithNewStandings() {
+    if (typeof ffcFantasyState === "undefined" || !ffcFantasyState) return;
+
     // 1. Refresh user team HUD and slots with latest driver values and points
     if (typeof renderFantasyHUD === "function") {
         renderFantasyHUD();
@@ -9223,6 +9221,9 @@ function renderFantasyPortal() {
 function initFantasyLeague() {
     isFantasyModuleInitialized = true;
     loadFantasyTeamFromStorage();
+    if (typeof initFantasyLeaderboardRealtime === "function") {
+        initFantasyLeaderboardRealtime();
+    }
 
     // Export global helpers to window
     window.switchFantasySubTab = switchFantasySubTab;
