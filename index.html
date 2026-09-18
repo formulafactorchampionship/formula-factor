@@ -1256,6 +1256,22 @@
             </button>
         </div>
 
+        <!-- Banner de Mercado de Fichajes Bloqueado (Carrera en Curso) -->
+        <div class="fantasy-locked-banner" id="fantasyLockedBanner" style="display: none;">
+            <div class="fantasy-locked-banner-left">
+                <span class="fantasy-locked-icon">🔒</span>
+                <div>
+                    <h3 class="fantasy-locked-title" id="fantasyLockedTitle">MERCADO DE FICHAJES BLOQUEADO</h3>
+                    <p class="fantasy-locked-desc" id="fantasyLockedDesc">
+                        Las alineaciones están congeladas durante la disputa del Gran Premio. No se permiten compras, ventas ni cambios de Turbo Driver hasta la reapertura del mercado.
+                    </p>
+                </div>
+            </div>
+            <div class="fantasy-locked-badge">
+                <span>🔴 CARRERA EN CURSO</span>
+            </div>
+        </div>
+
         <!-- HUD de métricas globales del equipo -->
         <div class="fantasy-hud-grid">
             <div class="fantasy-hud-card hud-budget">
@@ -2353,6 +2369,33 @@
                             <div class="admin-field">
                                 <label for="adminLiveSubtitle">Descripción / Subtítulo</label>
                                 <input type="text" id="adminLiveSubtitle" placeholder="Sigue la retransmisión oficial de la carrera en vivo por Twitch." value="Sigue la retransmisión oficial de la carrera en vivo por Twitch.">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- BLOQUEO DEL MERCADO FANTASY (CARRERA EN CURSO) -->
+                    <div class="admin-live-settings-card" style="border-color: rgba(214, 180, 92, 0.4); background: linear-gradient(135deg, rgba(28, 22, 12, 0.95), rgba(12, 16, 24, 0.95)); margin-top: 20px;">
+                        <div class="admin-live-header">
+                            <div class="admin-live-badge" style="background: rgba(214, 180, 92, 0.15); color: var(--gold); border-color: rgba(214, 180, 92, 0.4);">
+                                <span>🏎️</span>
+                                FFC FANTASY LEAGUE · BLOQUEO DE MERCADO
+                            </div>
+                            <label class="admin-switch-label" for="adminFantasyLocked">
+                                <span class="admin-switch-text" id="adminFantasyLockStatusText">MERCADO ABIERTO (FICHAJES ACTIVOS)</span>
+                                <div class="admin-switch">
+                                    <input type="checkbox" id="adminFantasyLocked">
+                                    <span class="admin-slider"></span>
+                                </div>
+                            </label>
+                        </div>
+                        <p class="admin-field-hint" style="margin-top: 10px; margin-bottom: 16px;">
+                            Activa este bloqueo antes o durante una carrera oficial para <strong>congelar las alineaciones</strong>. Mientras esté activado, los participantes no podrán fichar, vender pilotos ni cambiar su Turbo Driver.
+                        </p>
+
+                        <div class="admin-form-grid" style="margin-bottom: 0;">
+                            <div class="admin-field admin-field-full">
+                                <label for="adminFantasyLockMessage">Mensaje para los Usuarios cuando el Mercado esté Bloqueado</label>
+                                <input type="text" id="adminFantasyLockMessage" placeholder="Mercado de fichajes congelado por Gran Premio en curso." value="Mercado de fichajes congelado por Gran Premio en curso.">
                             </div>
                         </div>
                     </div>

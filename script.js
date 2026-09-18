@@ -2095,7 +2095,9 @@ const defaultSettings = {
     liveMode: false,
     twitchChannel: "https://www.twitch.tv/driezzz12",
     liveTitle: "ESTAMOS EN DIRECTO",
-    liveSubtitle: "Sigue la retransmisión oficial de la carrera en vivo por Twitch."
+    liveSubtitle: "Sigue la retransmisión oficial de la carrera en vivo por Twitch.",
+    fantasyLocked: false,
+    fantasyLockMessage: "Mercado de fichajes congelado por Gran Premio en curso."
 };
 
 // Admin UI Selectors
@@ -2148,6 +2150,9 @@ const adminTwitchChannel = document.getElementById("adminTwitchChannel");
 const adminLiveTitle = document.getElementById("adminLiveTitle");
 const adminLiveSubtitle = document.getElementById("adminLiveSubtitle");
 const adminSwitchStatusText = document.getElementById("adminSwitchStatusText");
+const adminFantasyLocked = document.getElementById("adminFantasyLocked");
+const adminFantasyLockStatusText = document.getElementById("adminFantasyLockStatusText");
+const adminFantasyLockMessage = document.getElementById("adminFantasyLockMessage");
 const adminDiscordUrl = document.getElementById("adminDiscordUrl");
 const adminXUrl = document.getElementById("adminXUrl");
 const adminInstagramUrl = document.getElementById("adminInstagramUrl");
@@ -4363,7 +4368,69 @@ function renderSettingsOnPage(settings) {
             }
         }
     }
+
+    // Fantasy Market Lock Synchronization
+    const isFantasyLocked = Boolean(settings && settings.fantasyLocked);
+    const lockMsg = (settings && settings.fantasyLockMessage) || "Mercado de fichajes congelado por Gran Premio en curso.";
+
+    if (adminFantasyLocked) {
+        adminFantasyLocked.checked = isFantasyLocked;
+    }
+    if (adminFantasyLockStatusText) {
+        adminFantasyLockStatusText.textContent = isFantasyLocked ? "🔒 MERCADO BLOQUEADO (CARRERA EN CURSO)" : "MERCADO ABIERTO (FICHAJES ACTIVOS)";
+        adminFantasyLockStatusText.classList.toggle("is-active", isFantasyLocked);
+    }
+    if (adminFantasyLockMessage && document.activeElement !== adminFantasyLockMessage) {
+        adminFantasyLockMessage.value = lockMsg;
+    }
+
+    // Fantasy Portal Banner & Reset UI update
+    const fantasyLockedBanner = document.getElementById("fantasyLockedBanner");
+    const fantasyLockedDesc = document.getElementById("fantasyLockedDesc");
+    if (fantasyLockedBanner) {
+        fantasyLockedBanner.style.display = isFantasyLocked ? "flex" : "none";
+    }
+    if (fantasyLockedDesc) {
+        fantasyLockedDesc.textContent = `${lockMsg} Las alineaciones están congeladas durante la carrera. No se permiten compras, ventas ni cambios de Turbo Driver hasta la reapertura del mercado.`;
+    }
+
+    const resetTeamBtn = document.getElementById("fantasyResetTeamBtn");
+    if (resetTeamBtn) {
+        resetTeamBtn.classList.toggle("is-locked", isFantasyLocked);
+        if (isFantasyLocked) {
+            resetTeamBtn.title = "Mercado bloqueado por carrera en curso";
+        } else {
+            resetTeamBtn.title = "Vende todos tus pilotos y constructor para recuperar los 75.0M€";
+        }
+    }
+
+    // Trigger re-render of fantasy slots and market grid if already initialized
+    if (typeof renderFantasySlots === "function" && typeof ffcFantasyState !== "undefined") {
+        try {
+            renderFantasySlots();
+            if (ffcFantasyState.activeSubTab === "market" && typeof renderFantasyMarketGrid === "function") {
+                renderFantasyMarketGrid();
+            }
+        } catch (e) {
+            // Ignore if not rendered yet
+        }
+    }
 }
+
+function isFantasyMarketLocked() {
+    const s = getSavedSettings();
+    return Boolean(s && s.fantasyLocked);
+}
+
+function getFantasyLockMessage() {
+    const s = getSavedSettings();
+    return (s && s.fantasyLockMessage) || "Mercado de fichajes congelado por Gran Premio en curso.";
+}
+
+window.handleLockedAction = function() {
+    const msg = getFantasyLockMessage();
+    alert("🔒 " + msg);
+};
 
 function escapeHtml(str) {
     if (!str) return "";
@@ -4945,6 +5012,18 @@ function populateAdminForms() {
     if (adminStatRounds) adminStatRounds.value = settings.rounds || "";
     if (adminStatDrivers) adminStatDrivers.value = settings.drivers || "";
 
+    if (adminFantasyLocked) {
+        adminFantasyLocked.checked = Boolean(settings.fantasyLocked);
+    }
+    if (adminFantasyLockStatusText) {
+        const isFantasyLocked = Boolean(settings.fantasyLocked);
+        adminFantasyLockStatusText.textContent = isFantasyLocked ? "🔒 MERCADO BLOQUEADO (CARRERA EN CURSO)" : "MERCADO ABIERTO (FICHAJES ACTIVOS)";
+        adminFantasyLockStatusText.classList.toggle("is-active", isFantasyLocked);
+    }
+    if (adminFantasyLockMessage) {
+        adminFantasyLockMessage.value = settings.fantasyLockMessage || "Mercado de fichajes congelado por Gran Premio en curso.";
+    }
+
     renderAdminDriversTab();
     if (typeof renderAdminVerifyTab === "function") renderAdminVerifyTab();
 
@@ -5104,6 +5183,17 @@ function initFirestoreListeners() {
                 if (adminStatSeason) adminStatSeason.value = currentSettings.season || "";
                 if (adminStatRounds) adminStatRounds.value = currentSettings.rounds || "";
                 if (adminStatDrivers) adminStatDrivers.value = currentSettings.drivers || "";
+                if (adminFantasyLocked) {
+                    adminFantasyLocked.checked = Boolean(currentSettings.fantasyLocked);
+                }
+                if (adminFantasyLockStatusText) {
+                    const isFantasyLocked = Boolean(currentSettings.fantasyLocked);
+                    adminFantasyLockStatusText.textContent = isFantasyLocked ? "🔒 MERCADO BLOQUEADO (CARRERA EN CURSO)" : "MERCADO ABIERTO (FICHAJES ACTIVOS)";
+                    adminFantasyLockStatusText.classList.toggle("is-active", isFantasyLocked);
+                }
+                if (adminFantasyLockMessage && document.activeElement !== adminFantasyLockMessage) {
+                    adminFantasyLockMessage.value = currentSettings.fantasyLockMessage || "Mercado de fichajes congelado por Gran Premio en curso.";
+                }
             }
         } else {
             try {
@@ -5409,6 +5499,36 @@ if (adminLiveMode) {
     });
 }
 
+// Toggle fantasy market lock switch with instant feedback
+if (adminFantasyLocked) {
+    adminFantasyLocked.addEventListener("change", async () => {
+        const isLocked = adminFantasyLocked.checked;
+        if (adminFantasyLockStatusText) {
+            adminFantasyLockStatusText.textContent = isLocked ? "🔒 MERCADO BLOQUEADO (CARRERA EN CURSO)" : "MERCADO ABIERTO (FICHAJES ACTIVOS)";
+            adminFantasyLockStatusText.classList.toggle("is-active", isLocked);
+        }
+        const current = getSavedSettings();
+        const updated = {
+            ...current,
+            fantasyLocked: isLocked,
+            fantasyLockMessage: adminFantasyLockMessage ? adminFantasyLockMessage.value.trim() : (current.fantasyLockMessage || "Mercado de fichajes congelado por Gran Premio en curso.")
+        };
+        try {
+            await setDoc(doc(db, "configuracion", "general"), updated, { merge: true });
+            currentSettings = updated;
+            renderSettingsOnPage(updated);
+            // Sincronizar endpoint de respaldo del servidor
+            fetch('/api/fantasy/lock', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ locked: isLocked, message: updated.fantasyLockMessage })
+            }).catch(() => {});
+        } catch (err) {
+            console.error("Error updating fantasy lock in Firestore:", err);
+        }
+    });
+}
+
 // Save General Settings
 if (generalSettingsForm) {
     generalSettingsForm.addEventListener("submit", async (e) => {
@@ -5418,6 +5538,8 @@ if (generalSettingsForm) {
             twitchChannel: adminTwitchChannel ? adminTwitchChannel.value.trim() : "https://www.twitch.tv/driezzz12",
             liveTitle: adminLiveTitle ? adminLiveTitle.value.trim() : "ESTAMOS EN DIRECTO",
             liveSubtitle: adminLiveSubtitle ? adminLiveSubtitle.value.trim() : "Sigue la retransmisión oficial de la carrera en vivo por Twitch.",
+            fantasyLocked: adminFantasyLocked ? adminFantasyLocked.checked : false,
+            fantasyLockMessage: adminFantasyLockMessage ? adminFantasyLockMessage.value.trim() : "Mercado de fichajes congelado por Gran Premio en curso.",
             discordUrl: adminDiscordUrl ? adminDiscordUrl.value.trim() : "",
             xUrl: adminXUrl ? adminXUrl.value.trim() : "",
             instagramUrl: adminInstagramUrl ? adminInstagramUrl.value.trim() : "",
@@ -5434,6 +5556,13 @@ if (generalSettingsForm) {
             await setDoc(doc(db, "configuracion", "general"), settings, { merge: true });
             currentSettings = settings;
             renderSettingsOnPage(settings);
+
+            // Sincronizar endpoint de respaldo
+            fetch('/api/fantasy/lock', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ locked: settings.fantasyLocked, message: settings.fantasyLockMessage })
+            }).catch(() => {});
 
             if (settingsSaveNotice) {
                 settingsSaveNotice.textContent = "✓ Ajustes guardados en Firestore";
@@ -8746,17 +8875,26 @@ function renderSlotCard(containerId, slotType, slotIndex, currentItem, pts, isTu
     if (!container) return;
 
     const isLogged = isFantasyUserLoggedIn();
+    const isLocked = isFantasyMarketLocked();
 
     if (!currentItem) {
         // Empty Slot State
         const label = slotType === "driver" ? `Piloto ${slotIndex}` : "Constructor";
         const icon = slotType === "driver" ? "🏎️" : "🏭";
+        const btnText = isLocked 
+            ? "🔒 Mercado Bloqueado" 
+            : (isLogged ? "Ir al Mercado" : "Iniciar Sesión");
+        const btnClick = isLocked 
+            ? "handleLockedAction()" 
+            : `handleEmptySlotClick('${slotType}')`;
+        const lockBtnClass = isLocked ? "is-locked" : "";
+
         container.innerHTML = `
-            <div class="slot-empty-body" onclick="handleEmptySlotClick('${slotType}')">
-                <div class="slot-empty-icon">${isLogged ? icon : "🔒"}</div>
-                <div class="slot-empty-title">${isLogged ? `+ Fichar ${label}` : `${label} Bloqueado`}</div>
-                <div class="slot-empty-sub">${isLogged ? "Vacante disponible" : "Inicia sesión para fichar"}</div>
-                <button type="button" class="slot-empty-btn">${isLogged ? "Ir al Mercado" : "Iniciar Sesión"}</button>
+            <div class="slot-empty-body" onclick="${btnClick}">
+                <div class="slot-empty-icon">${isLocked ? "🔒" : (isLogged ? icon : "🔒")}</div>
+                <div class="slot-empty-title">${isLocked ? `${label} (Bloqueado)` : (isLogged ? `+ Fichar ${label}` : `${label} Bloqueado`)}</div>
+                <div class="slot-empty-sub">${isLocked ? "Alineaciones congeladas por carrera" : (isLogged ? "Vacante disponible" : "Inicia sesión para fichar")}</div>
+                <button type="button" class="slot-empty-btn ${lockBtnClass}">${btnText}</button>
             </div>
         `;
     } else {
@@ -8770,11 +8908,19 @@ function renderSlotCard(containerId, slotType, slotIndex, currentItem, pts, isTu
             const turboClass = isTurbo ? "is-active" : "";
             const turboLabel = isTurbo ? "⭐ Turbo Activo (x2 Pts)" : "⭐ Activar Turbo (x2)";
 
+            const sellBtnHtml = isLocked
+                ? `<button type="button" class="slot-sell-btn is-locked" onclick="handleLockedAction()" title="Mercado bloqueado por carrera">🔒 Bloqueado</button>`
+                : `<button type="button" class="slot-sell-btn" onclick="handleSellSlot('driver${slotIndex}')">✕ Vender</button>`;
+
+            const turboBtnHtml = isLocked
+                ? `<button type="button" class="slot-turbo-btn ${turboClass} is-locked" onclick="handleLockedAction()" title="Mercado bloqueado por carrera">🔒 ${turboLabel}</button>`
+                : `<button type="button" class="slot-turbo-btn ${turboClass}" onclick="handleToggleTurbo('${escapeHtml(currentItem)}')">${turboLabel}</button>`;
+
             container.innerHTML = `
                 <div class="slot-filled-card">
                     <div class="slot-header-tag">
                         <span class="slot-type-label">PILOTO ${slotIndex}</span>
-                        <button type="button" class="slot-sell-btn" onclick="handleSellSlot('driver${slotIndex}')">✕ Vender</button>
+                        ${sellBtnHtml}
                     </div>
                     <div class="slot-avatar-wrap">
                         ${avatarUrl 
@@ -8796,19 +8942,21 @@ function renderSlotCard(containerId, slotType, slotIndex, currentItem, pts, isTu
                             <span class="slot-meta-val pts">${pts} PTS</span>
                         </div>
                     </div>
-                    <button type="button" class="slot-turbo-btn ${turboClass}" onclick="handleToggleTurbo('${escapeHtml(currentItem)}')">
-                        ${turboLabel}
-                    </button>
+                    ${turboBtnHtml}
                 </div>
             `;
         } else {
             // Constructor Slot
             const price = getConstructorFantasyPrice(currentItem);
+            const sellBtnHtml = isLocked
+                ? `<button type="button" class="slot-sell-btn is-locked" onclick="handleLockedAction()" title="Mercado bloqueado por carrera">🔒 Bloqueado</button>`
+                : `<button type="button" class="slot-sell-btn" onclick="handleSellSlot('team')">✕ Vender</button>`;
+
             container.innerHTML = `
                 <div class="slot-filled-card">
                     <div class="slot-header-tag">
                         <span class="slot-type-label">ESCUDERÍA OFICIAL</span>
-                        <button type="button" class="slot-sell-btn" onclick="handleSellSlot('team')">✕ Vender</button>
+                        ${sellBtnHtml}
                     </div>
                     <div class="slot-avatar-wrap">
                         <div class="slot-team-logo-icon">🏭</div>
@@ -8847,6 +8995,10 @@ function renderFantasySlots() {
 
 // Empty Slot Click Handler
 window.handleEmptySlotClick = function(slotType) {
+    if (isFantasyMarketLocked()) {
+        handleLockedAction();
+        return;
+    }
     if (!requireFantasyAuth()) return;
     if (slotType === "driver") {
         setMarketFilter("drivers");
@@ -8858,6 +9010,10 @@ window.handleEmptySlotClick = function(slotType) {
 
 // Sell Slot Handler
 window.handleSellSlot = function(slotKey) {
+    if (isFantasyMarketLocked()) {
+        handleLockedAction();
+        return;
+    }
     if (!requireFantasyAuth()) return;
 
     if (slotKey === "driver1") {
@@ -8888,6 +9044,10 @@ window.handleSellSlot = function(slotKey) {
 
 // Toggle Turbo Driver Handler
 window.handleToggleTurbo = function(driverName) {
+    if (isFantasyMarketLocked()) {
+        handleLockedAction();
+        return;
+    }
     if (!requireFantasyAuth()) return;
     if (!driverName) return;
     ffcFantasyState.turboDriver = driverName;
@@ -8898,6 +9058,10 @@ window.handleToggleTurbo = function(driverName) {
 
 // Sign Driver Action
 window.handleSignDriver = function(driverName) {
+    if (isFantasyMarketLocked()) {
+        handleLockedAction();
+        return;
+    }
     if (!requireFantasyAuth()) return;
     if (!driverName) return;
 
@@ -8937,6 +9101,10 @@ window.handleSignDriver = function(driverName) {
 
 // Sign Constructor Action
 window.handleSignConstructor = function(teamName) {
+    if (isFantasyMarketLocked()) {
+        handleLockedAction();
+        return;
+    }
     if (!requireFantasyAuth()) return;
     if (!teamName) return;
 
@@ -9066,13 +9234,20 @@ function renderFantasyMarketGrid() {
 
     const driverSlotsFull = Boolean(ffcFantasyState.driver1 && ffcFantasyState.driver2 && ffcFantasyState.driver3);
     const isLogged = isFantasyUserLoggedIn();
+    const isLocked = isFantasyMarketLocked();
 
     grid.innerHTML = items.map(item => {
         const isDriver = item.type === "driver";
         const canAfford = item.price <= metrics.remaining;
         
         let actionBtnHtml = "";
-        if (!isLogged) {
+        if (isLocked) {
+            if (item.isOwned) {
+                actionBtnHtml = `<button type="button" class="market-action-btn owned-btn is-locked" onclick="handleLockedAction()" title="Mercado bloqueado por carrera">🔒 Fichado (Bloqueado)</button>`;
+            } else {
+                actionBtnHtml = `<button type="button" class="market-action-btn is-locked" onclick="handleLockedAction()" title="Mercado bloqueado por carrera">🔒 Mercado Bloqueado</button>`;
+            }
+        } else if (!isLogged) {
             actionBtnHtml = `<button type="button" class="market-action-btn sign-btn" onclick="requireFantasyAuth()" title="Inicia sesión para fichar">🔒 Iniciar Sesión para Fichar</button>`;
         } else if (item.isOwned) {
             actionBtnHtml = `<button type="button" class="market-action-btn owned-btn" onclick="handleSellFromMarket('${item.type}', '${escapeHtml(item.name)}')">Fichado ✓ (Vender)</button>`;
@@ -9118,6 +9293,10 @@ function renderFantasyMarketGrid() {
 
 // Sell Item Directly from Market
 window.handleSellFromMarket = function(type, name) {
+    if (isFantasyMarketLocked()) {
+        handleLockedAction();
+        return;
+    }
     if (!requireFantasyAuth()) return;
     if (type === "driver") {
         if (ffcFantasyState.driver1 === name) handleSellSlot("driver1");
@@ -9306,6 +9485,23 @@ function renderFantasyPortal() {
 function initFantasyLeague() {
     isFantasyModuleInitialized = true;
     loadFantasyTeamFromStorage();
+
+    // Fetch initial server lock state fallback
+    fetch('/api/fantasy/lock')
+        .then(res => res.json())
+        .then(data => {
+            if (data && typeof data.locked === 'boolean') {
+                const current = getSavedSettings();
+                if (current.fantasyLocked !== data.locked || data.message) {
+                    current.fantasyLocked = data.locked;
+                    if (data.message) current.fantasyLockMessage = data.message;
+                    currentSettings = current;
+                    renderSettingsOnPage(current);
+                }
+            }
+        })
+        .catch(() => {});
+
     if (typeof initFantasyLeaderboardRealtime === "function") {
         initFantasyLeaderboardRealtime();
     }
@@ -9429,6 +9625,10 @@ function initFantasyLeague() {
     const resetBtn = document.getElementById("fantasyResetTeamBtn");
     if (resetBtn) {
         resetBtn.addEventListener("click", () => {
+            if (isFantasyMarketLocked()) {
+                handleLockedAction();
+                return;
+            }
             if (!requireFantasyAuth()) return;
             if (confirm("¿Estás seguro de que deseas reiniciar tu escudería y vender todos tus pilotos y constructor para recuperar los 75.0M€?")) {
                 ffcFantasyState.driver1 = null;

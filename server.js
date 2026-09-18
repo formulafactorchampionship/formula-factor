@@ -202,6 +202,44 @@ app.post('/api/fantasy/teams', (req, res) => {
   return res.json({ success: true, team: updatedEntry, total: teams.length });
 });
 
+const FANTASY_LOCK_FILE = path.join(__dirname, 'fantasy_lock_db.json');
+
+function getFantasyLockState() {
+  try {
+    if (fs.existsSync(FANTASY_LOCK_FILE)) {
+      const data = fs.readFileSync(FANTASY_LOCK_FILE, 'utf8');
+      return JSON.parse(data);
+    }
+  } catch (e) {
+    console.error('Error reading fantasy lock file:', e);
+  }
+  return { locked: false, message: "Mercado cerrado temporalmente por Gran Premio en curso." };
+}
+
+function saveFantasyLockState(state) {
+  try {
+    fs.writeFileSync(FANTASY_LOCK_FILE, JSON.stringify(state, null, 2), 'utf8');
+  } catch (e) {
+    console.error('Error saving fantasy lock file:', e);
+  }
+}
+
+app.get('/api/fantasy/lock', (req, res) => {
+  const state = getFantasyLockState();
+  return res.json({ success: true, ...state });
+});
+
+app.post('/api/fantasy/lock', (req, res) => {
+  const { locked, message } = req.body || {};
+  const state = {
+    locked: Boolean(locked),
+    message: message || "Mercado cerrado temporalmente por Gran Premio en curso.",
+    updatedAt: new Date().toISOString()
+  };
+  saveFantasyLockState(state);
+  return res.json({ success: true, ...state });
+});
+
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, 'index.html'));
 });

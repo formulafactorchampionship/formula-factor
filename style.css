@@ -8614,6 +8614,95 @@ footer {
     }
 }
 
+/* =========================================================
+   FANTASY MARKET LOCK STYLES (CARRERA EN DIRECTO)
+========================================================= */
+.fantasy-locked-banner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    background: linear-gradient(135deg, rgba(220, 38, 38, 0.18) 0%, rgba(20, 10, 12, 0.95) 100%);
+    border: 1px solid rgba(239, 68, 68, 0.5);
+    border-radius: 12px;
+    padding: 18px 24px;
+    margin-bottom: 24px;
+    box-shadow: 0 8px 30px rgba(220, 38, 38, 0.18), 0 4px 12px rgba(0, 0, 0, 0.5);
+    animation: fadeInFantasy 0.25s ease-out;
+}
+
+.fantasy-locked-banner-left {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.fantasy-locked-icon {
+    font-size: 30px;
+    line-height: 1;
+    filter: drop-shadow(0 0 10px rgba(239, 68, 68, 0.6));
+}
+
+.fantasy-locked-title {
+    font-family: var(--font-formula, 'Formula1', 'Cabinet Grotesk', sans-serif);
+    font-size: 15px;
+    font-weight: 800;
+    color: #f87171;
+    letter-spacing: 0.8px;
+    margin: 0 0 4px 0;
+}
+
+.fantasy-locked-desc {
+    font-size: 13px;
+    color: #fecaca;
+    line-height: 1.45;
+    margin: 0;
+}
+
+.fantasy-locked-badge {
+    white-space: nowrap;
+    background: rgba(220, 38, 38, 0.25);
+    border: 1px solid rgba(239, 68, 68, 0.6);
+    color: #fca5a5;
+    padding: 6px 14px;
+    border-radius: 9999px;
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+}
+
+.market-btn-sign.is-locked,
+.market-btn-sell.is-locked,
+.slot-sell-btn.is-locked,
+.slot-turbo-btn.is-locked,
+.btn-reset-team.is-locked {
+    background: rgba(40, 45, 55, 0.6) !important;
+    color: #94a3b8 !important;
+    border-color: rgba(255, 255, 255, 0.12) !important;
+    cursor: not-allowed !important;
+    opacity: 0.72;
+}
+
+.market-btn-sign.is-locked:hover,
+.market-btn-sell.is-locked:hover,
+.slot-sell-btn.is-locked:hover,
+.slot-turbo-btn.is-locked:hover,
+.btn-reset-team.is-locked:hover {
+    transform: none !important;
+    box-shadow: none !important;
+    background: rgba(40, 45, 55, 0.6) !important;
+    border-color: rgba(239, 68, 68, 0.4) !important;
+}
+
+@media (max-width: 768px) {
+    .fantasy-locked-banner {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+}
+
+
 
 
 
