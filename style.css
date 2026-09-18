@@ -8831,6 +8831,893 @@ footer {
     font-weight: 800;
 }
 
+/* ==========================================
+   DRIVER COMPARATOR (HEAD-TO-HEAD) STYLES
+========================================== */
+
+/* Navbar & Trigger Badges */
+.nav-compare-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    position: relative;
+    color: #e2e8f0;
+}
+
+.compare-nav-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+}
+
+.standings-compare-btn {
+    background: linear-gradient(135deg, rgba(214, 180, 92, 0.12), rgba(225, 6, 0, 0.12));
+    border-color: rgba(214, 180, 92, 0.35);
+    color: #fce79a;
+}
+
+.standings-compare-btn:hover {
+    background: linear-gradient(135deg, rgba(214, 180, 92, 0.25), rgba(225, 6, 0, 0.25));
+    border-color: var(--gold, #d6b45c);
+    color: #ffffff;
+    box-shadow: 0 0 16px rgba(214, 180, 92, 0.25);
+}
+
+/* Driver Modal Action Button */
+.driver-modal-footer-actions {
+    margin-top: 24px;
+    padding-top: 18px;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    display: flex;
+    justify-content: center;
+}
+
+.btn-driver-modal-compare {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: 100%;
+    padding: 12px 20px;
+    background: linear-gradient(135deg, rgba(214, 180, 92, 0.15), rgba(225, 6, 0, 0.15));
+    border: 1px solid rgba(214, 180, 92, 0.4);
+    border-radius: 8px;
+    color: #ffffff;
+    font-family: "Barlow Condensed", sans-serif;
+    font-size: 15px;
+    font-weight: 800;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.22s ease;
+}
+
+.btn-driver-modal-compare:hover {
+    background: linear-gradient(135deg, #d6b45c, #e10600);
+    color: #0b0f17;
+    border-color: #d6b45c;
+    box-shadow: 0 6px 20px rgba(214, 180, 92, 0.35);
+    transform: translateY(-1px);
+}
+
+/* ==========================================
+   COMPARATOR MODAL OVERLAY & CARD
+========================================== */
+.driver-compare-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(5, 7, 10, 0.88);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    z-index: 99999;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    box-sizing: border-box;
+    opacity: 0;
+    transition: opacity 0.25s ease;
+}
+
+.driver-compare-overlay.is-active {
+    display: flex;
+    opacity: 1;
+}
+
+.driver-compare-card {
+    position: relative;
+    background: #0d121c;
+    border: 1px solid rgba(214, 180, 92, 0.3);
+    border-radius: 14px;
+    width: 100%;
+    max-width: 1060px;
+    max-height: 92vh;
+    overflow-y: auto;
+    padding: 32px 30px;
+    box-shadow: 0 30px 80px rgba(0, 0, 0, 0.9), 0 0 40px rgba(214, 180, 92, 0.12);
+    box-sizing: border-box;
+    color: #f1f5f9;
+    animation: compareModalEnter 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes compareModalEnter {
+    from {
+        opacity: 0;
+        transform: translateY(18px) scale(0.98);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+.driver-compare-close {
+    position: absolute;
+    top: 18px;
+    right: 20px;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    color: #cbd5e1;
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    font-size: 24px;
+    line-height: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    z-index: 10;
+}
+
+.driver-compare-close:hover {
+    background: rgba(225, 6, 0, 0.85);
+    border-color: #e10600;
+    color: #ffffff;
+    transform: rotate(90deg);
+}
+
+/* Modal Header */
+.compare-modal-header {
+    text-align: center;
+    margin-bottom: 22px;
+}
+
+.compare-badge-wrap {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 8px;
+}
+
+.compare-kicker {
+    font-family: "Barlow Condensed", sans-serif;
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 2px;
+    color: var(--gold, #d6b45c);
+    text-transform: uppercase;
+}
+
+.compare-live-badge {
+    background: #e10600;
+    color: #ffffff;
+    font-family: "Barlow Condensed", sans-serif;
+    font-size: 10px;
+    font-weight: 900;
+    letter-spacing: 1px;
+    padding: 2px 7px;
+    border-radius: 4px;
+    text-transform: uppercase;
+}
+
+.compare-modal-title {
+    font-family: "Barlow Condensed", sans-serif;
+    font-size: 32px;
+    font-weight: 900;
+    letter-spacing: 1px;
+    margin: 0 0 6px 0;
+    color: #ffffff;
+    text-transform: uppercase;
+}
+
+.compare-modal-sub {
+    font-size: 13.5px;
+    color: #94a3b8;
+    margin: 0;
+    line-height: 1.4;
+}
+
+/* Matchup Preset Chips */
+.compare-presets-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: rgba(0, 0, 0, 0.35);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 8px;
+    padding: 10px 14px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+}
+
+.compare-preset-label {
+    font-family: "Barlow Condensed", sans-serif;
+    font-size: 11px;
+    font-weight: 800;
+    color: #64748b;
+    letter-spacing: 1px;
+}
+
+.compare-presets-list {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.compare-preset-chip {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 20px;
+    color: #e2e8f0;
+    font-family: "Barlow Condensed", sans-serif;
+    font-size: 12.5px;
+    font-weight: 700;
+    padding: 4px 12px;
+    cursor: pointer;
+    transition: all 0.18s ease;
+    white-space: nowrap;
+}
+
+.compare-preset-chip:hover {
+    background: rgba(214, 180, 92, 0.2);
+    border-color: var(--gold, #d6b45c);
+    color: #fce79a;
+    transform: translateY(-1px);
+}
+
+/* Selectors Bar */
+.compare-selectors-bar {
+    display: grid;
+    grid-template-columns: 1fr 70px 1fr;
+    gap: 16px;
+    align-items: flex-end;
+    margin-bottom: 24px;
+}
+
+.compare-selector-col {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.compare-select-label {
+    font-family: "Barlow Condensed", sans-serif;
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+}
+
+.col-driver-a .compare-select-label {
+    color: #f87171;
+}
+
+.col-driver-b .compare-select-label {
+    color: #60a5fa;
+}
+
+.compare-select-wrap {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.compare-select-flag {
+    position: absolute;
+    left: 12px;
+    font-size: 18px;
+    pointer-events: none;
+    z-index: 2;
+}
+
+.compare-driver-select {
+    width: 100%;
+    padding: 12px 14px 12px 42px;
+    background: #111827;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 8px;
+    color: #ffffff;
+    font-family: "Barlow Condensed", sans-serif;
+    font-size: 16px;
+    font-weight: 700;
+    appearance: none;
+    -webkit-appearance: none;
+    cursor: pointer;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.col-driver-a .compare-driver-select {
+    border-left: 4px solid #ef4444;
+}
+
+.col-driver-a .compare-driver-select:focus {
+    border-color: #ef4444;
+    outline: none;
+    box-shadow: 0 0 12px rgba(239, 68, 68, 0.35);
+}
+
+.col-driver-b .compare-driver-select {
+    border-left: 4px solid #3b82f6;
+}
+
+.col-driver-b .compare-driver-select:focus {
+    border-color: #3b82f6;
+    outline: none;
+    box-shadow: 0 0 12px rgba(59, 130, 246, 0.35);
+}
+
+.compare-swap-col {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.compare-swap-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 50px;
+    height: 46px;
+    background: #1e293b;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 8px;
+    color: #f1f5f9;
+    font-family: "Barlow Condensed", sans-serif;
+    font-size: 10px;
+    font-weight: 900;
+    letter-spacing: 1px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.compare-swap-btn:hover {
+    background: #e10600;
+    border-color: #e10600;
+    color: #ffffff;
+    transform: scale(1.05);
+}
+
+/* ==========================================
+   DUAL DRIVER HERO PROFILES & SCOREBOARD
+========================================== */
+.compare-hero-grid {
+    display: grid;
+    grid-template-columns: 1fr 220px 1fr;
+    gap: 16px;
+    align-items: stretch;
+    margin-bottom: 26px;
+}
+
+.compare-hero-card {
+    position: relative;
+    background: #111827;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 12px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+.compare-hero-card.card-a {
+    border-color: rgba(239, 68, 68, 0.3);
+}
+
+.compare-hero-card.card-b {
+    border-color: rgba(59, 130, 246, 0.3);
+}
+
+.compare-hero-strip {
+    height: 4px;
+    width: 100%;
+}
+
+.compare-hero-card.card-a .compare-hero-strip {
+    background: #ef4444;
+}
+
+.compare-hero-card.card-b .compare-hero-strip {
+    background: #3b82f6;
+}
+
+.compare-hero-body {
+    padding: 16px 18px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    position: relative;
+}
+
+.compare-avatar-box {
+    width: 64px;
+    height: 64px;
+    border-radius: 10px;
+    background: #080c14;
+    border: 2px solid rgba(255, 255, 255, 0.15);
+    overflow: hidden;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.compare-avatar-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.compare-driver-dorsal {
+    position: absolute;
+    top: 10px;
+    right: 14px;
+    font-family: "Barlow Condensed", sans-serif;
+    font-size: 26px;
+    font-weight: 900;
+    opacity: 0.25;
+    color: #ffffff;
+}
+
+.compare-driver-meta {
+    flex: 1;
+    min-width: 0;
+}
+
+.compare-driver-name-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 4px;
+}
+
+.compare-flag {
+    font-size: 18px;
+    line-height: 1;
+}
+
+.compare-name {
+    font-family: "Barlow Condensed", sans-serif;
+    font-size: 22px;
+    font-weight: 800;
+    margin: 0;
+    color: #ffffff;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.compare-tags-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+}
+
+.compare-team-pill {
+    font-family: "Barlow Condensed", sans-serif;
+    font-size: 11px;
+    font-weight: 800;
+    padding: 2px 7px;
+    border-radius: 4px;
+    background: rgba(255, 255, 255, 0.08);
+    color: #e2e8f0;
+}
+
+.compare-pos-badge {
+    font-family: "Barlow Condensed", sans-serif;
+    font-size: 11px;
+    font-weight: 800;
+    padding: 2px 7px;
+    border-radius: 4px;
+    background: rgba(214, 180, 92, 0.15);
+    color: #fce79a;
+}
+
+.compare-price-pill {
+    font-family: "Barlow Condensed", sans-serif;
+    font-size: 11px;
+    font-weight: 800;
+    padding: 2px 7px;
+    border-radius: 4px;
+    background: rgba(16, 185, 129, 0.15);
+    color: #6ee7b7;
+}
+
+/* Center Head-to-Head Duel Scoreboard */
+.compare-vs-scoreboard {
+    background: #090e17;
+    border: 1px solid rgba(214, 180, 92, 0.25);
+    border-radius: 12px;
+    padding: 14px 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}
+
+.vs-score-title {
+    font-family: "Barlow Condensed", sans-serif;
+    font-size: 11px;
+    font-weight: 800;
+    color: #94a3b8;
+    letter-spacing: 1px;
+}
+
+.vs-score-sub {
+    font-size: 10px;
+    color: #64748b;
+    margin-bottom: 6px;
+}
+
+.vs-numbers-row {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin: 4px 0;
+}
+
+.vs-num {
+    font-family: "Barlow Condensed", sans-serif;
+    font-size: 38px;
+    font-weight: 900;
+    line-height: 1;
+}
+
+.vs-num.num-a {
+    color: #f87171;
+}
+
+.vs-num.num-b {
+    color: #60a5fa;
+}
+
+.vs-divider {
+    font-size: 24px;
+    font-weight: 900;
+    color: #475569;
+}
+
+.vs-leader-tag {
+    font-family: "Barlow Condensed", sans-serif;
+    font-size: 11px;
+    font-weight: 800;
+    padding: 3px 8px;
+    border-radius: 4px;
+    background: rgba(214, 180, 92, 0.15);
+    color: #fce79a;
+    border: 1px solid rgba(214, 180, 92, 0.3);
+    margin-top: 4px;
+    white-space: nowrap;
+}
+
+/* ==========================================
+   METRICS COMPARISON GRID & BALANCE BARS
+========================================== */
+.compare-section-title-row {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    margin-bottom: 14px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    padding-bottom: 8px;
+}
+
+.compare-section-title {
+    font-family: "Barlow Condensed", sans-serif;
+    font-size: 17px;
+    font-weight: 800;
+    color: #ffffff;
+    letter-spacing: 0.5px;
+}
+
+.compare-section-sub {
+    font-family: "Barlow Condensed", sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    color: #64748b;
+    letter-spacing: 1px;
+}
+
+.compare-metrics-section {
+    margin-bottom: 28px;
+}
+
+.compare-metrics-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.compare-metric-row {
+    background: rgba(255, 255, 255, 0.025);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 8px;
+    padding: 10px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    transition: background 0.15s ease;
+}
+
+.compare-metric-row:hover {
+    background: rgba(255, 255, 255, 0.04);
+}
+
+.compare-metric-header {
+    display: grid;
+    grid-template-columns: 80px 1fr 80px;
+    align-items: center;
+}
+
+.metric-val {
+    font-family: "Barlow Condensed", sans-serif;
+    font-size: 18px;
+    font-weight: 800;
+    color: #94a3b8;
+}
+
+.metric-val.val-a {
+    text-align: left;
+}
+
+.metric-val.val-b {
+    text-align: right;
+}
+
+.metric-val.is-winner {
+    color: #fce79a;
+    font-weight: 900;
+}
+
+.metric-val.is-winner.val-a {
+    color: #f87171;
+}
+
+.metric-val.is-winner.val-b {
+    color: #60a5fa;
+}
+
+.metric-name-wrap {
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+}
+
+.metric-name {
+    font-family: "Barlow Condensed", sans-serif;
+    font-size: 13px;
+    font-weight: 800;
+    color: #ffffff;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+}
+
+.metric-bar-track {
+    display: flex;
+    height: 8px;
+    background: rgba(255, 255, 255, 0.06);
+    border-radius: 4px;
+    overflow: hidden;
+    position: relative;
+}
+
+.metric-bar-a {
+    height: 100%;
+    background: #ef4444;
+    transition: width 0.35s ease;
+}
+
+.metric-bar-divider {
+    width: 2px;
+    height: 100%;
+    background: #0d121c;
+}
+
+.metric-bar-b {
+    height: 100%;
+    background: #3b82f6;
+    transition: width 0.35s ease;
+}
+
+/* ==========================================
+   SKILLS & PERFORMANCE RADAR BARS
+========================================== */
+.compare-skills-section {
+    margin-bottom: 28px;
+}
+
+.compare-skills-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 12px;
+}
+
+.skill-card {
+    background: rgba(0, 0, 0, 0.25);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 8px;
+    padding: 12px 14px;
+}
+
+.skill-title-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.skill-name {
+    font-family: "Barlow Condensed", sans-serif;
+    font-size: 13px;
+    font-weight: 800;
+    color: #ffffff;
+    letter-spacing: 0.5px;
+}
+
+.skill-scores {
+    font-family: "Barlow Condensed", sans-serif;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.skill-scores .score-a {
+    color: #f87171;
+}
+
+.skill-scores .score-b {
+    color: #60a5fa;
+}
+
+.skill-bar-pair {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.skill-single-bar {
+    height: 6px;
+    border-radius: 3px;
+    background: rgba(255, 255, 255, 0.06);
+    overflow: hidden;
+}
+
+.skill-fill-a {
+    height: 100%;
+    background: #ef4444;
+    border-radius: 3px;
+    transition: width 0.4s ease;
+}
+
+.skill-fill-b {
+    height: 100%;
+    background: #3b82f6;
+    border-radius: 3px;
+    transition: width 0.4s ease;
+}
+
+/* ==========================================
+   ROUND-BY-ROUND BREAKDOWN TABLE
+========================================== */
+.compare-matrix-section {
+    margin-bottom: 10px;
+}
+
+.compare-rounds-table-wrap {
+    overflow-x: auto;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 10px;
+    background: #090e17;
+}
+
+.compare-rounds-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13.5px;
+}
+
+.compare-rounds-table th {
+    background: #06090f;
+    padding: 10px 14px;
+    font-family: "Barlow Condensed", sans-serif;
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 1px;
+    color: #64748b;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.compare-rounds-table td {
+    padding: 9px 14px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+}
+
+.compare-rounds-table tr:hover td {
+    background: rgba(255, 255, 255, 0.02);
+}
+
+.round-winner-chip {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    font-family: "Barlow Condensed", sans-serif;
+    font-size: 11px;
+    font-weight: 800;
+    padding: 3px 8px;
+    border-radius: 4px;
+    white-space: nowrap;
+}
+
+.round-winner-chip.winner-a {
+    background: rgba(239, 68, 68, 0.18);
+    color: #fca5a5;
+    border: 1px solid rgba(239, 68, 68, 0.4);
+}
+
+.round-winner-chip.winner-b {
+    background: rgba(59, 130, 246, 0.18);
+    color: #93c5fd;
+    border: 1px solid rgba(59, 130, 246, 0.4);
+}
+
+.round-winner-chip.winner-tie {
+    background: rgba(255, 255, 255, 0.06);
+    color: #94a3b8;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.round-driver-val {
+    font-family: "Barlow Condensed", sans-serif;
+    font-size: 15px;
+    font-weight: 800;
+}
+
+.round-driver-val.is-ahead {
+    font-weight: 900;
+}
+
+/* Responsive Rules for Comparator */
+@media (max-width: 860px) {
+    .compare-hero-grid {
+        grid-template-columns: 1fr;
+        gap: 12px;
+    }
+
+    .compare-vs-scoreboard {
+        order: -1;
+    }
+
+    .compare-selectors-bar {
+        grid-template-columns: 1fr;
+        gap: 12px;
+    }
+
+    .compare-swap-col {
+        display: none;
+    }
+}
+
 
 
 

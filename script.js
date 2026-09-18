@@ -75,6 +75,22 @@ function getPilotDocId(driverName) {
     return driverName.trim().toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9_-]/g, '_') || ("pilot_" + Date.now());
 }
 
+function escapeHtml(str) {
+    if (str === null || str === undefined) return "";
+    return String(str)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+}
+
+function escapeHTML(str) {
+    return escapeHtml(str);
+}
+window.escapeHtml = escapeHtml;
+window.escapeHTML = escapeHTML;
+
 /* =========================================================
    TIMEZONE & COUNTDOWN (MADRID BASE TIME)
 ========================================================= */
@@ -240,6 +256,7 @@ const translations = {
             calendar: "CALENDARIO",
             races: "CARRERAS",
             info: "INFORMACIÓN",
+            compare: "COMPARADOR",
             fantasy: "FANTASY"
         },
         hero: {
@@ -388,6 +405,7 @@ const translations = {
             calendar: "CALENDAR",
             races: "RACES",
             info: "INFO",
+            compare: "COMPARISON",
             fantasy: "FANTASY"
         },
         hero: {
@@ -589,6 +607,8 @@ function applyTranslations(lang) {
     if (navR) navR.textContent = dict.nav.races;
     const navI = document.getElementById("navInfo");
     if (navI) navI.textContent = dict.nav.info;
+    const navCmp = document.getElementById("navCompareText");
+    if (navCmp && dict.nav && dict.nav.compare) navCmp.textContent = dict.nav.compare;
     const navF = document.getElementById("navFantasyText");
     if (navF && dict.nav && dict.nav.fantasy) navF.textContent = dict.nav.fantasy;
 
@@ -4457,16 +4477,6 @@ window.handleLockedAction = function() {
     const msg = getFantasyLockMessage();
     alert("🔒 " + msg);
 };
-
-function escapeHtml(str) {
-    if (!str) return "";
-    return String(str)
-        .replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;")
-        .replace(/"/g, "&quot;")
-        .replace(/'/g, "&#039;");
-}
 
 // In-App Accessible Confirmation Modal (Guaranteed to work in iframes and all browsers)
 function showAppConfirm(title, message, confirmText = "Confirmar", cancelText = "Cancelar") {
@@ -10223,6 +10233,827 @@ if (document.readyState === "loading") {
 } else {
     initFantasyLeague();
 }
+
+/* =========================================================
+   DRIVER COMPARATOR ENGINE (HEAD-TO-HEAD DUEL ANALYZER)
+   Analizador y Comparador cara a cara de pilotos FFC
+========================================================= */
+
+let compareDriverA = null;
+let compareDriverB = null;
+
+// Get sorted list of all active drivers for comparator dropdowns
+function getComparatorDriversList() {
+    let list = [];
+    if (typeof currentPilotos !== "undefined" && Array.isArray(currentPilotos) && currentPilotos.length > 0) {
+        list = currentPilotos;
+    } else if (typeof getSavedStandings === "function") {
+        list = getSavedStandings();
+    } else if (typeof ffc2010SeasonDrivers !== "undefined" && Array.isArray(ffc2010SeasonDrivers)) {
+        list = ffc2010SeasonDrivers;
+    }
+
+    const sorted = typeof sortDriversStandings === "function" ? sortDriversStandings(list) : list;
+    return sorted.filter(d => d && d.driver);
+}
+
+// Open the Driver Comparison Modal
+function openDriverComparison(driverNameA, driverNameB) {
+    const overlay = document.getElementById("driverCompareOverlay");
+    if (!overlay) return;
+
+    const allDrivers = getComparatorDriversList();
+    if (allDrivers.length === 0) return;
+
+    // Determine initial drivers to compare
+    if (driverNameA) {
+        compareDriverA = driverNameA;
+    } else if (!compareDriverA) {
+        compareDriverA = allDrivers[0] ? allDrivers[0].driver : "Dieguiosk";
+    }
+
+    if (driverNameB) {
+        compareDriverB = driverNameB;
+    } else if (!compareDriverB || compareDriverB === compareDriverA) {
+        // Pick the 2nd driver or another rival
+        const rival = allDrivers.find(d => d.driver !== compareDriverA);
+        compareDriverB = rival ? rival.driver : (allDrivers[1] ? allDrivers[1].driver : "Hermesalo");
+    }
+
+    // Populate the dropdown selectors
+    populateComparatorDropdowns(allDrivers);
+
+    // Render the matchup
+    renderDriverComparison(compareDriverA, compareDriverB);
+
+    // Show modal
+    overlay.classList.add("is-active");
+    overlay.setAttribute("aria-hidden", "false");
+    document.body.style.overflow = "hidden";
+}
+
+// Close the Driver Comparison Modal
+function closeDriverComparison() {
+    const overlay = document.getElementById("driverCompareOverlay");
+    if (overlay) {
+        overlay.classList.remove("is-active");
+        overlay.setAttribute("aria-hidden", "true");
+    }
+    document.body.style.overflow = "";
+}
+
+// Populate driver options in the A & B selector elements
+function populateComparatorDropdowns(allDrivers) {
+    const selectA = document.getElementById("compareSelectDriverA");
+    const selectB = document.getElementById("compareSelectDriverB");
+    if (!selectA || !selectB) return;
+
+    const optionsHtml = allDrivers.map((d, index) => {
+        const flag = (typeof getOfficialDriverFlag === "function") ? getOfficialDriverFlag(d.driver) : (d.flag || "🏁");
+        const pos = d.pos || (index + 1);
+        const pts = d.pts || 0;
+        const team = d.team || "FFC";
+        return `<option value="${escapeHTML(d.driver)}">${flag} P${pos} · ${escapeHTML(d.driver)} (${team} - ${pts} pts)</option>`;
+    }).join("");
+
+    selectA.innerHTML = optionsHtml;
+    selectB.innerHTML = optionsHtml;
+
+    if (compareDriverA) selectA.value = compareDriverA;
+    if (compareDriverB) selectB.value = compareDriverB;
+}
+
+// Render dynamic quick preset buttons
+function renderComparatorPresets(allDrivers) {
+    const presetsContainer = document.getElementById("comparePresetsList");
+    if (!presetsContainer) return;
+
+    const presets = [];
+
+    // Preset 1: P1 vs P2 (Title Fight)
+    if (allDrivers.length >= 2) {
+        presets.push({
+            label: `🏆 ${allDrivers[0].driver} vs ${allDrivers[1].driver}`,
+            driverA: allDrivers[0].driver,
+            driverB: allDrivers[1].driver
+        });
+    }
+
+    // Preset 2: Teammate Battles
+    const teamGroups = {};
+    allDrivers.forEach(d => {
+        if (!teamGroups[d.team]) teamGroups[d.team] = [];
+        teamGroups[d.team].push(d);
+    });
+
+    Object.keys(teamGroups).forEach(team => {
+        if (teamGroups[team].length >= 2 && presets.length < 4) {
+            presets.push({
+                label: `⚔️ Duelo ${team} (${teamGroups[team][0].driver} vs ${teamGroups[team][1].driver})`,
+                driverA: teamGroups[team][0].driver,
+                driverB: teamGroups[team][1].driver
+            });
+        }
+    });
+
+    // Preset 3: Spanish / Iberian rivalry if available
+    const spanishDrivers = allDrivers.filter(d => {
+        const flag = typeof getOfficialDriverFlag === "function" ? getOfficialDriverFlag(d.driver) : d.flag;
+        return flag === "🇪🇸" || flag === "🇵🇹";
+    });
+    if (spanishDrivers.length >= 2 && presets.length < 5) {
+        const alreadyAdded = presets.some(p => p.driverA === spanishDrivers[0].driver && p.driverB === spanishDrivers[1].driver);
+        if (!alreadyAdded) {
+            presets.push({
+                label: `🇪🇸 ${spanishDrivers[0].driver} vs ${spanishDrivers[1].driver}`,
+                driverA: spanishDrivers[0].driver,
+                driverB: spanishDrivers[1].driver
+            });
+        }
+    }
+
+    presetsContainer.innerHTML = presets.map(p => `
+        <button type="button" class="compare-preset-chip" onclick="if(window.renderDriverComparison){window.renderDriverComparison('${escapeHTML(p.driverA)}', '${escapeHTML(p.driverB)}');}">
+            ${p.label}
+        </button>
+    `).join("");
+}
+
+// Helper to normalize and compute driver statistics for the comparator
+function normalizeComparatorStats(raw) {
+    if (!raw) return null;
+    const s = raw.stats || {};
+    const wins = s.wins !== undefined ? s.wins : 0;
+    const podiums = s.podiums !== undefined ? s.podiums : 0;
+    const poles = s.poles !== undefined ? s.poles : 0;
+    const fastestLaps = s.fastestLaps !== undefined ? s.fastestLaps : 0;
+    const racesCount = s.races !== undefined ? s.races : 0;
+    const dnfCount = s.dnfs !== undefined ? s.dnfs : 0;
+    let top10s = 0;
+
+    if (Array.isArray(raw.rounds)) {
+        raw.rounds.forEach(val => {
+            if (!val || val === "--" || val === "OUT" || val === "DSQ") return;
+            const numStr = String(val).replace(/[\(\)\*]/g, "");
+            const pts = parseInt(numStr, 10);
+            if (!isNaN(pts) && pts > 0) {
+                top10s++;
+            }
+        });
+    }
+
+    return {
+        ...raw,
+        wins,
+        podiums,
+        poles,
+        fastestLaps,
+        racesCount: Math.max(racesCount, 1),
+        dnfCount,
+        top10s
+    };
+}
+
+// Full Render of Driver Comparison View
+function renderDriverComparison(driverNameA, driverNameB) {
+    if (!driverNameA || !driverNameB) return;
+    compareDriverA = driverNameA;
+    compareDriverB = driverNameB;
+
+    const selectA = document.getElementById("compareSelectDriverA");
+    const selectB = document.getElementById("compareSelectDriverB");
+    if (selectA) selectA.value = compareDriverA;
+    if (selectB) selectB.value = compareDriverB;
+
+    // Update flag icons in selectors
+    const flagA = (typeof getOfficialDriverFlag === "function") ? getOfficialDriverFlag(compareDriverA) : "🏁";
+    const flagB = (typeof getOfficialDriverFlag === "function") ? getOfficialDriverFlag(compareDriverB) : "🏁";
+    const flagElA = document.getElementById("compareSelectFlagA");
+    const flagElB = document.getElementById("compareSelectFlagB");
+    if (flagElA) flagElA.textContent = flagA;
+    if (flagElB) flagElB.textContent = flagB;
+
+    // Fetch Stats using existing rich statistical aggregator
+    const rawStatsA = (typeof findDriverStats === "function") ? findDriverStats(compareDriverA) : null;
+    const rawStatsB = (typeof findDriverStats === "function") ? findDriverStats(compareDriverB) : null;
+
+    if (!rawStatsA || !rawStatsB) return;
+
+    const statsA = normalizeComparatorStats(rawStatsA);
+    const statsB = normalizeComparatorStats(rawStatsB);
+
+    // Fetch Fantasy Market Prices & Fluctuations
+    const fantasyPriceA = (typeof getDriverFantasyPrice === "function") ? getDriverFantasyPrice(compareDriverA) : 15.0;
+    const fantasyPriceB = (typeof getDriverFantasyPrice === "function") ? getDriverFantasyPrice(compareDriverB) : 15.0;
+
+    // 1. Render Driver A Profile Card
+    renderComparatorHeroCard("A", statsA, fantasyPriceA);
+
+    // 2. Render Driver B Profile Card
+    renderComparatorHeroCard("B", statsB, fantasyPriceB);
+
+    // 3. Compute Head-to-Head Direct GP Duel Score
+    const h2hResult = computeDriverHeadToHeadDuels(statsA, statsB);
+    renderComparatorScoreboard(h2hResult, statsA, statsB);
+
+    // 4. Render Comparative Metric Rows & Balance Bars
+    renderComparatorMetricsGrid(statsA, statsB, fantasyPriceA, fantasyPriceB);
+
+    // 5. Render Driver Performance & Skills Radar Indicators
+    renderComparatorSkillsGrid(statsA, statsB);
+
+    // 6. Render Round-by-Round Breakdown Matrix (R1 - R15)
+    renderComparatorRoundsTable(statsA, statsB);
+
+    // 7. Update Presets
+    const allDrivers = getComparatorDriversList();
+    renderComparatorPresets(allDrivers);
+}
+
+// Render individual Hero Profile Card
+function renderComparatorHeroCard(slot, stats, fantasyPrice) {
+    const prefix = slot; // "A" or "B"
+    const nameEl = document.getElementById(`compareName${prefix}`);
+    const flagEl = document.getElementById(`compareFlag${prefix}`);
+    const teamEl = document.getElementById(`compareTeam${prefix}`);
+    const posEl = document.getElementById(`comparePos${prefix}`);
+    const priceEl = document.getElementById(`comparePrice${prefix}`);
+    const dorsalEl = document.getElementById(`compareDorsal${prefix}`);
+    const avatarImg = document.getElementById(`compareAvatarImg${prefix}`);
+    const verifiedEl = document.getElementById(`compareVerified${prefix}`);
+    const stripEl = document.getElementById(`compareHeroStrip${prefix}`);
+
+    const driverName = stats.driver;
+    const flag = (typeof getOfficialDriverFlag === "function") ? getOfficialDriverFlag(driverName) : (stats.flag || "🏁");
+    const dorsal = (typeof getDriverDorsalNumber === "function") ? getDriverDorsalNumber(driverName) : (stats.dorsal || "#" + (stats.pos || 1));
+    const avatarUrl = (typeof getDriverAvatarUrl === "function") ? getDriverAvatarUrl(driverName) : (stats.photo || `https://api.dicebear.com/7.x/bottts/svg?seed=${encodeURIComponent(driverName)}`);
+
+    if (nameEl) nameEl.textContent = driverName;
+    if (flagEl) flagEl.textContent = flag;
+    if (teamEl) {
+        teamEl.textContent = stats.team || "FFC";
+        const teamClass = (typeof getTeamClass === "function") ? getTeamClass(stats.team) : "team-hrt";
+        teamEl.className = `compare-team-pill ${teamClass}`;
+    }
+    if (posEl) posEl.textContent = `P${stats.pos || 1} · ${stats.pts || 0} PTS`;
+    if (priceEl) priceEl.textContent = `${fantasyPrice.toFixed(1)}M€`;
+    if (dorsalEl) dorsalEl.textContent = dorsal;
+    if (avatarImg) {
+        avatarImg.src = avatarUrl;
+        avatarImg.alt = driverName;
+    }
+    if (verifiedEl) {
+        const isVer = (typeof isDriverAccountVerified === "function") ? isDriverAccountVerified(driverName) : false;
+        verifiedEl.style.display = isVer ? "inline-block" : "none";
+    }
+}
+
+// Calculate Head-to-Head direct duels across all 15 GPs
+function computeDriverHeadToHeadDuels(statsA, statsB) {
+    const list = (typeof FFC_SEASON_GPS !== "undefined" && Array.isArray(FFC_SEASON_GPS)) ? FFC_SEASON_GPS : [];
+    const rMap = (typeof raceResults !== "undefined" && raceResults) ? raceResults : {};
+
+    let scoreA = 0;
+    let scoreB = 0;
+    let ties = 0;
+    let roundsParticipatedTogether = 0;
+    const roundDuels = [];
+
+    const nameA = (statsA && statsA.driver) ? statsA.driver : "";
+    const nameB = (statsB && statsB.driver) ? statsB.driver : "";
+    const cleanA = typeof normalizeDriverKey === "function" ? normalizeDriverKey(nameA) : nameA.trim().toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+    const cleanB = typeof normalizeDriverKey === "function" ? normalizeDriverKey(nameB) : nameB.trim().toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+
+    list.forEach((gp, index) => {
+        const roundNum = index + 1;
+        const res = rMap[gp.raceKey];
+        const isCompleted = res && (res.status === "COMPLETED" || (res.winner && res.winner !== "TBA" && Array.isArray(res.drivers) && res.drivers.length > 0));
+
+        let resA = null;
+        let resB = null;
+
+        if (res && Array.isArray(res.drivers)) {
+            resA = res.drivers.find(d => {
+                if (!d) return false;
+                const dName = d.driver || d.name || "";
+                const dClean = typeof normalizeDriverKey === "function" ? normalizeDriverKey(dName) : dName.trim().toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+                return dClean === cleanA;
+            });
+            resB = res.drivers.find(d => {
+                if (!d) return false;
+                const dName = d.driver || d.name || "";
+                const dClean = typeof normalizeDriverKey === "function" ? normalizeDriverKey(dName) : dName.trim().toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+                return dClean === cleanB;
+            });
+        }
+
+        // Determine who finished ahead in this round
+        let winner = null; // "A", "B", "TIE", or null (not raced)
+        let ptsDiff = 0;
+
+        const ptsA = resA ? (parseInt(resA.pts, 10) || 0) : 0;
+        const ptsB = resB ? (parseInt(resB.pts, 10) || 0) : 0;
+        ptsDiff = ptsA - ptsB;
+
+        if (isCompleted && (resA || resB)) {
+            roundsParticipatedTogether++;
+            if (resA && !resB) {
+                winner = "A";
+                scoreA++;
+            } else if (!resA && resB) {
+                winner = "B";
+                scoreB++;
+            } else if (resA && resB) {
+                const posA = resA.pos;
+                const posB = resB.pos;
+
+                const isDnfA = isDriverDnfStatus(posA);
+                const isDnfB = isDriverDnfStatus(posB);
+
+                if (!isDnfA && isDnfB) {
+                    winner = "A";
+                    scoreA++;
+                } else if (isDnfA && !isDnfB) {
+                    winner = "B";
+                    scoreB++;
+                } else if (!isDnfA && !isDnfB) {
+                    const numA = parseInt(posA, 10) || 99;
+                    const numB = parseInt(posB, 10) || 99;
+                    if (numA < numB) {
+                        winner = "A";
+                        scoreA++;
+                    } else if (numB < numA) {
+                        winner = "B";
+                        scoreB++;
+                    } else {
+                        winner = "TIE";
+                        ties++;
+                    }
+                } else {
+                    // Both DNF
+                    if (ptsA > ptsB) {
+                        winner = "A";
+                        scoreA++;
+                    } else if (ptsB > ptsA) {
+                        winner = "B";
+                        scoreB++;
+                    } else {
+                        winner = "TIE";
+                        ties++;
+                    }
+                }
+            }
+        }
+
+        roundDuels.push({
+            roundNum,
+            gpName: gp.name,
+            country: gp.country,
+            raceKey: gp.raceKey,
+            isCompleted,
+            resA,
+            resB,
+            ptsA,
+            ptsB,
+            ptsDiff,
+            winner
+        });
+    });
+
+    return {
+        scoreA,
+        scoreB,
+        ties,
+        roundsParticipatedTogether,
+        roundDuels
+    };
+}
+
+// Helper to check DNF / DNS / NC status
+function isDriverDnfStatus(pos) {
+    if (!pos) return true;
+    const p = String(pos).trim().toUpperCase();
+    return p === "DNF" || p === "DNS" || p === "DSQ" || p === "NC" || p === "RET" || p === "AUSENTE";
+}
+
+// Render the duel scoreboard
+function renderComparatorScoreboard(h2h, statsA, statsB) {
+    const scoreAEl = document.getElementById("h2hScoreA");
+    const scoreBEl = document.getElementById("h2hScoreB");
+    const leaderTagEl = document.getElementById("h2hLeaderTag");
+    if (!scoreAEl || !scoreBEl || !leaderTagEl) return;
+
+    scoreAEl.textContent = h2h.scoreA;
+    scoreBEl.textContent = h2h.scoreB;
+
+    if (h2h.scoreA > h2h.scoreB) {
+        const diff = h2h.scoreA - h2h.scoreB;
+        leaderTagEl.innerHTML = `🏆 <strong>${escapeHTML(statsA.driver.toUpperCase())}</strong> LIDERA EL DUELO (+${diff})`;
+        leaderTagEl.style.color = "#f87171";
+        leaderTagEl.style.borderColor = "rgba(239, 68, 68, 0.4)";
+        leaderTagEl.style.background = "rgba(239, 68, 68, 0.15)";
+    } else if (h2h.scoreB > h2h.scoreA) {
+        const diff = h2h.scoreB - h2h.scoreA;
+        leaderTagEl.innerHTML = `🏆 <strong>${escapeHTML(statsB.driver.toUpperCase())}</strong> LIDERA EL DUELO (+${diff})`;
+        leaderTagEl.style.color = "#60a5fa";
+        leaderTagEl.style.borderColor = "rgba(59, 130, 246, 0.4)";
+        leaderTagEl.style.background = "rgba(59, 130, 246, 0.15)";
+    } else {
+        leaderTagEl.innerHTML = `⚖️ DUELO EMPATADO (${h2h.scoreA} - ${h2h.scoreB})`;
+        leaderTagEl.style.color = "#fce79a";
+        leaderTagEl.style.borderColor = "rgba(214, 180, 92, 0.3)";
+        leaderTagEl.style.background = "rgba(214, 180, 92, 0.12)";
+    }
+}
+
+// Render Comparative Metrics with relative interactive balance bars
+function renderComparatorMetricsGrid(statsA, statsB, priceA, priceB) {
+    const grid = document.getElementById("compareMetricsGrid");
+    if (!grid) return;
+
+    // Compute derived metrics
+    const racesA = statsA.racesCount || 1;
+    const racesB = statsB.racesCount || 1;
+
+    const avgPtsA = (statsA.pts / Math.max(racesA, 1)).toFixed(1);
+    const avgPtsB = (statsB.pts / Math.max(racesB, 1)).toFixed(1);
+
+    const relA = (statsA.racesCount > 0) ? Math.round(((statsA.racesCount - (statsA.dnfCount || 0)) / statsA.racesCount) * 100) : 0;
+    const relB = (statsB.racesCount > 0) ? Math.round(((statsB.racesCount - (statsB.dnfCount || 0)) / statsB.racesCount) * 100) : 0;
+
+    const metrics = [
+        {
+            name: "PUNTOS TOTALES",
+            valA: statsA.pts,
+            valB: statsB.pts,
+            dispA: `${statsA.pts} pts`,
+            dispB: `${statsB.pts} pts`,
+            higherIsBetter: true
+        },
+        {
+            name: "POSICIÓN CAMPEONATO",
+            valA: statsA.pos,
+            valB: statsB.pos,
+            dispA: `P${statsA.pos}`,
+            dispB: `P${statsB.pos}`,
+            higherIsBetter: false // Lower number is better
+        },
+        {
+            name: "VICTORIAS EN CARRERA",
+            valA: statsA.wins,
+            valB: statsB.wins,
+            dispA: `${statsA.wins} 🥇`,
+            dispB: `${statsB.wins} 🥇`,
+            higherIsBetter: true
+        },
+        {
+            name: "PODIOS TOTALES",
+            valA: statsA.podiums,
+            valB: statsB.podiums,
+            dispA: `${statsA.podiums} 🏆`,
+            dispB: `${statsB.podiums} 🏆`,
+            higherIsBetter: true
+        },
+        {
+            name: "POLE POSITIONS",
+            valA: statsA.poles,
+            valB: statsB.poles,
+            dispA: `${statsA.poles} ⏱️`,
+            dispB: `${statsB.poles} ⏱️`,
+            higherIsBetter: true
+        },
+        {
+            name: "VUELTAS RÁPIDAS",
+            valA: statsA.fastestLaps,
+            valB: statsB.fastestLaps,
+            dispA: `${statsA.fastestLaps} ⭐`,
+            dispB: `${statsB.fastestLaps} ⭐`,
+            higherIsBetter: true
+        },
+        {
+            name: "TOP 10 FINISHES",
+            valA: statsA.top10s,
+            valB: statsB.top10s,
+            dispA: `${statsA.top10s} / ${racesA}`,
+            dispB: `${statsB.top10s} / ${racesB}`,
+            higherIsBetter: true
+        },
+        {
+            name: "PROMEDIO PTS / GP",
+            valA: parseFloat(avgPtsA),
+            valB: parseFloat(avgPtsB),
+            dispA: `${avgPtsA} pts`,
+            dispB: `${avgPtsB} pts`,
+            higherIsBetter: true
+        },
+        {
+            name: "TASA DE FIABILIDAD",
+            valA: relA,
+            valB: relB,
+            dispA: `${relA}% (${statsA.dnfCount || 0} DNF)`,
+            dispB: `${relB}% (${statsB.dnfCount || 0} DNF)`,
+            higherIsBetter: true
+        },
+        {
+            name: "VALOR FANTASY FFC",
+            valA: priceA,
+            valB: priceB,
+            dispA: `${priceA.toFixed(1)}M€`,
+            dispB: `${priceB.toFixed(1)}M€`,
+            higherIsBetter: true
+        }
+    ];
+
+    grid.innerHTML = metrics.map(m => {
+        let isWinnerA = false;
+        let isWinnerB = false;
+
+        if (m.higherIsBetter) {
+            if (m.valA > m.valB) isWinnerA = true;
+            else if (m.valB > m.valA) isWinnerB = true;
+        } else {
+            if (m.valA < m.valB) isWinnerA = true;
+            else if (m.valB < m.valA) isWinnerB = true;
+        }
+
+        // Relative bar width calculation
+        let barPctA = 50;
+        let barPctB = 50;
+
+        if (m.higherIsBetter) {
+            const sum = (m.valA || 0) + (m.valB || 0);
+            if (sum > 0) {
+                barPctA = Math.max(12, Math.min(88, Math.round((m.valA / sum) * 100)));
+                barPctB = 100 - barPctA;
+            }
+        } else {
+            // For championship position, invert ratio
+            const invA = 1 / Math.max(1, m.valA);
+            const invB = 1 / Math.max(1, m.valB);
+            const sum = invA + invB;
+            if (sum > 0) {
+                barPctA = Math.max(12, Math.min(88, Math.round((invA / sum) * 100)));
+                barPctB = 100 - barPctA;
+            }
+        }
+
+        return `
+            <div class="compare-metric-row">
+                <div class="compare-metric-header">
+                    <div class="metric-val val-a ${isWinnerA ? 'is-winner' : ''}">${m.dispA} ${isWinnerA ? '👑' : ''}</div>
+                    <div class="metric-name-wrap">
+                        <span class="metric-name">${m.name}</span>
+                    </div>
+                    <div class="metric-val val-b ${isWinnerB ? 'is-winner' : ''}">${isWinnerB ? '👑' : ''} ${m.dispB}</div>
+                </div>
+                <div class="metric-bar-track">
+                    <div class="metric-bar-a" style="width: ${barPctA}%;"></div>
+                    <div class="metric-bar-divider"></div>
+                    <div class="metric-bar-b" style="width: ${barPctB}%;"></div>
+                </div>
+            </div>
+        `;
+    }).join("");
+}
+
+// Render Skills / Performance normalized ratings
+function renderComparatorSkillsGrid(statsA, statsB) {
+    const grid = document.getElementById("compareSkillsGrid");
+    if (!grid) return;
+
+    // Normalize ratings (0 to 100)
+    const racesA = Math.max(1, statsA.racesCount || 1);
+    const racesB = Math.max(1, statsB.racesCount || 1);
+
+    // 1. Race Pace / Ritmo en Carrera (Points + Wins + Podiums ratio)
+    const racePaceA = Math.min(99, Math.round((statsA.pts / (racesA * 25)) * 80 + (statsA.wins * 6) + (statsA.podiums * 3) + 20));
+    const racePaceB = Math.min(99, Math.round((statsB.pts / (racesB * 25)) * 80 + (statsB.wins * 6) + (statsB.podiums * 3) + 20));
+
+    // 2. Qualy Speed / Ritmo a Una Vuelta (Poles + Top 3 grid ratio)
+    const qualySpeedA = Math.min(99, Math.round(50 + (statsA.poles * 14) + (statsA.wins * 5)));
+    const qualySpeedB = Math.min(99, Math.round(50 + (statsB.poles * 14) + (statsB.wins * 5)));
+
+    // 3. Reliability / Fiabilidad Mecánica
+    const relScoreA = Math.max(15, Math.min(99, Math.round(((racesA - (statsA.dnfCount || 0)) / racesA) * 100)));
+    const relScoreB = Math.max(15, Math.min(99, Math.round(((racesB - (statsB.dnfCount || 0)) / racesB) * 100)));
+
+    // 4. Regularity / Consistencia en Puntos (Top 10 ratio)
+    const regScoreA = Math.min(99, Math.round((statsA.top10s / racesA) * 85 + 15));
+    const regScoreB = Math.min(99, Math.round((statsB.top10s / racesB) * 85 + 15));
+
+    // 5. Podium Efficiency / Efectividad
+    const podScoreA = Math.min(99, Math.round((statsA.podiums / racesA) * 90 + 10));
+    const podScoreB = Math.min(99, Math.round((statsB.podiums / racesB) * 90 + 10));
+
+    const skills = [
+        { name: "🏎️ RITMO DE CARRERA", scoreA: racePaceA, scoreB: racePaceB },
+        { name: "⏱️ RITMO DE CLASIFICACIÓN", scoreA: qualySpeedA, scoreB: qualySpeedB },
+        { name: "🛡️ FIABILIDAD MECÁNICA", scoreA: relScoreA, scoreB: relScoreB },
+        { name: "🎯 REGULARIDAD EN TOP 10", scoreA: regScoreA, scoreB: regScoreB },
+        { name: "🏆 EFECTIVIDAD EN PODIOS", scoreA: podScoreA, scoreB: podScoreB }
+    ];
+
+    grid.innerHTML = skills.map(s => `
+        <div class="skill-card">
+            <div class="skill-title-row">
+                <span class="skill-name">${s.name}</span>
+                <span class="skill-scores">
+                    <span class="score-a">${s.scoreA}</span> vs <span class="score-b">${s.scoreB}</span>
+                </span>
+            </div>
+            <div class="skill-bar-pair">
+                <div class="skill-single-bar">
+                    <div class="skill-fill-a" style="width: ${s.scoreA}%;"></div>
+                </div>
+                <div class="skill-single-bar">
+                    <div class="skill-fill-b" style="width: ${s.scoreB}%;"></div>
+                </div>
+            </div>
+        </div>
+    `).join("");
+}
+
+// Render Round-by-Round GP Matrix Table
+function renderComparatorRoundsTable(statsA, statsB) {
+    const tbody = document.getElementById("compareRoundsTableBody");
+    const thA = document.getElementById("thRoundDriverA");
+    const thB = document.getElementById("thRoundDriverB");
+    if (!tbody) return;
+
+    if (thA) thA.textContent = statsA.driver.toUpperCase();
+    if (thB) thB.textContent = statsB.driver.toUpperCase();
+
+    const h2h = computeDriverHeadToHeadDuels(statsA, statsB);
+
+    tbody.innerHTML = h2h.roundDuels.map(d => {
+        let duelBadge = `<span class="round-winner-chip" style="opacity: 0.4;">—</span>`;
+        if (d.isCompleted) {
+            if (d.winner === "A") {
+                duelBadge = `<span class="round-winner-chip winner-a">🔴 ${escapeHTML(statsA.driver)}</span>`;
+            } else if (d.winner === "B") {
+                duelBadge = `<span class="round-winner-chip winner-b">🔵 ${escapeHTML(statsB.driver)}</span>`;
+            } else if (d.winner === "TIE") {
+                duelBadge = `<span class="round-winner-chip winner-tie">➖ Empate</span>`;
+            }
+        }
+
+        // Format Driver A Result Cell
+        let dispA = `<span style="color: #64748b;">—</span>`;
+        if (d.resA) {
+            const poleTag = d.resA.pole ? ` <span title="Pole Position" style="color: #d6b45c;">⭕</span>` : "";
+            const vrTag = d.resA.vr ? ` <span title="Vuelta Rápida" style="color: #a855f7;">⭐</span>` : "";
+            const isWinnerA = d.winner === "A";
+            dispA = `<span class="round-driver-val ${isWinnerA ? 'is-ahead' : ''}" style="${isWinnerA ? 'color: #fca5a5;' : 'color: #cbd5e1;'}">${escapeHTML(d.resA.pos)} (${d.ptsA} pts)${poleTag}${vrTag}</span>`;
+        } else if (d.isCompleted) {
+            dispA = `<span style="color: #64748b; font-size: 11px;">NO PARTICIPÓ</span>`;
+        }
+
+        // Format Driver B Result Cell
+        let dispB = `<span style="color: #64748b;">—</span>`;
+        if (d.resB) {
+            const poleTag = d.resB.pole ? ` <span title="Pole Position" style="color: #d6b45c;">⭕</span>` : "";
+            const vrTag = d.resB.vr ? ` <span title="Vuelta Rápida" style="color: #a855f7;">⭐</span>` : "";
+            const isWinnerB = d.winner === "B";
+            dispB = `<span class="round-driver-val ${isWinnerB ? 'is-ahead' : ''}" style="${isWinnerB ? 'color: #93c5fd;' : 'color: #cbd5e1;'}">${escapeHTML(d.resB.pos)} (${d.ptsB} pts)${poleTag}${vrTag}</span>`;
+        } else if (d.isCompleted) {
+            dispB = `<span style="color: #64748b; font-size: 11px;">NO PARTICIPÓ</span>`;
+        }
+
+        // Difference in Points
+        let diffFormatted = `<span style="color: #64748b;">—</span>`;
+        if (d.isCompleted) {
+            if (d.ptsDiff > 0) {
+                diffFormatted = `<span style="color: #f87171; font-weight: 800;">+${d.ptsDiff}</span>`;
+            } else if (d.ptsDiff < 0) {
+                diffFormatted = `<span style="color: #60a5fa; font-weight: 800;">${d.ptsDiff}</span>`;
+            } else {
+                diffFormatted = `<span style="color: #94a3b8;">0</span>`;
+            }
+        }
+
+        return `
+            <tr>
+                <td style="font-weight: 800; color: #94a3b8; font-family: 'Barlow Condensed', sans-serif;">R${d.roundNum}</td>
+                <td>
+                    <span style="margin-right: 6px;">${d.country ? (typeof getOfficialCountryFlag === "function" ? getOfficialCountryFlag(d.country) : "🏁") : "🏁"}</span>
+                    <strong style="color: #f1f5f9;">${escapeHTML(d.gpName)}</strong>
+                </td>
+                <td style="text-align: center;">${dispA}</td>
+                <td style="text-align: center;">${duelBadge}</td>
+                <td style="text-align: center;">${dispB}</td>
+                <td style="text-align: right; font-family: 'Barlow Condensed', sans-serif;">${diffFormatted}</td>
+            </tr>
+        `;
+    }).join("");
+}
+
+// Initialize Driver Comparator Events & Controls
+function initDriverComparator() {
+    const overlay = document.getElementById("driverCompareOverlay");
+    const closeBtn = document.getElementById("closeDriverCompare");
+    const swapBtn = document.getElementById("compareSwapBtn");
+    const selectA = document.getElementById("compareSelectDriverA");
+    const selectB = document.getElementById("compareSelectDriverB");
+    const navCompare = document.getElementById("navCompare");
+    const standingsCompareBtn = document.getElementById("btnStandingsCompare");
+    const driverModalCompareBtn = document.getElementById("btnDriverModalCompareAction");
+
+    // Close button
+    if (closeBtn) {
+        closeBtn.addEventListener("click", (e) => {
+            e.preventDefault();
+            closeDriverComparison();
+        });
+    }
+
+    // Overlay backdrop click to close
+    if (overlay) {
+        overlay.addEventListener("click", (e) => {
+            if (e.target === overlay) {
+                closeDriverComparison();
+            }
+        });
+    }
+
+    // Escape key to close
+    document.addEventListener("keydown", (e) => {
+        if (e.key === "Escape" && overlay && overlay.classList.contains("is-active")) {
+            closeDriverComparison();
+        }
+    });
+
+    // Swap drivers button
+    if (swapBtn) {
+        swapBtn.addEventListener("click", () => {
+            if (compareDriverA && compareDriverB) {
+                const temp = compareDriverA;
+                compareDriverA = compareDriverB;
+                compareDriverB = temp;
+                renderDriverComparison(compareDriverA, compareDriverB);
+            }
+        });
+    }
+
+    // Dropdown change listeners
+    if (selectA) {
+        selectA.addEventListener("change", (e) => {
+            const val = e.target.value;
+            if (val) {
+                renderDriverComparison(val, compareDriverB);
+            }
+        });
+    }
+
+    if (selectB) {
+        selectB.addEventListener("change", (e) => {
+            const val = e.target.value;
+            if (val) {
+                renderDriverComparison(compareDriverA, val);
+            }
+        });
+    }
+
+    // Nav bar comparison trigger
+    if (navCompare) {
+        navCompare.addEventListener("click", (e) => {
+            e.preventDefault();
+            openDriverComparison();
+        });
+    }
+
+    // Standings comparison trigger
+    if (standingsCompareBtn) {
+        standingsCompareBtn.addEventListener("click", (e) => {
+            e.preventDefault();
+            openDriverComparison();
+        });
+    }
+
+    // Driver Modal comparison action trigger
+    if (driverModalCompareBtn) {
+        driverModalCompareBtn.addEventListener("click", () => {
+            const currentDriver = typeof currentOpenModalDriver !== "undefined" ? currentOpenModalDriver : null;
+            if (typeof closeDriverStatsModal === "function") {
+                closeDriverStatsModal();
+            }
+            openDriverComparison(currentDriver, null);
+        });
+    }
+}
+
+// Attach globally and initialize Driver Comparator
+window.openDriverComparison = openDriverComparison;
+window.closeDriverComparison = closeDriverComparison;
+window.renderDriverComparison = renderDriverComparison;
+window.initDriverComparator = initDriverComparator;
+
+// Initialize comparator on load
+if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", initDriverComparator);
+} else {
+    initDriverComparator();
+}
+
 
 
 

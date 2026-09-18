@@ -61,6 +61,10 @@
             <a href="#calendar" id="navCalendar">CALENDARIO</a>
             <a href="#races" id="navRaces">CARRERAS</a>
             <a href="#info" id="navInfo">INFORMACIÓN</a>
+            <a href="#compare" class="nav-compare-link" id="navCompare" title="Comparador de Pilotos (Cara a Cara)" onclick="if(window.openDriverComparison){window.openDriverComparison();return false;}">
+                <span class="compare-nav-badge">⚔️</span>
+                <span id="navCompareText">COMPARADOR</span>
+            </a>
             <a href="#fantasy" class="nav-fantasy-link" id="navFantasy" title="FFC Fantasy League" onclick="if(window.openFantasyPortal){window.openFantasyPortal();return false;}">
                 <span class="fantasy-nav-badge">75M€</span>
                 <span id="navFantasyText">FANTASY</span>
@@ -494,6 +498,10 @@
         <button type="button" class="standings-view-tab" id="tabStandingsMatrix" data-view="matrix">
             <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M3 3v18h18V3H3zm8 16H5v-4h6v4zm0-6H5V9h6v4zm0-6H5V5h6v2zm8 12h-6v-4h6v4zm0-6h-6V9h6v4zm0-6h-6V5h6v2z"/></svg>
             <span id="tabLabelMatrix">TABLA OFICIAL FFC 2010 SEASON</span>
+        </button>
+        <button type="button" class="standings-view-tab standings-compare-btn" id="btnStandingsCompare" data-view="compare" onclick="if(window.openDriverComparison){window.openDriverComparison();return false;}">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M9.01 14H2v2h7.01v3L13 15l-3.99-4v3zm5.98-1v-3H22V8h-7.01V5L11 9l3.99 4z"/></svg>
+            <span id="tabLabelCompare">⚔️ COMPARADOR CARA A CARA</span>
         </button>
     </div>
 
@@ -1733,6 +1741,14 @@
                 <!-- Dynamically populated per driver -->
             </div>
         </div>
+
+        <!-- Action footer for Driver Card -->
+        <div class="driver-modal-footer-actions">
+            <button type="button" class="btn-driver-modal-compare" id="btnDriverModalCompareAction">
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M9.01 14H2v2h7.01v3L13 15l-3.99-4v3zm5.98-1v-3H22V8h-7.01V5L11 9l3.99 4z"/></svg>
+                <span id="lblDriverModalCompareBtn">⚔️ COMPARAR CON OTRO PILOTO</span>
+            </button>
+        </div>
     </div>
 </div>
 
@@ -1822,6 +1838,181 @@
                 <!-- Dynamically populated per team -->
             </div>
         </div>
+    </div>
+</div>
+
+
+<!-- ==============================================
+     COMPARADOR DE PILOTOS CARA A CARA (MODAL H2H)
+============================================== -->
+<div class="driver-compare-overlay" id="driverCompareOverlay" aria-hidden="true" role="dialog" aria-modal="true">
+    <div class="driver-compare-card" id="driverCompareCard">
+        <!-- Close button -->
+        <button type="button" class="driver-compare-close" id="closeDriverCompare" aria-label="Cerrar comparador">&times;</button>
+
+        <!-- Header -->
+        <div class="compare-modal-header">
+            <div class="compare-badge-wrap">
+                <span class="compare-kicker">FORMULA FACTOR CHAMPIONSHIP</span>
+                <span class="compare-live-badge">HEAD-TO-HEAD</span>
+            </div>
+            <h2 class="compare-modal-title" id="lblCompareTitle">⚔️ COMPARADOR DE PILOTOS</h2>
+            <p class="compare-modal-sub" id="lblCompareSub">Análisis cara a cara: duelo directo en pista, puntos, victorias, ritmo y fiabilidad</p>
+        </div>
+
+        <!-- Quick Matchup Preset Buttons -->
+        <div class="compare-presets-row">
+            <span class="compare-preset-label" id="lblComparePresets">DUELOS RECOMENDADOS:</span>
+            <div class="compare-presets-list" id="comparePresetsList">
+                <!-- Dynamically populated or common presets -->
+            </div>
+        </div>
+
+        <!-- Driver Selectors Bar -->
+        <div class="compare-selectors-bar">
+            <!-- Selector Driver A -->
+            <div class="compare-selector-col col-driver-a">
+                <label for="compareSelectDriverA" class="compare-select-label" id="lblSelectDriverA">PILOTO A (ESQUINA ROJA)</label>
+                <div class="compare-select-wrap">
+                    <span class="compare-select-flag" id="compareSelectFlagA">🇵🇹</span>
+                    <select id="compareSelectDriverA" class="compare-driver-select" aria-label="Seleccionar Piloto A">
+                        <!-- Dynamically populated -->
+                    </select>
+                </div>
+            </div>
+
+            <!-- Swap Button -->
+            <div class="compare-swap-col">
+                <button type="button" class="compare-swap-btn" id="compareSwapBtn" title="Intercambiar pilotos">
+                    <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor">
+                        <path d="M6.99 11L3 15l3.99 4v-3H14v-2H6.99v-3zM21 9l-3.99-4v3H10v2h7.01v3L21 9z"/>
+                    </svg>
+                    <span>VS</span>
+                </button>
+            </div>
+
+            <!-- Selector Driver B -->
+            <div class="compare-selector-col col-driver-b">
+                <label for="compareSelectDriverB" class="compare-select-label" id="lblSelectDriverB">PILOTO B (ESQUINA AZUL)</label>
+                <div class="compare-select-wrap">
+                    <span class="compare-select-flag" id="compareSelectFlagB">🇪🇸</span>
+                    <select id="compareSelectDriverB" class="compare-driver-select" aria-label="Seleccionar Piloto B">
+                        <!-- Dynamically populated -->
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <!-- Dual Driver Hero Profile Cards -->
+        <div class="compare-hero-grid">
+            <!-- Driver A Profile -->
+            <div class="compare-hero-card card-a" id="compareHeroCardA">
+                <div class="compare-hero-strip" id="compareHeroStripA"></div>
+                <div class="compare-hero-body">
+                    <div class="compare-avatar-box" id="compareAvatarBoxA">
+                        <img src="" id="compareAvatarImgA" class="compare-avatar-img" alt="Piloto A">
+                    </div>
+                    <div class="compare-driver-dorsal" id="compareDorsalA">#23</div>
+                    <div class="compare-driver-meta">
+                        <div class="compare-driver-name-row">
+                            <span class="compare-flag" id="compareFlagA">🇵🇹</span>
+                            <h3 class="compare-name" id="compareNameA">Dieguiosk</h3>
+                            <span id="compareVerifiedA" class="verify-badge-verified" style="display: none;">✅</span>
+                        </div>
+                        <div class="compare-tags-row">
+                            <span class="compare-team-pill" id="compareTeamA">HRT</span>
+                            <span class="compare-pos-badge" id="comparePosA">P1 · 153 PTS</span>
+                            <span class="compare-price-pill" id="comparePriceA">29.7M€</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Center Head-to-Head Duel Scoreboard -->
+            <div class="compare-vs-scoreboard">
+                <div class="vs-score-title" id="lblH2HVerdict">DUELO DIRECTO EN PISTA</div>
+                <div class="vs-score-sub" id="lblH2HVerdictSub">Carreras terminadas por delante</div>
+                <div class="vs-numbers-row">
+                    <span class="vs-num num-a" id="h2hScoreA">0</span>
+                    <span class="vs-divider">:</span>
+                    <span class="vs-num num-b" id="h2hScoreB">0</span>
+                </div>
+                <div class="vs-leader-tag" id="h2hLeaderTag">⚖️ DUELO EMPATADO</div>
+            </div>
+
+            <!-- Driver B Profile -->
+            <div class="compare-hero-card card-b" id="compareHeroCardB">
+                <div class="compare-hero-strip" id="compareHeroStripB"></div>
+                <div class="compare-hero-body">
+                    <div class="compare-avatar-box" id="compareAvatarBoxB">
+                        <img src="" id="compareAvatarImgB" class="compare-avatar-img" alt="Piloto B">
+                    </div>
+                    <div class="compare-driver-dorsal" id="compareDorsalB">#1</div>
+                    <div class="compare-driver-meta">
+                        <div class="compare-driver-name-row">
+                            <span class="compare-flag" id="compareFlagB">🇪🇸</span>
+                            <h3 class="compare-name" id="compareNameB">Hermesalo</h3>
+                            <span id="compareVerifiedB" class="verify-badge-verified" style="display: none;">✅</span>
+                        </div>
+                        <div class="compare-tags-row">
+                            <span class="compare-team-pill" id="compareTeamB">RED BULL</span>
+                            <span class="compare-pos-badge" id="comparePosB">P2 · 109 PTS</span>
+                            <span class="compare-price-pill" id="comparePriceB">26.2M€</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Comparative Metrics Section (Bento Grid with visual balance bars) -->
+        <div class="compare-metrics-section">
+            <div class="compare-section-title-row">
+                <span class="compare-section-title" id="lblMetricsTitle">COMPARATIVA ESTADÍSTICA DETALLADA</span>
+                <span class="compare-section-sub" id="lblMetricsSub">TEMPORADA FFC 2010 OFICIAL</span>
+            </div>
+
+            <div class="compare-metrics-grid" id="compareMetricsGrid">
+                <!-- Metrics rows generated dynamically with interactive comparison bars -->
+            </div>
+        </div>
+
+        <!-- Radar/Skills Comparison Section -->
+        <div class="compare-skills-section">
+            <div class="compare-section-title-row">
+                <span class="compare-section-title" id="lblSkillsTitle">ÍNDICE DE RENDIMIENTO &amp; DESTREZAS</span>
+                <span class="compare-section-sub" id="lblSkillsSub">MÉTRICAS NORMALIZADAS DE PILOTAJE</span>
+            </div>
+            <div class="compare-skills-grid" id="compareSkillsGrid">
+                <!-- Dynamically populated -->
+            </div>
+        </div>
+
+        <!-- Round-by-Round Breakdown Matrix (R1 to R15) -->
+        <div class="compare-matrix-section">
+            <div class="compare-section-title-row">
+                <span class="compare-section-title" id="lblCompareRoundsTitle">DUELOS RONDA POR RONDA (R1 - R15)</span>
+                <span class="compare-section-sub" id="lblCompareRoundsSub">RESULTADOS DIRECTOS EN CADA GRAN PREMIO</span>
+            </div>
+            
+            <div class="compare-rounds-table-wrap">
+                <table class="compare-rounds-table">
+                    <thead>
+                        <tr>
+                            <th style="width: 70px;">RONDA</th>
+                            <th>GRAN PREMIO</th>
+                            <th style="text-align: center; width: 140px;" id="thRoundDriverA">PILOTO A</th>
+                            <th style="text-align: center; width: 120px;">DUELO GP</th>
+                            <th style="text-align: center; width: 140px;" id="thRoundDriverB">PILOTO B</th>
+                            <th style="text-align: right; width: 90px;">DIF. PTS</th>
+                        </tr>
+                    </thead>
+                    <tbody id="compareRoundsTableBody">
+                        <!-- Dynamically populated -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
     </div>
 </div>
 
