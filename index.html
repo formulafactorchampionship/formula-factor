@@ -13,6 +13,7 @@
 
     <link rel="stylesheet" href="style.css?v=20260918_v3">
     <link rel="stylesheet" href="BorderGlow.css">
+    <link rel="stylesheet" href="LightPillar.css">
     <script>
         // Early instant hook for FFC Fantasy Portal
         window.openFantasyPortal = function() {
@@ -576,6 +577,13 @@
 <!-- =========================
      STANDINGS
 ========================= -->
+
+<!-- =========================================================
+     UNIFIED SECTIONS WITH LIGHT PILLAR BACKGROUND
+========================================================= -->
+<div class="unified-sections-wrapper" style="position: relative; width: 100%; overflow: hidden;">
+    <!-- Single, continuous LightPillar Background Canvas -->
+    <div id="unified-lightpillar-bg" class="section-lightpillar-bg" style="opacity: 0.28;"></div>
 
 <section class="section" id="standings">
 
@@ -1294,6 +1302,8 @@
     </div>
 
 </section>
+
+</div> <!-- End unified-sections-wrapper -->
 
 <!-- =========================================================
      SITE FOOTER

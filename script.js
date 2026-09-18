@@ -6,6 +6,7 @@ import { initShapeWavesBackground } from "./ShapeWaves.js";
 import { initCalendarBorderGlow } from "./BorderGlow.js";
 import { initSideRaysBackground } from "./SideRays.js";
 import { initCobeGlobe } from "./CobeGlobe.js";
+import { initLightPillar } from "./LightPillar.js";
 
 // Initialize interactive background layers
 const handleInitBackgrounds = () => {
@@ -39,6 +40,21 @@ const handleInitBackgrounds = () => {
         blend: 0.6,
         falloff: 1.6,
         opacity: 0.6
+    });
+
+    // Mount a single, continuous, unified LightPillar component for the entire wrapper
+    initLightPillar("unified-lightpillar-bg", {
+        topColor: "#f5e29f",    // Official FFC Light Gold/Yellow (#f5e29f)
+        bottomColor: "#06080d", // Official page background color (#06080d) to fade beautifully into dark
+        intensity: 0.65,        // Reduced for a much darker/subtle effect
+        rotationSpeed: 0.45,    // Increased speed for a more energetic movement
+        interactive: true,
+        glowAmount: 0.005,      // Reduced glow spread
+        pillarWidth: 1.1,       // Much thinner pillar
+        pillarHeight: 0.35,
+        noiseIntensity: 0.18,
+        pillarRotation: 12,
+        quality: "medium"
     });
 };
 
@@ -3297,19 +3313,34 @@ function getCountryNameByFlag(flag) {
 function extractFlagFromCountryString(str) {
     if (!str) return "🏁";
     const trimmed = str.trim();
-    if (trimmed === "🏴󠁧󠁢󠁳󠁣󠁴󠁿" || trimmed.startsWith("🏴󠁧󠁢󠁳󠁣󠁴󠁿")) return "🏴󠁧󠁢󠁳󠁣󠁴󠁿";
-    if (trimmed === "🏴󠁧󠁢󠁥󠁮󠁧󠁿" || trimmed.startsWith("🏴󠁧󠁢󠁥󠁮󠁧󠁿")) return "🏴󠁧󠁢󠁥󠁮󠁧󠁿";
-    if (trimmed === "🏴󠁧󠁢󠁷󠁬󠁳󠁿" || trimmed.startsWith("🏴󠁧󠁢󠁷󠁬󠁳󠁿")) return "🏴󠁧󠁢󠁷󠁬󠁳󠁿";
-    if (trimmed === "🇪🇺" || trimmed.startsWith("🇪🇺")) return "🇪🇺";
+
+    // Check custom/regional long flags first
+    if (trimmed.includes("🏴󠁧󠁢󠁳󠁣󠁴󠁿") || trimmed.startsWith("🏴󠁧󠁢󠁳󠁣󠁴󠁿")) return "🏴󠁧󠁢󠁳󠁣󠁴󠁿";
+    if (trimmed.includes("🏴󠁧󠁢󠁥󠁮󠁧󠁿") || trimmed.startsWith("🏴󠁧󠁢󠁥󠁮󠁧󠁿")) return "🏴󠁧󠁢󠁥󠁮󠁧󠁿";
+    if (trimmed.includes("🏴󠁧󠁢󠁷󠁬󠁳󠁿") || trimmed.startsWith("🏴󠁧󠁢󠁷󠁬󠁳󠁿")) return "🏴󠁧󠁢󠁷󠁬󠁳󠁿";
+    if (trimmed.includes("🇪🇺") || trimmed.startsWith("🇪🇺")) return "🇪🇺";
+
+    // Scan for known flag emojis or names in OFFICIAL_COUNTRY_FLAGS
+    if (typeof OFFICIAL_COUNTRY_FLAGS !== "undefined" && Array.isArray(OFFICIAL_COUNTRY_FLAGS)) {
+        for (const c of OFFICIAL_COUNTRY_FLAGS) {
+            if (trimmed.includes(c.flag)) return c.flag;
+            if (trimmed.toLowerCase() === c.name.toLowerCase()) return c.flag;
+        }
+    }
+
+    // Match 2-character regional indicators for country flags at start or anywhere
     const regMatch = trimmed.match(/^[\u{1F1E6}-\u{1F1FF}]{2}/u);
     if (regMatch) return regMatch[0];
-    const surrogateMatch = trimmed.match(/^[\uD800-\uDBFF][\uDC00-\uDFFF]/);
-    if (surrogateMatch) return surrogateMatch[0];
-    for (const c of OFFICIAL_COUNTRY_FLAGS) {
-        if (trimmed.includes(c.flag)) return c.flag;
-        if (trimmed.toLowerCase() === c.name.toLowerCase()) return c.flag;
+    const regMatchAny = trimmed.match(/[\u{1F1E6}-\u{1F1FF}]{2}/u);
+    if (regMatchAny) return regMatchAny[0];
+
+    // Safely extract the first full unicode character (including emojis) using Array.from
+    const chars = Array.from(trimmed);
+    if (chars.length > 0) {
+        return chars[0];
     }
-    return trimmed.substring(0, 2) || "🏁";
+
+    return "🏁";
 }
 
 function initAllCountriesDatalist() {
