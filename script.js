@@ -3264,10 +3264,12 @@ function getCountryNameByFlag(flag) {
 function extractFlagFromCountryString(str) {
     if (!str) return "🏁";
     const trimmed = str.trim();
-    if (trimmed === "🏴󠁧󠁢󠁳󠁣󠁴󠁿") return "🏴󠁧󠁢󠁳󠁣󠁴󠁿";
+    if (trimmed === "🏴󠁧󠁢󠁳󠁣󠁴󠁿" || trimmed.startsWith("🏴󠁧󠁢󠁳󠁣󠁴󠁿")) return "🏴󠁧󠁢󠁳󠁣󠁴󠁿";
+    if (trimmed === "🏴󠁧󠁢󠁥󠁮󠁧󠁿" || trimmed.startsWith("🏴󠁧󠁢󠁥󠁮󠁧󠁿")) return "🏴󠁧󠁢󠁥󠁮󠁧󠁿";
+    if (trimmed === "🏴󠁧󠁢󠁷󠁬󠁳󠁿" || trimmed.startsWith("🏴󠁧󠁢󠁷󠁬󠁳󠁿")) return "🏴󠁧󠁢󠁷󠁬󠁳󠁿";
+    if (trimmed === "🇪🇺" || trimmed.startsWith("🇪🇺")) return "🇪🇺";
     const regMatch = trimmed.match(/^[\u{1F1E6}-\u{1F1FF}]{2}/u);
     if (regMatch) return regMatch[0];
-    if (trimmed.startsWith("🏴󠁧󠁢󠁳󠁣󠁴󠁿")) return "🏴󠁧󠁢󠁳󠁣󠁴󠁿";
     const surrogateMatch = trimmed.match(/^[\uD800-\uDBFF][\uDC00-\uDFFF]/);
     if (surrogateMatch) return surrogateMatch[0];
     for (const c of OFFICIAL_COUNTRY_FLAGS) {
@@ -6144,7 +6146,8 @@ function initFirestoreListeners() {
                 isVerified: !!data.isVerified,
                 avatarUrl: data.avatarUrl || null,
                 cardColor: data.cardColor || null,
-                customFlag: data.customFlag || null,
+                flag: data.flag || data.customFlag || null,
+                customFlag: data.customFlag || data.flag || null,
                 bio: data.bio || null,
                 socialTwitch: data.socialTwitch || null,
                 socialYoutube: data.socialYoutube || null,
