@@ -262,6 +262,9 @@ const translations = {
         hero: {
             eyebrow: "TEMPORADA 1 · FORMULA FACTOR CHAMPIONSHIP",
             title: "CORRE RUEDA A RUEDA<br>EN LA PARRILLA <span class=\"gold-text-glow\">FFC</span>",
+            tagGps: "15 GRANDES PREMIOS",
+            tagDrivers: "44 PILOTOS INSCRITOS",
+            tagChampion: "1 CAMPEÓN FFC",
             description: "Una liga de sim racing competitiva, limpia y abierta a pilotos que quieren correr, competir y disfrutar del motorsport.",
             btnStandings: "VER CLASIFICACIÓN",
             btnCalendar: "VER CALENDARIO"
@@ -413,6 +416,9 @@ const translations = {
         hero: {
             eyebrow: "SEASON 1 · FORMULA FACTOR CHAMPIONSHIP",
             title: "RACE WHEEL-TO-WHEEL<br>ON THE <span class=\"gold-text-glow\">FFC GRID</span>",
+            tagGps: "15 GRAND PRIX",
+            tagDrivers: "44 REGISTERED DRIVERS",
+            tagChampion: "1 FFC CHAMPION",
             description: "A competitive, clean sim racing league open to drivers who want to race, compete, and enjoy motorsport.",
             btnStandings: "VIEW STANDINGS",
             btnCalendar: "VIEW CALENDAR"
@@ -621,6 +627,12 @@ function applyTranslations(lang) {
     if (heroEye) heroEye.textContent = dict.hero.eyebrow;
     const heroT = document.getElementById("heroTitle");
     if (heroT) heroT.innerHTML = dict.hero.title;
+    const heroTagGps = document.getElementById("heroTagGpsText");
+    if (heroTagGps && dict.hero.tagGps) heroTagGps.textContent = dict.hero.tagGps;
+    const heroTagDrivers = document.getElementById("heroTagDriversText");
+    if (heroTagDrivers && dict.hero.tagDrivers) heroTagDrivers.textContent = dict.hero.tagDrivers;
+    const heroTagChampion = document.getElementById("heroTagChampionText");
+    if (heroTagChampion && dict.hero.tagChampion) heroTagChampion.textContent = dict.hero.tagChampion;
     const heroD = document.getElementById("heroDescription");
     if (heroD) heroD.textContent = dict.hero.description;
     const heroBS = document.getElementById("heroBtnStandings");

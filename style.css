@@ -1147,6 +1147,67 @@ button {
     opacity: 0.6;
 }
 
+.hero-header-row {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    flex-wrap: wrap;
+    margin-bottom: 2px;
+}
+
+.starting-lights-gantry {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: #06090f;
+    border: 1px solid rgba(214, 180, 92, 0.35);
+    padding: 6px 10px;
+    border-radius: 6px;
+    box-shadow: 0 3px 12px rgba(0, 0, 0, 0.7), inset 0 1px 3px rgba(0, 0, 0, 0.8);
+}
+
+.light-unit {
+    width: 11px;
+    height: 11px;
+    border-radius: 50%;
+    background: #111722;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.light-bulb {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #4b1212;
+    transition: all 0.3s ease;
+}
+
+.light-bulb.active {
+    background: #ef4444;
+    box-shadow: 0 0 8px rgba(239, 68, 68, 0.95), 0 0 14px rgba(239, 68, 68, 0.6);
+    animation: startingLightGlow 2.5s infinite alternate ease-in-out;
+}
+
+.starting-lights-gantry .light-unit:nth-child(1) .light-bulb.active { animation-delay: 0.1s; }
+.starting-lights-gantry .light-unit:nth-child(2) .light-bulb.active { animation-delay: 0.25s; }
+.starting-lights-gantry .light-unit:nth-child(3) .light-bulb.active { animation-delay: 0.4s; }
+.starting-lights-gantry .light-unit:nth-child(4) .light-bulb.active { animation-delay: 0.55s; }
+.starting-lights-gantry .light-unit:nth-child(5) .light-bulb.active { animation-delay: 0.7s; }
+
+@keyframes startingLightGlow {
+    0% {
+        opacity: 0.85;
+        box-shadow: 0 0 6px rgba(239, 68, 68, 0.8), 0 0 10px rgba(239, 68, 68, 0.4);
+    }
+    100% {
+        opacity: 1;
+        box-shadow: 0 0 10px rgba(239, 68, 68, 1), 0 0 18px rgba(239, 68, 68, 0.75);
+    }
+}
+
 .eyebrow,
 .section-kicker {
     font-family: "Barlow Condensed", sans-serif;
@@ -1170,7 +1231,7 @@ button {
 }
 
 .hero h1 {
-    margin-top: 18px;
+    margin-top: 14px;
     font-family: "Barlow Condensed", sans-serif;
     font-size: clamp(62px, 7vw, 110px);
     line-height: 0.92;
@@ -1178,6 +1239,46 @@ button {
     letter-spacing: -1px;
     text-transform: uppercase;
     text-shadow: 0 4px 24px rgba(0, 0, 0, 0.6);
+}
+
+.hero-grid-tags {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 20px;
+    margin-bottom: 6px;
+    flex-wrap: wrap;
+}
+
+.grid-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    background: rgba(214, 180, 92, 0.08);
+    border: 1px solid rgba(214, 180, 92, 0.24);
+    border-radius: 9999px;
+    padding: 5px 13px;
+    font-family: "Barlow Condensed", sans-serif;
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: 1.2px;
+    color: #e2e8f0;
+    text-transform: uppercase;
+    transition: all 0.22s ease;
+    backdrop-filter: blur(8px);
+}
+
+.grid-tag:hover {
+    background: rgba(214, 180, 92, 0.16);
+    border-color: rgba(214, 180, 92, 0.5);
+    color: #fff8d6;
+    transform: translateY(-1.5px);
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4), 0 0 10px rgba(214, 180, 92, 0.15);
+}
+
+.grid-tag-icon {
+    font-size: 13px;
+    line-height: 1;
 }
 
 .gold-text-glow {
