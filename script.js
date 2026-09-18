@@ -2947,6 +2947,25 @@ function getOfficialDriverFlag(driverName) {
     return "🏁";
 }
 
+function getCountryCodeFromEmoji(emoji) {
+    if (!emoji || emoji === "🏁") return null;
+    if (emoji === "🏴󠁧󠁢󠁳󠁣󠁴󠁿") return "gb-sct";
+    if (emoji === "🇪🇺") return "eu";
+    const chars = [...emoji];
+    if (chars.length !== 2) return null;
+    const code = chars.map(c => String.fromCharCode(c.codePointAt(0) - 127397)).join('').toLowerCase();
+    return code.length === 2 ? code : null;
+}
+
+function getDriverFlagHtml(driverName, size = 18) {
+    const flagEmoji = (typeof getOfficialDriverFlag === "function") ? getOfficialDriverFlag(driverName) : "🏁";
+    const code = getCountryCodeFromEmoji(flagEmoji);
+    if (code) {
+        return `<img src="https://flagcdn.com/w40/${code}.png" class="driver-flag-img" alt="${code}" width="${size}" height="${Math.round(size * 0.75)}" onerror="this.outerHTML='<span class=\\'driver-flag-emoji\\'>${flagEmoji}</span>'">`;
+    }
+    return `<span class="driver-flag-emoji">${flagEmoji || "🏁"}</span>`;
+}
+
 const COUNTRY_NAMES_BY_FLAG = {
     "🇪🇸": "España",
     "🇵🇹": "Portugal",
@@ -3101,17 +3120,17 @@ function renderStandingsOnPage(drivers) {
                     driverLeaderRow.style.borderColor = "";
                 }
                 const d1Avatar = (d1.avatarUrl && d1.avatarUrl.trim()) ? `<img src="${escapeHtml(d1.avatarUrl.trim())}" class="ranking-leader-avatar" alt="${escapeHtml(d1.driver)}" onerror="this.style.display='none'">` : "";
-                const d1OfficialFlag = getOfficialDriverFlag(d1.driver);
-                const d1Flag = d1OfficialFlag ? `<span style="font-size: 16px; margin-right: 4px;">${escapeHtml(d1OfficialFlag)}</span>` : "";
+                const d1FlagHtml = getDriverFlagHtml(d1.driver, 20);
+                const d1TeamClass = getTeamClass(d1.team);
 
                 driverLeaderRow.innerHTML = `
                     <div class="ranking-leader-left">
                         <span class="ranking-leader-pos">1.</span>
                         ${d1Avatar}
                         <div class="ranking-leader-info">
-                            <span class="ranking-leader-name driver-clickable" data-driver="${escapeHtml(d1.driver)}">${d1Flag}${escapeHtml(d1.driver)}</span>
+                            <span class="ranking-leader-name driver-clickable" data-driver="${escapeHtml(d1.driver)}">${d1FlagHtml}${escapeHtml(d1.driver)}</span>
                             <div class="ranking-leader-meta">
-                                <span class="ranking-team-pill ${getTeamClass(d1.team)} team-clickable" data-team="${escapeHtml(d1.team)}" title="Ver equipo ${escapeHtml(d1.team)}"><span class="team-dot"></span>${escapeHtml(d1.team)}</span>
+                                <span class="ranking-team-flat ${d1TeamClass} team-clickable" data-team="${escapeHtml(d1.team)}" title="Ver equipo ${escapeHtml(d1.team)}">${escapeHtml(d1.team)}</span>
                             </div>
                         </div>
                     </div>
@@ -3139,8 +3158,8 @@ function renderStandingsOnPage(drivers) {
 
             if (d2) {
                 const d2Avatar = (d2.avatarUrl && d2.avatarUrl.trim()) ? `<img src="${escapeHtml(d2.avatarUrl.trim())}" class="ranking-driver-avatar" alt="${escapeHtml(d2.driver)}" onerror="this.style.display='none'">` : "";
-                const d2OfficialFlag = getOfficialDriverFlag(d2.driver);
-                const d2Flag = d2OfficialFlag ? `<span style="margin-right: 4px;">${escapeHtml(d2OfficialFlag)}</span>` : "";
+                const d2FlagHtml = getDriverFlagHtml(d2.driver, 18);
+                const d2TeamClass = getTeamClass(d2.team);
                 const d2Border = d2.cardColor ? `style="border-color: ${d2.cardColor}80;"` : "";
 
                 p2Html = `
@@ -3149,9 +3168,9 @@ function renderStandingsOnPage(drivers) {
                             <span class="ranking-podium-pos">2.</span>
                             ${d2Avatar}
                             <div class="ranking-podium-info">
-                                <span class="ranking-podium-name driver-clickable" data-driver="${escapeHtml(d2.driver)}">${d2Flag}${escapeHtml(d2.driver)}</span>
+                                <span class="ranking-podium-name driver-clickable" data-driver="${escapeHtml(d2.driver)}">${d2FlagHtml}${escapeHtml(d2.driver)}</span>
                                 <div class="ranking-podium-meta">
-                                    <span class="ranking-team-pill ${getTeamClass(d2.team)} team-clickable" data-team="${escapeHtml(d2.team)}" title="Ver equipo ${escapeHtml(d2.team)}"><span class="team-dot"></span>${escapeHtml(d2.team)}</span>
+                                    <span class="ranking-team-flat ${d2TeamClass} team-clickable" data-team="${escapeHtml(d2.team)}" title="Ver equipo ${escapeHtml(d2.team)}">${escapeHtml(d2.team)}</span>
                                 </div>
                             </div>
                         </div>
@@ -3167,8 +3186,8 @@ function renderStandingsOnPage(drivers) {
 
             if (d3) {
                 const d3Avatar = (d3.avatarUrl && d3.avatarUrl.trim()) ? `<img src="${escapeHtml(d3.avatarUrl.trim())}" class="ranking-driver-avatar" alt="${escapeHtml(d3.driver)}" onerror="this.style.display='none'">` : "";
-                const d3OfficialFlag = getOfficialDriverFlag(d3.driver);
-                const d3Flag = d3OfficialFlag ? `<span style="margin-right: 4px;">${escapeHtml(d3OfficialFlag)}</span>` : "";
+                const d3FlagHtml = getDriverFlagHtml(d3.driver, 18);
+                const d3TeamClass = getTeamClass(d3.team);
                 const d3Border = d3.cardColor ? `style="border-color: ${d3.cardColor}80;"` : "";
 
                 p3Html = `
@@ -3177,9 +3196,9 @@ function renderStandingsOnPage(drivers) {
                             <span class="ranking-podium-pos">3.</span>
                             ${d3Avatar}
                             <div class="ranking-podium-info">
-                                <span class="ranking-podium-name driver-clickable" data-driver="${escapeHtml(d3.driver)}">${d3Flag}${escapeHtml(d3.driver)}</span>
+                                <span class="ranking-podium-name driver-clickable" data-driver="${escapeHtml(d3.driver)}">${d3FlagHtml}${escapeHtml(d3.driver)}</span>
                                 <div class="ranking-podium-meta">
-                                    <span class="ranking-team-pill ${getTeamClass(d3.team)} team-clickable" data-team="${escapeHtml(d3.team)}" title="Ver equipo ${escapeHtml(d3.team)}"><span class="team-dot"></span>${escapeHtml(d3.team)}</span>
+                                    <span class="ranking-team-flat ${d3TeamClass} team-clickable" data-team="${escapeHtml(d3.team)}" title="Ver equipo ${escapeHtml(d3.team)}">${escapeHtml(d3.team)}</span>
                                 </div>
                             </div>
                         </div>
@@ -3205,9 +3224,6 @@ function renderStandingsOnPage(drivers) {
                 rowDiv.className = "ranking-row driver-row-clickable";
                 rowDiv.setAttribute("data-driver", d.driver);
                 rowDiv.setAttribute("title", `Ver estadísticas de ${d.driver}`);
-                if (d.cardColor) {
-                    rowDiv.style.borderLeft = `3px solid ${d.cardColor}`;
-                }
                 if (idx >= 10) {
                     if (!isStandingsExpanded) {
                         rowDiv.classList.add("standings-row-hidden");
@@ -3217,14 +3233,14 @@ function renderStandingsOnPage(drivers) {
                         rowDiv.style.setProperty("--row-delay", `${delayStep * 15}ms`);
                     }
                 }
-                const dAvatar = (d.avatarUrl && d.avatarUrl.trim()) ? `<img src="${escapeHtml(d.avatarUrl.trim())}" class="ranking-driver-avatar" alt="${escapeHtml(d.driver)}" onerror="this.style.display='none'">` : "";
-                const dOfficialFlag = getOfficialDriverFlag(d.driver);
-                const dFlag = dOfficialFlag ? `<span style="margin-right: 4px;">${escapeHtml(dOfficialFlag)}</span>` : "";
+                const teamClass = getTeamClass(d.team);
+                const flagHtml = getDriverFlagHtml(d.driver, 18);
 
                 rowDiv.innerHTML = `
+                    <div class="team-color-strip ${teamClass}"></div>
                     <span class="ranking-row-pos">${idx + 1}</span>
-                    <span class="ranking-row-name driver-clickable" data-driver="${escapeHtml(d.driver)}">${dAvatar}${dFlag}${escapeHtml(d.driver)}</span>
-                    <span class="ranking-team-cell"><span class="ranking-team-pill ${getTeamClass(d.team)} team-clickable" data-team="${escapeHtml(d.team)}" title="Ver equipo ${escapeHtml(d.team)}"><span class="team-dot"></span>${escapeHtml(d.team)}</span></span>
+                    <span class="ranking-row-name driver-clickable" data-driver="${escapeHtml(d.driver)}">${flagHtml}<span>${escapeHtml(d.driver)}</span></span>
+                    <span class="ranking-team-cell"><span class="ranking-team-flat ${teamClass} team-clickable" data-team="${escapeHtml(d.team)}" title="Ver equipo ${escapeHtml(d.team)}">${escapeHtml(d.team)}</span></span>
                     <span class="ranking-row-pts">${Number(d.pts)}</span>
                 `;
                 driverRowsList.appendChild(rowDiv);
@@ -4591,9 +4607,11 @@ function updateConstructorStandings(driverList) {
                 rowDiv.className = "ranking-row team-row-clickable";
                 rowDiv.setAttribute("data-team", row.team);
                 rowDiv.setAttribute("title", isEn ? `View ${row.team} stats` : `Ver estadísticas de ${row.team}`);
+                const teamClass = getTeamClass(row.team);
                 rowDiv.innerHTML = `
+                    <div class="team-color-strip ${teamClass}"></div>
                     <span class="ranking-row-pos">${idx + 1}</span>
-                    <span class="ranking-team-cell"><span class="ranking-team-pill ${getTeamClass(row.team)}"><span class="team-dot"></span>${escapeHtml(row.team)}</span></span>
+                    <span class="ranking-team-cell"><span class="ranking-team-flat ${teamClass}">${escapeHtml(row.team)}</span></span>
                     <span class="ranking-row-pts">${row.pts}</span>
                     <span class="ranking-row-diff">${diff}</span>
                 `;
@@ -4699,9 +4717,11 @@ function updateConstructorStandings(driverList) {
                 rowDiv.className = "ranking-row team-row-clickable";
                 rowDiv.setAttribute("data-team", row.team);
                 rowDiv.setAttribute("title", isEn ? `View ${row.team} stats` : `Ver estadísticas de ${row.team}`);
+                const teamClass = getTeamClass(row.team);
                 rowDiv.innerHTML = `
+                    <div class="team-color-strip ${teamClass}"></div>
                     <span class="ranking-row-pos">${idx + 1}</span>
-                    <span class="ranking-team-cell"><span class="ranking-team-pill ${getTeamClass(row.team)}"><span class="team-dot"></span>${escapeHtml(row.team)}</span></span>
+                    <span class="ranking-team-cell"><span class="ranking-team-flat ${teamClass}">${escapeHtml(row.team)}</span></span>
                     <span class="ranking-row-pts">${row.pts}</span>
                     <span class="ranking-row-diff">${diff}</span>
                 `;

@@ -30,13 +30,14 @@ html {
 }
 
 body {
-    background: #040609;
+    background: #06080d;
     background-image: 
-        radial-gradient(circle at 50% -10%, rgba(214, 180, 92, 0.09), transparent 55%),
-        radial-gradient(circle at 90% 20%, rgba(59, 130, 246, 0.04), transparent 45%);
+        radial-gradient(circle at 50% -10%, rgba(214, 180, 92, 0.07), transparent 50%),
+        radial-gradient(circle at 85% 20%, rgba(225, 6, 0, 0.04), transparent 45%),
+        radial-gradient(circle at 15% 70%, rgba(59, 130, 246, 0.03), transparent 50%);
     background-attachment: fixed;
-    color: #f1f5f9;
-    font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    color: #f8fafc;
+    font-family: "Plus Jakarta Sans", "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
     line-height: 1.55;
     overflow-x: hidden;
     -webkit-font-smoothing: antialiased;
@@ -64,15 +65,22 @@ button {
     --gold: #d6b45c;
     --gold-light: #f5e29f;
     --gold-dark: #8f7431;
-    --gold-glow: rgba(214, 180, 92, 0.25);
-    --bg: #040609;
-    --bg-2: #080c12;
-    --panel: #0a0e16;
-    --panel-2: #0f1522;
+    --gold-glow: rgba(214, 180, 92, 0.2);
+    --bg: #06080d;
+    --bg-2: #0b0f17;
+    --panel: #0d121c;
+    --panel-2: #121824;
     --border: rgba(255, 255, 255, 0.08);
     --border-hover: rgba(255, 255, 255, 0.18);
-    --muted: #8e97a6;
+    --muted: #94a3b8;
     --white: #f8fafc;
+    --red-f1: #e10600;
+}
+
+/* Monospaced Telemetry Numerical Utility */
+.pts, .price, .td-pts, .td-gap, .td-diff, .hud-stat-num, .count-num, .countdown-num, .slot-meta-val, .market-stat-val, .table-pos, .driver-number {
+    font-family: "JetBrains Mono", "Barlow Condensed", monospace;
+    font-variant-numeric: tabular-nums;
 }
 
 
@@ -2721,18 +2729,80 @@ button {
 }
 
 /* 3. Bottom Rows: Positions 4+ */
+/* 1. Team Color Strip */
+.team-color-strip {
+    width: 3px;
+    height: 100%;
+    min-height: 20px;
+    border-radius: 1px;
+    background-color: var(--team-color, #64748b);
+    flex-shrink: 0;
+    align-self: stretch;
+}
+
+/* 2. Flags & Driver Names */
+.driver-flag-img {
+    width: 18px;
+    height: 13px;
+    object-fit: cover;
+    border-radius: 2px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+    flex-shrink: 0;
+    vertical-align: middle;
+    margin-right: 8px;
+    display: inline-block;
+}
+
+.driver-flag-emoji {
+    font-size: 15px;
+    line-height: 1;
+    flex-shrink: 0;
+    vertical-align: middle;
+    margin-right: 8px;
+    display: inline-block;
+}
+
+/* 3. Flat Team Text (No Pill Badge) */
+.ranking-team-cell {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    text-align: left;
+}
+
+.ranking-team-flat {
+    font-family: "Barlow Condensed", sans-serif;
+    font-size: 13.5px;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: #cbd5e1;
+    background: transparent !important;
+    border: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+}
+
+/* 4. Bottom Rows: Positions 4+ */
+.ranking-rows-list {
+    background: #06080e;
+    border: 1px solid #1e293b;
+    border-radius: 2px;
+    overflow: hidden;
+}
+
 .ranking-rows-header {
     display: grid;
-    grid-template-columns: 46px 1fr auto 60px;
+    grid-template-columns: 3px 38px 1fr 140px 60px;
     gap: 10px;
     align-items: center;
-    padding: 10px 18px;
-    background: #06090e;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-    color: #6e747d;
+    padding: 10px 16px;
+    background: #0b0f19;
+    border-bottom: 2px solid #1e293b;
+    color: #94a3b8;
     font-family: "Barlow Condensed", sans-serif;
-    font-size: 11.5px;
-    font-weight: 700;
+    font-size: 12px;
+    font-weight: 800;
     letter-spacing: 1.5px;
     text-transform: uppercase;
 }
@@ -2742,25 +2812,22 @@ button {
 }
 
 .team-rankings-board .ranking-rows-header {
-    grid-template-columns: 46px 1fr 65px 55px;
-}
-
-.ranking-rows-list {
-    background: #090d14;
+    grid-template-columns: 3px 38px 1fr 70px 60px;
 }
 
 .ranking-row {
     display: grid;
-    grid-template-columns: 46px 1fr auto 60px;
+    grid-template-columns: 3px 38px 1fr 140px 60px;
     gap: 10px;
     align-items: center;
-    padding: 9.5px 18px;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    padding: 9.5px 16px;
+    background: #06080e;
+    border-bottom: 1px solid #1e293b;
     transition: background 0.15s ease;
 }
 
 .team-rankings-board .ranking-row {
-    grid-template-columns: 46px 1fr 65px 55px;
+    grid-template-columns: 3px 38px 1fr 70px 60px;
 }
 
 .ranking-row:last-child {
@@ -2768,26 +2835,29 @@ button {
 }
 
 .ranking-row:hover {
-    background: rgba(255, 255, 255, 0.03);
+    background: #0f172a;
 }
 
 .ranking-row-pos {
-    font-family: "Barlow Condensed", sans-serif;
-    font-size: 15px;
+    font-family: "JetBrains Mono", "Barlow Condensed", monospace;
+    font-size: 14px;
     font-weight: 800;
-    color: #788190;
-    letter-spacing: 0.5px;
+    color: #94a3b8;
+    text-align: left;
 }
 
 .ranking-row-name {
+    display: flex;
+    align-items: center;
     font-family: "Barlow Condensed", sans-serif;
-    font-size: 16px;
+    font-size: 15.5px;
     font-weight: 700;
-    color: #ffffff;
+    color: #f8fafc;
     letter-spacing: 0.5px;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    text-align: left;
 }
 
 .ranking-row-team {
@@ -2795,22 +2865,23 @@ button {
     font-size: 13.5px;
     font-weight: 700;
     letter-spacing: 0.8px;
+    text-align: left;
 }
 
 .ranking-row-pts {
     text-align: right;
-    font-family: "Barlow Condensed", sans-serif;
+    font-family: "JetBrains Mono", "Barlow Condensed", monospace;
     font-size: 15.5px;
     font-weight: 800;
-    color: #ffffff;
+    color: #f8fafc;
 }
 
 .ranking-row-diff {
     text-align: right;
-    font-family: "Barlow Condensed", sans-serif;
+    font-family: "JetBrains Mono", "Barlow Condensed", monospace;
     font-size: 13.5px;
     font-weight: 700;
-    color: #737c89;
+    color: #94a3b8;
 }
 
 /* Responsive adjustments */
@@ -2884,27 +2955,27 @@ button {
     }
 
     .ranking-rows-header {
-        grid-template-columns: 36px 1fr auto 50px;
+        grid-template-columns: 3px 28px 1fr 100px 45px;
         gap: 8px;
-        padding: 9px 14px;
+        padding: 9px 12px;
     }
 
     .team-rankings-board .ranking-rows-header {
-        grid-template-columns: 36px 1fr 50px 44px;
+        grid-template-columns: 3px 28px 1fr 50px 45px;
         gap: 8px;
-        padding: 9px 14px;
+        padding: 9px 12px;
     }
 
     .ranking-row {
-        grid-template-columns: 36px 1fr auto 50px;
+        grid-template-columns: 3px 28px 1fr 100px 45px;
         gap: 8px;
-        padding: 8.5px 14px;
+        padding: 8.5px 12px;
     }
 
     .team-rankings-board .ranking-row {
-        grid-template-columns: 36px 1fr 50px 44px;
+        grid-template-columns: 3px 28px 1fr 50px 45px;
         gap: 8px;
-        padding: 8.5px 14px;
+        padding: 8.5px 12px;
     }
 
     .ranking-team-pill {
@@ -2921,25 +2992,25 @@ button {
 
 @media (max-width: 440px) {
     .ranking-rows-header {
-        grid-template-columns: 30px 1fr auto 44px;
+        grid-template-columns: 3px 22px 1fr 75px 38px;
         gap: 6px;
         padding: 8px 10px;
     }
 
     .team-rankings-board .ranking-rows-header {
-        grid-template-columns: 30px 1fr 44px 38px;
+        grid-template-columns: 3px 22px 1fr 44px 38px;
         gap: 6px;
         padding: 8px 10px;
     }
 
     .ranking-row {
-        grid-template-columns: 30px 1fr auto 44px;
+        grid-template-columns: 3px 22px 1fr 75px 38px;
         gap: 6px;
         padding: 7.5px 10px;
     }
 
     .team-rankings-board .ranking-row {
-        grid-template-columns: 30px 1fr 44px 38px;
+        grid-template-columns: 3px 22px 1fr 44px 38px;
         gap: 6px;
         padding: 7.5px 10px;
     }
@@ -2998,18 +3069,18 @@ button {
    TEAM COLORS
 ========================= */
 
-.team-hrt { color: #d5c299; }
-.team-redbull { color: #0600ef; }
-.team-ferrari { color: #dc0000; }
-.team-mercedes { color: #00d2be; }
-.team-tororosso { color: #4c00be; }
-.team-sauber { color: #ffffff; }
-.team-mclaren { color: #c0c0c0; }
-.team-williams { color: #0082fa; }
-.team-lotus { color: #2b8220; }
-.team-virgin { color: #5a0000; }
-.team-renault { color: #fff500; }
-.team-forceindia { color: #ff5f0f; }
+.team-hrt { --team-color: #d5c299; color: #e2d1a8; }
+.team-redbull { --team-color: #2563eb; color: #60a5fa; }
+.team-ferrari { --team-color: #ef4444; color: #f87171; }
+.team-mercedes { --team-color: #06b6d4; color: #22d3ee; }
+.team-tororosso { --team-color: #3b82f6; color: #60a5fa; }
+.team-sauber { --team-color: #22c55e; color: #4ade80; }
+.team-mclaren { --team-color: #f97316; color: #fb923c; }
+.team-williams { --team-color: #0284c7; color: #38bdf8; }
+.team-lotus { --team-color: #eab308; color: #facc15; }
+.team-virgin { --team-color: #dc2626; color: #f87171; }
+.team-renault { --team-color: #facc15; color: #fde047; }
+.team-forceindia { --team-color: #ff5f0f; color: #fb923c; }
 
 
 /* =========================
@@ -10701,6 +10772,212 @@ footer {
         padding: 8px 12px;
         font-size: 13px;
     }
+}
+
+
+/* =========================================================
+   AUTHENTIC F1 BROADCAST & TELEMETRY DESIGN OVERHAUL
+   ========================================================= */
+
+/* --- DIRECTIVE 1: SHAPE (Sharp 2px mechanical borders across all components) --- */
+.hero-gp-card, .info-card, .driver-card-inner, .fantasy-hud-card, .market-card, 
+.slot-filled-card, .slot-empty-card, .admin-card, .claim-box, .auth-modal-dialog, 
+.card-editor-modal, .compare-card, .race-modal, .navbar, .standing-card,
+.ranking-table-card, .modal-content, .card, input, select, textarea, button,
+.btn-primary, .fantasy-hud-btn, .market-action-btn, .claim-submit-btn, .auth-submit-btn,
+.nav-btn, .hero-tab-btn, .subtab-btn, .badge, .status-badge, .pos-badge, .lb-pos, .td-pos {
+    border-radius: 2px !important;
+}
+
+/* Mechanical square frames for avatars and icons (no circles) */
+.market-card-avatar, .slot-avatar-img, .driver-card-avatar, .nav-avatar-img,
+.user-avatar-img, .leaderboard-avatar, .compare-avatar, .card-avatar,
+.market-card-team-icon, .slot-team-logo-icon, .brand-logo {
+    border-radius: 2px !important;
+}
+
+/* --- DIRECTIVE 2: CLEAN CONTRAST (Flat 1px solid charcoal/gold borders, crisp text, no glowing radial noise) --- */
+.hero-gp-card, .info-card, .driver-card-inner, .fantasy-hud-card, .market-card, 
+.slot-filled-card, .slot-empty-card, .admin-card, .claim-box, .auth-modal-dialog, 
+.card-editor-modal, .compare-card, .race-modal, .navbar, .standing-card,
+.ranking-table-card, .modal-content, .card {
+    background: #090d14 !important;
+    border: 1px solid #1e293b !important;
+    box-shadow: none !important;
+    text-shadow: none !important;
+    filter: none !important;
+}
+
+.hero-gp-card:hover, .info-card:hover, .market-card:hover, .compare-card:hover,
+.driver-card-inner:hover, .slot-filled-card:hover {
+    border-color: rgba(214, 180, 92, 0.45) !important;
+    box-shadow: none !important;
+    transform: none !important;
+}
+
+/* Bright contrast typography so text never fades into dark backgrounds */
+body {
+    color: #f8fafc !important;
+}
+
+p, span, td, th, div, label, li, a {
+    text-shadow: none !important;
+}
+
+.muted, .text-muted, .hud-stat-lbl, .slot-meta-lbl, .market-stat-lbl, 
+.card-meta-lbl, .slot-type-label, .admin-label, .claim-lbl,
+.standing-sub, .hero-sub, .table-header, .stat-label, .slot-meta-item .slot-meta-lbl {
+    color: #cbd5e1 !important;
+    font-weight: 700 !important;
+    letter-spacing: 0.05em !important;
+}
+
+/* High-Precision Monospaced Telemetry Numbers */
+.pts, .price, .td-pts, .td-gap, .td-diff, .hud-stat-num, .count-num, .countdown-num, 
+.slot-meta-val, .market-stat-val, .table-pos, .driver-number, .card-stat-val, .driver-points-total,
+.ranking-pts, .ranking-pos, .lb-pts, .lb-pos, .stat-value, .metric-number {
+    font-family: "JetBrains Mono", "Barlow Condensed", monospace !important;
+    font-variant-numeric: tabular-nums !important;
+    letter-spacing: -0.02em !important;
+}
+
+/* --- DIRECTIVE 3: TYPOGRAPHY OVER BADGES (Raw text with vertical accent blocks instead of rounded pill capsules) --- */
+.ranking-team-pill, .driver-modal-team-pill, .status-badge, .card-tag, 
+.badge, .pill, .team-pill {
+    background: transparent !important;
+    border: none !important;
+    border-radius: 0 !important;
+    padding: 0 !important;
+    box-shadow: none !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 6px !important;
+    font-family: "Barlow Condensed", sans-serif !important;
+    font-size: 13px !important;
+    font-weight: 800 !important;
+    letter-spacing: 0.05em !important;
+    text-transform: uppercase !important;
+    color: #f8fafc !important;
+}
+
+/* Convert rounded dots into crisp vertical accent lines */
+.team-dot, .ranking-team-pill .team-dot, .driver-modal-team-pill .team-dot {
+    width: 4px !important;
+    height: 13px !important;
+    border-radius: 0 !important;
+    background: currentColor !important;
+    box-shadow: none !important;
+    flex-shrink: 0 !important;
+}
+
+/* --- DIRECTIVE 4: SIMPLIFY LAYOUTS (Remove nested bounding boxes within cards, strip out extra padding) --- */
+.market-card-stats, .slot-meta-row, .hud-card-body, .info-card-inner,
+.compare-card-stats, .card-editor-section, .claim-box-inner,
+.driver-card-stats, .admin-card-body {
+    background: transparent !important;
+    border: none !important;
+    border-top: 1px solid #1e293b !important;
+    border-bottom: 1px solid #1e293b !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    padding: 8px 0 !important;
+    margin: 10px 0 !important;
+}
+
+/* Dense data presentation */
+.market-card, .slot-filled-card, .info-card, .fantasy-hud-card, .driver-card-inner {
+    padding: 14px !important;
+}
+
+/* Tables: Telemetry timing screen alignment */
+.standings-table, .leaderboard-table, .race-table, .fantasy-leaderboard-table, .compare-rounds-table {
+    border-collapse: collapse !important;
+    width: 100% !important;
+    border: 1px solid #1e293b !important;
+}
+
+.standings-table th, .leaderboard-table th, .race-table th, .fantasy-leaderboard-table th {
+    background: #0f172a !important;
+    color: #cbd5e1 !important;
+    font-family: "Barlow Condensed", sans-serif !important;
+    font-weight: 800 !important;
+    font-size: 12px !important;
+    letter-spacing: 0.1em !important;
+    text-transform: uppercase !important;
+    padding: 10px 12px !important;
+    border-bottom: 2px solid #1e293b !important;
+}
+
+.standings-table td, .leaderboard-table td, .race-table td, .fantasy-leaderboard-table td {
+    padding: 9px 12px !important;
+    border-bottom: 1px solid #1e293b !important;
+    color: #f8fafc !important;
+    font-size: 13.5px !important;
+}
+
+.standings-table tr:hover td, .leaderboard-table tr:hover td, .race-table tr:hover td {
+    background: rgba(255, 255, 255, 0.03) !important;
+}
+
+/* Mechanical top-3 badges */
+.pos-badge.pos-1, .lb-pos.pos-1, .td-pos.pos-1 {
+    color: #000 !important;
+    background: #f59e0b !important;
+    font-weight: 900 !important;
+    border-radius: 2px !important;
+    padding: 2px 6px !important;
+}
+
+.pos-badge.pos-2, .lb-pos.pos-2, .td-pos.pos-2 {
+    color: #000 !important;
+    background: #cbd5e1 !important;
+    font-weight: 900 !important;
+    border-radius: 2px !important;
+    padding: 2px 6px !important;
+}
+
+.pos-badge.pos-3, .lb-pos.pos-3, .td-pos.pos-3 {
+    color: #fff !important;
+    background: #b45309 !important;
+    font-weight: 900 !important;
+    border-radius: 2px !important;
+    padding: 2px 6px !important;
+}
+
+/* Sharp mechanical form controls & buttons */
+input[type="text"], input[type="email"], input[type="password"], input[type="number"], select, textarea {
+    background: #030712 !important;
+    border: 1px solid #334155 !important;
+    border-radius: 2px !important;
+    color: #ffffff !important;
+    font-family: "Plus Jakarta Sans", sans-serif !important;
+    padding: 8px 12px !important;
+}
+
+input[type="text"]:focus, input[type="email"]:focus, input[type="password"]:focus, input[type="number"]:focus, select:focus, textarea:focus {
+    border-color: var(--gold) !important;
+    box-shadow: none !important;
+    outline: none !important;
+}
+
+.btn-primary, .fantasy-hud-btn, .market-action-btn.sign-btn, .claim-submit-btn, .auth-submit-btn {
+    border-radius: 2px !important;
+    box-shadow: none !important;
+    font-family: "Barlow Condensed", sans-serif !important;
+    font-weight: 800 !important;
+    letter-spacing: 0.08em !important;
+    text-transform: uppercase !important;
+}
+
+.btn-primary:hover, .fantasy-hud-btn:hover, .market-action-btn.sign-btn:hover:not(:disabled), .claim-submit-btn:hover, .auth-submit-btn:hover {
+    box-shadow: none !important;
+    filter: brightness(1.15) !important;
+}
+
+/* Modal overlay sharpness */
+.auth-modal-overlay, .card-editor-overlay, .race-overlay, .claim-modal-overlay {
+    background: rgba(3, 7, 18, 0.9) !important;
+    backdrop-filter: blur(8px) !important;
 }
 
 
