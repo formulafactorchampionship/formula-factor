@@ -417,6 +417,28 @@ const translations = {
             customizeBtn: "🎨 Personalizar Tarjeta",
             viewCardBtn: "👁️ Ver Tarjeta"
         },
+        cardEditor: {
+            title: "🎨 PERSONALIZAR TU TARJETA DE PILOTO",
+            desc: "Los cambios se guardarán en Firebase y se reflejarán públicamente en tu ficha de piloto.",
+            previewLabel: "VISTA PREVIA EN TIEMPO REAL DE TU TARJETA",
+            liveBadge: "EN VIVO",
+            verifiedTag: "VERIFICADO ✅",
+            group1: "COLOR DE TU TARJETA & ESCUDERÍA",
+            customColorLabel: "O elige cualquier color:",
+            group2: "FOTO DE PERFIL O AVATAR",
+            avatarPresetLabel: "Avatares FFC:",
+            btnTriggerAvatarFile: "📁 Subir desde tu equipo (PC/Móvil)",
+            avatarUploadOr: "o pega un enlace de imagen:",
+            group3: "NACIONALIDAD OFICIAL DEL PILOTO",
+            lockedBadge: "🔒 OFICIAL FFC",
+            officialFlagNotice: "El país está fijado por la FIA/FFC en base a tu inscripción oficial y no se puede modificar.",
+            group4: "BIOGRAFÍA Y PERIFÉRICOS",
+            bioSuggestLabel: "Ideas rápidas:",
+            bioPlaceholder: "Resumen de tu estilo de conducción, periféricos, aspiraciones en FFC...",
+            group5: "REDES SOCIALES & CONTACTO",
+            saveBtn: "⚡ Guardar Cambios en Firebase",
+            viewBtn: "👁️ Ver Tarjeta"
+        },
         fantasy: {
             backBtn: "Volver a la Web Principal",
             statusLive: "● EN VIVO",
@@ -648,6 +670,28 @@ const translations = {
             unlinkBtn: "🔓 Unlink Driver",
             customizeBtn: "🎨 Customize Card",
             viewCardBtn: "👁️ View Card"
+        },
+        cardEditor: {
+            title: "🎨 CUSTOMIZE YOUR DRIVER CARD",
+            desc: "Changes will be saved to Firebase and reflected publicly on your driver card.",
+            previewLabel: "REAL-TIME PREVIEW OF YOUR CARD",
+            liveBadge: "LIVE",
+            verifiedTag: "VERIFIED ✅",
+            group1: "CARD & TEAM COLOR",
+            customColorLabel: "Or choose any color:",
+            group2: "PROFILE PHOTO OR AVATAR",
+            avatarPresetLabel: "FFC Avatars:",
+            btnTriggerAvatarFile: "📁 Upload from device (PC/Mobile)",
+            avatarUploadOr: "or paste an image link:",
+            group3: "OFFICIAL DRIVER NATIONALITY",
+            lockedBadge: "🔒 OFFICIAL FFC",
+            officialFlagNotice: "Nationality is set by the FIA/FFC based on your official entry and cannot be modified.",
+            group4: "BIOGRAPHY & PERIPHERALS",
+            bioSuggestLabel: "Quick ideas:",
+            bioPlaceholder: "Summary of your driving style, peripherals, aspirations in FFC...",
+            group5: "SOCIAL MEDIA & CONTACT",
+            saveBtn: "⚡ Save Changes to Firebase",
+            viewBtn: "👁️ View Card"
         },
         fantasy: {
             backBtn: "Back to Main Site",
@@ -958,18 +1002,44 @@ function applyTranslations(lang) {
         if (authBtnLabelEl && !authBtnLabelEl.dataset.customName) {
             authBtnLabelEl.textContent = dict.auth.btnLabel;
         }
-        const authBadgeEl = document.getElementById("authCardBadge");
+        const authBadgeEl = document.getElementById("authBadge");
         if (authBadgeEl) authBadgeEl.textContent = dict.auth.badge;
         const tabLog = document.getElementById("authTabLogin");
         if (tabLog) tabLog.textContent = dict.auth.tabLogin;
         const tabReg = document.getElementById("authTabRegister");
         if (tabReg) tabReg.textContent = dict.auth.tabRegister;
-        const logSub = document.getElementById("authLoginSub");
+
+        const logSub = document.getElementById("loginSubtitle");
         if (logSub) logSub.textContent = dict.auth.loginSub;
-        const regSub = document.getElementById("authRegisterSub");
+        const regSub = document.getElementById("registerSubtitle");
         if (regSub) regSub.textContent = dict.auth.registerSub;
-        const resSub = document.getElementById("authResetSub");
+        const resSub = document.getElementById("resetSubtitle");
         if (resSub) resSub.textContent = dict.auth.resetSub;
+
+        // Labels
+        const lblLogEmail = document.getElementById("labelLoginEmail");
+        if (lblLogEmail) lblLogEmail.textContent = dict.auth.labelEmail;
+        const lblLogPassword = document.getElementById("labelLoginPassword");
+        if (lblLogPassword) lblLogPassword.textContent = dict.auth.labelPassword;
+        const lblRegName = document.getElementById("labelRegisterName");
+        if (lblRegName) lblRegName.textContent = dict.auth.labelName;
+        const lblRegEmail = document.getElementById("labelRegisterEmail");
+        if (lblRegEmail) lblRegEmail.textContent = dict.auth.labelEmail;
+        const lblRegPassword = document.getElementById("labelRegisterPassword");
+        if (lblRegPassword) lblRegPassword.textContent = dict.auth.labelPasswordReg;
+        const lblResEmail = document.getElementById("labelResetEmail");
+        if (lblResEmail) lblResEmail.textContent = dict.auth.labelEmail;
+
+        // Input placeholders
+        const inputLogEmail = document.getElementById("loginEmailInput");
+        if (inputLogEmail) inputLogEmail.placeholder = lang === "en" ? "driver@formulafactor.com" : "piloto@formulafactor.com";
+        const inputRegName = document.getElementById("registerNameInput");
+        if (inputRegName) inputRegName.placeholder = lang === "en" ? "e.g. Ayrton, Max, Dieguiosk..." : "Ej. Ayrton, Max, Dieguiosk...";
+        const inputRegEmail = document.getElementById("registerEmailInput");
+        if (inputRegEmail) inputRegEmail.placeholder = lang === "en" ? "driver@formulafactor.com" : "piloto@formulafactor.com";
+        const inputResEmail = document.getElementById("resetEmailInput");
+        if (inputResEmail) inputResEmail.placeholder = lang === "en" ? "driver@formulafactor.com" : "piloto@formulafactor.com";
+
         const forgotLink = document.getElementById("authForgotBtn");
         if (forgotLink) forgotLink.textContent = dict.auth.forgotLink;
         const logCancel = document.getElementById("loginCancelBtn");
@@ -978,12 +1048,14 @@ function applyTranslations(lang) {
         if (regCancel) regCancel.textContent = dict.auth.btnCancel;
         const resBack = document.getElementById("resetBackBtn");
         if (resBack) resBack.textContent = dict.auth.btnBack;
-        const logSubBtn = document.getElementById("loginSubmitBtn");
-        if (logSubBtn && !logSubBtn.disabled) logSubBtn.textContent = dict.auth.btnSubmitLogin;
-        const regSubBtn = document.getElementById("registerSubmitBtn");
-        if (regSubBtn && !regSubBtn.disabled) regSubBtn.textContent = dict.auth.btnSubmitRegister;
-        const resSubBtn = document.getElementById("resetSubmitBtn");
-        if (resSubBtn && !resSubBtn.disabled) resSubBtn.textContent = dict.auth.btnSubmitReset;
+
+        const logSubText = document.getElementById("loginSubmitBtnText");
+        if (logSubText) logSubText.textContent = dict.auth.btnSubmitLogin;
+        const regSubText = document.getElementById("registerSubmitBtnText");
+        if (regSubText) regSubText.textContent = dict.auth.btnSubmitRegister;
+        const resSubText = document.getElementById("resetSubmitBtnText");
+        if (resSubText) resSubText.textContent = dict.auth.btnSubmitReset;
+
         const uLogout = document.getElementById("userLogoutBtn");
         if (uLogout) {
             const logoutSpan = uLogout.querySelector("span:last-child");
@@ -991,6 +1063,12 @@ function applyTranslations(lang) {
         }
         const uAdminBtn = document.getElementById("userAdminBtnText");
         if (uAdminBtn && dict.auth && dict.auth.adminPanelBtn) uAdminBtn.textContent = dict.auth.adminPanelBtn;
+        const uFantasyBtn = document.getElementById("userFantasyBtnText");
+        if (uFantasyBtn) uFantasyBtn.textContent = lang === "en" ? "My FFC Fantasy Team" : "Mi Escudería FFC Fantasy";
+
+        if (typeof activeUserAuth !== "undefined" && activeUserAuth) {
+            renderUserAuthState(activeUserAuth);
+        }
     }
 
     // Driver Claim / Verification Card translations
@@ -1027,6 +1105,50 @@ function applyTranslations(lang) {
 
         const cView = document.getElementById("openMyDriverCardBtn");
         if (cView) cView.textContent = dict.claim.viewCardBtn;
+    }
+
+    // Driver Card Editor Modal translations
+    if (dict.cardEditor) {
+        const ceTitle = document.getElementById("cardEditorTitle");
+        if (ceTitle) ceTitle.textContent = dict.cardEditor.title;
+        const ceDesc = document.getElementById("cardEditorDesc");
+        if (ceDesc) ceDesc.textContent = dict.cardEditor.desc;
+        const cePrevLabel = document.getElementById("cardEditorPreviewLabel");
+        if (cePrevLabel) cePrevLabel.textContent = dict.cardEditor.previewLabel;
+        const ceLiveBadge = document.getElementById("cardEditorLiveBadge");
+        if (ceLiveBadge) ceLiveBadge.textContent = dict.cardEditor.liveBadge;
+        const ceG1 = document.getElementById("cardGroup1Title");
+        if (ceG1) ceG1.textContent = dict.cardEditor.group1;
+        const ceCustColor = document.getElementById("cardCustomColorLabel");
+        if (ceCustColor) ceCustColor.textContent = dict.cardEditor.customColorLabel;
+        const ceG2 = document.getElementById("cardGroup2Title");
+        if (ceG2) ceG2.textContent = dict.cardEditor.group2;
+        const ceAvLabel = document.getElementById("avatarPresetLabel");
+        if (ceAvLabel) ceAvLabel.textContent = dict.cardEditor.avatarPresetLabel;
+        const ceRemAv = document.getElementById("btnRemoveAvatar");
+        if (ceRemAv) ceRemAv.title = lang === "en" ? "Remove photo" : "Quitar foto";
+        const ceTrigFile = document.getElementById("btnTriggerAvatarFileSpan");
+        if (ceTrigFile) ceTrigFile.textContent = dict.cardEditor.btnTriggerAvatarFile;
+        const ceOrText = document.getElementById("avatarUploadOrText");
+        if (ceOrText) ceOrText.textContent = dict.cardEditor.avatarUploadOr;
+        const ceG3 = document.getElementById("cardGroup3Title");
+        if (ceG3) ceG3.textContent = dict.cardEditor.group3;
+        const ceLocked = document.getElementById("cardLockedBadge");
+        if (ceLocked) ceLocked.textContent = dict.cardEditor.lockedBadge;
+        const ceNotice = document.getElementById("officialFlagNotice");
+        if (ceNotice) ceNotice.textContent = dict.cardEditor.officialFlagNotice;
+        const ceG4 = document.getElementById("cardGroup4Title");
+        if (ceG4) ceG4.textContent = dict.cardEditor.group4;
+        const ceBioSuggest = document.getElementById("bioSuggestLabel");
+        if (ceBioSuggest) ceBioSuggest.textContent = dict.cardEditor.bioSuggestLabel;
+        const ceBio = document.getElementById("editCardBio");
+        if (ceBio) ceBio.placeholder = dict.cardEditor.bioPlaceholder;
+        const ceG5 = document.getElementById("cardGroup5Title");
+        if (ceG5) ceG5.textContent = dict.cardEditor.group5;
+        const ceSave = document.getElementById("saveDriverCardBtn");
+        if (ceSave) ceSave.textContent = dict.cardEditor.saveBtn;
+        const ceView = document.getElementById("modalViewOfficialCardBtn");
+        if (ceView) ceView.textContent = dict.cardEditor.viewBtn;
     }
 
     // Fantasy section translations
@@ -7461,6 +7583,7 @@ function openUserAuthModal(tab = "login") {
     closeAllDropdowns();
     clearAuthAlert();
     switchUserAuthTab(tab);
+    if (typeof setLanguage === "function") setLanguage(currentLanguage);
     userAuthOverlay.classList.add("active");
     document.body.classList.add("modal-open");
 }
@@ -7769,9 +7892,11 @@ if (userLoginForm) {
         }
 
         const isEn = currentLanguage === "en";
+        const loginSubSpan = document.getElementById("loginSubmitBtnText");
         if (loginSubmitBtn) {
             loginSubmitBtn.disabled = true;
-            loginSubmitBtn.textContent = isEn ? "LOGGING IN..." : "INICIANDO SESIÓN...";
+            if (loginSubSpan) loginSubSpan.textContent = isEn ? "LOGGING IN..." : "INICIANDO SESIÓN...";
+            else loginSubmitBtn.textContent = isEn ? "LOGGING IN..." : "INICIANDO SESIÓN...";
         }
 
         try {
@@ -7788,7 +7913,8 @@ if (userLoginForm) {
             if (loginSubmitBtn) {
                 loginSubmitBtn.disabled = false;
                 const dict = translations[currentLanguage] || translations.es;
-                loginSubmitBtn.textContent = dict.auth ? dict.auth.btnSubmitLogin : "INICIAR SESIÓN";
+                const text = dict.auth ? dict.auth.btnSubmitLogin : (isEn ? "LOG IN" : "INICIAR SESIÓN");
+                loginSubmitBtn.innerHTML = `<span class="btn-text" id="loginSubmitBtnText">${text}</span>`;
             }
         }
     });
@@ -7816,9 +7942,11 @@ if (userRegisterForm) {
             return;
         }
 
+        const regSubSpan = document.getElementById("registerSubmitBtnText");
         if (registerSubmitBtn) {
             registerSubmitBtn.disabled = true;
-            registerSubmitBtn.textContent = isEn ? "CREATING ACCOUNT..." : "CREANDO CUENTA...";
+            if (regSubSpan) regSubSpan.textContent = isEn ? "CREATING ACCOUNT..." : "CREANDO CUENTA...";
+            else registerSubmitBtn.textContent = isEn ? "CREATING ACCOUNT..." : "CREANDO CUENTA...";
         }
 
         try {
@@ -7835,7 +7963,8 @@ if (userRegisterForm) {
             if (registerSubmitBtn) {
                 registerSubmitBtn.disabled = false;
                 const dict = translations[currentLanguage] || translations.es;
-                registerSubmitBtn.textContent = dict.auth ? dict.auth.btnSubmitRegister : "CREAR CUENTA";
+                const text = dict.auth ? dict.auth.btnSubmitRegister : (isEn ? "CREATE ACCOUNT" : "CREAR CUENTA");
+                registerSubmitBtn.innerHTML = `<span class="btn-text" id="registerSubmitBtnText">${text}</span>`;
             }
         }
     });
@@ -7855,9 +7984,11 @@ if (userResetForm) {
             return;
         }
 
+        const resetSubSpan = document.getElementById("resetSubmitBtnText");
         if (resetSubmitBtn) {
             resetSubmitBtn.disabled = true;
-            resetSubmitBtn.textContent = isEn ? "SENDING..." : "ENVIANDO...";
+            if (resetSubSpan) resetSubSpan.textContent = isEn ? "SENDING..." : "ENVIANDO...";
+            else resetSubmitBtn.textContent = isEn ? "SENDING..." : "ENVIANDO...";
         }
 
         try {
@@ -7876,7 +8007,8 @@ if (userResetForm) {
             if (resetSubmitBtn) {
                 resetSubmitBtn.disabled = false;
                 const dict = translations[currentLanguage] || translations.es;
-                resetSubmitBtn.textContent = dict.auth ? dict.auth.btnSubmitReset : "ENVIAR ENLACE";
+                const text = dict.auth ? dict.auth.btnSubmitReset : (isEn ? "SEND LINK" : "ENVIAR ENLACE");
+                resetSubmitBtn.innerHTML = `<span class="btn-text" id="resetSubmitBtnText">${text}</span>`;
             }
         }
     });

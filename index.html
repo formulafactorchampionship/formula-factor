@@ -2816,15 +2816,15 @@
         <button type="button" class="card-editor-modal-close" id="closeCardEditorModal" aria-label="Cerrar modal">&times;</button>
         
         <div class="card-editor-header">
-            <h2 class="card-editor-title">🎨 PERSONALIZAR TU TARJETA DE PILOTO</h2>
-            <p>Los cambios se guardarán en Firebase y se reflejarán públicamente en tu ficha de piloto.</p>
+            <h2 class="card-editor-title" id="cardEditorTitle">🎨 PERSONALIZAR TU TARJETA DE PILOTO</h2>
+            <p id="cardEditorDesc">Los cambios se guardarán en Firebase y se reflejarán públicamente en tu ficha de piloto.</p>
         </div>
 
         <!-- Live Preview of Driver Card -->
         <div class="card-editor-preview-container">
             <div class="preview-title-row">
-                <span class="modal-sub-label">VISTA PREVIA EN TIEMPO REAL DE TU TARJETA</span>
-                <span class="preview-badge-live">EN VIVO</span>
+                <span class="modal-sub-label" id="cardEditorPreviewLabel">VISTA PREVIA EN TIEMPO REAL DE TU TARJETA</span>
+                <span class="preview-badge-live" id="cardEditorLiveBadge">EN VIVO</span>
             </div>
             <div class="card-live-preview-box" id="cardLivePreviewBox">
                 <div class="preview-card-strip" id="previewCardStrip"></div>
@@ -2859,7 +2859,7 @@
             <div class="card-edit-group">
                 <div class="card-group-header">
                     <span class="card-group-num">1</span>
-                    <span class="card-group-title">COLOR DE TU TARJETA & ESCUDERÍA</span>
+                    <span class="card-group-title" id="cardGroup1Title">COLOR DE TU TARJETA & ESCUDERÍA</span>
                 </div>
                 <div class="color-preset-grid" id="colorPresetGrid">
                     <button type="button" class="color-swatch-btn" data-color="#e10600" title="Ferrari Red" style="--swatch-color: #e10600;"></button>
@@ -2874,7 +2874,7 @@
                     <button type="button" class="color-swatch-btn" data-color="#10b981" title="Turbo Mint" style="--swatch-color: #10b981;"></button>
                 </div>
                 <div class="custom-color-row">
-                    <span class="custom-color-label">O elige cualquier color:</span>
+                    <span class="custom-color-label" id="cardCustomColorLabel">O elige cualquier color:</span>
                     <div class="color-picker-wrapper">
                         <input type="color" id="editCardColor" value="#e10600">
                         <span id="editCardColorHex" class="color-hex-label">#E10600</span>
@@ -2886,11 +2886,11 @@
             <div class="card-edit-group">
                 <div class="card-group-header">
                     <span class="card-group-num">2</span>
-                    <span class="card-group-title">FOTO DE PERFIL O AVATAR</span>
+                    <span class="card-group-title" id="cardGroup2Title">FOTO DE PERFIL O AVATAR</span>
                 </div>
                 <div class="avatar-controls-container">
                     <div class="avatar-quick-presets" id="avatarQuickPresets">
-                        <span class="avatar-preset-label">Avatares FFC:</span>
+                        <span class="avatar-preset-label" id="avatarPresetLabel">Avatares FFC:</span>
                         <button type="button" class="avatar-preset-btn" data-avatar="helmet-gold" title="Casco Oro">🏆 Oro</button>
                         <button type="button" class="avatar-preset-btn" data-avatar="helmet-red" title="Casco Rojo">🔴 Rojo</button>
                         <button type="button" class="avatar-preset-btn" data-avatar="helmet-blue" title="Casco Azul">🔵 Azul</button>
@@ -2900,10 +2900,10 @@
                     
                     <div class="avatar-upload-row">
                         <button type="button" class="btn-avatar-upload" id="btnTriggerAvatarFile">
-                            <span>📁 Subir desde tu equipo (PC/Móvil)</span>
+                            <span id="btnTriggerAvatarFileSpan">📁 Subir desde tu equipo (PC/Móvil)</span>
                         </button>
                         <input type="file" id="editCardFileInput" accept="image/*" style="display: none;">
-                        <span class="avatar-upload-or">o pega un enlace de imagen:</span>
+                        <span class="avatar-upload-or" id="avatarUploadOrText">o pega un enlace de imagen:</span>
                     </div>
                     <input type="url" id="editCardAvatar" class="claim-input" placeholder="https://ejemplo.com/tu-foto.jpg">
                 </div>
@@ -2913,8 +2913,8 @@
             <div class="card-edit-group card-group-readonly">
                 <div class="card-group-header">
                     <span class="card-group-num">3</span>
-                    <span class="card-group-title">NACIONALIDAD OFICIAL DEL PILOTO</span>
-                    <span class="card-locked-badge">🔒 OFICIAL FFC</span>
+                    <span class="card-group-title" id="cardGroup3Title">NACIONALIDAD OFICIAL DEL PILOTO</span>
+                    <span class="card-locked-badge" id="cardLockedBadge">🔒 OFICIAL FFC</span>
                 </div>
                 <div class="official-nationality-card">
                     <span id="editCardFlagDisplay" class="official-flag-icon">🏁</span>
@@ -2929,11 +2929,11 @@
             <div class="card-edit-group">
                 <div class="card-group-header">
                     <span class="card-group-num">4</span>
-                    <span class="card-group-title">BIOGRAFÍA Y PERIFÉRICOS</span>
+                    <span class="card-group-title" id="cardGroup4Title">BIOGRAFÍA Y PERIFÉRICOS</span>
                     <span class="bio-char-count" id="bioCharCounter">0/300</span>
                 </div>
                 <div class="bio-suggestions-row">
-                    <span class="bio-suggest-label">Ideas rápidas:</span>
+                    <span class="bio-suggest-label" id="bioSuggestLabel">Ideas rápidas:</span>
                     <button type="button" class="bio-tag-btn" data-tag="🎮 Mando PS5">🎮 Mando</button>
                     <button type="button" class="bio-tag-btn" data-tag="🕹️ Volante G29">🕹️ Volante G29</button>
                     <button type="button" class="bio-tag-btn" data-tag="🏎️ Fanatec DD">🏎️ Fanatec DD</button>
@@ -2948,7 +2948,7 @@
             <div class="card-edit-group">
                 <div class="card-group-header">
                     <span class="card-group-num">5</span>
-                    <span class="card-group-title">REDES SOCIALES & CONTACTO</span>
+                    <span class="card-group-title" id="cardGroup5Title">REDES SOCIALES & CONTACTO</span>
                 </div>
                 <div class="social-input-grid-visual">
                     <div class="social-input-item">
