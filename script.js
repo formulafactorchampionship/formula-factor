@@ -3028,6 +3028,8 @@ const OFFICIAL_COUNTRY_FLAGS = [
     { name: "Bulgaria", flag: "🇧🇬" },
     { name: "Chipre", flag: "🇨🇾" },
     { name: "Croacia", flag: "🇭🇷" },
+    { name: "República Checa", flag: "🇨🇿" },
+    { name: "Unión Europea", flag: "🇪🇺" },
     { name: "Eslovaquia", flag: "🇸🇰" },
     { name: "Eslovenia", flag: "🇸🇮" },
     { name: "Estonia", flag: "🇪🇪" },
@@ -3176,22 +3178,53 @@ const OFFICIAL_COUNTRY_FLAGS = [
 ];
 
 function getCountryCodeFromEmoji(emoji) {
-    if (!emoji || emoji === "🏁") return null;
-    if (emoji === "🏴󠁧󠁢󠁳󠁣󠁴󠁿") return "gb-sct";
-    if (emoji === "🇪🇺") return "eu";
-    const chars = [...emoji];
+    if (!emoji || emoji === "🏁" || emoji === "🏭") return null;
+    
+    let cleanEmoji = String(emoji).trim();
+    if (cleanEmoji.includes("🏴󠁧󠁢󠁳󠁣󠁴󠁿")) return "gb-sct";
+    if (cleanEmoji.includes("🏴󠁧󠁢󠁥󠁮󠁧󠁿")) return "gb-eng";
+    if (cleanEmoji.includes("🏴󠁧󠁢󠁷󠁬󠁳󠁿")) return "gb-wls";
+    if (cleanEmoji.includes("🇪🇺")) return "eu";
+
+    // Extract regional indicator letters
+    const matched = cleanEmoji.match(/[\uD83C][\uDDE6-\uDDFF][\uD83C][\uDDE6-\uDDFF]/);
+    if (matched) {
+        cleanEmoji = matched[0];
+    } else {
+        const chars = [...cleanEmoji];
+        if (chars.length >= 2) {
+            for (let i = 0; i < chars.length - 1; i++) {
+                const code1 = chars[i].codePointAt(0);
+                const code2 = chars[i+1].codePointAt(0);
+                if (code1 >= 127462 && code1 <= 127487 && code2 >= 127462 && code2 <= 127487) {
+                    cleanEmoji = chars[i] + chars[i+1];
+                    break;
+                }
+            }
+        }
+    }
+
+    const chars = [...cleanEmoji];
     if (chars.length !== 2) return null;
-    const code = chars.map(c => String.fromCharCode(c.codePointAt(0) - 127397)).join('').toLowerCase();
+    const code = chars.map(c => {
+        const cp = c.codePointAt(0);
+        return String.fromCharCode(cp - 127397);
+    }).join('').toLowerCase();
     return code.length === 2 ? code : null;
+}
+
+function getFlagHtml(flagEmoji, size = 18) {
+    if (!flagEmoji) return `<span class="driver-flag-emoji" style="display: inline-block; vertical-align: middle;">🏁</span>`;
+    const code = getCountryCodeFromEmoji(flagEmoji);
+    if (code) {
+        return `<img src="https://flagcdn.com/w40/${code}.png" class="driver-flag-img inline-block align-middle" alt="${code}" style="width: ${size}px; height: auto; max-height: ${Math.round(size * 0.85)}px; border-radius: 2px; box-shadow: 0 1px 3px rgba(0,0,0,0.35); display: inline-block; vertical-align: middle; margin-top: -2px; margin-right: 4px;" onerror="this.outerHTML='<span class=\\'driver-flag-emoji\\'>${flagEmoji}</span>'">`;
+    }
+    return `<span class="driver-flag-emoji" style="display: inline-block; vertical-align: middle;">${flagEmoji}</span>`;
 }
 
 function getDriverFlagHtml(driverName, size = 18) {
     const flagEmoji = (typeof getOfficialDriverFlag === "function") ? getOfficialDriverFlag(driverName) : "🏁";
-    const code = getCountryCodeFromEmoji(flagEmoji);
-    if (code) {
-        return `<img src="https://flagcdn.com/w40/${code}.png" class="driver-flag-img" alt="${code}" width="${size}" height="${Math.round(size * 0.75)}" onerror="this.outerHTML='<span class=\\'driver-flag-emoji\\'>${flagEmoji}</span>'">`;
-    }
-    return `<span class="driver-flag-emoji">${flagEmoji || "🏁"}</span>`;
+    return getFlagHtml(flagEmoji, size);
 }
 
 const COUNTRY_NAMES_BY_FLAG = {
@@ -3700,7 +3733,7 @@ function renderFfcMatrixTable(filterText = "") {
         const driverContent = `
             <div class="driver-cell-content driver-clickable" data-driver="${escapeHtml(row.driver)}" title="Ver estadísticas de ${escapeHtml(row.driver)}">
                 <span class="driver-number-badge ${getTeamClass(row.team)}">${row.number || ""}</span>
-                <span class="driver-flag-emoji">${row.flag || ""}</span>
+                <span class="driver-flag-emoji">${getFlagHtml(row.flag || getOfficialDriverFlag(row.driver), 18)}</span>
                 <span class="driver-name-text">${escapeHtml(row.driver)}</span>
             </div>
         `;
@@ -3949,7 +3982,7 @@ function openDriverStatsModal(driverName) {
 
     // Flag & Name
     const flagEl = document.getElementById("driverModalFlag");
-    if (flagEl) flagEl.textContent = data.customFlag || data.flag || "🏁";
+    if (flagEl) flagEl.innerHTML = getFlagHtml(data.customFlag || data.flag || "🏁", 24);
 
     const nameEl = document.getElementById("driverModalName");
     if (nameEl) nameEl.textContent = data.driver;
@@ -4170,7 +4203,7 @@ function openDriverStatsModal(driverName) {
 
             card.innerHTML = `
                 <div class="round-card-mini-top">
-                    <span class="round-card-mini-flag">${gp.flag}</span>
+                    <span class="round-card-mini-flag">${getFlagHtml(gp.flag, 16)}</span>
                     <span>R${gp.r}</span>
                 </div>
                 <div class="round-res-pill ${pillClass}">${pillText}</div>
@@ -4652,7 +4685,7 @@ function openTeamStatsModal(teamName) {
                 card.innerHTML = `
                     <div class="team-squad-card-left">
                         <span class="team-squad-dorsal">${d.dorsal ? '#' + d.dorsal : ''}</span>
-                        <span class="team-squad-flag">${d.flag || '🏁'}</span>
+                        <span class="team-squad-flag">${getFlagHtml(d.flag || getOfficialDriverFlag(d.driver), 18)}</span>
                         <span class="team-squad-name">${escapeHtml(d.driver)}</span>
                     </div>
                     <div class="team-squad-card-right">
@@ -4714,7 +4747,7 @@ function openTeamStatsModal(teamName) {
 
             card.innerHTML = `
                 <div class="round-card-mini-top">
-                    <span class="round-card-mini-flag">${gp.flag}</span>
+                    <span class="round-card-mini-flag">${getFlagHtml(gp.flag, 16)}</span>
                     <span>R${gp.r}</span>
                 </div>
                 <div class="round-res-pill ${pillClass}">${pillText}</div>
@@ -8940,7 +8973,7 @@ function updateCardLivePreview() {
     }
 
     // Name & Flag
-    if (previewFlag) previewFlag.textContent = officialFlag || "🏁";
+    if (previewFlag) previewFlag.innerHTML = getFlagHtml(officialFlag || "🏁", 24);
     if (previewDriverName) previewDriverName.textContent = driverName;
     if (previewTeamPill) previewTeamPill.textContent = teamName;
 
@@ -9041,8 +9074,8 @@ function populateUserCardEditor(data) {
     const driverName = data.claimedDriver || (activeUserData && activeUserData.claimedDriver) || "";
     const officialFlag = getOfficialDriverFlag(driverName);
     const countryName = getCountryNameByFlag(officialFlag);
-    if (editCardFlagDisplay) editCardFlagDisplay.textContent = officialFlag || "🏁";
-    if (editCardCountryName) editCardCountryName.textContent = `${officialFlag} ${countryName}`;
+    if (editCardFlagDisplay) editCardFlagDisplay.innerHTML = getFlagHtml(officialFlag || "🏁", 24);
+    if (editCardCountryName) editCardCountryName.innerHTML = `${getFlagHtml(officialFlag || "🏁", 18)} <span style="vertical-align: middle; margin-left: 4px;">${countryName}</span>`;
 
     const bioCharCounter = document.getElementById("bioCharCounter");
     if (editCardBio) {
@@ -10914,7 +10947,7 @@ function renderFantasyMarketGrid() {
                         : `<div class="market-card-team-icon">🏭</div>`
                     }
                     <div class="market-card-info">
-                        <div class="market-card-name" title="${escapeHtml(item.name)}">${item.flag} ${escapeHtml(item.name)}</div>
+                        <div class="market-card-name" title="${escapeHtml(item.name)}">${getFlagHtml(item.flag, 16)} ${escapeHtml(item.name)}</div>
                         <span class="ranking-team-pill ${getTeamClass(item.team)}"><span class="team-dot"></span>${escapeHtml(item.team)}</span>
                     </div>
                 </div>
@@ -11660,7 +11693,7 @@ function renderComparatorHeroCard(slot, stats, fantasyPrice) {
     const avatarUrl = (typeof getDriverAvatarUrl === "function") ? getDriverAvatarUrl(driverName) : (stats.photo || `https://api.dicebear.com/7.x/bottts/svg?seed=${encodeURIComponent(driverName)}`);
 
     if (nameEl) nameEl.textContent = driverName;
-    if (flagEl) flagEl.textContent = flag;
+    if (flagEl) flagEl.innerHTML = getFlagHtml(flag, 20);
     if (teamEl) {
         teamEl.textContent = stats.team || "FFC";
         const teamClass = (typeof getTeamClass === "function") ? getTeamClass(stats.team) : "team-hrt";
@@ -12257,7 +12290,7 @@ function renderComparatorRoundsTable(statsA, statsB, h2h) {
             <tr class="${isNonMutual ? 'is-non-mutual' : ''}">
                 <td style="font-weight: 800; color: #94a3b8; font-family: 'Barlow Condensed', sans-serif;">R${d.roundNum}</td>
                 <td>
-                    <span style="margin-right: 6px;">${d.flag || "🏁"}</span>
+                    <span style="margin-right: 6px;">${getFlagHtml(d.flag || "🏁", 16)}</span>
                     <strong style="color: #f1f5f9;">${escapeHTML(d.gpName)}</strong>
                 </td>
                 <td style="text-align: center;">${dispA}</td>
