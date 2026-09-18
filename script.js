@@ -275,7 +275,10 @@ const translations = {
             subtitle: "Sigue la retransmisión oficial de la carrera en vivo por Twitch.",
             watchOnTwitch: "VER EN TWITCH.TV ↗",
             btnStandings: "VER CLASIFICACIÓN",
-            btnCalendar: "VER CALENDARIO"
+            btnCalendar: "VER CALENDARIO",
+            chatBadge: "EN DIRECTO",
+            chatSuffix: "CHAT EN VIVO",
+            chatPopout: "CHAT DE TWITCH ↗"
         },
         nextRace: {
             cardTop: "PRÓXIMA CARRERA",
@@ -429,7 +432,10 @@ const translations = {
             subtitle: "Watch the official championship race broadcast live on Twitch.",
             watchOnTwitch: "WATCH ON TWITCH.TV ↗",
             btnStandings: "VIEW STANDINGS",
-            btnCalendar: "VIEW CALENDAR"
+            btnCalendar: "VIEW CALENDAR",
+            chatBadge: "LIVE NOW",
+            chatSuffix: "LIVE CHAT",
+            chatPopout: "TWITCH CHAT ↗"
         },
         nextRace: {
             cardTop: "NEXT RACE",
@@ -640,7 +646,7 @@ function applyTranslations(lang) {
     const heroBC = document.getElementById("heroBtnCalendar");
     if (heroBC) heroBC.textContent = dict.hero.btnCalendar;
 
-    // Live Stream Hero
+    // Live Stream Hero & Next Race Live Chat
     if (dict.live) {
         const liveBadge = document.getElementById("liveStatusBadge");
         if (liveBadge) liveBadge.textContent = dict.live.badge;
@@ -650,6 +656,13 @@ function applyTranslations(lang) {
         if (heroLiveBtnStandings) heroLiveBtnStandings.textContent = dict.live.btnStandings;
         const heroLiveBtnCalendar = document.getElementById("heroLiveBtnCalendar");
         if (heroLiveBtnCalendar) heroLiveBtnCalendar.textContent = dict.live.btnCalendar;
+
+        const liveChatBadge = document.getElementById("liveChatBadgeText");
+        if (liveChatBadge && dict.live.chatBadge) liveChatBadge.textContent = dict.live.chatBadge;
+        const liveChatSuffix = document.getElementById("liveChatSuffixText");
+        if (liveChatSuffix && dict.live.chatSuffix) liveChatSuffix.textContent = dict.live.chatSuffix;
+        const twitchChatPopout = document.getElementById("twitchChatPopoutText");
+        if (twitchChatPopout && dict.live.chatPopout) twitchChatPopout.textContent = dict.live.chatPopout;
     }
 
     // Next race card
@@ -2190,6 +2203,7 @@ const generalSettingsForm = document.getElementById("generalSettingsForm");
 const adminLiveMode = document.getElementById("adminLiveMode");
 const adminTwitchChannel = document.getElementById("adminTwitchChannel");
 const adminLiveTitle = document.getElementById("adminLiveTitle");
+const adminLiveRaceTitle = document.getElementById("adminLiveRaceTitle");
 const adminLiveSubtitle = document.getElementById("adminLiveSubtitle");
 const adminSwitchStatusText = document.getElementById("adminSwitchStatusText");
 const adminFantasyLocked = document.getElementById("adminFantasyLocked");
@@ -4319,6 +4333,49 @@ function buildTwitchEmbedUrl(channelInput) {
     return `https://player.twitch.tv/?channel=${encodeURIComponent(chan)}&${parentQuery}&autoplay=true&muted=false`;
 }
 
+function buildTwitchChatEmbedUrl(channelInput) {
+    const chan = extractTwitchChannel(channelInput);
+    const parents = new Set();
+    if (typeof window !== "undefined" && window.location && window.location.hostname) {
+        parents.add(window.location.hostname);
+    }
+    try {
+        if (typeof document !== "undefined" && document.referrer) {
+            const refUrl = new URL(document.referrer);
+            if (refUrl.hostname) parents.add(refUrl.hostname);
+        }
+    } catch(e) {}
+    try {
+        if (typeof window !== "undefined" && window.parent && window.parent.location && window.parent.location.hostname) {
+            parents.add(window.parent.location.hostname);
+        }
+    } catch(e) {}
+    parents.add("ais-dev-llhirdz3pjvgtgrzjmkdqn-850418529081.europe-west2.run.app");
+    parents.add("ais-pre-llhirdz3pjvgtgrzjmkdqn-850418529081.europe-west2.run.app");
+    parents.add("ai.studio");
+    parents.add("aistudio.google.com");
+    parents.add("localhost");
+    parents.add("127.0.0.1");
+
+    const parentQuery = Array.from(parents).filter(Boolean).map(p => `parent=${encodeURIComponent(p)}`).join("&");
+    return `https://www.twitch.tv/embed/${encodeURIComponent(chan)}/chat?${parentQuery}&darkpopout=true`;
+}
+
+window.reloadLiveTwitchChat = function() {
+    const twitchChatPlayerContainer = document.getElementById("twitchChatPlayerContainer");
+    if (!twitchChatPlayerContainer) return;
+    const settings = getSavedSettings();
+    const channel = extractTwitchChannel(settings?.twitchChannel || "https://www.twitch.tv/driezzz12");
+    const chatEmbedUrl = buildTwitchChatEmbedUrl(channel);
+    twitchChatPlayerContainer.innerHTML = `<iframe 
+        src="${chatEmbedUrl}" 
+        data-channel="${channel}"
+        scrolling="yes" 
+        frameborder="0"
+        title="Twitch Live Chat">
+    </iframe>`;
+};
+
 function getSavedSettings() {
     if (currentSettings && (currentSettings.discordUrl !== undefined || currentSettings.season !== undefined || currentSettings.liveMode !== undefined)) {
         return currentSettings;
@@ -4351,7 +4408,7 @@ function renderSettingsOnPage(settings) {
     if (statRoundsEl && settings.rounds) statRoundsEl.textContent = settings.rounds;
     if (statDriversEl && settings.drivers) statDriversEl.textContent = settings.drivers;
 
-    // Live Mode (Transmisión en directo Twitch)
+    // Live Mode (Transmisión en directo Twitch & Chat)
     const heroSection = document.getElementById("home");
     const heroContentStandard = document.getElementById("heroContentStandard");
     const heroContentLive = document.getElementById("heroContentLive");
@@ -4359,6 +4416,16 @@ function renderSettingsOnPage(settings) {
     const twitchExternalLink = document.getElementById("twitchExternalLink");
     const heroLiveHeading = document.getElementById("heroLiveHeading");
     const heroLiveSubtitle = document.getElementById("heroLiveSubtitle");
+
+    // Next Race Card: Standard Countdown View vs Live Chat View
+    const heroAsideCard = document.getElementById("heroAsideCard");
+    const nextRaceStandardView = document.getElementById("nextRaceStandardView");
+    const nextRaceLiveChatView = document.getElementById("nextRaceLiveChatView");
+    const liveChatGpName = document.getElementById("liveChatGpName");
+    const liveChatBadgeText = document.getElementById("liveChatBadgeText");
+    const liveChatSuffixText = document.getElementById("liveChatSuffixText");
+    const twitchChatPlayerContainer = document.getElementById("twitchChatPlayerContainer");
+    const twitchChatPopoutLink = document.getElementById("twitchChatPopoutLink");
 
     const isLive = Boolean(settings && settings.liveMode);
     const channel = extractTwitchChannel(settings?.twitchChannel || "https://www.twitch.tv/driezzz12");
@@ -4387,7 +4454,7 @@ function renderSettingsOnPage(settings) {
                 twitchExternalLink.href = twitchUrl;
             }
 
-            // Mount or update Twitch embed iframe
+            // Mount or update Twitch video stream iframe
             if (twitchPlayerContainer) {
                 const currentIframe = twitchPlayerContainer.querySelector("iframe");
                 const embedUrl = buildTwitchEmbedUrl(channel);
@@ -4407,6 +4474,61 @@ function renderSettingsOnPage(settings) {
             heroContentLive.style.display = "none";
             if (twitchPlayerContainer) {
                 twitchPlayerContainer.innerHTML = "";
+            }
+        }
+    }
+
+    // Toggle and configure Next Race Card Live Chat View
+    if (heroAsideCard && nextRaceStandardView && nextRaceLiveChatView) {
+        if (isLive) {
+            heroAsideCard.classList.add("is-live-chat-mode");
+            nextRaceStandardView.style.display = "none";
+            nextRaceLiveChatView.style.display = "flex";
+
+            // Resolve GP Name for Live Chat Header
+            let activeGpName = (settings && settings.liveRaceTitle) ? settings.liveRaceTitle.trim() : "";
+            if (!activeGpName) {
+                const raceData = getSavedNextRace();
+                if (raceData && raceData.title) {
+                    activeGpName = raceData.title.replace(/<br\s*[\/]?>/gi, " ").trim();
+                } else {
+                    activeGpName = "NÜRBURGRING GP";
+                }
+            }
+
+            if (liveChatGpName) {
+                liveChatGpName.textContent = activeGpName;
+            }
+            if (liveChatBadgeText) {
+                liveChatBadgeText.textContent = currentLanguage === "en" ? "LIVE NOW" : "EN DIRECTO";
+            }
+            if (liveChatSuffixText) {
+                liveChatSuffixText.textContent = currentLanguage === "en" ? "LIVE CHAT" : "CHAT EN VIVO";
+            }
+            if (twitchChatPopoutLink) {
+                twitchChatPopoutLink.href = `https://www.twitch.tv/popout/${channel}/chat`;
+            }
+
+            // Mount or update Twitch Chat iframe
+            if (twitchChatPlayerContainer) {
+                const currentChatIframe = twitchChatPlayerContainer.querySelector("iframe");
+                const chatEmbedUrl = buildTwitchChatEmbedUrl(channel);
+                if (!currentChatIframe || currentChatIframe.dataset.channel !== channel) {
+                    twitchChatPlayerContainer.innerHTML = `<iframe 
+                        src="${chatEmbedUrl}" 
+                        data-channel="${channel}"
+                        scrolling="yes" 
+                        frameborder="0"
+                        title="Twitch Live Chat">
+                    </iframe>`;
+                }
+            }
+        } else {
+            heroAsideCard.classList.remove("is-live-chat-mode");
+            nextRaceStandardView.style.display = "flex";
+            nextRaceLiveChatView.style.display = "none";
+            if (twitchChatPlayerContainer) {
+                twitchChatPlayerContainer.innerHTML = "";
             }
         }
     }
@@ -5055,6 +5177,7 @@ function populateAdminForms() {
     }
     if (adminTwitchChannel) adminTwitchChannel.value = settings.twitchChannel || "https://www.twitch.tv/driezzz12";
     if (adminLiveTitle) adminLiveTitle.value = settings.liveTitle || "ESTAMOS EN DIRECTO";
+    if (adminLiveRaceTitle) adminLiveRaceTitle.value = settings.liveRaceTitle || "";
     if (adminLiveSubtitle) adminLiveSubtitle.value = settings.liveSubtitle || "Sigue la retransmisión oficial de la carrera en vivo por Twitch.";
     if (adminDiscordUrl) adminDiscordUrl.value = settings.discordUrl || "";
     if (adminXUrl) adminXUrl.value = settings.xUrl || "";
@@ -5243,6 +5366,7 @@ function initFirestoreListeners() {
                 }
                 if (adminTwitchChannel) adminTwitchChannel.value = currentSettings.twitchChannel || "https://www.twitch.tv/driezzz12";
                 if (adminLiveTitle) adminLiveTitle.value = currentSettings.liveTitle || "ESTAMOS EN DIRECTO";
+                if (adminLiveRaceTitle) adminLiveRaceTitle.value = currentSettings.liveRaceTitle || "";
                 if (adminLiveSubtitle) adminLiveSubtitle.value = currentSettings.liveSubtitle || "Sigue la retransmisión oficial de la carrera en vivo por Twitch.";
                 if (adminDiscordUrl) adminDiscordUrl.value = currentSettings.discordUrl || "";
                 if (adminXUrl) adminXUrl.value = currentSettings.xUrl || "";
@@ -5703,6 +5827,7 @@ if (generalSettingsForm) {
             liveMode: adminLiveMode ? adminLiveMode.checked : false,
             twitchChannel: adminTwitchChannel ? adminTwitchChannel.value.trim() : "https://www.twitch.tv/driezzz12",
             liveTitle: adminLiveTitle ? adminLiveTitle.value.trim() : "ESTAMOS EN DIRECTO",
+            liveRaceTitle: adminLiveRaceTitle ? adminLiveRaceTitle.value.trim() : "",
             liveSubtitle: adminLiveSubtitle ? adminLiveSubtitle.value.trim() : "Sigue la retransmisión oficial de la carrera en vivo por Twitch.",
             fantasyLocked: adminFantasyLocked ? adminFantasyLocked.checked : false,
             fantasyLockMessage: adminFantasyLockMessage ? adminFantasyLockMessage.value.trim() : "Mercado de fichajes congelado por Gran Premio en curso.",

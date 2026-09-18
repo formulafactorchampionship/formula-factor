@@ -409,73 +409,117 @@
     </div>
 
 
-    <aside class="next-race-card">
+    <aside class="next-race-card" id="heroAsideCard">
 
-        <div class="next-race-header-row">
-            <div class="card-top">
-                <span class="live-dot"></span>
-                <span id="nextRaceCardTopText">PRÓXIMA CARRERA</span>
+        <!-- STANDARD NEXT RACE VIEW (Shown when Live Mode is inactive) -->
+        <div class="next-race-standard-view" id="nextRaceStandardView">
+
+            <div class="next-race-header-row">
+                <div class="card-top">
+                    <span class="live-dot"></span>
+                    <span id="nextRaceCardTopText">PRÓXIMA CARRERA</span>
+                </div>
+
+                <div class="round-label" id="nextRaceRound">
+                    ROUND 10
+                </div>
             </div>
 
-            <div class="round-label" id="nextRaceRound">
-                ROUND 10
+            <div class="next-race-info-block">
+                <div class="lightning">//</div>
+
+                <div class="next-label" id="nextRaceNextLabel">
+                    SIGUIENTE RONDA
+                </div>
+
+                <h2 id="nextRaceTitle">
+                    NÜRBURGRING<br>
+                    GP
+                </h2>
+
+                <p class="location" id="nextRaceLocation">
+                    NÜRBURGRING · EUROPE
+                </p>
             </div>
+
+            <div class="countdown">
+
+                <div class="count-box">
+                    <strong id="days">00</strong>
+                    <span id="labelDays">DÍAS</span>
+                </div>
+
+                <div class="count-box">
+                    <strong id="hours">00</strong>
+                    <span id="labelHours">HRS</span>
+                </div>
+
+                <div class="count-box">
+                    <strong id="mins">00</strong>
+                    <span id="labelMins">MIN</span>
+                </div>
+
+                <div class="count-box count-box-secs">
+                    <strong id="secs">00</strong>
+                    <span id="labelSecs">SEG</span>
+                </div>
+
+            </div>
+
+            <div class="next-race-time-row">
+                <span class="race-start-label" id="raceStartTimeLabel">HORA DE INICIO</span>
+                <div class="race-date" id="nextRaceDateText">
+                    20 SEP · 16:30 <span>CEST</span>
+                </div>
+            </div>
+
+            <a href="#calendar" class="next-race-details-btn" id="nextRaceDetailsBtn">
+                <span id="nextRaceDetailsBtnText">DETALLES DEL CIRCUITO Y EVENTO</span>
+                <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor" aria-hidden="true">
+                    <path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.41z"/>
+                </svg>
+            </a>
+
         </div>
 
-        <div class="next-race-info-block">
-            <div class="lightning">//</div>
-
-            <div class="next-label" id="nextRaceNextLabel">
-                SIGUIENTE RONDA
+        <!-- LIVE CHAT VIEW (Shown when Live Mode is active, per user mockup) -->
+        <div class="next-race-live-chat-view" id="nextRaceLiveChatView" style="display: none;">
+            
+            <div class="live-chat-header-wrap">
+                <div class="live-chat-status-bar" id="liveChatStatusBar">
+                    <span class="live-pulse-dot" style="width:7px; height:7px;"></span>
+                    <span id="liveChatBadgeText">LIVE NOW</span>
+                </div>
+                
+                <div class="live-chat-title-box">
+                    <h2 class="live-chat-gp-heading" id="liveChatGpHeading">
+                        <span id="liveChatGpName">NÜRBURGRING GP</span> <span class="gold-text-glow" id="liveChatSuffixText">LIVE CHAT</span>
+                    </h2>
+                </div>
             </div>
 
-            <h2 id="nextRaceTitle">
-                NÜRBURGRING<br>
-                GP
-            </h2>
-
-            <p class="location" id="nextRaceLocation">
-                NÜRBURGRING · EUROPE
-            </p>
-        </div>
-
-        <div class="countdown">
-
-            <div class="count-box">
-                <strong id="days">00</strong>
-                <span id="labelDays">DÍAS</span>
-            </div>
-
-            <div class="count-box">
-                <strong id="hours">00</strong>
-                <span id="labelHours">HRS</span>
-            </div>
-
-            <div class="count-box">
-                <strong id="mins">00</strong>
-                <span id="labelMins">MIN</span>
-            </div>
-
-            <div class="count-box count-box-secs">
-                <strong id="secs">00</strong>
-                <span id="labelSecs">SEG</span>
+            <div class="live-chat-frame-wrapper">
+                <div class="twitch-chat-aspect" id="twitchChatPlayerContainer">
+                    <!-- Embedded Twitch Chat iframe loaded dynamically -->
+                </div>
+                
+                <div class="live-chat-footer-action">
+                    <button type="button" class="twitch-popout-btn twitch-reload-btn" id="twitchChatReloadBtn" onclick="if(window.reloadLiveTwitchChat){window.reloadLiveTwitchChat();}">
+                        <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                            <path d="M23 4v6h-6M1 20v-6h6M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/>
+                        </svg>
+                        <span id="twitchChatReloadText">RECARGAR</span>
+                    </button>
+                    <a href="https://www.twitch.tv/popout/driezzz12/chat" target="_blank" rel="noopener noreferrer" class="twitch-popout-btn" id="twitchChatPopoutLink">
+                        <svg viewBox="0 0 24 24" width="13" height="13" fill="currentColor" aria-hidden="true">
+                            <path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/>
+                        </svg>
+                        <span id="twitchChatPopoutText">CHAT DE TWITCH ↗</span>
+                    </a>
+                </div>
             </div>
 
         </div>
-
-        <div class="next-race-time-row">
-            <span class="race-start-label" id="raceStartTimeLabel">HORA DE INICIO</span>
-            <div class="race-date" id="nextRaceDateText">
-                20 SEP · 16:30 <span>CEST</span>
-            </div>
-        </div>
-
-        <a href="#calendar" class="next-race-details-btn" id="nextRaceDetailsBtn">
-            <span id="nextRaceDetailsBtnText">DETALLES DEL CIRCUITO Y EVENTO</span>
-            <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor" aria-hidden="true">
-                <path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.41z"/>
-            </svg>
-        </a>
 
     </aside>
 
@@ -2629,6 +2673,11 @@
                                 <input type="text" id="adminLiveTitle" placeholder="ESTAMOS EN DIRECTO" value="ESTAMOS EN DIRECTO">
                             </div>
                             <div class="admin-field">
+                                <label for="adminLiveRaceTitle">Nombre del GP en Directo (para el Chat)</label>
+                                <input type="text" id="adminLiveRaceTitle" placeholder="NÜRBURGRING GP" value="">
+                                <span class="admin-field-hint">Si se deja vacío, tomará automáticamente el nombre de la próxima carrera.</span>
+                            </div>
+                            <div class="admin-field admin-field-full">
                                 <label for="adminLiveSubtitle">Descripción / Subtítulo</label>
                                 <input type="text" id="adminLiveSubtitle" placeholder="Sigue la retransmisión oficial de la carrera en vivo por Twitch." value="Sigue la retransmisión oficial de la carrera en vivo por Twitch.">
                             </div>
