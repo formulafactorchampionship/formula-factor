@@ -10241,6 +10241,47 @@ if (document.readyState === "loading") {
 
 let compareDriverA = null;
 let compareDriverB = null;
+let compareMode = "mutual"; // "mutual" (Fair H2H - only shared races) or "all" (Full season)
+
+// Switch between Fair (Mutual) and Full Season modes
+function setComparatorMode(mode) {
+    if (mode !== "mutual" && mode !== "all") return;
+    compareMode = mode;
+
+    const btnMutual = document.getElementById("btnCompareModeMutual");
+    const btnAll = document.getElementById("btnCompareModeAll");
+    const hintText = document.getElementById("compareModeInfoText");
+    const hintIcon = document.getElementById("modeInfoIcon");
+
+    if (btnMutual) {
+        if (mode === "mutual") btnMutual.classList.add("is-active");
+        else btnMutual.classList.remove("is-active");
+    }
+
+    if (btnAll) {
+        if (mode === "all") btnAll.classList.add("is-active");
+        else btnAll.classList.remove("is-active");
+    }
+
+    if (hintText && hintIcon) {
+        const isEn = typeof currentLanguage !== "undefined" && currentLanguage === "en";
+        if (mode === "mutual") {
+            hintIcon.textContent = "⚖️";
+            hintText.innerHTML = isEn
+                ? "<strong>Fair Mode Active:</strong> Evaluating only Grands Prix where both drivers started on track. Absences do not award duel wins to the opponent."
+                : "<strong>Modo Justo activo:</strong> Se analizan exclusivamente las carreras donde ambos compitieron en pista. Las ausencias no otorgan victorias al rival.";
+        } else {
+            hintIcon.textContent = "🌐";
+            hintText.innerHTML = isEn
+                ? "<strong>Full Season Mode:</strong> Evaluating all 15 rounds of the championship (non-participation counts as an adverse result)."
+                : "<strong>Modo Temporada Completa:</strong> Se evalúan las 15 rondas del campeonato (la no participación cuenta como resultado adverso).";
+        }
+    }
+
+    if (compareDriverA && compareDriverB) {
+        renderDriverComparison(compareDriverA, compareDriverB);
+    }
+}
 
 // Get sorted list of all active drivers for comparator dropdowns
 function getComparatorDriversList() {
@@ -10453,17 +10494,17 @@ function renderDriverComparison(driverNameA, driverNameB) {
     renderComparatorHeroCard("B", statsB, fantasyPriceB);
 
     // 3. Compute Head-to-Head Direct GP Duel Score
-    const h2hResult = computeDriverHeadToHeadDuels(statsA, statsB);
+    const h2hResult = computeDriverHeadToHeadDuels(statsA, statsB, compareMode);
     renderComparatorScoreboard(h2hResult, statsA, statsB);
 
     // 4. Render Comparative Metric Rows & Balance Bars
-    renderComparatorMetricsGrid(statsA, statsB, fantasyPriceA, fantasyPriceB);
+    renderComparatorMetricsGrid(statsA, statsB, fantasyPriceA, fantasyPriceB, h2hResult);
 
     // 5. Render Driver Performance & Skills Radar Indicators
     renderComparatorSkillsGrid(statsA, statsB);
 
     // 6. Render Round-by-Round Breakdown Matrix (R1 - R15)
-    renderComparatorRoundsTable(statsA, statsB);
+    renderComparatorRoundsTable(statsA, statsB, h2hResult);
 
     // 7. Update Presets
     const allDrivers = getComparatorDriversList();
@@ -10481,7 +10522,6 @@ function renderComparatorHeroCard(slot, stats, fantasyPrice) {
     const dorsalEl = document.getElementById(`compareDorsal${prefix}`);
     const avatarImg = document.getElementById(`compareAvatarImg${prefix}`);
     const verifiedEl = document.getElementById(`compareVerified${prefix}`);
-    const stripEl = document.getElementById(`compareHeroStrip${prefix}`);
 
     const driverName = stats.driver;
     const flag = (typeof getOfficialDriverFlag === "function") ? getOfficialDriverFlag(driverName) : (stats.flag || "🏁");
@@ -10495,7 +10535,7 @@ function renderComparatorHeroCard(slot, stats, fantasyPrice) {
         const teamClass = (typeof getTeamClass === "function") ? getTeamClass(stats.team) : "team-hrt";
         teamEl.className = `compare-team-pill ${teamClass}`;
     }
-    if (posEl) posEl.textContent = `P${stats.pos || 1} · ${stats.pts || 0} PTS`;
+    if (posEl) posEl.textContent = `P${stats.pos || 1} · ${stats.pts || 0} PTS (${stats.racesCount || 1} GPs)`;
     if (priceEl) priceEl.textContent = `${fantasyPrice.toFixed(1)}M€`;
     if (dorsalEl) dorsalEl.textContent = dorsal;
     if (avatarImg) {
@@ -10508,15 +10548,53 @@ function renderComparatorHeroCard(slot, stats, fantasyPrice) {
     }
 }
 
-// Calculate Head-to-Head direct duels across all 15 GPs
-function computeDriverHeadToHeadDuels(statsA, statsB) {
+// Helper to calculate race points for a driver entry in a given GP
+function calculateRaceDriverPoints(driverEntry, raceObj, cleanDriverKey) {
+    if (!driverEntry) return 0;
+    if (typeof driverEntry.pts === "number" && !isNaN(driverEntry.pts)) {
+        return driverEntry.pts;
+    }
+    if (typeof driverEntry.pts === "string" && driverEntry.pts.trim() !== "" && !isNaN(Number(driverEntry.pts))) {
+        return Number(driverEntry.pts);
+    }
+    const status = String(driverEntry.status || "").trim().toUpperCase();
+    if (status === "DSQ" || status === "DNS" || status === "NC" || status === "AUSENTE" || status === "NO_SHOW") {
+        return 0;
+    }
+    const posRaw = driverEntry.pos;
+    if (isDriverDnfStatus(posRaw) || status === "DNF") {
+        return 0;
+    }
+    const posNum = parseInt(posRaw, 10);
+    if (isNaN(posNum) || posNum < 1 || posNum > 10) {
+        return 0;
+    }
+
+    let pts = (typeof F1_POINTS_MAP !== "undefined" && F1_POINTS_MAP[posNum]) ? F1_POINTS_MAP[posNum] : 0;
+
+    // Check if this driver scored fastest lap in this GP (+1 bonus point)
+    if (raceObj && raceObj.fastest && raceObj.fastest !== "TBA" && cleanDriverKey) {
+        const flName = raceObj.fastest.split("·")[0].trim();
+        const flKey = typeof normalizeDriverKey === "function" ? normalizeDriverKey(flName) : flName.trim().toLowerCase();
+        if (flKey === cleanDriverKey) {
+            pts += (typeof F1_FASTEST_LAP_PTS !== "undefined" ? F1_FASTEST_LAP_PTS : 1);
+        }
+    }
+    return pts;
+}
+
+// Calculate Head-to-Head direct duels across all 15 GPs (Supports Fair Mutual Mode and Full Season)
+function computeDriverHeadToHeadDuels(statsA, statsB, mode = "mutual") {
     const list = (typeof FFC_SEASON_GPS !== "undefined" && Array.isArray(FFC_SEASON_GPS)) ? FFC_SEASON_GPS : [];
     const rMap = (typeof raceResults !== "undefined" && raceResults) ? raceResults : {};
 
     let scoreA = 0;
     let scoreB = 0;
     let ties = 0;
-    let roundsParticipatedTogether = 0;
+    let mutualRoundsCount = 0;
+    let totalCompletedRounds = 0;
+    let mutualPtsA = 0;
+    let mutualPtsB = 0;
     const roundDuels = [];
 
     const nameA = (statsA && statsA.driver) ? statsA.driver : "";
@@ -10528,18 +10606,19 @@ function computeDriverHeadToHeadDuels(statsA, statsB) {
         const roundNum = index + 1;
         const res = rMap[gp.raceKey];
         const isCompleted = res && (res.status === "COMPLETED" || (res.winner && res.winner !== "TBA" && Array.isArray(res.drivers) && res.drivers.length > 0));
+        if (isCompleted) totalCompletedRounds++;
 
-        let resA = null;
-        let resB = null;
+        let rawA = null;
+        let rawB = null;
 
         if (res && Array.isArray(res.drivers)) {
-            resA = res.drivers.find(d => {
+            rawA = res.drivers.find(d => {
                 if (!d) return false;
                 const dName = d.driver || d.name || "";
                 const dClean = typeof normalizeDriverKey === "function" ? normalizeDriverKey(dName) : dName.trim().toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
                 return dClean === cleanA;
             });
-            resB = res.drivers.find(d => {
+            rawB = res.drivers.find(d => {
                 if (!d) return false;
                 const dName = d.driver || d.name || "";
                 const dClean = typeof normalizeDriverKey === "function" ? normalizeDriverKey(dName) : dName.trim().toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
@@ -10547,28 +10626,52 @@ function computeDriverHeadToHeadDuels(statsA, statsB) {
             });
         }
 
-        // Determine who finished ahead in this round
-        let winner = null; // "A", "B", "TIE", or null (not raced)
-        let ptsDiff = 0;
+        const bothParticipated = Boolean(isCompleted && rawA && rawB);
+        if (bothParticipated) {
+            mutualRoundsCount++;
+        }
 
-        const ptsA = resA ? (parseInt(resA.pts, 10) || 0) : 0;
-        const ptsB = resB ? (parseInt(resB.pts, 10) || 0) : 0;
-        ptsDiff = ptsA - ptsB;
+        // Determine Pole & Fastest Lap for each driver in this GP
+        let poleA = false;
+        let vrA = false;
+        let poleB = false;
+        let vrB = false;
 
-        if (isCompleted && (resA || resB)) {
-            roundsParticipatedTogether++;
-            if (resA && !resB) {
-                winner = "A";
-                scoreA++;
-            } else if (!resA && resB) {
-                winner = "B";
-                scoreB++;
-            } else if (resA && resB) {
-                const posA = resA.pos;
-                const posB = resB.pos;
+        if (res && res.pole && res.pole !== "TBA") {
+            const poleDriver = res.pole.split("·")[0].trim();
+            const poleKey = typeof normalizeDriverKey === "function" ? normalizeDriverKey(poleDriver) : poleDriver.toLowerCase();
+            if (poleKey === cleanA) poleA = true;
+            if (poleKey === cleanB) poleB = true;
+        }
+        if (res && res.fastest && res.fastest !== "TBA") {
+            const vrDriver = res.fastest.split("·")[0].trim();
+            const vrKey = typeof normalizeDriverKey === "function" ? normalizeDriverKey(vrDriver) : vrDriver.toLowerCase();
+            if (vrKey === cleanA) vrA = true;
+            if (vrKey === cleanB) vrB = true;
+        }
 
-                const isDnfA = isDriverDnfStatus(posA);
-                const isDnfB = isDriverDnfStatus(posB);
+        const ptsA = rawA ? calculateRaceDriverPoints(rawA, res, cleanA) : 0;
+        const ptsB = rawB ? calculateRaceDriverPoints(rawB, res, cleanB) : 0;
+        const ptsDiff = ptsA - ptsB;
+
+        if (bothParticipated) {
+            mutualPtsA += ptsA;
+            mutualPtsB += ptsB;
+        }
+
+        const resA = rawA ? { ...rawA, pts: ptsA, pole: poleA, vr: vrA } : null;
+        const resB = rawB ? { ...rawB, pts: ptsB, pole: poleB, vr: vrB } : null;
+
+        let winner = null; // "A", "B", "TIE", or "NON_MUTUAL" / null
+
+        if (isCompleted) {
+            if (bothParticipated) {
+                // Both raced: compute direct head-to-head finish
+                const posA = rawA.pos;
+                const posB = rawB.pos;
+
+                const isDnfA = isDriverDnfStatus(posA) || (rawA.status && String(rawA.status).toUpperCase() === "DNF");
+                const isDnfB = isDriverDnfStatus(posB) || (rawB.status && String(rawB.status).toUpperCase() === "DNF");
 
                 if (!isDnfA && isDnfB) {
                     winner = "A";
@@ -10586,8 +10689,16 @@ function computeDriverHeadToHeadDuels(statsA, statsB) {
                         winner = "B";
                         scoreB++;
                     } else {
-                        winner = "TIE";
-                        ties++;
+                        if (ptsA > ptsB) {
+                            winner = "A";
+                            scoreA++;
+                        } else if (ptsB > ptsA) {
+                            winner = "B";
+                            scoreB++;
+                        } else {
+                            winner = "TIE";
+                            ties++;
+                        }
                     }
                 } else {
                     // Both DNF
@@ -10602,15 +10713,31 @@ function computeDriverHeadToHeadDuels(statsA, statsB) {
                         ties++;
                     }
                 }
+            } else if (rawA || rawB) {
+                // Only one of them raced in this GP
+                if (mode === "all") {
+                    if (rawA && !rawB) {
+                        winner = "A";
+                        scoreA++;
+                    } else if (!rawA && rawB) {
+                        winner = "B";
+                        scoreB++;
+                    }
+                } else {
+                    // In Fair Mutual Mode, absence is treated as neutral (no duel victory awarded)
+                    winner = "NON_MUTUAL";
+                }
             }
         }
 
         roundDuels.push({
             roundNum,
-            gpName: gp.name,
-            country: gp.country,
+            gpName: gp.name || gp.code || `Round ${roundNum}`,
+            flag: gp.flag || (gp.country ? (typeof getOfficialCountryFlag === "function" ? getOfficialCountryFlag(gp.country) : "🏁") : "🏁"),
+            country: gp.country || gp.name,
             raceKey: gp.raceKey,
             isCompleted,
+            bothParticipated,
             resA,
             resB,
             ptsA,
@@ -10624,7 +10751,11 @@ function computeDriverHeadToHeadDuels(statsA, statsB) {
         scoreA,
         scoreB,
         ties,
-        roundsParticipatedTogether,
+        mutualRoundsCount,
+        totalCompletedRounds,
+        mutualPtsA,
+        mutualPtsB,
+        mode,
         roundDuels
     };
 }
@@ -10641,47 +10772,126 @@ function renderComparatorScoreboard(h2h, statsA, statsB) {
     const scoreAEl = document.getElementById("h2hScoreA");
     const scoreBEl = document.getElementById("h2hScoreB");
     const leaderTagEl = document.getElementById("h2hLeaderTag");
+    const verdictSubEl = document.getElementById("lblH2HVerdictSub");
+    const mutualBadgeEl = document.getElementById("compareMutualCountBadge");
+
+    if (mutualBadgeEl) {
+        mutualBadgeEl.textContent = `${h2h.mutualRoundsCount} GPs juntos`;
+    }
+
     if (!scoreAEl || !scoreBEl || !leaderTagEl) return;
 
     scoreAEl.textContent = h2h.scoreA;
     scoreBEl.textContent = h2h.scoreB;
 
-    if (h2h.scoreA > h2h.scoreB) {
+    const isEn = typeof currentLanguage !== "undefined" && currentLanguage === "en";
+
+    // Update scoreboard subtext based on active mode
+    if (verdictSubEl) {
+        if (h2h.mode === "mutual") {
+            if (h2h.mutualRoundsCount === 0) {
+                verdictSubEl.textContent = isEn ? "No mutual races completed together yet" : "Sin carreras coincidentes disputadas todavía";
+            } else {
+                verdictSubEl.textContent = isEn
+                    ? `Direct on-track duel in ${h2h.mutualRoundsCount} shared Grands Prix`
+                    : `Duelo directo en las ${h2h.mutualRoundsCount} carreras donde ambos participaron`;
+            }
+        } else {
+            verdictSubEl.textContent = isEn
+                ? `Global duel across full season (${h2h.totalCompletedRounds} completed GPs)`
+                : `Duelo global sobre el calendario completo (${h2h.totalCompletedRounds} carreras)`;
+        }
+    }
+
+    if (h2h.mode === "mutual" && h2h.mutualRoundsCount === 0) {
+        leaderTagEl.innerHTML = isEn ? "⚖️ NO MUTUAL RACES (0 SHARED GPS)" : "⚖️ SIN ENFRENTAMIENTOS DIRECTOS (0 GPs juntos)";
+        leaderTagEl.style.color = "#94a3b8";
+        leaderTagEl.style.borderColor = "rgba(255, 255, 255, 0.15)";
+        leaderTagEl.style.background = "rgba(255, 255, 255, 0.05)";
+    } else if (h2h.scoreA > h2h.scoreB) {
         const diff = h2h.scoreA - h2h.scoreB;
-        leaderTagEl.innerHTML = `🏆 <strong>${escapeHTML(statsA.driver.toUpperCase())}</strong> LIDERA EL DUELO (+${diff})`;
+        leaderTagEl.innerHTML = `🏆 <strong>${escapeHTML(statsA.driver.toUpperCase())}</strong> ${isEn ? "LEADS DUEL" : "LIDERA EL DUELO"} (+${diff})`;
         leaderTagEl.style.color = "#f87171";
         leaderTagEl.style.borderColor = "rgba(239, 68, 68, 0.4)";
         leaderTagEl.style.background = "rgba(239, 68, 68, 0.15)";
     } else if (h2h.scoreB > h2h.scoreA) {
         const diff = h2h.scoreB - h2h.scoreA;
-        leaderTagEl.innerHTML = `🏆 <strong>${escapeHTML(statsB.driver.toUpperCase())}</strong> LIDERA EL DUELO (+${diff})`;
+        leaderTagEl.innerHTML = `🏆 <strong>${escapeHTML(statsB.driver.toUpperCase())}</strong> ${isEn ? "LEADS DUEL" : "LIDERA EL DUELO"} (+${diff})`;
         leaderTagEl.style.color = "#60a5fa";
         leaderTagEl.style.borderColor = "rgba(59, 130, 246, 0.4)";
         leaderTagEl.style.background = "rgba(59, 130, 246, 0.15)";
     } else {
-        leaderTagEl.innerHTML = `⚖️ DUELO EMPATADO (${h2h.scoreA} - ${h2h.scoreB})`;
+        leaderTagEl.innerHTML = `⚖️ ${isEn ? "TIED DUEL" : "DUELO EMPATADO"} (${h2h.scoreA} - ${h2h.scoreB})`;
         leaderTagEl.style.color = "#fce79a";
         leaderTagEl.style.borderColor = "rgba(214, 180, 92, 0.3)";
         leaderTagEl.style.background = "rgba(214, 180, 92, 0.12)";
     }
 }
 
-// Render Comparative Metrics with relative interactive balance bars
-function renderComparatorMetricsGrid(statsA, statsB, priceA, priceB) {
+// Render Comparative Metrics with relative interactive balance bars (Fair Mode support)
+function renderComparatorMetricsGrid(statsA, statsB, priceA, priceB, h2h) {
     const grid = document.getElementById("compareMetricsGrid");
     if (!grid) return;
 
-    // Compute derived metrics
+    // Derived normalized metrics
     const racesA = statsA.racesCount || 1;
     const racesB = statsB.racesCount || 1;
 
     const avgPtsA = (statsA.pts / Math.max(racesA, 1)).toFixed(1);
     const avgPtsB = (statsB.pts / Math.max(racesB, 1)).toFixed(1);
 
+    const winRateA = Math.round((statsA.wins / racesA) * 100);
+    const winRateB = Math.round((statsB.wins / racesB) * 100);
+
+    const podiumRateA = Math.round((statsA.podiums / racesA) * 100);
+    const podiumRateB = Math.round((statsB.podiums / racesB) * 100);
+
     const relA = (statsA.racesCount > 0) ? Math.round(((statsA.racesCount - (statsA.dnfCount || 0)) / statsA.racesCount) * 100) : 0;
     const relB = (statsB.racesCount > 0) ? Math.round(((statsB.racesCount - (statsB.dnfCount || 0)) / statsB.racesCount) * 100) : 0;
 
+    const isMutualMode = h2h && h2h.mode === "mutual";
+
     const metrics = [
+        {
+            name: "PROMEDIO PTS / GP",
+            valA: parseFloat(avgPtsA),
+            valB: parseFloat(avgPtsB),
+            dispA: `${avgPtsA} pts / GP`,
+            dispB: `${avgPtsB} pts / GP`,
+            higherIsBetter: true
+        },
+        ...(isMutualMode && h2h.mutualRoundsCount > 0 ? [{
+            name: `PUNTOS EN DUELOS DIRECTOS (${h2h.mutualRoundsCount} GPs)`,
+            valA: h2h.mutualPtsA,
+            valB: h2h.mutualPtsB,
+            dispA: `${h2h.mutualPtsA} pts`,
+            dispB: `${h2h.mutualPtsB} pts`,
+            higherIsBetter: true
+        }] : []),
+        {
+            name: "EFECTIVIDAD EN PODIOS",
+            valA: podiumRateA,
+            valB: podiumRateB,
+            dispA: `${statsA.podiums} de ${racesA} (${podiumRateA}%)`,
+            dispB: `${statsB.podiums} de ${racesB} (${podiumRateB}%)`,
+            higherIsBetter: true
+        },
+        {
+            name: "EFECTIVIDAD EN VICTORIAS",
+            valA: winRateA,
+            valB: winRateB,
+            dispA: `${statsA.wins} de ${racesA} (${winRateA}%)`,
+            dispB: `${statsB.wins} de ${racesB} (${winRateB}%)`,
+            higherIsBetter: true
+        },
+        {
+            name: "CARRERAS DISPUTADAS",
+            valA: racesA,
+            valB: racesB,
+            dispA: `${racesA} GPs`,
+            dispB: `${racesB} GPs`,
+            higherIsBetter: true
+        },
         {
             name: "PUNTOS TOTALES",
             valA: statsA.pts,
@@ -10691,63 +10901,31 @@ function renderComparatorMetricsGrid(statsA, statsB, priceA, priceB) {
             higherIsBetter: true
         },
         {
-            name: "POSICIÓN CAMPEONATO",
+            name: "POSICIÓN EN EL MUNDIAL",
             valA: statsA.pos,
             valB: statsB.pos,
             dispA: `P${statsA.pos}`,
             dispB: `P${statsB.pos}`,
-            higherIsBetter: false // Lower number is better
-        },
-        {
-            name: "VICTORIAS EN CARRERA",
-            valA: statsA.wins,
-            valB: statsB.wins,
-            dispA: `${statsA.wins} 🥇`,
-            dispB: `${statsB.wins} 🥇`,
-            higherIsBetter: true
-        },
-        {
-            name: "PODIOS TOTALES",
-            valA: statsA.podiums,
-            valB: statsB.podiums,
-            dispA: `${statsA.podiums} 🏆`,
-            dispB: `${statsB.podiums} 🏆`,
-            higherIsBetter: true
+            higherIsBetter: false // Lower position number is better
         },
         {
             name: "POLE POSITIONS",
             valA: statsA.poles,
             valB: statsB.poles,
-            dispA: `${statsA.poles} ⏱️`,
-            dispB: `${statsB.poles} ⏱️`,
+            dispA: `${statsA.poles} poles`,
+            dispB: `${statsB.poles} poles`,
             higherIsBetter: true
         },
         {
             name: "VUELTAS RÁPIDAS",
             valA: statsA.fastestLaps,
             valB: statsB.fastestLaps,
-            dispA: `${statsA.fastestLaps} ⭐`,
-            dispB: `${statsB.fastestLaps} ⭐`,
+            dispA: `${statsA.fastestLaps} VR`,
+            dispB: `${statsB.fastestLaps} VR`,
             higherIsBetter: true
         },
         {
-            name: "TOP 10 FINISHES",
-            valA: statsA.top10s,
-            valB: statsB.top10s,
-            dispA: `${statsA.top10s} / ${racesA}`,
-            dispB: `${statsB.top10s} / ${racesB}`,
-            higherIsBetter: true
-        },
-        {
-            name: "PROMEDIO PTS / GP",
-            valA: parseFloat(avgPtsA),
-            valB: parseFloat(avgPtsB),
-            dispA: `${avgPtsA} pts`,
-            dispB: `${avgPtsB} pts`,
-            higherIsBetter: true
-        },
-        {
-            name: "TASA DE FIABILIDAD",
+            name: "FIABILIDAD EN CARRERA",
             valA: relA,
             valB: relB,
             dispA: `${relA}% (${statsA.dnfCount || 0} DNF)`,
@@ -10797,14 +10975,23 @@ function renderComparatorMetricsGrid(statsA, statsB, priceA, priceB) {
             }
         }
 
+        const crownA = isWinnerA ? `<span class="metric-crown" title="Mejor registro">👑</span>` : ``;
+        const crownB = isWinnerB ? `<span class="metric-crown" title="Mejor registro">👑</span>` : ``;
+
         return `
             <div class="compare-metric-row">
                 <div class="compare-metric-header">
-                    <div class="metric-val val-a ${isWinnerA ? 'is-winner' : ''}">${m.dispA} ${isWinnerA ? '👑' : ''}</div>
+                    <div class="metric-val val-a ${isWinnerA ? 'is-winner' : ''}">
+                        ${isWinnerA ? crownA : ''}
+                        <span>${m.dispA}</span>
+                    </div>
                     <div class="metric-name-wrap">
                         <span class="metric-name">${m.name}</span>
                     </div>
-                    <div class="metric-val val-b ${isWinnerB ? 'is-winner' : ''}">${isWinnerB ? '👑' : ''} ${m.dispB}</div>
+                    <div class="metric-val val-b ${isWinnerB ? 'is-winner' : ''}">
+                        <span>${m.dispB}</span>
+                        ${isWinnerB ? crownB : ''}
+                    </div>
                 </div>
                 <div class="metric-bar-track">
                     <div class="metric-bar-a" style="width: ${barPctA}%;"></div>
@@ -10816,22 +11003,21 @@ function renderComparatorMetricsGrid(statsA, statsB, priceA, priceB) {
     }).join("");
 }
 
-// Render Skills / Performance normalized ratings
+// Render Skills / Performance normalized ratings (per-race basis)
 function renderComparatorSkillsGrid(statsA, statsB) {
     const grid = document.getElementById("compareSkillsGrid");
     if (!grid) return;
 
-    // Normalize ratings (0 to 100)
     const racesA = Math.max(1, statsA.racesCount || 1);
     const racesB = Math.max(1, statsB.racesCount || 1);
 
-    // 1. Race Pace / Ritmo en Carrera (Points + Wins + Podiums ratio)
-    const racePaceA = Math.min(99, Math.round((statsA.pts / (racesA * 25)) * 80 + (statsA.wins * 6) + (statsA.podiums * 3) + 20));
-    const racePaceB = Math.min(99, Math.round((statsB.pts / (racesB * 25)) * 80 + (statsB.wins * 6) + (statsB.podiums * 3) + 20));
+    // 1. Race Pace / Ritmo en Carrera (Normalized per GP)
+    const racePaceA = Math.min(99, Math.round((statsA.pts / (racesA * 25)) * 80 + ((statsA.wins / racesA) * 20) + ((statsA.podiums / racesA) * 10) + 15));
+    const racePaceB = Math.min(99, Math.round((statsB.pts / (racesB * 25)) * 80 + ((statsB.wins / racesB) * 20) + ((statsB.podiums / racesB) * 10) + 15));
 
-    // 2. Qualy Speed / Ritmo a Una Vuelta (Poles + Top 3 grid ratio)
-    const qualySpeedA = Math.min(99, Math.round(50 + (statsA.poles * 14) + (statsA.wins * 5)));
-    const qualySpeedB = Math.min(99, Math.round(50 + (statsB.poles * 14) + (statsB.wins * 5)));
+    // 2. Qualy Speed / Ritmo a Una Vuelta
+    const qualySpeedA = Math.min(99, Math.round(50 + ((statsA.poles / racesA) * 45) + ((statsA.wins / racesA) * 15)));
+    const qualySpeedB = Math.min(99, Math.round(50 + ((statsB.poles / racesB) * 45) + ((statsB.wins / racesB) * 15)));
 
     // 3. Reliability / Fiabilidad Mecánica
     const relScoreA = Math.max(15, Math.min(99, Math.round(((racesA - (statsA.dnfCount || 0)) / racesA) * 100)));
@@ -10873,8 +11059,8 @@ function renderComparatorSkillsGrid(statsA, statsB) {
     `).join("");
 }
 
-// Render Round-by-Round GP Matrix Table
-function renderComparatorRoundsTable(statsA, statsB) {
+// Render Round-by-Round GP Matrix Table with mutual awareness
+function renderComparatorRoundsTable(statsA, statsB, h2h) {
     const tbody = document.getElementById("compareRoundsTableBody");
     const thA = document.getElementById("thRoundDriverA");
     const thB = document.getElementById("thRoundDriverB");
@@ -10883,10 +11069,12 @@ function renderComparatorRoundsTable(statsA, statsB) {
     if (thA) thA.textContent = statsA.driver.toUpperCase();
     if (thB) thB.textContent = statsB.driver.toUpperCase();
 
-    const h2h = computeDriverHeadToHeadDuels(statsA, statsB);
+    const data = h2h || computeDriverHeadToHeadDuels(statsA, statsB, compareMode);
 
-    tbody.innerHTML = h2h.roundDuels.map(d => {
+    tbody.innerHTML = data.roundDuels.map(d => {
         let duelBadge = `<span class="round-winner-chip" style="opacity: 0.4;">—</span>`;
+        let isNonMutual = false;
+
         if (d.isCompleted) {
             if (d.winner === "A") {
                 duelBadge = `<span class="round-winner-chip winner-a">🔴 ${escapeHTML(statsA.driver)}</span>`;
@@ -10894,6 +11082,9 @@ function renderComparatorRoundsTable(statsA, statsB) {
                 duelBadge = `<span class="round-winner-chip winner-b">🔵 ${escapeHTML(statsB.driver)}</span>`;
             } else if (d.winner === "TIE") {
                 duelBadge = `<span class="round-winner-chip winner-tie">➖ Empate</span>`;
+            } else if (d.winner === "NON_MUTUAL") {
+                isNonMutual = true;
+                duelBadge = `<span class="round-winner-chip chip-non-mutual" title="Solo uno participó: no suma victoria en Modo Justo">⚪ Sin coincidencia</span>`;
             }
         }
 
@@ -10932,10 +11123,10 @@ function renderComparatorRoundsTable(statsA, statsB) {
         }
 
         return `
-            <tr>
+            <tr class="${isNonMutual ? 'is-non-mutual' : ''}">
                 <td style="font-weight: 800; color: #94a3b8; font-family: 'Barlow Condensed', sans-serif;">R${d.roundNum}</td>
                 <td>
-                    <span style="margin-right: 6px;">${d.country ? (typeof getOfficialCountryFlag === "function" ? getOfficialCountryFlag(d.country) : "🏁") : "🏁"}</span>
+                    <span style="margin-right: 6px;">${d.flag || "🏁"}</span>
                     <strong style="color: #f1f5f9;">${escapeHTML(d.gpName)}</strong>
                 </td>
                 <td style="text-align: center;">${dispA}</td>
@@ -10957,6 +11148,8 @@ function initDriverComparator() {
     const navCompare = document.getElementById("navCompare");
     const standingsCompareBtn = document.getElementById("btnStandingsCompare");
     const driverModalCompareBtn = document.getElementById("btnDriverModalCompareAction");
+    const btnModeMutual = document.getElementById("btnCompareModeMutual");
+    const btnModeAll = document.getElementById("btnCompareModeAll");
 
     // Close button
     if (closeBtn) {
@@ -11010,6 +11203,19 @@ function initDriverComparator() {
             if (val) {
                 renderDriverComparison(compareDriverA, val);
             }
+        });
+    }
+
+    // Comparator Mode Toggle Buttons
+    if (btnModeMutual) {
+        btnModeMutual.addEventListener("click", () => {
+            setComparatorMode("mutual");
+        });
+    }
+
+    if (btnModeAll) {
+        btnModeAll.addEventListener("click", () => {
+            setComparatorMode("all");
         });
     }
 

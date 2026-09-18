@@ -1910,6 +1910,25 @@
             </div>
         </div>
 
+        <!-- Mode Switcher (Fair H2H vs Full Season) -->
+        <div class="compare-mode-container" id="compareModeContainer">
+            <div class="compare-mode-toggle-wrap">
+                <button type="button" class="compare-mode-btn is-active" id="btnCompareModeMutual" data-mode="mutual" title="Solo evalúa Grandes Premios donde ambos pilotos tomaron la salida">
+                    <span class="compare-mode-icon">⚖️</span>
+                    <span class="compare-mode-label" id="lblModeMutual">SOLO CARRERAS COINCIDENTES (JUSTO)</span>
+                    <span class="compare-mode-badge" id="compareMutualCountBadge">0 GPs</span>
+                </button>
+                <button type="button" class="compare-mode-btn" id="btnCompareModeAll" data-mode="all" title="Evalúa las 15 rondas del calendario de la temporada completa">
+                    <span class="compare-mode-icon">🌐</span>
+                    <span class="compare-mode-label" id="lblModeAll">TEMPORADA COMPLETA (15 GPs)</span>
+                </button>
+            </div>
+            <div class="compare-mode-info" id="compareModeInfo">
+                <span class="mode-info-icon" id="modeInfoIcon">💡</span>
+                <span class="mode-info-text" id="compareModeInfoText">Modo Justo activo: Se analizan exclusivamente las carreras donde ambos compitieron en pista. Las ausencias no otorgan victorias al rival.</span>
+            </div>
+        </div>
+
         <!-- Dual Driver Hero Profile Cards -->
         <div class="compare-hero-grid">
             <!-- Driver A Profile -->

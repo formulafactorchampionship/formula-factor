@@ -9200,7 +9200,98 @@ footer {
     grid-template-columns: 1fr 70px 1fr;
     gap: 16px;
     align-items: flex-end;
+    margin-bottom: 16px;
+}
+
+/* ==========================================
+   COMPARATOR MODE SWITCHER (FAIR H2H VS ALL)
+========================================== */
+.compare-mode-container {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
     margin-bottom: 24px;
+    background: rgba(14, 18, 27, 0.7);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 10px;
+    padding: 12px 16px;
+}
+
+.compare-mode-toggle-wrap {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    background: rgba(0, 0, 0, 0.4);
+    padding: 4px;
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.compare-mode-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 10px 16px;
+    background: transparent;
+    border: 1px solid transparent;
+    border-radius: 6px;
+    color: #94a3b8;
+    font-family: "Barlow Condensed", sans-serif;
+    font-size: 14px;
+    font-weight: 800;
+    letter-spacing: 0.8px;
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    white-space: nowrap;
+}
+
+.compare-mode-btn:hover {
+    color: #f1f5f9;
+    background: rgba(255, 255, 255, 0.04);
+}
+
+.compare-mode-btn.is-active {
+    background: linear-gradient(135deg, rgba(214, 180, 92, 0.18), rgba(214, 180, 92, 0.06));
+    border-color: rgba(214, 180, 92, 0.4);
+    color: #ffffff;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.4), 0 0 14px rgba(214, 180, 92, 0.15);
+}
+
+.compare-mode-btn.is-active .compare-mode-label {
+    color: var(--gold-light, #f5e4b2);
+}
+
+.compare-mode-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 2px 8px;
+    background: rgba(214, 180, 92, 0.2);
+    border: 1px solid rgba(214, 180, 92, 0.4);
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: 800;
+    color: var(--gold-light, #fce79a);
+    line-height: 1;
+}
+
+.compare-mode-info {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12.5px;
+    color: #94a3b8;
+    line-height: 1.4;
+    padding: 2px 4px;
+}
+
+.compare-mode-info .mode-info-icon {
+    font-size: 14px;
+    flex-shrink: 0;
+}
+
+.compare-mode-info strong {
+    color: #e2e8f0;
 }
 
 .compare-selector-col {
@@ -9576,23 +9667,39 @@ footer {
 
 .compare-metric-header {
     display: grid;
-    grid-template-columns: 80px 1fr 80px;
+    grid-template-columns: minmax(130px, 1fr) auto minmax(130px, 1fr);
     align-items: center;
+    gap: 8px;
 }
 
 .metric-val {
     font-family: "Barlow Condensed", sans-serif;
-    font-size: 18px;
+    font-size: 16px;
     font-weight: 800;
     color: #94a3b8;
+    white-space: nowrap;
+    display: flex;
+    align-items: center;
+    gap: 6px;
 }
 
 .metric-val.val-a {
     text-align: left;
+    justify-content: flex-start;
 }
 
 .metric-val.val-b {
     text-align: right;
+    justify-content: flex-end;
+}
+
+.metric-crown {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    line-height: 1;
+    filter: drop-shadow(0 0 5px rgba(250, 204, 21, 0.4));
 }
 
 .metric-val.is-winner {
@@ -9799,6 +9906,22 @@ footer {
     border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
+.round-winner-chip.chip-non-mutual {
+    background: rgba(255, 255, 255, 0.03);
+    color: #64748b;
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    font-weight: 700;
+}
+
+.compare-rounds-table tr.is-non-mutual {
+    opacity: 0.55;
+    transition: opacity 0.2s ease;
+}
+
+.compare-rounds-table tr.is-non-mutual:hover {
+    opacity: 0.9;
+}
+
 .round-driver-val {
     font-family: "Barlow Condensed", sans-serif;
     font-size: 15px;
@@ -9827,6 +9950,15 @@ footer {
 
     .compare-swap-col {
         display: none;
+    }
+
+    .compare-mode-toggle-wrap {
+        grid-template-columns: 1fr;
+    }
+
+    .compare-mode-btn {
+        padding: 8px 12px;
+        font-size: 13px;
     }
 }
 
