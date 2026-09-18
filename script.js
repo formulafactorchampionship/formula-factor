@@ -8425,14 +8425,16 @@ function getDriverPriceFluctuation(driverName) {
             if (!entry || !entry.driver) return;
             if (normalizeDriverKey(entry.driver) === norm) {
                 foundEntry = entry;
-                if (entry.status !== "DSQ") {
+                if (entry.status !== "DSQ" && entry.status !== "DNS" && entry.status !== "NC" && entry.status !== "AUSENTE" && entry.status !== "NO_SHOW") {
                     const pos = Number(entry.pos) || (idx + 1);
                     lastRacePos = `${pos}º`;
                     if (pos >= 1 && pos <= 10) {
                         lastRacePts += (F1_POINTS_MAP[pos] || 0);
                     }
-                } else {
+                } else if (entry.status === "DSQ") {
                     lastRacePos = "DSQ";
+                } else {
+                    lastRacePos = "DNS";
                 }
             }
         });
@@ -8444,33 +8446,32 @@ function getDriverPriceFluctuation(driverName) {
             }
         }
 
-        if (foundEntry) {
-            if (foundEntry.status === "DSQ") {
-                delta = -0.6;
-            } else if (lastRacePts >= 25) {
-                delta = +0.8;
-            } else if (lastRacePts >= 18) {
-                delta = +0.6;
-            } else if (lastRacePts >= 15) {
-                delta = +0.5;
-            } else if (lastRacePts >= 10) {
-                delta = basePrice < 15 ? +0.5 : +0.3;
-            } else if (lastRacePts >= 6) {
-                delta = basePrice < 12 ? +0.4 : +0.2;
-            } else if (lastRacePts >= 1) {
-                delta = basePrice < 10 ? +0.3 : +0.1;
-            } else {
-                delta = basePrice > 18 ? -0.5 : (basePrice > 12 ? -0.3 : -0.1);
-            }
-        } else {
+        const didNotParticipate = !foundEntry || (foundEntry.status === "DNS" || foundEntry.status === "NC" || foundEntry.status === "AUSENTE" || foundEntry.status === "NO_SHOW");
+
+        if (didNotParticipate) {
+            // If the driver did not participate in this GP, do NOT discount their price (delta = 0)
+            delta = 0.0;
+        } else if (foundEntry.status === "DSQ") {
+            delta = -0.6;
+        } else if (foundEntry.status === "DNF") {
             delta = basePrice > 16 ? -0.4 : -0.2;
+        } else if (lastRacePts >= 25) {
+            delta = +0.8;
+        } else if (lastRacePts >= 18) {
+            delta = +0.6;
+        } else if (lastRacePts >= 15) {
+            delta = +0.5;
+        } else if (lastRacePts >= 10) {
+            delta = basePrice < 15 ? +0.5 : +0.3;
+        } else if (lastRacePts >= 6) {
+            delta = basePrice < 12 ? +0.4 : +0.2;
+        } else if (lastRacePts >= 1) {
+            delta = basePrice < 10 ? +0.3 : +0.1;
+        } else {
+            delta = basePrice > 18 ? -0.5 : (basePrice > 12 ? -0.3 : -0.1);
         }
     } else {
-        if (pts >= 120) delta = +0.5;
-        else if (pts >= 80) delta = +0.3;
-        else if (pts >= 40) delta = +0.1;
-        else if (pts >= 10) delta = -0.1;
-        else delta = -0.2;
+        delta = 0.0;
     }
 
     const settings = getSavedSettings();
@@ -8489,7 +8490,13 @@ function getDriverPriceFluctuation(driverName) {
     let formClass = "trend-flat";
     let formTag = "➖ Estable";
 
-    if (delta > 0) {
+    const isNonParticipant = latest.race && Array.isArray(latest.race.drivers) && latest.race.drivers.length > 0 && (!latest.race.drivers.some(e => e && e.driver && normalizeDriverKey(e.driver) === normalizeDriverKey(driverName)) || (latest.race.drivers.find(e => e && e.driver && normalizeDriverKey(e.driver) === normalizeDriverKey(driverName))?.status === "DNS"));
+
+    if (isNonParticipant) {
+        trend = "flat";
+        formClass = "trend-flat";
+        formTag = `⏸️ No participó (en ${lastRaceName})`;
+    } else if (delta > 0) {
         trend = "up";
         formClass = "trend-up";
         if (delta >= 0.5) formTag = `🔥 En Racha (+${lastRacePts} pts en ${lastRaceName})`;
@@ -8540,6 +8547,7 @@ function getTeamPriceFluctuation(teamName) {
     let delta = 0.0;
     let lastRacePts = 0;
     let lastRaceName = latest.meta ? (latest.meta.name || latest.meta.code) : "Último GP";
+    let teamDriversCount = 0;
 
     if (latest.race && Array.isArray(latest.race.drivers) && latest.race.drivers.length > 0) {
         const cleanTeam = teamName.trim().toLowerCase();
@@ -8547,10 +8555,15 @@ function getTeamPriceFluctuation(teamName) {
         latest.race.drivers.forEach((entry, idx) => {
             if (!entry || !entry.driver) return;
             const dTeam = (entry.team || getDriverTeam(entry.driver) || "").trim().toLowerCase();
-            if (dTeam === cleanTeam && entry.status !== "DSQ") {
-                const pos = Number(entry.pos) || (idx + 1);
-                if (pos >= 1 && pos <= 10) {
-                    lastRacePts += (F1_POINTS_MAP[pos] || 0);
+            if (dTeam === cleanTeam) {
+                if (entry.status !== "DNS" && entry.status !== "NC" && entry.status !== "AUSENTE" && entry.status !== "NO_SHOW") {
+                    teamDriversCount++;
+                }
+                if (entry.status !== "DSQ" && entry.status !== "DNS" && entry.status !== "NC" && entry.status !== "AUSENTE" && entry.status !== "NO_SHOW") {
+                    const pos = Number(entry.pos) || (idx + 1);
+                    if (pos >= 1 && pos <= 10) {
+                        lastRacePts += (F1_POINTS_MAP[pos] || 0);
+                    }
                 }
             }
         });
@@ -8565,17 +8578,17 @@ function getTeamPriceFluctuation(teamName) {
             }
         }
 
-        if (lastRacePts >= 37) delta = +1.0;
+        if (teamDriversCount === 0) {
+            // Escudería no participó en este GP -> no se descuenta
+            delta = 0.0;
+        } else if (lastRacePts >= 37) delta = +1.0;
         else if (lastRacePts >= 27) delta = +0.7;
         else if (lastRacePts >= 18) delta = +0.4;
         else if (lastRacePts >= 10) delta = +0.2;
         else if (lastRacePts >= 1) delta = basePrice > 25 ? -0.2 : +0.1;
         else delta = basePrice > 20 ? -0.6 : -0.3;
     } else {
-        if (pts >= 180) delta = +0.6;
-        else if (pts >= 100) delta = +0.3;
-        else if (pts >= 40) delta = +0.1;
-        else delta = -0.3;
+        delta = 0.0;
     }
 
     const settings = getSavedSettings();
@@ -8594,7 +8607,11 @@ function getTeamPriceFluctuation(teamName) {
     let formClass = "trend-flat";
     let formTag = "➖ Estable";
 
-    if (delta > 0) {
+    if (teamDriversCount === 0 && latest.race && Array.isArray(latest.race.drivers) && latest.race.drivers.length > 0) {
+        trend = "flat";
+        formClass = "trend-flat";
+        formTag = `⏸️ Sin Participación (en ${lastRaceName})`;
+    } else if (delta > 0) {
         trend = "up";
         formClass = "trend-up";
         if (delta >= 0.6) formTag = `🔥 En Racha (+${lastRacePts} pts en ${lastRaceName})`;
