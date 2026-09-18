@@ -4,16 +4,48 @@
 
 import { initShapeWavesBackground } from "./ShapeWaves.js";
 import { initCalendarBorderGlow } from "./BorderGlow.js";
+import { initSideRaysBackground } from "./SideRays.js";
+import { initCobeGlobe } from "./CobeGlobe.js";
 
-// Initialize ShapeWaves interactive background canvas & Calendar BorderGlow
-if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", () => {
-        initShapeWavesBackground();
-        initCalendarBorderGlow();
-    });
-} else {
+// Initialize interactive background layers
+const handleInitBackgrounds = () => {
     initShapeWavesBackground();
     initCalendarBorderGlow();
+    
+    // Mount the React Bits SideRays component
+    initSideRaysBackground("hero-siderays-bg", {
+        speed: 2.5,
+        rayColor1: "#d6b45c", // Gold accent
+        rayColor2: "#00d2be", // High speed Mercedes teal / cyan
+        intensity: 2.0,
+        spread: 2.4,
+        origin: "top-right",
+        tilt: -5,
+        saturation: 1.4,
+        blend: 0.65,
+        falloff: 1.5,
+        opacity: 0.55
+    });
+
+    initSideRaysBackground("fantasy-siderays-bg", {
+        speed: 1.8,
+        rayColor1: "#d6b45c", // Gold accent
+        rayColor2: "#10b981", // Turbo Mint accent
+        intensity: 1.8,
+        spread: 2.2,
+        origin: "top-right",
+        tilt: -8,
+        saturation: 1.3,
+        blend: 0.6,
+        falloff: 1.6,
+        opacity: 0.6
+    });
+};
+
+if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", handleInitBackgrounds);
+} else {
+    handleInitBackgrounds();
 }
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
@@ -2790,6 +2822,7 @@ function getSavedNextRace() {
 
 function renderNextRaceOnPage(race) {
     if (!race) race = defaultNextRace;
+
     if (nextRaceRoundEl) nextRaceRoundEl.textContent = race.round;
     if (nextRaceTitleEl) {
         if (race.title && race.title.includes(" GP")) {
@@ -4800,6 +4833,13 @@ function initTeamStatsModal() {
     });
 }
 
+/* =========================================================
+   FFC GLOBAL 3D COBE GLOBE TELEMETRY SYSTEM
+========================================================= */
+function initInteractiveChampionshipMap() {
+    initCobeGlobe("hero-cobe-globe-container");
+}
+
 // Initialize modals on script load / DOM ready
 if (document.readyState === "loading") {
     document.addEventListener("DOMContentLoaded", () => {
@@ -4807,12 +4847,14 @@ if (document.readyState === "loading") {
         initStandingsViewTabs();
         initDriverStatsModal();
         initTeamStatsModal();
+        initInteractiveChampionshipMap();
     });
 } else {
     initAllCountriesDatalist();
     initStandingsViewTabs();
     initDriverStatsModal();
     initTeamStatsModal();
+    initInteractiveChampionshipMap();
 }
 
 function updateConstructorStandings(driverList) {
