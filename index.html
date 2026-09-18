@@ -1304,8 +1304,8 @@
                 <span id="fantasyBackBtnText">Volver a la Web Principal</span>
             </button>
             <div class="fantasy-top-badges">
-                <span class="fantasy-status-live">● EN VIVO</span>
-                <span class="fantasy-season-badge">TEMPORADA 1 · OFICIAL</span>
+                <span class="fantasy-status-live" id="fantasyStatusLive">● EN VIVO</span>
+                <span class="fantasy-season-badge" id="fantasySeasonBadge">TEMPORADA 1 · OFICIAL</span>
             </div>
         </div>
 
@@ -1337,7 +1337,7 @@
             </div>
             <button type="button" class="fantasy-btn-gold-primary fantasy-auth-action-btn" id="fantasyLoginPromptBtn">
                 <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
-                <span>Iniciar Sesión / Registrarse</span>
+                <span id="fantasyLoginPromptText">Iniciar Sesión / Registrarse</span>
             </button>
         </div>
 
@@ -1353,7 +1353,7 @@
                 </div>
             </div>
             <div class="fantasy-locked-badge">
-                <span>🔴 CARRERA EN CURSO</span>
+                <span id="fantasyLockedBadgeText">🔴 CARRERA EN CURSO</span>
             </div>
         </div>
 
@@ -1447,7 +1447,7 @@
                         <span id="fantasyResetBtnText">Reiniciar Equipo</span>
                     </button>
                     <button type="button" class="fantasy-btn-gold-primary" id="fantasyGoToMarketBtn">
-                        <span>+ Fichar en el Mercado</span>
+                        <span id="fantasyGoToMarketText">+ Fichar en el Mercado</span>
                     </button>
                 </div>
             </div>
@@ -1537,11 +1537,11 @@
                 <table class="fantasy-leaderboard-table">
                     <thead>
                         <tr>
-                            <th style="width: 55px;">POS</th>
-                            <th>ESCUDERÍA / MANAGER</th>
-                            <th>ALINEACIÓN (3 PILOTOS + 1 CONSTRUCTOR)</th>
-                            <th style="text-align: right; width: 120px;">VALOR</th>
-                            <th style="text-align: right; width: 110px;">PUNTOS</th>
+                            <th style="width: 55px;" id="thLbPos">POS</th>
+                            <th id="thLbTeam">ESCUDERÍA / MANAGER</th>
+                            <th id="thLbLineup">ALINEACIÓN (3 PILOTOS + 1 CONSTRUCTOR)</th>
+                            <th style="text-align: right; width: 120px;" id="thLbVal">VALOR</th>
+                            <th style="text-align: right; width: 110px;" id="thLbPts">PUNTOS</th>
                         </tr>
                     </thead>
                     <tbody id="fantasyLeaderboardBody">
@@ -1561,56 +1561,56 @@
 
                 <div class="fantasy-rule-card">
                     <div class="rule-card-icon">💰</div>
-                    <h3 class="rule-card-title">1. Presupuesto Inicial (75.0M €)</h3>
-                    <p class="rule-card-text">
+                    <h3 class="rule-card-title" id="ruleCard1Title">1. Presupuesto Inicial (75.0M €)</h3>
+                    <p class="rule-card-text" id="ruleCard1Text">
                         Dispones de 75.0M€ de presupuesto fijo. Los constructores son el activo principal (14.0M€ - 38.5M€) y los pilotos oscilan entre 6.0M€ y 29.7M€. Es imposible fichar a los mejores pilotos y al mejor equipo simultáneamente, obligándote a gestionar tu estrategia con fichajes equilibrados.
                     </p>
                 </div>
 
                 <div class="fantasy-rule-card">
                     <div class="rule-card-icon">🏎️</div>
-                    <h3 class="rule-card-title">2. Estructura de la Escudería</h3>
-                    <p class="rule-card-text">
+                    <h3 class="rule-card-title" id="ruleCard2Title">2. Estructura de la Escudería</h3>
+                    <p class="rule-card-text" id="ruleCard2Text">
                         Debes fichar exactamente <strong>3 pilotos oficiales</strong> y <strong>1 constructor</strong>. No se permiten pilotos duplicados en una misma alineación.
                     </p>
                 </div>
 
                 <div class="fantasy-rule-card">
                     <div class="rule-card-icon">⭐</div>
-                    <h3 class="rule-card-title">3. Turbo Driver (Multiplicador x2)</h3>
-                    <p class="rule-card-text">
+                    <h3 class="rule-card-title" id="ruleCard3Title">3. Turbo Driver (Multiplicador x2)</h3>
+                    <p class="rule-card-text" id="ruleCard3Text">
                         Selecciona a uno de tus 3 pilotos como <strong>Turbo Driver</strong>. Los puntos obtenidos por este piloto se multiplicarán por 2 (x2) en la puntuación total de tu escudería.
                     </p>
                 </div>
 
                 <div class="fantasy-rule-card">
                     <div class="rule-card-icon">🏁</div>
-                    <h3 class="rule-card-title">4. Inicio con 0 Puntos (A partir de Nürburgring)</h3>
-                    <p class="rule-card-text">
+                    <h3 class="rule-card-title" id="ruleCard4Title">4. Inicio con 0 Puntos (A partir de Nürburgring)</h3>
+                    <p class="rule-card-text" id="ruleCard4Text">
                         Todos los equipos y participantes comienzan la liga Fantasy con <strong>0 puntos</strong>. Las puntuaciones se acumularán a partir del Gran Premio de Nürburgring (Round 10) y siguientes rondas de la temporada con los puntos reales que consigan tus pilotos y constructor en cada carrera oficial.
                     </p>
                 </div>
 
                 <div class="fantasy-rule-card">
                     <div class="rule-card-icon">🔄</div>
-                    <h3 class="rule-card-title">5. Mercado de Traspasos Libre</h3>
-                    <p class="rule-card-text">
+                    <h3 class="rule-card-title" id="ruleCard5Title">5. Mercado de Traspasos Libre</h3>
+                    <p class="rule-card-text" id="ruleCard5Text">
                         Puedes vender y cambiar pilotos y constructores en cualquier momento entre carreras. Al vender un piloto recuperas el 100% de su valor actual para reinvertirlo en nuevos talentos.
                     </p>
                 </div>
 
                 <div class="fantasy-rule-card">
                     <div class="rule-card-icon">☁️</div>
-                    <h3 class="rule-card-title">6. Guardado en Tu Perfil</h3>
-                    <p class="rule-card-text">
+                    <h3 class="rule-card-title" id="ruleCard6Title">6. Guardado en Tu Perfil</h3>
+                    <p class="rule-card-text" id="ruleCard6Text">
                         Si has iniciado sesión con tu cuenta, tu escudería se sincroniza automáticamente con la nube en Firestore, manteniéndose guardada y visible en la clasificación comunitaria.
                     </p>
                 </div>
 
                 <div class="fantasy-rule-card">
                     <div class="rule-card-icon">📈</div>
-                    <h3 class="rule-card-title">7. Fluctuación Dinámica de Precios & Plusvalías</h3>
-                    <p class="rule-card-text">
+                    <h3 class="rule-card-title" id="ruleCard7Title">7. Fluctuación Dinámica de Precios & Plusvalías</h3>
+                    <p class="rule-card-text" id="ruleCard7Text">
                         El precio de mercado de cada piloto y constructor sube (<strong>▲ +0.1M€ a +1.0M€</strong>) o baja (<strong>▼ -0.1M€ a -0.6M€</strong>) tras cada Gran Premio oficial según su rendimiento real. Si fichas a un piloto antes de una gran actuación y su valor se dispara, al venderlo recuperarás su <strong>nuevo precio de mercado</strong>, aumentando el presupuesto total de tu escudería.
                     </p>
                 </div>

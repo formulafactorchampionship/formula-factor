@@ -416,6 +416,69 @@ const translations = {
             unlinkBtn: "🔓 Desvincular Piloto",
             customizeBtn: "🎨 Personalizar Tarjeta",
             viewCardBtn: "👁️ Ver Tarjeta"
+        },
+        fantasy: {
+            backBtn: "Volver a la Web Principal",
+            statusLive: "● EN VIVO",
+            seasonBadge: "TEMPORADA 1 · OFICIAL",
+            heroEyebrow: "🏆 FFC FANTASY LEAGUE · OFICIAL",
+            heroTitle: "CREA TU <span class=\"gold-gradient\">ESCUDERÍA</span>",
+            heroDesc: "Administra tu presupuesto de 75.0M€, ficha a 3 pilotos de la parrilla oficial y 1 constructor, y compite contra la comunidad sumando los puntos reales de cada Gran Premio disputado.",
+            authTitle: "INICIA SESIÓN PARA JUGAR",
+            authDesc: "Debes iniciar sesión con tu cuenta de Formula Factor para gestionar tus 75.0M€ de presupuesto, fichar pilotos y competir en la clasificación oficial.",
+            loginPromptBtn: "Iniciar Sesión / Registrarse",
+            lockedTitle: "MERCADO DE FICHAJES BLOQUEADO",
+            lockedDesc: "Las alineaciones están congeladas durante la disputa del Gran Premio. No se permiten compras, ventas ni cambios de Turbo Driver hasta la reapertura del mercado.",
+            lockedBadge: "🔴 CARRERA EN CURSO",
+            hudBudgetLabel: "PRESUPUESTO DISPONIBLE",
+            hudTeamValLabel: "VALOR DEL EQUIPO",
+            hudPointsLabel: "PUNTOS FANTASY",
+            hudRankLabel: "RANGO EN LIGA",
+            hudTurboSub: "Incluye Turbo Driver (x2)",
+            tabTeam: "Mi Escudería",
+            tabMarket: "Mercado de Fichajes",
+            tabLeaderboard: "Clasificación Fantasy",
+            tabRules: "Reglamento & Puntos",
+            teamNameLabel: "Nombre de tu Escudería:",
+            teamNamePlaceholder: "Ej. Apex Factor Racing",
+            saveBtn: "Guardar",
+            resetBtn: "Reiniciar Equipo",
+            goToMarketBtn: "+ Fichar en el Mercado",
+            infoStripText: "<strong>Regla FFC Fantasy:</strong> Tu alineación debe incluir exactamente 3 pilotos y 1 constructor dentro del tope de 75.0M€. Pulsa el botón <strong>⭐ Turbo Driver</strong> en cualquiera de tus 3 pilotos para duplicar (x2) sus puntos en cada Gran Premio oficial.",
+            filterAll: "Todos",
+            filterDrivers: "Pilotos",
+            filterTeams: "Constructores",
+            filterRising: "🔥 En Alza (▲)",
+            filterFalling: "📉 En Oferta (▼)",
+            filterAffordable: "Asequibles (≤ Presupuesto)",
+            searchPlaceholder: "Buscar por nombre o escudería...",
+            sortPriceDesc: "Precio: Mayor a Menor",
+            sortPriceAsc: "Precio: Menor a Mayor",
+            sortRisingDesc: "Mayor Revalorización (▲ Subida)",
+            sortFallingDesc: "Mayor Descuento (▼ Ganga)",
+            sortPtsDesc: "Puntos: Más a Menos",
+            sortNameAsc: "Nombre: A-Z",
+            lbHeading: "Clasificación General FFC Fantasy",
+            lbSub: "Ranking de directores de equipo y puntos acumulados en la Temporada 1 oficial.",
+            thPos: "POS",
+            thTeam: "ESCUDERÍA / MANAGER",
+            thLineup: "ALINEACIÓN (3 PILOTOS + 1 CONSTRUCTOR)",
+            thValue: "VALOR",
+            thPoints: "PUNTOS",
+            r1Title: "1. Presupuesto Inicial (75.0M €)",
+            r1Text: "Dispones de 75.0M€ de presupuesto fijo. Los constructores son el activo principal (14.0M€ - 38.5M€) y los pilotos oscilan entre 6.0M€ y 29.7M€. Es imposible fichar a los mejores pilotos y al mejor equipo simultáneamente, obligándote a gestionar tu estrategia con fichajes equilibrados.",
+            r2Title: "2. Estructura de la Escudería",
+            r2Text: "Debes fichar exactamente <strong>3 pilotos oficiales</strong> y <strong>1 constructor</strong>. No se permiten pilotos duplicados en una misma alineación.",
+            r3Title: "3. Turbo Driver (Multiplicador x2)",
+            r3Text: "Selecciona a uno de tus 3 pilotos como <strong>Turbo Driver</strong>. Los puntos obtenidos por este piloto se multiplicarán por 2 (x2) en la puntuación total de tu escudería.",
+            r4Title: "4. Inicio con 0 Puntos (A partir de Nürburgring)",
+            r4Text: "Todos los equipos y participantes comienzan la liga Fantasy con <strong>0 puntos</strong>. Las puntuaciones se acumularán a partir del Gran Premio de Nürburgring (Round 10) y siguientes rondas de la temporada con los puntos reales que consigan tus pilotos y constructor en cada carrera oficial.",
+            r5Title: "5. Mercado de Traspasos Libre",
+            r5Text: "Puedes vender y cambiar pilotos y constructores en cualquier momento entre carreras. Al vender un piloto recuperas el 100% de su valor actual para reinvertirlo en nuevos talentos.",
+            r6Title: "6. Guardado en Tu Perfil",
+            r6Text: "Si has iniciado sesión con tu cuenta, tu escudería se sincroniza automáticamente con la nube en Firestore, manteniéndose guardada y visible en la clasificación comunitaria.",
+            r7Title: "7. Fluctuación Dinámica de Precios & Plusvalías",
+            r7Text: "El precio de mercado de cada piloto y constructor sube (<strong>▲ +0.1M€ a +1.0M€</strong>) o baja (<strong>▼ -0.1M€ a -0.6M€</strong>) tras cada Gran Premio oficial según su rendimiento real. Si fichas a un piloto antes de una gran actuación y su valor se dispara, al venderlo recuperarás su <strong>nuevo precio de mercado</strong>, aumentando el presupuesto total de tu escudería."
         }
     },
     en: {
@@ -585,6 +648,69 @@ const translations = {
             unlinkBtn: "🔓 Unlink Driver",
             customizeBtn: "🎨 Customize Card",
             viewCardBtn: "👁️ View Card"
+        },
+        fantasy: {
+            backBtn: "Back to Main Site",
+            statusLive: "● LIVE",
+            seasonBadge: "SEASON 1 · OFFICIAL",
+            heroEyebrow: "🏆 FFC FANTASY LEAGUE · OFFICIAL",
+            heroTitle: "CREATE YOUR <span class=\"gold-gradient\">TEAM</span>",
+            heroDesc: "Manage your €75.0M budget, sign 3 drivers from the official grid and 1 constructor, and compete against the community scoring real points from each Grand Prix.",
+            authTitle: "LOG IN TO PLAY",
+            authDesc: "You must log in with your Formula Factor account to manage your €75.0M budget, sign drivers, and compete in the official standings.",
+            loginPromptBtn: "Log In / Register",
+            lockedTitle: "TRANSFER MARKET LOCKED",
+            lockedDesc: "Lineups are frozen during the Grand Prix. No buys, sells, or Turbo Driver changes are allowed until the market reopens.",
+            lockedBadge: "🔴 RACE IN PROGRESS",
+            hudBudgetLabel: "REMAINING BUDGET",
+            hudTeamValLabel: "TEAM VALUE",
+            hudPointsLabel: "FANTASY POINTS",
+            hudRankLabel: "LEAGUE RANK",
+            hudTurboSub: "Includes Turbo Driver (x2)",
+            tabTeam: "My Team",
+            tabMarket: "Transfer Market",
+            tabLeaderboard: "Fantasy Standings",
+            tabRules: "Rules & Scoring",
+            teamNameLabel: "Your Team Name:",
+            teamNamePlaceholder: "e.g. Apex Factor Racing",
+            saveBtn: "Save",
+            resetBtn: "Reset Team",
+            goToMarketBtn: "+ Sign in Market",
+            infoStripText: "<strong>FFC Fantasy Rule:</strong> Your lineup must include exactly 3 drivers and 1 constructor within the €75.0M budget cap. Click the <strong>⭐ Turbo Driver</strong> button on any of your 3 drivers to double (x2) their points in each official Grand Prix.",
+            filterAll: "All",
+            filterDrivers: "Drivers",
+            filterTeams: "Constructors",
+            filterRising: "🔥 Rising (▲)",
+            filterFalling: "📉 On Offer (▼)",
+            filterAffordable: "Affordable (≤ Budget)",
+            searchPlaceholder: "Search by name or team...",
+            sortPriceDesc: "Price: High to Low",
+            sortPriceAsc: "Price: Low to High",
+            sortRisingDesc: "Highest Gain (▲ Rise)",
+            sortFallingDesc: "Biggest Discount (▼ Bargain)",
+            sortPtsDesc: "Points: Most to Least",
+            sortNameAsc: "Name: A-Z",
+            lbHeading: "FFC Fantasy Overall Standings",
+            lbSub: "Team principal rankings and total accumulated points in official Season 1.",
+            thPos: "POS",
+            thTeam: "TEAM / MANAGER",
+            thLineup: "LINEUP (3 DRIVERS + 1 CONSTRUCTOR)",
+            thValue: "VALUE",
+            thPoints: "POINTS",
+            r1Title: "1. Starting Budget (€75.0M)",
+            r1Text: "You have a fixed €75.0M budget. Constructors are the primary asset (€14.0M - €38.5M) and drivers range from €6.0M to €29.7M. It is impossible to sign all top drivers and the top team at once, forcing strategic balanced picks.",
+            r2Title: "2. Team Structure",
+            r2Text: "You must sign exactly <strong>3 official drivers</strong> and <strong>1 constructor</strong>. Duplicate drivers are not allowed in the same lineup.",
+            r3Title: "3. Turbo Driver (x2 Multiplier)",
+            r3Text: "Select one of your 3 drivers as <strong>Turbo Driver</strong>. Points scored by this driver will be multiplied by 2 (x2) in your team's total score.",
+            r4Title: "4. Fresh Start (From Nürburgring)",
+            r4Text: "All teams and participants start the Fantasy league with <strong>0 points</strong>. Points will accumulate starting from the Nürburgring Grand Prix (Round 10) and subsequent season rounds based on real points scored by your drivers and constructor in each official race.",
+            r5Title: "5. Free Transfer Market",
+            r5Text: "You can sell and swap drivers and constructors anytime between races. Selling a driver refunds 100% of their current market value to reinvest in new talent.",
+            r6Title: "6. Saved to Your Profile",
+            r6Text: "If you are logged in, your team automatically syncs with the Firestore cloud, staying saved and visible in the community leaderboard.",
+            r7Title: "7. Dynamic Price Fluctuations & Gains",
+            r7Text: "The market price of each driver and constructor rises (<strong>▲ +€0.1M to +€1.0M</strong>) or falls (<strong>▼ -€0.1M to -€0.6M</strong>) after each official Grand Prix based on real performance. If you sign a driver before a breakout performance and their value surges, selling them yields their <strong>new market price</strong>, increasing your overall budget."
         }
     }
 };
@@ -901,6 +1027,147 @@ function applyTranslations(lang) {
 
         const cView = document.getElementById("openMyDriverCardBtn");
         if (cView) cView.textContent = dict.claim.viewCardBtn;
+    }
+
+    // Fantasy section translations
+    if (dict.fantasy) {
+        const fBack = document.getElementById("fantasyBackBtnText");
+        if (fBack) fBack.textContent = dict.fantasy.backBtn;
+
+        const fLive = document.getElementById("fantasyStatusLive");
+        if (fLive) fLive.textContent = dict.fantasy.statusLive;
+
+        const fBadge = document.getElementById("fantasySeasonBadge");
+        if (fBadge) fBadge.textContent = dict.fantasy.seasonBadge;
+
+        const fEyebrow = document.getElementById("fantasyHeroEyebrow");
+        if (fEyebrow) fEyebrow.innerHTML = `<span>🏆</span> ${dict.fantasy.heroEyebrow}`;
+
+        const fTitle = document.getElementById("fantasyHeroTitle");
+        if (fTitle) fTitle.innerHTML = dict.fantasy.heroTitle;
+
+        const fDesc = document.getElementById("fantasyHeroDesc");
+        if (fDesc) fDesc.textContent = dict.fantasy.heroDesc;
+
+        const fAuthT = document.getElementById("fantasyAuthBannerTitle");
+        if (fAuthT) fAuthT.textContent = dict.fantasy.authTitle;
+
+        const fAuthD = document.getElementById("fantasyAuthBannerDesc");
+        if (fAuthD) fAuthD.textContent = dict.fantasy.authDesc;
+
+        const fLoginPromptText = document.getElementById("fantasyLoginPromptText");
+        if (fLoginPromptText) fLoginPromptText.textContent = dict.fantasy.loginPromptBtn;
+
+        const fLockT = document.getElementById("fantasyLockedTitle");
+        if (fLockT) fLockT.textContent = dict.fantasy.lockedTitle;
+
+        const fLockD = document.getElementById("fantasyLockedDesc");
+        if (fLockD) fLockD.textContent = dict.fantasy.lockedDesc;
+
+        const fLockB = document.getElementById("fantasyLockedBadgeText");
+        if (fLockB) fLockB.textContent = dict.fantasy.lockedBadge;
+
+        const hudBudgetL = document.getElementById("hudBudgetLabel");
+        if (hudBudgetL) hudBudgetL.textContent = dict.fantasy.hudBudgetLabel;
+
+        const hudTeamValL = document.getElementById("hudTeamValLabel");
+        if (hudTeamValL) hudTeamValL.textContent = dict.fantasy.hudTeamValLabel;
+
+        const hudPointsL = document.getElementById("hudPointsLabel");
+        if (hudPointsL) hudPointsL.textContent = dict.fantasy.hudPointsLabel;
+
+        const hudRankL = document.getElementById("hudRankLabel");
+        if (hudRankL) hudRankL.textContent = dict.fantasy.hudRankLabel;
+
+        const hudTurboS = document.getElementById("hudTurboSub");
+        if (hudTurboS) hudTurboS.textContent = dict.fantasy.hudTurboSub;
+
+        const tTeam = document.getElementById("tabLabelTeam");
+        if (tTeam) tTeam.textContent = dict.fantasy.tabTeam;
+
+        const tMarket = document.getElementById("tabLabelMarket");
+        if (tMarket) tMarket.textContent = dict.fantasy.tabMarket;
+
+        const tLb = document.getElementById("tabLabelLeaderboard");
+        if (tLb) tLb.textContent = dict.fantasy.tabLeaderboard;
+
+        const tRules = document.getElementById("tabLabelRules");
+        if (tRules) tRules.textContent = dict.fantasy.tabRules;
+
+        const teamNameL = document.getElementById("teamNameLabel");
+        if (teamNameL) teamNameL.textContent = dict.fantasy.teamNameLabel;
+
+        const saveBtnT = document.getElementById("saveTeamNameBtnText");
+        if (saveBtnT) saveBtnT.textContent = dict.fantasy.saveBtn;
+
+        const resetBtnT = document.getElementById("fantasyResetBtnText");
+        if (resetBtnT) resetBtnT.textContent = dict.fantasy.resetBtn;
+
+        const goToMarketT = document.getElementById("fantasyGoToMarketText");
+        if (goToMarketT) goToMarketT.textContent = dict.fantasy.goToMarketBtn;
+
+        const infoStripT = document.getElementById("fantasyInfoStripText");
+        if (infoStripT) infoStripT.innerHTML = dict.fantasy.infoStripText;
+
+        // Filter pills
+        const fAll = document.getElementById("marketFilterAll");
+        if (fAll) fAll.textContent = dict.fantasy.filterAll;
+        const fDrv = document.getElementById("marketFilterDrivers");
+        if (fDrv) fDrv.textContent = dict.fantasy.filterDrivers;
+        const fTm = document.getElementById("marketFilterTeams");
+        if (fTm) fTm.textContent = dict.fantasy.filterTeams;
+        const fRis = document.getElementById("marketFilterRising");
+        if (fRis) fRis.textContent = dict.fantasy.filterRising;
+        const fFal = document.getElementById("marketFilterFalling");
+        if (fFal) fFal.textContent = dict.fantasy.filterFalling;
+        const fAff = document.getElementById("marketFilterAffordable");
+        if (fAff) fAff.textContent = dict.fantasy.filterAffordable;
+
+        // Search & Sort
+        const mSearch = document.getElementById("marketSearchInput");
+        if (mSearch) mSearch.placeholder = dict.fantasy.searchPlaceholder;
+
+        const mSort = document.getElementById("marketSortSelect");
+        if (mSort) {
+            const opts = mSort.options;
+            if (opts && opts.length >= 6) {
+                opts[0].textContent = dict.fantasy.sortPriceDesc;
+                opts[1].textContent = dict.fantasy.sortPriceAsc;
+                opts[2].textContent = dict.fantasy.sortRisingDesc;
+                opts[3].textContent = dict.fantasy.sortFallingDesc;
+                opts[4].textContent = dict.fantasy.sortPtsDesc;
+                opts[5].textContent = dict.fantasy.sortNameAsc;
+            }
+        }
+
+        // Leaderboard
+        const lbH = document.getElementById("fantasyLeaderboardHeading");
+        if (lbH) lbH.textContent = dict.fantasy.lbHeading;
+        const lbS = document.getElementById("fantasyLeaderboardSub");
+        if (lbS) lbS.textContent = dict.fantasy.lbSub;
+
+        const thPos = document.getElementById("thLbPos");
+        if (thPos) thPos.textContent = dict.fantasy.thPos;
+        const thTeam = document.getElementById("thLbTeam");
+        if (thTeam) thTeam.textContent = dict.fantasy.thTeam;
+        const thLineup = document.getElementById("thLbLineup");
+        if (thLineup) thLineup.textContent = dict.fantasy.thLineup;
+        const thVal = document.getElementById("thLbVal");
+        if (thVal) thVal.textContent = dict.fantasy.thValue;
+        const thPts = document.getElementById("thLbPts");
+        if (thPts) thPts.textContent = dict.fantasy.thPoints;
+
+        // Rules
+        for (let i = 1; i <= 7; i++) {
+            const rT = document.getElementById(`ruleCard${i}Title`);
+            const rTxt = document.getElementById(`ruleCard${i}Text`);
+            if (rT && dict.fantasy[`r${i}Title`]) rT.textContent = dict.fantasy[`r${i}Title`];
+            if (rTxt && dict.fantasy[`r${i}Text`]) rTxt.innerHTML = dict.fantasy[`r${i}Text`];
+        }
+
+        if (typeof renderFantasyPortal === "function" && typeof isFantasyModuleInitialized !== "undefined" && isFantasyModuleInitialized) {
+            renderFantasyPortal();
+        }
     }
 
     // Calendar cards status & country
@@ -9556,6 +9823,7 @@ function switchFantasySubTab(tabName) {
 function renderFantasyHUD() {
     const isLogged = isFantasyUserLoggedIn();
     const currentUser = getFantasyCurrentUser();
+    const isEn = typeof currentLanguage !== "undefined" && currentLanguage === "en";
 
     // Toggle Login Requirement Banner
     const authBanner = document.getElementById("fantasyAuthBanner");
@@ -9583,9 +9851,11 @@ function renderFantasyHUD() {
     }
     if (budgetSub) {
         if (metrics.remaining < 0) {
-            budgetSub.innerHTML = `<span style="color:#ef4444; font-weight:700;">⚠️ Exceso: -${Math.abs(metrics.remaining).toFixed(1)}M € (Vende fichajes)</span>`;
+            budgetSub.innerHTML = `<span style="color:#ef4444; font-weight:700;">⚠️ ${isEn ? "Excess: -" : "Exceso: -"}${Math.abs(metrics.remaining).toFixed(1)}M € (${isEn ? "Sell picks" : "Vende fichajes"})</span>`;
         } else {
-            budgetSub.textContent = `Gastados: ${metrics.spent.toFixed(1)}M € de ${FANTASY_INITIAL_BUDGET.toFixed(1)}M €`;
+            budgetSub.textContent = isEn 
+                ? `Spent: ${metrics.spent.toFixed(1)}M € of ${FANTASY_INITIAL_BUDGET.toFixed(1)}M € starting`
+                : `Gastados: ${metrics.spent.toFixed(1)}M € de ${FANTASY_INITIAL_BUDGET.toFixed(1)}M €`;
         }
     }
 
@@ -9594,8 +9864,8 @@ function renderFantasyHUD() {
     if (valueEl) valueEl.textContent = `${metrics.spent.toFixed(1)}M €`;
     if (slotsCountEl) {
         slotsCountEl.textContent = isLogged 
-            ? `${metrics.filledSlots} / 4 Fichajes completados`
-            : "Inicia sesión para jugar";
+            ? (isEn ? `${metrics.filledSlots} / 4 Signings completed` : `${metrics.filledSlots} / 4 Fichajes completados`)
+            : (isEn ? "Log in to play" : "Inicia sesión para jugar");
     }
 
     const ptsEl = document.getElementById("fantasyTotalPts");
@@ -9605,10 +9875,10 @@ function renderFantasyHUD() {
     const rankEl = document.getElementById("fantasyRankPosition");
     const rankSub = document.getElementById("fantasyRankSub");
     if (!isLogged) {
-        if (rankEl) rankEl.textContent = "🔒 Inicia Sesión";
-        if (rankSub) rankSub.textContent = "Para competir en la liga";
+        if (rankEl) rankEl.textContent = isEn ? "🔒 Log In" : "🔒 Inicia Sesión";
+        if (rankSub) rankSub.textContent = isEn ? "To compete in the league" : "Para competir en la liga";
     } else {
-        if (rankSub) rankSub.textContent = "Clasificación General";
+        if (rankSub) rankSub.textContent = isEn ? "Overall Standings" : "Clasificación General";
     }
 
     // Team name input
@@ -9616,18 +9886,18 @@ function renderFantasyHUD() {
     const saveHint = document.getElementById("fantasySaveHint");
     if (teamNameInput && document.activeElement !== teamNameInput) {
         if (isLogged) {
-            teamNameInput.value = ffcFantasyState.teamName || `Escudería de ${currentUser.displayName || currentUser.email.split('@')[0]}`;
+            teamNameInput.value = ffcFantasyState.teamName || (isEn ? `${currentUser.displayName || currentUser.email.split('@')[0]}'s Team` : `Escudería de ${currentUser.displayName || currentUser.email.split('@')[0]}`);
             teamNameInput.disabled = false;
-            teamNameInput.placeholder = "Nombre de tu Escudería";
+            teamNameInput.placeholder = isEn ? "Your Team Name" : "Nombre de tu Escudería";
             if (saveHint) {
-                saveHint.textContent = `Manager: ${currentUser.displayName || currentUser.email.split('@')[0]} · Sincronizado en la nube`;
+                saveHint.textContent = isEn ? `Manager: ${currentUser.displayName || currentUser.email.split('@')[0]} · Synced to cloud` : `Manager: ${currentUser.displayName || currentUser.email.split('@')[0]} · Sincronizado en la nube`;
             }
         } else {
             teamNameInput.value = "";
             teamNameInput.disabled = true;
-            teamNameInput.placeholder = "Inicia sesión para gestionar tu equipo";
+            teamNameInput.placeholder = isEn ? "Log in to manage your team" : "Inicia sesión para gestionar tu equipo";
             if (saveHint) {
-                saveHint.textContent = "Debes iniciar sesión para guardar tu escudería";
+                saveHint.textContent = isEn ? "You must log in to save your team" : "Debes iniciar sesión para guardar tu escudería";
             }
         }
     }
@@ -9640,14 +9910,15 @@ function renderSlotCard(containerId, slotType, slotIndex, currentItem, pts, isTu
 
     const isLogged = isFantasyUserLoggedIn();
     const isLocked = isFantasyMarketLocked();
+    const isEn = typeof currentLanguage !== "undefined" && currentLanguage === "en";
 
     if (!currentItem) {
         // Empty Slot State
-        const label = slotType === "driver" ? `Piloto ${slotIndex}` : "Constructor";
+        const label = slotType === "driver" ? (isEn ? `Driver ${slotIndex}` : `Piloto ${slotIndex}`) : (isEn ? "Constructor" : "Constructor");
         const icon = slotType === "driver" ? "🏎️" : "🏭";
         const btnText = isLocked 
-            ? "🔒 Mercado Bloqueado" 
-            : (isLogged ? "Ir al Mercado" : "Iniciar Sesión");
+            ? (isEn ? "🔒 Market Locked" : "🔒 Mercado Bloqueado") 
+            : (isLogged ? (isEn ? "Go to Market" : "Ir al Mercado") : (isEn ? "Log In" : "Iniciar Sesión"));
         const btnClick = isLocked 
             ? "handleLockedAction()" 
             : `handleEmptySlotClick('${slotType}')`;
@@ -9656,8 +9927,8 @@ function renderSlotCard(containerId, slotType, slotIndex, currentItem, pts, isTu
         container.innerHTML = `
             <div class="slot-empty-body" onclick="${btnClick}">
                 <div class="slot-empty-icon">${isLocked ? "🔒" : (isLogged ? icon : "🔒")}</div>
-                <div class="slot-empty-title">${isLocked ? `${label} (Bloqueado)` : (isLogged ? `+ Fichar ${label}` : `${label} Bloqueado`)}</div>
-                <div class="slot-empty-sub">${isLocked ? "Alineaciones congeladas por carrera" : (isLogged ? "Vacante disponible" : "Inicia sesión para fichar")}</div>
+                <div class="slot-empty-title">${isLocked ? `${label} (${isEn ? "Locked" : "Bloqueado"})` : (isLogged ? `+ ${isEn ? "Sign " + label : "Fichar " + label}` : `${label} ${isEn ? "Locked" : "Bloqueado"}`)}</div>
+                <div class="slot-empty-sub">${isLocked ? (isEn ? "Lineups frozen during race" : "Alineaciones congeladas por carrera") : (isLogged ? (isEn ? "Vacant slot available" : "Vacante disponible") : (isEn ? "Log in to sign" : "Inicia sesión para fichar"))}</div>
                 <button type="button" class="slot-empty-btn ${lockBtnClass}">${btnText}</button>
             </div>
         `;
@@ -9671,20 +9942,20 @@ function renderSlotCard(containerId, slotType, slotIndex, currentItem, pts, isTu
             const flu = getDriverPriceFluctuation(currentItem);
             const avatarUrl = driverData && driverData.avatarUrl ? driverData.avatarUrl : null;
             const turboClass = isTurbo ? "is-active" : "";
-            const turboLabel = isTurbo ? "⭐ Turbo Activo (x2 Pts)" : "⭐ Activar Turbo (x2)";
+            const turboLabel = isTurbo ? (isEn ? "⭐ Turbo Active (x2 Pts)" : "⭐ Turbo Activo (x2 Pts)") : (isEn ? "⭐ Activate Turbo (x2)" : "⭐ Activar Turbo (x2)");
 
             const sellBtnHtml = isLocked
-                ? `<button type="button" class="slot-sell-btn is-locked" onclick="handleLockedAction()" title="Mercado bloqueado por carrera">🔒 Bloqueado</button>`
-                : `<button type="button" class="slot-sell-btn" onclick="handleSellSlot('driver${slotIndex}')">✕ Vender</button>`;
+                ? `<button type="button" class="slot-sell-btn is-locked" onclick="handleLockedAction()" title="${isEn ? "Market locked during race" : "Mercado bloqueado por carrera"}">🔒 ${isEn ? "Locked" : "Bloqueado"}</button>`
+                : `<button type="button" class="slot-sell-btn" onclick="handleSellSlot('driver${slotIndex}')">✕ ${isEn ? "Sell" : "Vender"}</button>`;
 
             const turboBtnHtml = isLocked
-                ? `<button type="button" class="slot-turbo-btn ${turboClass} is-locked" onclick="handleLockedAction()" title="Mercado bloqueado por carrera">🔒 ${turboLabel}</button>`
+                ? `<button type="button" class="slot-turbo-btn ${turboClass} is-locked" onclick="handleLockedAction()" title="${isEn ? "Market locked during race" : "Mercado bloqueado por carrera"}">🔒 ${turboLabel}</button>`
                 : `<button type="button" class="slot-turbo-btn ${turboClass}" onclick="handleToggleTurbo('${escapeHtml(currentItem)}')">${turboLabel}</button>`;
 
             container.innerHTML = `
                 <div class="slot-filled-card">
                     <div class="slot-header-tag">
-                        <span class="slot-type-label">PILOTO ${slotIndex}</span>
+                        <span class="slot-type-label">${isEn ? "DRIVER " + slotIndex : "PILOTO " + slotIndex}</span>
                         ${sellBtnHtml}
                     </div>
                     <div class="slot-avatar-wrap">
@@ -9699,14 +9970,14 @@ function renderSlotCard(containerId, slotType, slotIndex, currentItem, pts, isTu
                     </div>
                     <div class="slot-meta-row">
                         <div class="slot-meta-item">
-                            <span class="slot-meta-lbl">VALOR</span>
+                            <span class="slot-meta-lbl">${isEn ? "VALUE" : "VALOR"}</span>
                             <span class="slot-meta-val price">
                                 ${price.toFixed(1)}M €
-                                <span class="price-delta-badge ${flu.formClass}" title="Fluctuación del valor: ${flu.deltaFormatted}">${flu.deltaFormatted}</span>
+                                <span class="price-delta-badge ${flu.formClass}" title="${isEn ? "Value fluctuation: " + flu.deltaFormatted : "Fluctuación del valor: " + flu.deltaFormatted}">${flu.deltaFormatted}</span>
                             </span>
                         </div>
                         <div class="slot-meta-item" style="text-align: right;">
-                            <span class="slot-meta-lbl">PUNTOS</span>
+                            <span class="slot-meta-lbl">${isEn ? "POINTS" : "PUNTOS"}</span>
                             <span class="slot-meta-val pts">${pts} PTS</span>
                         </div>
                     </div>
@@ -9718,13 +9989,13 @@ function renderSlotCard(containerId, slotType, slotIndex, currentItem, pts, isTu
             const price = getConstructorFantasyPrice(currentItem);
             const flu = getTeamPriceFluctuation(currentItem);
             const sellBtnHtml = isLocked
-                ? `<button type="button" class="slot-sell-btn is-locked" onclick="handleLockedAction()" title="Mercado bloqueado por carrera">🔒 Bloqueado</button>`
-                : `<button type="button" class="slot-sell-btn" onclick="handleSellSlot('team')">✕ Vender</button>`;
+                ? `<button type="button" class="slot-sell-btn is-locked" onclick="handleLockedAction()" title="${isEn ? "Market locked during race" : "Mercado bloqueado por carrera"}">🔒 ${isEn ? "Locked" : "Bloqueado"}</button>`
+                : `<button type="button" class="slot-sell-btn" onclick="handleSellSlot('team')">✕ ${isEn ? "Sell" : "Vender"}</button>`;
 
             container.innerHTML = `
                 <div class="slot-filled-card">
                     <div class="slot-header-tag">
-                        <span class="slot-type-label">ESCUDERÍA OFICIAL</span>
+                        <span class="slot-type-label">${isEn ? "OFFICIAL TEAM" : "ESCUDERÍA OFICIAL"}</span>
                         ${sellBtnHtml}
                     </div>
                     <div class="slot-avatar-wrap">
@@ -9736,19 +10007,19 @@ function renderSlotCard(containerId, slotType, slotIndex, currentItem, pts, isTu
                     </div>
                     <div class="slot-meta-row">
                         <div class="slot-meta-item">
-                            <span class="slot-meta-lbl">VALOR</span>
+                            <span class="slot-meta-lbl">${isEn ? "VALUE" : "VALOR"}</span>
                             <span class="slot-meta-val price">
                                 ${price.toFixed(1)}M €
-                                <span class="price-delta-badge ${flu.formClass}" title="Fluctuación del valor: ${flu.deltaFormatted}">${flu.deltaFormatted}</span>
+                                <span class="price-delta-badge ${flu.formClass}" title="${isEn ? "Value fluctuation: " + flu.deltaFormatted : "Fluctuación del valor: " + flu.deltaFormatted}">${flu.deltaFormatted}</span>
                             </span>
                         </div>
                         <div class="slot-meta-item" style="text-align: right;">
-                            <span class="slot-meta-lbl">PUNTOS</span>
+                            <span class="slot-meta-lbl">${isEn ? "POINTS" : "PUNTOS"}</span>
                             <span class="slot-meta-val pts">${pts} PTS</span>
                         </div>
                     </div>
                     <div style="font-size: 11px; color: #6b7280; text-align: center; margin-top: auto; padding: 6px;">
-                        Suma los puntos de todos sus monoplazas en carrera
+                        ${isEn ? "Sums the points of all its cars in the race" : "Suma los puntos de todos sus monoplazas en carrera"}
                     </div>
                 </div>
             `;
@@ -9918,6 +10189,7 @@ function renderFantasyMarketGrid() {
     const filter = ffcFantasyState.currentFilter;
     const query = (ffcFantasyState.searchQuery || "").trim().toLowerCase();
     const sortBy = ffcFantasyState.sortBy;
+    const isEn = typeof currentLanguage !== "undefined" && currentLanguage === "en";
 
     // Gather Drivers
     const allDrivers = (typeof ffc2010SeasonDrivers !== "undefined" && Array.isArray(ffc2010SeasonDrivers))
@@ -10007,7 +10279,7 @@ function renderFantasyMarketGrid() {
     if (items.length === 0) {
         grid.innerHTML = `
             <div style="grid-column: 1/-1; text-align: center; padding: 48px 20px; color: #6b7280; font-size: 14px;">
-                No se encontraron pilotos o constructores que coincidan con la búsqueda.
+                ${isEn ? "No drivers or constructors found matching your search." : "No se encontraron pilotos o constructores que coincidan con la búsqueda."}
             </div>
         `;
         return;
@@ -10024,21 +10296,21 @@ function renderFantasyMarketGrid() {
         let actionBtnHtml = "";
         if (isLocked) {
             if (item.isOwned) {
-                actionBtnHtml = `<button type="button" class="market-action-btn owned-btn is-locked" onclick="handleLockedAction()" title="Mercado bloqueado por carrera">🔒 Fichado (Bloqueado)</button>`;
+                actionBtnHtml = `<button type="button" class="market-action-btn owned-btn is-locked" onclick="handleLockedAction()" title="${isEn ? "Market locked during race" : "Mercado bloqueado por carrera"}">🔒 ${isEn ? "Signed (Locked)" : "Fichado (Bloqueado)"}</button>`;
             } else {
-                actionBtnHtml = `<button type="button" class="market-action-btn is-locked" onclick="handleLockedAction()" title="Mercado bloqueado por carrera">🔒 Mercado Bloqueado</button>`;
+                actionBtnHtml = `<button type="button" class="market-action-btn is-locked" onclick="handleLockedAction()" title="${isEn ? "Market locked during race" : "Mercado bloqueado por carrera"}">🔒 ${isEn ? "Market Locked" : "Mercado Bloqueado"}</button>`;
             }
         } else if (!isLogged) {
-            actionBtnHtml = `<button type="button" class="market-action-btn sign-btn" onclick="requireFantasyAuth()" title="Inicia sesión para fichar">🔒 Iniciar Sesión para Fichar</button>`;
+            actionBtnHtml = `<button type="button" class="market-action-btn sign-btn" onclick="requireFantasyAuth()" title="${isEn ? "Log in to sign" : "Inicia sesión para fichar"}">🔒 ${isEn ? "Log In to Sign" : "Iniciar Sesión para Fichar"}</button>`;
         } else if (item.isOwned) {
-            actionBtnHtml = `<button type="button" class="market-action-btn owned-btn" onclick="handleSellFromMarket('${item.type}', '${escapeHtml(item.name)}')">Fichado ✓ (Vender)</button>`;
+            actionBtnHtml = `<button type="button" class="market-action-btn owned-btn" onclick="handleSellFromMarket('${item.type}', '${escapeHtml(item.name)}')">${isEn ? "Signed ✓ (Sell)" : "Fichado ✓ (Vender)"}</button>`;
         } else if (isDriver && driverSlotsFull) {
-            actionBtnHtml = `<button type="button" class="market-action-btn" disabled>3/3 Pilotos Lleno</button>`;
+            actionBtnHtml = `<button type="button" class="market-action-btn" disabled>${isEn ? "3/3 Drivers Full" : "3/3 Pilotos Lleno"}</button>`;
         } else if (!canAfford) {
-            actionBtnHtml = `<button type="button" class="market-action-btn" disabled>Sin Presupuesto (${item.price.toFixed(1)}M)</button>`;
+            actionBtnHtml = `<button type="button" class="market-action-btn" disabled>${isEn ? "No Budget" : "Sin Presupuesto"} (${item.price.toFixed(1)}M)</button>`;
         } else {
             const clickFn = isDriver ? `handleSignDriver('${escapeHtml(item.name)}')` : `handleSignConstructor('${escapeHtml(item.name)}')`;
-            actionBtnHtml = `<button type="button" class="market-action-btn sign-btn" onclick="${clickFn}">+ Fichar por ${item.price.toFixed(1)}M €</button>`;
+            actionBtnHtml = `<button type="button" class="market-action-btn sign-btn" onclick="${clickFn}">+ ${isEn ? "Sign for " : "Fichar por "}${item.price.toFixed(1)}M €</button>`;
         }
 
         return `
@@ -10059,14 +10331,14 @@ function renderFantasyMarketGrid() {
                 ${item.flu ? `<div class="market-form-tag ${item.flu.formClass}">${item.flu.formTag}</div>` : ''}
                 <div class="market-card-stats">
                     <div class="market-stat-item">
-                        <span class="market-stat-lbl">PRECIO</span>
+                        <span class="market-stat-lbl">${isEn ? "PRICE" : "PRECIO"}</span>
                         <span class="market-stat-val price">
                             ${item.price.toFixed(1)}M €
-                            ${item.flu ? `<span class="price-delta-badge ${item.flu.formClass}" title="Fluctuación: ${item.flu.deltaFormatted}">${item.flu.deltaFormatted}</span>` : ''}
+                            ${item.flu ? `<span class="price-delta-badge ${item.flu.formClass}" title="${isEn ? "Fluctuation: " + item.flu.deltaFormatted : "Fluctuación: " + item.flu.deltaFormatted}">${item.flu.deltaFormatted}</span>` : ''}
                         </span>
                     </div>
                     <div class="market-stat-item" style="text-align: right;">
-                        <span class="market-stat-lbl">PUNTOS REALES</span>
+                        <span class="market-stat-lbl">${isEn ? "REAL POINTS" : "PUNTOS REALES"}</span>
                         <span class="market-stat-val pts">${item.pts} PTS</span>
                     </div>
                 </div>
@@ -10100,6 +10372,7 @@ async function renderFantasyLeaderboard() {
 
     const isLogged = isFantasyUserLoggedIn();
     const currentUser = getFantasyCurrentUser();
+    const isEn = typeof currentLanguage !== "undefined" && currentLanguage === "en";
 
     // 1. Gather all community teams from our real-time cloud cache
     let teamsList = Array.isArray(cloudFantasyTeams) ? [...cloudFantasyTeams] : [];
@@ -10156,7 +10429,7 @@ async function renderFantasyLeaderboard() {
         );
 
         const myTeamEntry = {
-            teamName: ffcFantasyState.teamName || `Escudería de ${userDisplayName}`,
+            teamName: ffcFantasyState.teamName || (isEn ? `${userDisplayName}'s Team` : `Escudería de ${userDisplayName}`),
             managerName: userDisplayName,
             email: userEmail,
             driver1: ffcFantasyState.driver1,
@@ -10199,7 +10472,7 @@ async function renderFantasyLeaderboard() {
             const myRankIndex = teamsList.findIndex(t => t.isUserTeam);
             rankEl.textContent = myRankIndex >= 0 ? `#${myRankIndex + 1} / ${teamsList.length}` : "-";
         } else {
-            rankEl.textContent = "🔒 Inicia Sesión";
+            rankEl.textContent = isEn ? "🔒 Log In" : "🔒 Inicia Sesión";
         }
     }
 
@@ -10209,8 +10482,8 @@ async function renderFantasyLeaderboard() {
             <tr>
                 <td colspan="5" style="text-align: center; padding: 48px 20px; color: #94a3b8;">
                     <div style="font-size: 32px; margin-bottom: 8px;">🏎️</div>
-                    <div style="font-size: 15px; font-weight: 700; color: #f1f5f9; margin-bottom: 4px;">Aún no hay escuderías registradas</div>
-                    <div style="font-size: 13px; color: #64748b;">${isLogged ? "¡Configura tu alineación en 'Mi Escudería' para liderar la clasificación!" : "Inicia sesión con tu cuenta para crear tu equipo y competir en la liga."}</div>
+                    <div style="font-size: 15px; font-weight: 700; color: #f1f5f9; margin-bottom: 4px;">${isEn ? "No registered teams yet" : "Aún no hay escuderías registradas"}</div>
+                    <div style="font-size: 13px; color: #64748b;">${isLogged ? (isEn ? "Set up your lineup in 'My Team' to lead the standings!" : "¡Configura tu alineación en 'Mi Escudería' para liderar la clasificación!") : (isEn ? "Log in with your account to create your team and compete in the league." : "Inicia sesión con tu cuenta para crear tu equipo y competir en la liga.")}</div>
                 </td>
             </tr>
         `;
@@ -10226,20 +10499,24 @@ async function renderFantasyLeaderboard() {
         else if (pos === 2) posClass += " pos-2";
         else if (pos === 3) posClass += " pos-3";
 
-        const d1Chip = t.driver1 ? `<span class="lb-driver-chip ${t.turboDriver === t.driver1 ? 'is-turbo' : ''}">${t.turboDriver === t.driver1 ? '⭐ ' : ''}${escapeHtml(t.driver1)}</span>` : `<span class="lb-driver-chip" style="opacity:0.4;">Vacante</span>`;
-        const d2Chip = t.driver2 ? `<span class="lb-driver-chip ${t.turboDriver === t.driver2 ? 'is-turbo' : ''}">${t.turboDriver === t.driver2 ? '⭐ ' : ''}${escapeHtml(t.driver2)}</span>` : `<span class="lb-driver-chip" style="opacity:0.4;">Vacante</span>`;
-        const d3Chip = t.driver3 ? `<span class="lb-driver-chip ${t.turboDriver === t.driver3 ? 'is-turbo' : ''}">${t.turboDriver === t.driver3 ? '⭐ ' : ''}${escapeHtml(t.driver3)}</span>` : `<span class="lb-driver-chip" style="opacity:0.4;">Vacante</span>`;
-        const teamChip = t.team ? `<span class="lb-team-chip ranking-team-pill ${getTeamClass(t.team)}"><span class="team-dot"></span>${escapeHtml(t.team)}</span>` : `<span class="lb-team-chip" style="opacity:0.4;">Sin Escudería</span>`;
+        const vacantTxt = isEn ? "Vacant" : "Vacante";
+        const noTeamTxt = isEn ? "No Team" : "Sin Escudería";
+        const myTeamBadge = isEn ? "YOUR TEAM" : "TU EQUIPO";
+
+        const d1Chip = t.driver1 ? `<span class="lb-driver-chip ${t.turboDriver === t.driver1 ? 'is-turbo' : ''}">${t.turboDriver === t.driver1 ? '⭐ ' : ''}${escapeHtml(t.driver1)}</span>` : `<span class="lb-driver-chip" style="opacity:0.4;">${vacantTxt}</span>`;
+        const d2Chip = t.driver2 ? `<span class="lb-driver-chip ${t.turboDriver === t.driver2 ? 'is-turbo' : ''}">${t.turboDriver === t.driver2 ? '⭐ ' : ''}${escapeHtml(t.driver2)}</span>` : `<span class="lb-driver-chip" style="opacity:0.4;">${vacantTxt}</span>`;
+        const d3Chip = t.driver3 ? `<span class="lb-driver-chip ${t.turboDriver === t.driver3 ? 'is-turbo' : ''}">${t.turboDriver === t.driver3 ? '⭐ ' : ''}${escapeHtml(t.driver3)}</span>` : `<span class="lb-driver-chip" style="opacity:0.4;">${vacantTxt}</span>`;
+        const teamChip = t.team ? `<span class="lb-team-chip ranking-team-pill ${getTeamClass(t.team)}"><span class="team-dot"></span>${escapeHtml(t.team)}</span>` : `<span class="lb-team-chip" style="opacity:0.4;">${noTeamTxt}</span>`;
 
         return `
             <tr class="${isMe ? 'my-team-row' : ''}">
                 <td class="${posClass}">${pos}</td>
                 <td>
                     <div class="lb-team-name">
-                        ${escapeHtml(t.teamName || "Escudería FFC")}
-                        ${isMe ? `<span class="my-team-badge">TU EQUIPO</span>` : ''}
+                        ${escapeHtml(t.teamName || (isEn ? "FFC Team" : "Escudería FFC"))}
+                        ${isMe ? `<span class="my-team-badge">${myTeamBadge}</span>` : ''}
                     </div>
-                    <div class="lb-manager-name">Manager: ${escapeHtml(t.managerName || "Piloto FFC")}</div>
+                    <div class="lb-manager-name">Manager: ${escapeHtml(t.managerName || (isEn ? "FFC Driver" : "Piloto FFC"))}</div>
                 </td>
                 <td>
                     <div class="lb-lineup-chips">
