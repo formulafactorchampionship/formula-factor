@@ -732,13 +732,16 @@ function applyTranslations(lang) {
     const bkBtn = document.getElementById("backToCalendar");
     if (bkBtn) bkBtn.textContent = dict.modal.backBtn;
 
-    // Timezone Dropdown Texts
-    const tzTitleEl = document.getElementById("tzMenuTitle");
-    if (tzTitleEl && dict.tz) tzTitleEl.textContent = dict.tz.title;
-    const tzDescEl = document.getElementById("tzMenuDesc");
-    if (tzDescEl && dict.tz) tzDescEl.textContent = dict.tz.desc;
-    const tzBtnEl = document.getElementById("tzDropdownBtn");
-    if (tzBtnEl && dict.tz) tzBtnEl.setAttribute("title", dict.tz.btnTitle);
+    // Timezone & Language settings in User Profile
+    const profileTzLabel = document.getElementById("profileTzLabel");
+    if (profileTzLabel) {
+        profileTzLabel.textContent = lang === "en" ? "⏰ Time Zone" : "⏰ Zona Horaria";
+    }
+    const profileLangLabel = document.getElementById("profileLangLabel");
+    if (profileLangLabel) {
+        profileLangLabel.textContent = lang === "en" ? "🌐 Language" : "🌐 Idioma / Language";
+    }
+    renderTimezoneOptions();
 
     // User Auth translations
     if (dict.auth) {
@@ -828,6 +831,21 @@ const TIMEZONES = [
     { id: "UTC", city: "Tiempo Universal", country: "UTC / GMT", flagSvg: FLAG_SVGS.utc, short: "UTC", tzCode: "UTC", note: "Universal" }
 ];
 
+const TIMEZONE_FLAGS = {
+    "Europe/Madrid": "🇪🇸",
+    "Europe/London": "🇬🇧",
+    "America/Argentina/Buenos_Aires": "🇦🇷",
+    "America/Mexico_City": "🇲🇽",
+    "America/Bogota": "🇨🇴",
+    "America/Santiago": "🇨🇱",
+    "America/Sao_Paulo": "🇧🇷",
+    "America/New_York": "🇺🇸",
+    "America/Los_Angeles": "🇺🇸",
+    "Asia/Tokyo": "🇯🇵",
+    "Australia/Sydney": "🇦🇺",
+    "UTC": "🌐"
+};
+
 let selectedTimezone = (() => {
     try {
         const saved = localStorage.getItem("ffc_timezone");
@@ -904,15 +922,14 @@ function getTimezoneBadge(targetTz, dateObj = new Date()) {
 }
 
 function renderTimezoneOptions() {
+    const selectEl = document.getElementById("profileTzSelect");
     const listEl = document.getElementById("tzOptionsList");
-    if (!listEl) return;
+    const profileTzBadge = document.getElementById("profileTzBadge");
 
     const race = getSavedNextRace();
     const raceDateTime = race?.dateTime || "2026-09-20T16:30";
     const epochMs = getMadridEpochMs(raceDateTime);
     const raceDateObj = !isNaN(epochMs) ? new Date(epochMs) : new Date();
-
-    listEl.innerHTML = "";
 
     // Sort timezones from greatest to least ("de más a menos", e.g. +10 down to -7)
     const sortedTimezones = [...TIMEZONES].sort((a, b) => {
@@ -924,34 +941,59 @@ function renderTimezoneOptions() {
         return a.city.localeCompare(b.city);
     });
 
-    sortedTimezones.forEach(tz => {
-        const isActive = tz.id === selectedTimezone;
-        const tzBadge = getTimezoneBadge(tz.id, raceDateObj);
-
-        const btn = document.createElement("button");
-        btn.type = "button";
-        btn.className = `tz-option${isActive ? " active" : ""}`;
-        btn.setAttribute("role", "option");
-        btn.setAttribute("aria-selected", isActive ? "true" : "false");
-        btn.dataset.tz = tz.id;
-
-        btn.innerHTML = `
-            <span class="tz-flag">${tz.flagSvg}</span>
-            <div class="tz-info">
-                <span class="tz-city">${escapeHtml(tz.city)} <small style="opacity:0.75; font-size:10.5px;">(${escapeHtml(tz.country)})</small></span>
-                <span class="tz-sub">${escapeHtml(tz.note)}</span>
-            </div>
-            <span class="tz-time-preview">${escapeHtml(tzBadge)}</span>
-            <span class="tz-check" aria-hidden="true">✓</span>
-        `;
-
-        btn.addEventListener("click", () => {
-            setTimezone(tz.id);
-            closeAllDropdowns();
+    if (selectEl) {
+        selectEl.innerHTML = "";
+        const isEnglish = currentLanguage === "en";
+        sortedTimezones.forEach(tz => {
+            const tzBadge = getTimezoneBadge(tz.id, raceDateObj);
+            const flag = TIMEZONE_FLAGS[tz.id] || "🏁";
+            const opt = document.createElement("option");
+            opt.value = tz.id;
+            opt.selected = (tz.id === selectedTimezone);
+            const isBase = tz.id === "Europe/Madrid";
+            const baseTag = isBase ? (isEnglish ? " · FFC Base" : " · Base Oficial") : "";
+            opt.textContent = `${flag} ${tz.city} (${tzBadge})${baseTag}`;
+            selectEl.appendChild(opt);
         });
+        selectEl.value = selectedTimezone;
+    }
 
-        listEl.appendChild(btn);
-    });
+    if (profileTzBadge) {
+        const activeTzBadge = getTimezoneBadge(selectedTimezone, raceDateObj);
+        profileTzBadge.textContent = selectedTimezone === "Europe/Madrid" ? "BASE: MADRID" : activeTzBadge;
+    }
+
+    if (listEl) {
+        listEl.innerHTML = "";
+        sortedTimezones.forEach(tz => {
+            const isActive = tz.id === selectedTimezone;
+            const tzBadge = getTimezoneBadge(tz.id, raceDateObj);
+
+            const btn = document.createElement("button");
+            btn.type = "button";
+            btn.className = `tz-option${isActive ? " active" : ""}`;
+            btn.setAttribute("role", "option");
+            btn.setAttribute("aria-selected", isActive ? "true" : "false");
+            btn.dataset.tz = tz.id;
+
+            btn.innerHTML = `
+                <span class="tz-flag">${tz.flagSvg}</span>
+                <div class="tz-info">
+                    <span class="tz-city">${escapeHtml(tz.city)} <small style="opacity:0.75; font-size:10.5px;">(${escapeHtml(tz.country)})</small></span>
+                    <span class="tz-sub">${escapeHtml(tz.note)}</span>
+                </div>
+                <span class="tz-time-preview">${escapeHtml(tzBadge)}</span>
+                <span class="tz-check" aria-hidden="true">✓</span>
+            `;
+
+            btn.addEventListener("click", () => {
+                setTimezone(tz.id);
+                closeAllDropdowns();
+            });
+
+            listEl.appendChild(btn);
+        });
+    }
 
     const currentTzCodeEl = document.getElementById("currentTzCode");
     const currentTzFlagEl = document.getElementById("currentTzFlag");
@@ -974,6 +1016,21 @@ function setTimezone(tzId) {
         console.error("Error saving timezone preference:", e);
     }
 
+    const selectEl = document.getElementById("profileTzSelect");
+    if (selectEl && selectEl.value !== tzId) {
+        selectEl.value = tzId;
+    }
+
+    const profileTzBadge = document.getElementById("profileTzBadge");
+    if (profileTzBadge) {
+        const race = getSavedNextRace();
+        const raceDateTime = race?.dateTime || "2026-09-20T16:30";
+        const epochMs = getMadridEpochMs(raceDateTime);
+        const raceDateObj = !isNaN(epochMs) ? new Date(epochMs) : new Date();
+        const activeTzBadge = getTimezoneBadge(selectedTimezone, raceDateObj);
+        profileTzBadge.textContent = selectedTimezone === "Europe/Madrid" ? "BASE: MADRID" : activeTzBadge;
+    }
+
     const currentTzCodeEl = document.getElementById("currentTzCode");
     const currentTzFlagEl = document.getElementById("currentTzFlag");
     const activeTz = TIMEZONES.find(t => t.id === tzId) || TIMEZONES[0];
@@ -982,6 +1039,16 @@ function setTimezone(tzId) {
     }
     if (currentTzFlagEl) {
         currentTzFlagEl.innerHTML = activeTz.flagSvg;
+    }
+
+    // Persist timezone preference to Firestore if user is authenticated
+    if (typeof activeUserAuth !== "undefined" && activeUserAuth && activeUserAuth.uid && typeof db !== "undefined") {
+        try {
+            setDoc(doc(db, "usuarios", activeUserAuth.uid), { timezone: tzId }, { merge: true }).catch(() => {});
+            if (activeUserAuth.email && typeof getUserDocId === "function") {
+                setDoc(doc(db, "usuarios", getUserDocId(activeUserAuth.email)), { timezone: tzId }, { merge: true }).catch(() => {});
+            }
+        } catch (e) {}
     }
 
     renderNextRaceOnPage(getSavedNextRace());
@@ -1051,6 +1118,13 @@ function initCustomDropdowns() {
         });
     }
 
+    const profileTzSelect = document.getElementById("profileTzSelect");
+    if (profileTzSelect) {
+        profileTzSelect.addEventListener("change", (e) => {
+            setTimezone(e.target.value);
+        });
+    }
+
     document.addEventListener("click", (e) => {
         if (!e.target.closest(".custom-dropdown")) {
             closeAllDropdowns();
@@ -1098,6 +1172,12 @@ function setLanguage(lang) {
         optEn.classList.toggle("active", isEn);
         optEn.setAttribute("aria-selected", isEn ? "true" : "false");
     }
+
+    // Update Profile Language Buttons State
+    const profileLangEsBtn = document.getElementById("profileLangEsBtn");
+    const profileLangEnBtn = document.getElementById("profileLangEnBtn");
+    if (profileLangEsBtn) profileLangEsBtn.classList.toggle("active", lang === "es");
+    if (profileLangEnBtn) profileLangEnBtn.classList.toggle("active", lang === "en");
 
     applyTranslations(lang);
     renderNextRaceOnPage(getSavedNextRace());
@@ -2278,6 +2358,50 @@ const officialDriverOrder = {
     "galogb": 44
 };
 
+function getOfficialDriverFlag(driverName) {
+    if (!driverName) return "🏁";
+    const clean = driverName.trim().toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+    if (typeof ffc2010SeasonDrivers !== "undefined" && Array.isArray(ffc2010SeasonDrivers)) {
+        const found = ffc2010SeasonDrivers.find(d => 
+            d.driver && d.driver.trim().toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "") === clean
+        );
+        if (found && found.flag) return found.flag;
+    }
+    return "🏁";
+}
+
+const COUNTRY_NAMES_BY_FLAG = {
+    "🇪🇸": "España",
+    "🇵🇹": "Portugal",
+    "🇦🇷": "Argentina",
+    "🇨🇴": "Colombia",
+    "🇧🇷": "Brasil",
+    "🇨🇭": "Suiza",
+    "🏴󠁧󠁢󠁳󠁣󠁴󠁿": "Escocia",
+    "🇬🇧": "Reino Unido",
+    "🇧🇬": "Bulgaria",
+    "🇯🇵": "Japón",
+    "🇮🇹": "Italia",
+    "🇨🇿": "República Checa",
+    "🇳🇬": "Nigeria",
+    "🇦🇹": "Austria",
+    "🇹🇷": "Turquía",
+    "🇷🇺": "Rusia",
+    "🇫🇷": "Francia",
+    "🇲🇽": "México",
+    "🇨🇱": "Chile",
+    "🇺🇾": "Uruguay",
+    "🇵🇪": "Perú",
+    "🇺🇸": "Estados Unidos",
+    "🇩🇪": "Alemania",
+    "🏁": "Internacional / FFC"
+};
+
+function getCountryNameByFlag(flag) {
+    if (!flag) return "Internacional / FFC";
+    return COUNTRY_NAMES_BY_FLAG[flag] || "Oficial FIA / FFC";
+}
+
 function getOfficialDriverRank(driverName) {
     if (!driverName) return 999;
     const clean = driverName.trim().toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
@@ -2400,7 +2524,8 @@ function renderStandingsOnPage(drivers) {
                     driverLeaderRow.style.borderColor = "";
                 }
                 const d1Avatar = (d1.avatarUrl && d1.avatarUrl.trim()) ? `<img src="${escapeHtml(d1.avatarUrl.trim())}" class="ranking-leader-avatar" alt="${escapeHtml(d1.driver)}" onerror="this.style.display='none'">` : "";
-                const d1Flag = d1.customFlag ? `<span style="font-size: 16px; margin-right: 4px;">${escapeHtml(d1.customFlag)}</span>` : "";
+                const d1OfficialFlag = getOfficialDriverFlag(d1.driver);
+                const d1Flag = d1OfficialFlag ? `<span style="font-size: 16px; margin-right: 4px;">${escapeHtml(d1OfficialFlag)}</span>` : "";
 
                 driverLeaderRow.innerHTML = `
                     <div class="ranking-leader-left">
@@ -2437,7 +2562,8 @@ function renderStandingsOnPage(drivers) {
 
             if (d2) {
                 const d2Avatar = (d2.avatarUrl && d2.avatarUrl.trim()) ? `<img src="${escapeHtml(d2.avatarUrl.trim())}" class="ranking-driver-avatar" alt="${escapeHtml(d2.driver)}" onerror="this.style.display='none'">` : "";
-                const d2Flag = d2.customFlag ? `<span style="margin-right: 4px;">${escapeHtml(d2.customFlag)}</span>` : "";
+                const d2OfficialFlag = getOfficialDriverFlag(d2.driver);
+                const d2Flag = d2OfficialFlag ? `<span style="margin-right: 4px;">${escapeHtml(d2OfficialFlag)}</span>` : "";
                 const d2Border = d2.cardColor ? `style="border-color: ${d2.cardColor}80;"` : "";
 
                 p2Html = `
@@ -2464,7 +2590,8 @@ function renderStandingsOnPage(drivers) {
 
             if (d3) {
                 const d3Avatar = (d3.avatarUrl && d3.avatarUrl.trim()) ? `<img src="${escapeHtml(d3.avatarUrl.trim())}" class="ranking-driver-avatar" alt="${escapeHtml(d3.driver)}" onerror="this.style.display='none'">` : "";
-                const d3Flag = d3.customFlag ? `<span style="margin-right: 4px;">${escapeHtml(d3.customFlag)}</span>` : "";
+                const d3OfficialFlag = getOfficialDriverFlag(d3.driver);
+                const d3Flag = d3OfficialFlag ? `<span style="margin-right: 4px;">${escapeHtml(d3OfficialFlag)}</span>` : "";
                 const d3Border = d3.cardColor ? `style="border-color: ${d3.cardColor}80;"` : "";
 
                 p3Html = `
@@ -2514,7 +2641,8 @@ function renderStandingsOnPage(drivers) {
                     }
                 }
                 const dAvatar = (d.avatarUrl && d.avatarUrl.trim()) ? `<img src="${escapeHtml(d.avatarUrl.trim())}" class="ranking-driver-avatar" alt="${escapeHtml(d.driver)}" onerror="this.style.display='none'">` : "";
-                const dFlag = d.customFlag ? `<span style="margin-right: 4px;">${escapeHtml(d.customFlag)}</span>` : "";
+                const dOfficialFlag = getOfficialDriverFlag(d.driver);
+                const dFlag = dOfficialFlag ? `<span style="margin-right: 4px;">${escapeHtml(dOfficialFlag)}</span>` : "";
 
                 rowDiv.innerHTML = `
                     <span class="ranking-row-pos">${idx + 1}</span>
@@ -2664,11 +2792,13 @@ function getDynamicSeasonMatrixData() {
             }
         });
 
+        const officialFlag = meta.flag || getOfficialDriverFlag(driverName) || "🏁";
+
         return {
             pos,
             id: driverObj.id || null,
             number: meta.number || pos,
-            flag: driverObj.customFlag || meta.flag || "🏁",
+            flag: officialFlag,
             driver: driverName,
             team,
             r: rounds,
@@ -2676,7 +2806,7 @@ function getDynamicSeasonMatrixData() {
             dif,
             avatarUrl: driverObj.avatarUrl || null,
             cardColor: driverObj.cardColor || null,
-            customFlag: driverObj.customFlag || null,
+            customFlag: null,
             bio: driverObj.bio || null,
             socialTwitch: driverObj.socialTwitch || null,
             socialYoutube: driverObj.socialYoutube || null,
@@ -2851,7 +2981,7 @@ function findDriverStats(driverName) {
 
     const cardColor = userCustom.cardColor || pilotDoc.cardColor || match.cardColor || null;
     const avatarUrl = userCustom.avatarUrl !== undefined ? userCustom.avatarUrl : (pilotDoc.avatarUrl || match.avatarUrl || null);
-    const customFlag = userCustom.customFlag || pilotDoc.customFlag || match.customFlag || null;
+    const officialFlag = match.flag || getOfficialDriverFlag(match.driver) || "🏁";
     const bio = userCustom.bio !== undefined ? userCustom.bio : (pilotDoc.bio || match.bio || null);
     const socialTwitch = userCustom.socialTwitch !== undefined ? userCustom.socialTwitch : (pilotDoc.socialTwitch || match.socialTwitch || null);
     const socialYoutube = userCustom.socialYoutube !== undefined ? userCustom.socialYoutube : (pilotDoc.socialYoutube || match.socialYoutube || null);
@@ -2865,12 +2995,12 @@ function findDriverStats(driverName) {
         pos: match.pos,
         pts: match.pts,
         number: match.number,
-        flag: customFlag || match.flag || "🏁",
+        flag: officialFlag,
         dif: match.dif,
         rounds: match.r,
         avatarUrl,
         cardColor,
-        customFlag,
+        customFlag: null,
         bio,
         socialTwitch,
         socialYoutube,
@@ -6922,6 +7052,12 @@ function generateDriverVerificationCode() {
 
 // Render claim state inside user profile dropdown
 function renderUserClaimState(uData) {
+    if (uData && uData.timezone && TIMEZONES.some(t => t.id === uData.timezone)) {
+        if (selectedTimezone !== uData.timezone) {
+            setTimezone(uData.timezone);
+        }
+    }
+
     if (uData && uData.isVerified && uData.claimedDriver) {
         if (userClaimUnverified) userClaimUnverified.style.display = "none";
         if (userClaimVerified) userClaimVerified.style.display = "block";
@@ -7329,7 +7465,8 @@ const userCardEditForm = document.getElementById("userCardEditForm");
 const editCardAvatar = document.getElementById("editCardAvatar");
 const editCardColor = document.getElementById("editCardColor");
 const editCardColorHex = document.getElementById("editCardColorHex");
-const editCardFlag = document.getElementById("editCardFlag");
+const editCardFlagDisplay = document.getElementById("editCardFlagDisplay");
+const editCardCountryName = document.getElementById("editCardCountryName");
 const editCardBio = document.getElementById("editCardBio");
 const editCardTwitch = document.getElementById("editCardTwitch");
 const editCardYoutube = document.getElementById("editCardYoutube");
@@ -7411,10 +7548,10 @@ function updateCardLivePreview() {
 
     const color = (editCardColor ? editCardColor.value : "#e10600") || "#e10600";
     const avatarUrl = editCardAvatar ? editCardAvatar.value.trim() : "";
-    const flag = editCardFlag ? editCardFlag.value.trim() : "";
-    const bio = editCardBio ? editCardBio.value.trim() : "";
     const driverName = (activeUserData && activeUserData.claimedDriver) ? activeUserData.claimedDriver : "Tu Piloto";
     const teamName = (activeUserData && activeUserData.claimedTeam) ? activeUserData.claimedTeam : "Piloto Oficial";
+    const officialFlag = getOfficialDriverFlag(driverName);
+    const bio = editCardBio ? editCardBio.value.trim() : "";
 
     // Color accents
     if (previewStrip) {
@@ -7452,7 +7589,7 @@ function updateCardLivePreview() {
     }
 
     // Name & Flag
-    if (previewFlag) previewFlag.textContent = flag || "🏁";
+    if (previewFlag) previewFlag.textContent = officialFlag || "🏁";
     if (previewDriverName) previewDriverName.textContent = driverName;
     if (previewTeamPill) previewTeamPill.textContent = teamName;
 
@@ -7540,18 +7677,6 @@ function syncActiveColorSwatch(color) {
     });
 }
 
-function syncActiveFlagChip(flag) {
-    const chips = document.querySelectorAll(".flag-chip-btn");
-    chips.forEach(ch => {
-        const chFlag = ch.getAttribute("data-flag");
-        if (chFlag && chFlag === (flag || "").trim()) {
-            ch.classList.add("active");
-        } else {
-            ch.classList.remove("active");
-        }
-    });
-}
-
 // Populate User Customizer Form
 function populateUserCardEditor(data) {
     if (!data) return;
@@ -7562,10 +7687,12 @@ function populateUserCardEditor(data) {
         if (editCardColorHex) editCardColorHex.textContent = color.toUpperCase();
         syncActiveColorSwatch(color);
     }
-    if (editCardFlag) {
-        editCardFlag.value = data.customFlag || "";
-        syncActiveFlagChip(data.customFlag || "");
-    }
+    const driverName = data.claimedDriver || (activeUserData && activeUserData.claimedDriver) || "";
+    const officialFlag = getOfficialDriverFlag(driverName);
+    const countryName = getCountryNameByFlag(officialFlag);
+    if (editCardFlagDisplay) editCardFlagDisplay.textContent = officialFlag || "🏁";
+    if (editCardCountryName) editCardCountryName.textContent = `${officialFlag} ${countryName}`;
+
     const bioCharCounter = document.getElementById("bioCharCounter");
     if (editCardBio) {
         editCardBio.value = data.bio || "";
@@ -7580,15 +7707,12 @@ function populateUserCardEditor(data) {
 }
 
 // Live update preview on inputs
-[editCardAvatar, editCardColor, editCardFlag, editCardBio, editCardTwitch, editCardYoutube, editCardTwitter, editCardDiscord].forEach(input => {
+[editCardAvatar, editCardColor, editCardBio, editCardTwitch, editCardYoutube, editCardTwitter, editCardDiscord].forEach(input => {
     if (input) {
         input.addEventListener("input", () => {
             if (input === editCardColor) {
                 if (editCardColorHex) editCardColorHex.textContent = editCardColor.value.toUpperCase();
                 syncActiveColorSwatch(editCardColor.value);
-            }
-            if (input === editCardFlag) {
-                syncActiveFlagChip(editCardFlag.value);
             }
             if (input === editCardBio) {
                 const counter = document.getElementById("bioCharCounter");
@@ -7610,21 +7734,6 @@ if (colorPresetGrid) {
             editCardColor.value = color;
             if (editCardColorHex) editCardColorHex.textContent = color.toUpperCase();
             syncActiveColorSwatch(color);
-            updateCardLivePreview();
-        }
-    });
-}
-
-// Flag Preset Clicks
-const flagPresetGrid = document.getElementById("flagPresetGrid");
-if (flagPresetGrid) {
-    flagPresetGrid.addEventListener("click", (e) => {
-        const btn = e.target.closest(".flag-chip-btn");
-        if (!btn) return;
-        const flag = btn.getAttribute("data-flag");
-        if (flag && editCardFlag) {
-            editCardFlag.value = flag;
-            syncActiveFlagChip(flag);
             updateCardLivePreview();
         }
     });
@@ -7774,7 +7883,6 @@ if (userCardEditForm) {
         const customPayload = {
             avatarUrl: editCardAvatar ? editCardAvatar.value.trim() : null,
             cardColor: editCardColor ? editCardColor.value : "#e10600",
-            customFlag: editCardFlag ? editCardFlag.value.trim() : null,
             bio: editCardBio ? editCardBio.value.trim() : null,
             socialTwitch: editCardTwitch ? editCardTwitch.value.trim() : null,
             socialYoutube: editCardYoutube ? editCardYoutube.value.trim() : null,

@@ -87,37 +87,6 @@
                 </div>
             </div>
 
-            <!-- Desplegable de Zona Horaria (Hora base: Madrid) -->
-            <div class="custom-dropdown tz-dropdown" id="tzDropdown">
-                <button type="button" class="dropdown-trigger tz-trigger" id="tzDropdownBtn" aria-haspopup="listbox" aria-expanded="false" title="Zona horaria (Hora base: Madrid)">
-                    <span class="trigger-flag" id="currentTzFlag">
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 17" width="22" height="15" class="flag-svg" aria-hidden="true">
-                            <rect width="24" height="17" fill="#c60b1e"/>
-                            <rect y="4.25" width="24" height="8.5" fill="#ffc400"/>
-                            <circle cx="6.5" cy="8.5" r="2.2" fill="#c60b1e"/>
-                            <rect x="5.8" y="7" width="1.4" height="3" fill="#ffc400"/>
-                            <circle cx="6.5" cy="6.2" r="0.8" fill="#c60b1e"/>
-                        </svg>
-                    </span>
-                    <span class="trigger-code" id="currentTzCode">MADRID</span>
-                    <svg class="dropdown-chevron" viewBox="0 0 10 6" width="9" height="5" aria-hidden="true">
-                        <path d="M1 1L5 5L9 1" stroke="currentColor" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-                    </svg>
-                </button>
-                <div class="dropdown-menu tz-menu" id="tzDropdownMenu" role="listbox" aria-label="Seleccionar zona horaria">
-                    <div class="tz-menu-header">
-                        <div class="tz-header-title-row">
-                            <span class="tz-header-title" id="tzMenuTitle">ZONAS HORARIAS</span>
-                            <span class="tz-base-tag">BASE: MADRID</span>
-                        </div>
-                        <p class="tz-header-desc" id="tzMenuDesc">Selecciona tu zona horaria para ver la hora local</p>
-                    </div>
-                    <div class="tz-menu-list" id="tzOptionsList">
-                        <!-- Generado dinámicamente -->
-                    </div>
-                </div>
-            </div>
-
             <a
                 class="discord-btn"
                 href="https://discord.gg/4k8kPsP6Mb"
@@ -239,10 +208,23 @@
 
                                 <!-- Preferencia de Idioma -->
                                 <div class="setting-row-item">
-                                    <span>🌐 Idioma / Language</span>
+                                    <span id="profileLangLabel">🌐 Idioma / Language</span>
                                     <div class="setting-lang-opts">
                                         <button type="button" class="lang-mini-btn active" id="profileLangEsBtn">ES 🇪🇸</button>
                                         <button type="button" class="lang-mini-btn" id="profileLangEnBtn">EN 🇬🇧</button>
+                                    </div>
+                                </div>
+
+                                <!-- Preferencia de Zona Horaria -->
+                                <div class="setting-row-item setting-row-tz">
+                                    <div class="setting-tz-header">
+                                        <span id="profileTzLabel">⏰ Zona Horaria</span>
+                                        <span class="setting-tz-badge" id="profileTzBadge">BASE: MADRID</span>
+                                    </div>
+                                    <div class="setting-tz-select-wrap">
+                                        <select id="profileTzSelect" class="profile-tz-select" aria-label="Zona Horaria">
+                                            <!-- Opciones generadas dinámicamente -->
+                                        </select>
                                     </div>
                                 </div>
 
@@ -2175,31 +2157,19 @@
                 </div>
             </div>
 
-            <!-- SECCIÓN 3: BANDERA / NACIONALIDAD -->
-            <div class="card-edit-group">
+            <!-- SECCIÓN 3: NACIONALIDAD OFICIAL (NO MODIFICABLE) -->
+            <div class="card-edit-group card-group-readonly">
                 <div class="card-group-header">
                     <span class="card-group-num">3</span>
-                    <span class="card-group-title">BANDERA Y NACIONALIDAD</span>
+                    <span class="card-group-title">NACIONALIDAD OFICIAL DEL PILOTO</span>
+                    <span class="card-locked-badge">🔒 OFICIAL FFC</span>
                 </div>
-                <div class="flag-preset-grid" id="flagPresetGrid">
-                    <button type="button" class="flag-chip-btn" data-flag="🇪🇸" title="España">🇪🇸 ES</button>
-                    <button type="button" class="flag-chip-btn" data-flag="🇲🇽" title="México">🇲🇽 MX</button>
-                    <button type="button" class="flag-chip-btn" data-flag="🇦🇷" title="Argentina">🇦🇷 AR</button>
-                    <button type="button" class="flag-chip-btn" data-flag="🇨🇴" title="Colombia">🇨🇴 CO</button>
-                    <button type="button" class="flag-chip-btn" data-flag="🇨🇱" title="Chile">🇨🇱 CL</button>
-                    <button type="button" class="flag-chip-btn" data-flag="🇺🇾" title="Uruguay">🇺🇾 UY</button>
-                    <button type="button" class="flag-chip-btn" data-flag="🇧🇷" title="Brasil">🇧🇷 BR</button>
-                    <button type="button" class="flag-chip-btn" data-flag="🇵🇪" title="Perú">🇵🇪 PE</button>
-                    <button type="button" class="flag-chip-btn" data-flag="🇺🇸" title="USA">🇺🇸 US</button>
-                    <button type="button" class="flag-chip-btn" data-flag="🇬🇧" title="UK">🇬🇧 UK</button>
-                    <button type="button" class="flag-chip-btn" data-flag="🇫🇷" title="Francia">🇫🇷 FR</button>
-                    <button type="button" class="flag-chip-btn" data-flag="🇮🇹" title="Italia">🇮🇹 IT</button>
-                    <button type="button" class="flag-chip-btn" data-flag="🇩🇪" title="Alemania">🇩🇪 DE</button>
-                    <button type="button" class="flag-chip-btn" data-flag="🏁" title="FFC Racing">🏁 FFC</button>
-                </div>
-                <div class="flag-input-row">
-                    <span class="custom-color-label">Personalizada:</span>
-                    <input type="text" id="editCardFlag" class="claim-input flag-input-compact" placeholder="Ej: 🇪🇸" maxlength="8">
+                <div class="official-nationality-card">
+                    <span id="editCardFlagDisplay" class="official-flag-icon">🏁</span>
+                    <div class="official-flag-details">
+                        <span id="editCardCountryName" class="official-country-name">Nacionalidad oficial FFC</span>
+                        <span class="official-flag-notice">El país está fijado por la FIA/FFC en base a tu inscripción oficial y no se puede modificar.</span>
+                    </div>
                 </div>
             </div>
 
