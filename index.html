@@ -1411,6 +1411,8 @@
                     <button type="button" class="market-filter-pill active" id="marketFilterAll" data-filter="all">Todos</button>
                     <button type="button" class="market-filter-pill" id="marketFilterDrivers" data-filter="drivers">Pilotos</button>
                     <button type="button" class="market-filter-pill" id="marketFilterTeams" data-filter="teams">Constructores</button>
+                    <button type="button" class="market-filter-pill" id="marketFilterRising" data-filter="rising">🔥 En Alza (▲)</button>
+                    <button type="button" class="market-filter-pill" id="marketFilterFalling" data-filter="falling">📉 En Oferta (▼)</button>
                     <button type="button" class="market-filter-pill" id="marketFilterAffordable" data-filter="affordable">Asequibles (≤ Presupuesto)</button>
                 </div>
                 <div class="market-search-sort">
@@ -1421,6 +1423,8 @@
                     <select id="marketSortSelect" class="market-sort-select" aria-label="Ordenar mercado">
                         <option value="price-desc">Precio: Mayor a Menor</option>
                         <option value="price-asc">Precio: Menor a Mayor</option>
+                        <option value="rising-desc">Mayor Revalorización (▲ Subida)</option>
+                        <option value="falling-desc">Mayor Descuento (▼ Ganga)</option>
                         <option value="pts-desc">Puntos: Más a Menos</option>
                         <option value="name-asc">Nombre: A-Z</option>
                     </select>
@@ -1515,6 +1519,14 @@
                     <h3 class="rule-card-title">6. Guardado en Tu Perfil</h3>
                     <p class="rule-card-text">
                         Si has iniciado sesión con tu cuenta, tu escudería se sincroniza automáticamente con la nube en Firestore, manteniéndose guardada y visible en la clasificación comunitaria.
+                    </p>
+                </div>
+
+                <div class="fantasy-rule-card">
+                    <div class="rule-card-icon">📈</div>
+                    <h3 class="rule-card-title">7. Fluctuación Dinámica de Precios & Plusvalías</h3>
+                    <p class="rule-card-text">
+                        El precio de mercado de cada piloto y constructor sube (<strong>▲ +0.1M€ a +1.0M€</strong>) o baja (<strong>▼ -0.1M€ a -0.6M€</strong>) tras cada Gran Premio oficial según su rendimiento real. Si fichas a un piloto antes de una gran actuación y su valor se dispara, al venderlo recuperarás su <strong>nuevo precio de mercado</strong>, aumentando el presupuesto total de tu escudería.
                     </p>
                 </div>
 
@@ -2398,6 +2410,45 @@
                                 <input type="text" id="adminFantasyLockMessage" placeholder="Mercado de fichajes congelado por Gran Premio en curso." value="Mercado de fichajes congelado por Gran Premio en curso.">
                             </div>
                         </div>
+                    </div>
+
+                    <!-- FLUCTUACIÓN DINÁMICA DE PRECIOS FANTASY -->
+                    <div class="admin-live-settings-card" style="border-color: rgba(74, 222, 128, 0.35); background: linear-gradient(135deg, rgba(12, 28, 18, 0.95), rgba(10, 16, 24, 0.95)); margin-top: 16px;">
+                        <div class="admin-live-header">
+                            <div class="admin-live-badge" style="background: rgba(74, 222, 128, 0.15); color: #4ade80; border-color: rgba(74, 222, 128, 0.4);">
+                                <span>📈</span>
+                                FFC FANTASY · FLUCTUACIÓN DINÁMICA DE PRECIOS
+                            </div>
+                            <label class="admin-switch-label" for="adminFantasyFluctuation">
+                                <span class="admin-switch-text" id="adminFantasyFluctuationStatusText">FLUCTUACIÓN ACTIVADA (EN VIVO)</span>
+                                <div class="admin-switch">
+                                    <input type="checkbox" id="adminFantasyFluctuation" checked>
+                                    <span class="admin-slider"></span>
+                                </div>
+                            </label>
+                        </div>
+                        <p class="admin-field-hint" style="margin-top: 10px; margin-bottom: 16px;">
+                            Calcula y actualiza automáticamente el valor de mercado de pilotos y constructores tras cada carrera según sus puntos y rendimiento en pista.
+                        </p>
+
+                        <div class="admin-form-grid" style="margin-bottom: 12px;">
+                            <div class="admin-field">
+                                <label for="adminFantasyVolatility">Volatilidad / Factor de Cambio</label>
+                                <select id="adminFantasyVolatility" class="admin-select-input">
+                                    <option value="1.0" selected>Estándar (±0.1M€ a ±1.0M€ por GP)</option>
+                                    <option value="1.5">Alta Volatilidad (±0.2M€ a ±1.5M€ por GP)</option>
+                                    <option value="0.5">Moderada / Estable (±0.05M€ a ±0.5M€ por GP)</option>
+                                </select>
+                            </div>
+                            <div class="admin-field">
+                                <label>Acción Rápida de Mercado</label>
+                                <button type="button" class="fantasy-btn-gold" id="adminRecalculatePricesBtn" style="width: 100%; height: 42px; margin-top: 2px;">
+                                    <span>🔄 Recalcular y Aplicar Precios</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div id="adminMarketSentimentWidget" class="admin-market-sentiment-box"></div>
                     </div>
 
                     <div class="admin-tab-intro" style="margin-top: 24px; padding-bottom: 12px; border-bottom: 1px solid rgba(255,255,255,0.08);">

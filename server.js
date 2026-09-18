@@ -213,7 +213,12 @@ function getFantasyLockState() {
   } catch (e) {
     console.error('Error reading fantasy lock file:', e);
   }
-  return { locked: false, message: "Mercado cerrado temporalmente por Gran Premio en curso." };
+  return {
+    locked: false,
+    message: "Mercado cerrado temporalmente por Gran Premio en curso.",
+    fluctuationEnabled: true,
+    volatilityMultiplier: 1.0
+  };
 }
 
 function saveFantasyLockState(state) {
@@ -230,10 +235,13 @@ app.get('/api/fantasy/lock', (req, res) => {
 });
 
 app.post('/api/fantasy/lock', (req, res) => {
-  const { locked, message } = req.body || {};
+  const { locked, message, fluctuationEnabled, volatilityMultiplier } = req.body || {};
+  const current = getFantasyLockState();
   const state = {
-    locked: Boolean(locked),
-    message: message || "Mercado cerrado temporalmente por Gran Premio en curso.",
+    locked: typeof locked === 'boolean' ? locked : current.locked,
+    message: message !== undefined ? message : current.message,
+    fluctuationEnabled: typeof fluctuationEnabled === 'boolean' ? fluctuationEnabled : (current.fluctuationEnabled !== undefined ? current.fluctuationEnabled : true),
+    volatilityMultiplier: typeof volatilityMultiplier === 'number' ? volatilityMultiplier : (current.volatilityMultiplier || 1.0),
     updatedAt: new Date().toISOString()
   };
   saveFantasyLockState(state);

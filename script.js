@@ -2097,7 +2097,9 @@ const defaultSettings = {
     liveTitle: "ESTAMOS EN DIRECTO",
     liveSubtitle: "Sigue la retransmisión oficial de la carrera en vivo por Twitch.",
     fantasyLocked: false,
-    fantasyLockMessage: "Mercado de fichajes congelado por Gran Premio en curso."
+    fantasyLockMessage: "Mercado de fichajes congelado por Gran Premio en curso.",
+    fantasyFluctuationEnabled: true,
+    fantasyVolatilityMultiplier: 1.0
 };
 
 // Admin UI Selectors
@@ -2153,6 +2155,11 @@ const adminSwitchStatusText = document.getElementById("adminSwitchStatusText");
 const adminFantasyLocked = document.getElementById("adminFantasyLocked");
 const adminFantasyLockStatusText = document.getElementById("adminFantasyLockStatusText");
 const adminFantasyLockMessage = document.getElementById("adminFantasyLockMessage");
+const adminFantasyFluctuation = document.getElementById("adminFantasyFluctuation");
+const adminFantasyFluctuationStatusText = document.getElementById("adminFantasyFluctuationStatusText");
+const adminFantasyVolatility = document.getElementById("adminFantasyVolatility");
+const adminRecalculatePricesBtn = document.getElementById("adminRecalculatePricesBtn");
+const adminMarketSentimentWidget = document.getElementById("adminMarketSentimentWidget");
 const adminDiscordUrl = document.getElementById("adminDiscordUrl");
 const adminXUrl = document.getElementById("adminXUrl");
 const adminInstagramUrl = document.getElementById("adminInstagramUrl");
@@ -4384,6 +4391,25 @@ function renderSettingsOnPage(settings) {
         adminFantasyLockMessage.value = lockMsg;
     }
 
+    // Dynamic Price Fluctuation Settings Synchronization
+    const isFluctEnabled = settings ? (settings.fantasyFluctuationEnabled !== false) : true;
+    const volMultiplier = settings && typeof settings.fantasyVolatilityMultiplier === "number" ? settings.fantasyVolatilityMultiplier : 1.0;
+
+    if (adminFantasyFluctuation) {
+        adminFantasyFluctuation.checked = isFluctEnabled;
+    }
+    if (adminFantasyFluctuationStatusText) {
+        adminFantasyFluctuationStatusText.textContent = isFluctEnabled ? "FLUCTUACIÓN DINÁMICA ACTIVADA" : "PRECIOS ESTÁTICOS BASE";
+        adminFantasyFluctuationStatusText.classList.toggle("is-active", isFluctEnabled);
+    }
+    if (adminFantasyVolatility && document.activeElement !== adminFantasyVolatility) {
+        adminFantasyVolatility.value = String(volMultiplier);
+    }
+
+    if (typeof renderAdminMarketSentimentWidget === "function") {
+        renderAdminMarketSentimentWidget();
+    }
+
     // Fantasy Portal Banner & Reset UI update
     const fantasyLockedBanner = document.getElementById("fantasyLockedBanner");
     const fantasyLockedDesc = document.getElementById("fantasyLockedDesc");
@@ -5024,6 +5050,22 @@ function populateAdminForms() {
         adminFantasyLockMessage.value = settings.fantasyLockMessage || "Mercado de fichajes congelado por Gran Premio en curso.";
     }
 
+    if (adminFantasyFluctuation) {
+        adminFantasyFluctuation.checked = (settings.fantasyFluctuationEnabled !== false);
+    }
+    if (adminFantasyFluctuationStatusText) {
+        const isFluct = (settings.fantasyFluctuationEnabled !== false);
+        adminFantasyFluctuationStatusText.textContent = isFluct ? "FLUCTUACIÓN DINÁMICA ACTIVADA" : "PRECIOS ESTÁTICOS BASE";
+        adminFantasyFluctuationStatusText.classList.toggle("is-active", isFluct);
+    }
+    if (adminFantasyVolatility) {
+        adminFantasyVolatility.value = String(settings.fantasyVolatilityMultiplier || 1.0);
+    }
+
+    if (typeof renderAdminMarketSentimentWidget === "function") {
+        renderAdminMarketSentimentWidget();
+    }
+
     renderAdminDriversTab();
     if (typeof renderAdminVerifyTab === "function") renderAdminVerifyTab();
 
@@ -5193,6 +5235,20 @@ function initFirestoreListeners() {
                 }
                 if (adminFantasyLockMessage && document.activeElement !== adminFantasyLockMessage) {
                     adminFantasyLockMessage.value = currentSettings.fantasyLockMessage || "Mercado de fichajes congelado por Gran Premio en curso.";
+                }
+                if (adminFantasyFluctuation) {
+                    adminFantasyFluctuation.checked = (currentSettings.fantasyFluctuationEnabled !== false);
+                }
+                if (adminFantasyFluctuationStatusText) {
+                    const isFluct = (currentSettings.fantasyFluctuationEnabled !== false);
+                    adminFantasyFluctuationStatusText.textContent = isFluct ? "FLUCTUACIÓN DINÁMICA ACTIVADA" : "PRECIOS ESTÁTICOS BASE";
+                    adminFantasyFluctuationStatusText.classList.toggle("is-active", isFluct);
+                }
+                if (adminFantasyVolatility && document.activeElement !== adminFantasyVolatility) {
+                    adminFantasyVolatility.value = String(currentSettings.fantasyVolatilityMultiplier || 1.0);
+                }
+                if (typeof renderAdminMarketSentimentWidget === "function") {
+                    renderAdminMarketSentimentWidget();
                 }
             }
         } else {
@@ -5529,6 +5585,91 @@ if (adminFantasyLocked) {
     });
 }
 
+// Toggle dynamic price fluctuation switch with instant feedback
+if (adminFantasyFluctuation) {
+    adminFantasyFluctuation.addEventListener("change", async () => {
+        const isFluct = adminFantasyFluctuation.checked;
+        if (adminFantasyFluctuationStatusText) {
+            adminFantasyFluctuationStatusText.textContent = isFluct ? "FLUCTUACIÓN DINÁMICA ACTIVADA" : "PRECIOS ESTÁTICOS BASE";
+            adminFantasyFluctuationStatusText.classList.toggle("is-active", isFluct);
+        }
+        const current = getSavedSettings();
+        const updated = {
+            ...current,
+            fantasyFluctuationEnabled: isFluct
+        };
+        try {
+            await setDoc(doc(db, "configuracion", "general"), updated, { merge: true });
+            currentSettings = updated;
+            renderSettingsOnPage(updated);
+            fetch('/api/fantasy/lock', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    locked: updated.fantasyLocked,
+                    message: updated.fantasyLockMessage,
+                    fluctuationEnabled: isFluct,
+                    volatilityMultiplier: updated.fantasyVolatilityMultiplier || 1.0
+                })
+            }).catch(() => {});
+        } catch (err) {
+            console.error("Error updating fluctuation setting in Firestore:", err);
+        }
+    });
+}
+
+// Change volatility selector
+if (adminFantasyVolatility) {
+    adminFantasyVolatility.addEventListener("change", async () => {
+        const vol = parseFloat(adminFantasyVolatility.value) || 1.0;
+        const current = getSavedSettings();
+        const updated = {
+            ...current,
+            fantasyVolatilityMultiplier: vol
+        };
+        try {
+            await setDoc(doc(db, "configuracion", "general"), updated, { merge: true });
+            currentSettings = updated;
+            renderSettingsOnPage(updated);
+            fetch('/api/fantasy/lock', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    locked: updated.fantasyLocked,
+                    message: updated.fantasyLockMessage,
+                    fluctuationEnabled: updated.fantasyFluctuationEnabled !== false,
+                    volatilityMultiplier: vol
+                })
+            }).catch(() => {});
+        } catch (err) {
+            console.error("Error updating volatility setting in Firestore:", err);
+        }
+    });
+}
+
+// Recalculate Prices Button
+if (adminRecalculatePricesBtn) {
+    adminRecalculatePricesBtn.addEventListener("click", () => {
+        if (typeof renderAdminMarketSentimentWidget === "function") {
+            renderAdminMarketSentimentWidget();
+        }
+        if (window.isFantasyModuleInitialized && typeof window.renderFantasySlots === "function" && window.ffcFantasyState) {
+            window.renderFantasyHUD();
+            window.renderFantasySlots();
+            if (window.ffcFantasyState.activeSubTab === "market" && typeof window.renderFantasyMarketGrid === "function") {
+                window.renderFantasyMarketGrid();
+            }
+        }
+        const originalText = adminRecalculatePricesBtn.textContent;
+        adminRecalculatePricesBtn.textContent = "✓ ¡Precios Recalculados!";
+        adminRecalculatePricesBtn.style.background = "#238636";
+        setTimeout(() => {
+            adminRecalculatePricesBtn.textContent = originalText;
+            adminRecalculatePricesBtn.style.background = "";
+        }, 2200);
+    });
+}
+
 // Save General Settings
 if (generalSettingsForm) {
     generalSettingsForm.addEventListener("submit", async (e) => {
@@ -5540,6 +5681,8 @@ if (generalSettingsForm) {
             liveSubtitle: adminLiveSubtitle ? adminLiveSubtitle.value.trim() : "Sigue la retransmisión oficial de la carrera en vivo por Twitch.",
             fantasyLocked: adminFantasyLocked ? adminFantasyLocked.checked : false,
             fantasyLockMessage: adminFantasyLockMessage ? adminFantasyLockMessage.value.trim() : "Mercado de fichajes congelado por Gran Premio en curso.",
+            fantasyFluctuationEnabled: adminFantasyFluctuation ? adminFantasyFluctuation.checked : true,
+            fantasyVolatilityMultiplier: adminFantasyVolatility ? (parseFloat(adminFantasyVolatility.value) || 1.0) : 1.0,
             discordUrl: adminDiscordUrl ? adminDiscordUrl.value.trim() : "",
             xUrl: adminXUrl ? adminXUrl.value.trim() : "",
             instagramUrl: adminInstagramUrl ? adminInstagramUrl.value.trim() : "",
@@ -5561,7 +5704,12 @@ if (generalSettingsForm) {
             fetch('/api/fantasy/lock', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ locked: settings.fantasyLocked, message: settings.fantasyLockMessage })
+                body: JSON.stringify({
+                    locked: settings.fantasyLocked,
+                    message: settings.fantasyLockMessage,
+                    fluctuationEnabled: settings.fantasyFluctuationEnabled,
+                    volatilityMultiplier: settings.fantasyVolatilityMultiplier
+                })
             }).catch(() => {});
 
             if (settingsSaveNotice) {
@@ -5973,6 +6121,9 @@ async function recalculateAndSyncStandings(racesMap = raceResults) {
     if (adminDriversTableBody) {
         renderAdminDriversTab(adminSearchPilotInput ? adminSearchPilotInput.value : "");
     }
+
+    // Refresh fantasy prices and leaderboard immediately
+    updateFantasyWithNewStandings();
 
     return newStandings;
 }
@@ -8214,29 +8365,340 @@ function getFantasyDriverData(driverName) {
     return { driver: driverName, team: "FFC", pts: 0 };
 }
 
-// Calculate Balanced Dynamic Driver Fantasy Price
-function getDriverFantasyPrice(driverName) {
+// Find the most recent officially completed Grand Prix
+function getLatestCompletedRace() {
+    const list = (typeof FFC_SEASON_GPS !== "undefined" && Array.isArray(FFC_SEASON_GPS)) ? FFC_SEASON_GPS : [];
+    let latestRace = null;
+    let latestMeta = null;
+    let latestKey = null;
+
+    const rMap = (typeof raceResults !== "undefined" && raceResults) ? raceResults : {};
+
+    for (let i = list.length - 1; i >= 0; i--) {
+        const gp = list[i];
+        const r = rMap[gp.raceKey];
+        if (r && (r.status === "COMPLETED" || (r.winner && r.winner !== "TBA" && Array.isArray(r.drivers) && r.drivers.length > 0))) {
+            latestRace = r;
+            latestMeta = gp;
+            latestKey = gp.raceKey;
+            break;
+        }
+    }
+
+    if (!latestRace) {
+        for (let i = list.length - 1; i >= 0; i--) {
+            const gp = list[i];
+            const r = rMap[gp.raceKey];
+            if (r && Array.isArray(r.drivers) && r.drivers.length > 0) {
+                latestRace = r;
+                latestMeta = gp;
+                latestKey = gp.raceKey;
+                break;
+            }
+        }
+    }
+
+    return {
+        raceKey: latestKey,
+        race: latestRace,
+        meta: latestMeta
+    };
+}
+
+// Calculate dynamic price fluctuation for a Driver
+function getDriverPriceFluctuation(driverName) {
     const d = getFantasyDriverData(driverName);
     const pts = d ? (Number(d.pts) || 0) : 0;
-    // Driver scale: Base 6.0M€ (0 pts) to ~29.7M€ (153 pts)
-    // An individual driver is always valued lower than a full constructor
-    let price = 6.0 + (pts * 0.155);
-    price = Math.max(6.0, Math.min(30.0, price));
-    return Math.round(price * 10) / 10;
+    const basePrice = Math.round((6.0 + (pts * 0.155)) * 10) / 10;
+
+    const latest = getLatestCompletedRace();
+    let delta = 0.0;
+    let lastRacePts = 0;
+    let lastRacePos = null;
+    let lastRaceName = latest.meta ? (latest.meta.name || latest.meta.code) : "Último GP";
+
+    if (latest.race && Array.isArray(latest.race.drivers) && latest.race.drivers.length > 0) {
+        const norm = normalizeDriverKey(driverName);
+        let foundEntry = null;
+
+        latest.race.drivers.forEach((entry, idx) => {
+            if (!entry || !entry.driver) return;
+            if (normalizeDriverKey(entry.driver) === norm) {
+                foundEntry = entry;
+                if (entry.status !== "DSQ") {
+                    const pos = Number(entry.pos) || (idx + 1);
+                    lastRacePos = `${pos}º`;
+                    if (pos >= 1 && pos <= 10) {
+                        lastRacePts += (F1_POINTS_MAP[pos] || 0);
+                    }
+                } else {
+                    lastRacePos = "DSQ";
+                }
+            }
+        });
+
+        if (latest.race.fastest && latest.race.fastest !== "TBA") {
+            const rawName = latest.race.fastest.split("·")[0].trim();
+            if (rawName && normalizeDriverKey(rawName) === norm) {
+                lastRacePts += (typeof F1_FASTEST_LAP_PTS !== "undefined" ? F1_FASTEST_LAP_PTS : 1);
+            }
+        }
+
+        if (foundEntry) {
+            if (foundEntry.status === "DSQ") {
+                delta = -0.6;
+            } else if (lastRacePts >= 25) {
+                delta = +0.8;
+            } else if (lastRacePts >= 18) {
+                delta = +0.6;
+            } else if (lastRacePts >= 15) {
+                delta = +0.5;
+            } else if (lastRacePts >= 10) {
+                delta = basePrice < 15 ? +0.5 : +0.3;
+            } else if (lastRacePts >= 6) {
+                delta = basePrice < 12 ? +0.4 : +0.2;
+            } else if (lastRacePts >= 1) {
+                delta = basePrice < 10 ? +0.3 : +0.1;
+            } else {
+                delta = basePrice > 18 ? -0.5 : (basePrice > 12 ? -0.3 : -0.1);
+            }
+        } else {
+            delta = basePrice > 16 ? -0.4 : -0.2;
+        }
+    } else {
+        if (pts >= 120) delta = +0.5;
+        else if (pts >= 80) delta = +0.3;
+        else if (pts >= 40) delta = +0.1;
+        else if (pts >= 10) delta = -0.1;
+        else delta = -0.2;
+    }
+
+    const settings = getSavedSettings();
+    const isEnabled = settings ? (settings.fantasyFluctuationEnabled !== false) : true;
+    const volatility = settings && typeof settings.fantasyVolatilityMultiplier === "number" ? settings.fantasyVolatilityMultiplier : 1.0;
+
+    if (!isEnabled) {
+        delta = 0.0;
+    } else {
+        delta = Math.round((delta * volatility) * 10) / 10;
+    }
+
+    let dynamicPrice = Math.max(5.0, Math.min(32.0, Math.round((basePrice + delta) * 10) / 10));
+
+    let trend = "flat";
+    let formClass = "trend-flat";
+    let formTag = "➖ Estable";
+
+    if (delta > 0) {
+        trend = "up";
+        formClass = "trend-up";
+        if (delta >= 0.5) formTag = `🔥 En Racha (+${lastRacePts} pts en ${lastRaceName})`;
+        else formTag = `📈 Al Alza (+${lastRacePts} pts en ${lastRaceName})`;
+    } else if (delta < 0) {
+        trend = "down";
+        formClass = "trend-down";
+        if (delta <= -0.4) formTag = `❄️ En Frío (${lastRacePos || '0 pts'} en ${lastRaceName})`;
+        else formTag = `📉 Descuento (${lastRacePos || '0 pts'} en ${lastRaceName})`;
+    } else {
+        formTag = lastRacePts > 0 ? `⚡ Rentable (${lastRacePts} pts)` : `➖ Valor Estable`;
+    }
+
+    return {
+        basePrice,
+        currentPrice: dynamicPrice,
+        delta,
+        deltaFormatted: (delta > 0 ? `+${delta.toFixed(1)}` : delta.toFixed(1)) + "M€",
+        trend,
+        lastRacePts,
+        lastRacePos,
+        lastRaceName,
+        formTag,
+        formClass
+    };
+}
+
+// Calculate dynamic price fluctuation for a Constructor
+function getTeamPriceFluctuation(teamName) {
+    if (!teamName) {
+        return {
+            basePrice: 16.0,
+            currentPrice: 16.0,
+            delta: 0,
+            deltaFormatted: "+0.0M€",
+            trend: "flat",
+            lastRacePts: 0,
+            lastRaceName: "Temporada",
+            formTag: "➖ Estable",
+            formClass: "trend-flat"
+        };
+    }
+
+    const pts = getTeamCurrentPoints(teamName);
+    const basePrice = Math.round((14.0 + (pts * 0.115)) * 10) / 10;
+
+    const latest = getLatestCompletedRace();
+    let delta = 0.0;
+    let lastRacePts = 0;
+    let lastRaceName = latest.meta ? (latest.meta.name || latest.meta.code) : "Último GP";
+
+    if (latest.race && Array.isArray(latest.race.drivers) && latest.race.drivers.length > 0) {
+        const cleanTeam = teamName.trim().toLowerCase();
+
+        latest.race.drivers.forEach((entry, idx) => {
+            if (!entry || !entry.driver) return;
+            const dTeam = (entry.team || getDriverTeam(entry.driver) || "").trim().toLowerCase();
+            if (dTeam === cleanTeam && entry.status !== "DSQ") {
+                const pos = Number(entry.pos) || (idx + 1);
+                if (pos >= 1 && pos <= 10) {
+                    lastRacePts += (F1_POINTS_MAP[pos] || 0);
+                }
+            }
+        });
+
+        if (latest.race.fastest && latest.race.fastest !== "TBA") {
+            const rawName = latest.race.fastest.split("·")[0].trim();
+            if (rawName) {
+                const flDriverTeam = (getDriverTeam(rawName) || "").trim().toLowerCase();
+                if (flDriverTeam === cleanTeam) {
+                    lastRacePts += (typeof F1_FASTEST_LAP_PTS !== "undefined" ? F1_FASTEST_LAP_PTS : 1);
+                }
+            }
+        }
+
+        if (lastRacePts >= 37) delta = +1.0;
+        else if (lastRacePts >= 27) delta = +0.7;
+        else if (lastRacePts >= 18) delta = +0.4;
+        else if (lastRacePts >= 10) delta = +0.2;
+        else if (lastRacePts >= 1) delta = basePrice > 25 ? -0.2 : +0.1;
+        else delta = basePrice > 20 ? -0.6 : -0.3;
+    } else {
+        if (pts >= 180) delta = +0.6;
+        else if (pts >= 100) delta = +0.3;
+        else if (pts >= 40) delta = +0.1;
+        else delta = -0.3;
+    }
+
+    const settings = getSavedSettings();
+    const isEnabled = settings ? (settings.fantasyFluctuationEnabled !== false) : true;
+    const volatility = settings && typeof settings.fantasyVolatilityMultiplier === "number" ? settings.fantasyVolatilityMultiplier : 1.0;
+
+    if (!isEnabled) {
+        delta = 0.0;
+    } else {
+        delta = Math.round((delta * volatility) * 10) / 10;
+    }
+
+    let dynamicPrice = Math.max(12.0, Math.min(42.0, Math.round((basePrice + delta) * 10) / 10));
+
+    let trend = "flat";
+    let formClass = "trend-flat";
+    let formTag = "➖ Estable";
+
+    if (delta > 0) {
+        trend = "up";
+        formClass = "trend-up";
+        if (delta >= 0.6) formTag = `🔥 En Racha (+${lastRacePts} pts en ${lastRaceName})`;
+        else formTag = `📈 Al Alza (+${lastRacePts} pts en ${lastRaceName})`;
+    } else if (delta < 0) {
+        trend = "down";
+        formClass = "trend-down";
+        if (delta <= -0.4) formTag = `❄️ En Frío (${lastRacePts} pts en ${lastRaceName})`;
+        else formTag = `📉 Descuento (${lastRacePts} pts en ${lastRaceName})`;
+    } else {
+        formTag = lastRacePts > 0 ? `⚡ Rentable (${lastRacePts} pts)` : `➖ Valor Estable`;
+    }
+
+    return {
+        basePrice,
+        currentPrice: dynamicPrice,
+        delta,
+        deltaFormatted: (delta > 0 ? `+${delta.toFixed(1)}` : delta.toFixed(1)) + "M€",
+        trend,
+        lastRacePts,
+        lastRaceName,
+        formTag,
+        formClass
+    };
+}
+
+// Calculate Balanced Dynamic Driver Fantasy Price
+function getDriverFantasyPrice(driverName) {
+    const flu = getDriverPriceFluctuation(driverName);
+    return flu.currentPrice;
 }
 
 // Calculate Balanced Dynamic Constructor Fantasy Price
 function getConstructorFantasyPrice(teamName) {
-    if (!teamName) return 16.0;
-    const pts = getTeamCurrentPoints(teamName);
-    // Constructors represent two race cars and engineering package:
-    // They are always worth more than individual drivers (Base 14.0M€ to 38.5M€ for 213 pts).
-    // Purchasing the top constructor (38.5M€) + the 3 best drivers (74.7M€) totals 113.2M€,
-    // which is strictly impossible within the 100.0M€ budget and requires strategic trade-offs.
-    let price = 14.0 + (pts * 0.115);
-    price = Math.max(14.0, Math.min(40.0, price));
-    return Math.round(price * 10) / 10;
+    const flu = getTeamPriceFluctuation(teamName);
+    return flu.currentPrice;
 }
+
+// Render Admin Market Sentiment and Trends Widget
+function renderAdminMarketSentimentWidget() {
+    const widget = document.getElementById("adminMarketSentimentWidget");
+    if (!widget) return;
+
+    const allDrivers = (typeof ffc2010SeasonDrivers !== "undefined" && Array.isArray(ffc2010SeasonDrivers))
+        ? ffc2010SeasonDrivers
+        : (typeof defaultStandings !== "undefined" ? defaultStandings : []);
+
+    const allTeams = typeof F1_TEAMS !== "undefined" ? F1_TEAMS : ["Red Bull", "Ferrari", "McLaren", "Mercedes", "Renault", "Williams", "Force India", "Sauber", "Toro Rosso", "Lotus", "HRT", "Virgin"];
+
+    let maxUpDriver = null;
+    let maxDownDriver = null;
+    let maxUpTeam = null;
+
+    allDrivers.forEach(d => {
+        if (!d || !d.driver) return;
+        const flu = getDriverPriceFluctuation(d.driver);
+        if (!maxUpDriver || flu.delta > maxUpDriver.flu.delta) {
+            maxUpDriver = { name: d.driver, team: d.team, flu };
+        }
+        if (!maxDownDriver || flu.delta < maxDownDriver.flu.delta) {
+            maxDownDriver = { name: d.driver, team: d.team, flu };
+        }
+    });
+
+    allTeams.forEach(t => {
+        if (!t) return;
+        const flu = getTeamPriceFluctuation(t);
+        if (!maxUpTeam || flu.delta > maxUpTeam.flu.delta) {
+            maxUpTeam = { name: t, flu };
+        }
+    });
+
+    const latest = getLatestCompletedRace();
+    const gpName = latest.meta ? `${latest.meta.flag || '🏁'} ${latest.meta.name || latest.meta.code}` : "Temporada Regular";
+
+    const s = getSavedSettings();
+    const isFluct = s ? (s.fantasyFluctuationEnabled !== false) : true;
+    const vol = s && typeof s.fantasyVolatilityMultiplier === "number" ? s.fantasyVolatilityMultiplier : 1.0;
+
+    widget.innerHTML = `
+        <div style="font-size:12px; color:#8b949e; margin-bottom:10px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:6px;">
+            <span>Evaluación según: <strong style="color:#e6edf3;">${gpName}</strong> (Volatilidad: ${vol.toFixed(1)}x)</span>
+            <span class="price-delta-badge ${isFluct ? 'trend-up' : 'trend-flat'}">${isFluct ? 'Fluctuación Activa' : 'Precios Estáticos'}</span>
+        </div>
+        <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap:10px;">
+            <div style="background: rgba(63, 185, 80, 0.08); border: 1px solid rgba(63, 185, 80, 0.25); border-radius: 8px; padding: 10px;">
+                <div style="font-size: 10px; text-transform: uppercase; color: #3fb950; font-weight: 700; margin-bottom: 4px;">🚀 Mayor Subida</div>
+                <div style="font-weight: 700; font-size: 13px; color: #f0f6fc; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${maxUpDriver ? escapeHtml(maxUpDriver.name) : '--'}</div>
+                <div style="font-size: 11px; color: #3fb950; font-weight: 700; margin-top: 2px;">${maxUpDriver ? maxUpDriver.flu.deltaFormatted : '+0.0M€'} (${maxUpDriver ? maxUpDriver.flu.currentPrice.toFixed(1) : 0}M€)</div>
+            </div>
+            <div style="background: rgba(248, 81, 73, 0.08); border: 1px solid rgba(248, 81, 73, 0.25); border-radius: 8px; padding: 10px;">
+                <div style="font-size: 10px; text-transform: uppercase; color: #f85149; font-weight: 700; margin-bottom: 4px;">📉 Mayor Descuento</div>
+                <div style="font-weight: 700; font-size: 13px; color: #f0f6fc; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${maxDownDriver ? escapeHtml(maxDownDriver.name) : '--'}</div>
+                <div style="font-size: 11px; color: #f85149; font-weight: 700; margin-top: 2px;">${maxDownDriver ? maxDownDriver.flu.deltaFormatted : '+0.0M€'} (${maxDownDriver ? maxDownDriver.flu.currentPrice.toFixed(1) : 0}M€)</div>
+            </div>
+            <div style="background: rgba(210, 153, 34, 0.08); border: 1px solid rgba(210, 153, 34, 0.25); border-radius: 8px; padding: 10px;">
+                <div style="font-size: 10px; text-transform: uppercase; color: #d29922; font-weight: 700; margin-bottom: 4px;">🏎️ Escudería Destacada</div>
+                <div style="font-weight: 700; font-size: 13px; color: #f0f6fc; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${maxUpTeam ? escapeHtml(maxUpTeam.name) : '--'}</div>
+                <div style="font-size: 11px; color: #d29922; font-weight: 700; margin-top: 2px;">${maxUpTeam ? maxUpTeam.flu.deltaFormatted : '+0.0M€'} (${maxUpTeam ? maxUpTeam.flu.currentPrice.toFixed(1) : 0}M€)</div>
+            </div>
+        </div>
+    `;
+}
+window.renderAdminMarketSentimentWidget = renderAdminMarketSentimentWidget;
 
 // Get team's current official accumulated points
 function getTeamCurrentPoints(teamName) {
@@ -8351,16 +8813,18 @@ function getTeamFantasyPoints(teamName) {
     return pts;
 }
 
-// Calculate team budget, value and points
+// Calculate team budget, value, fluctuation equity and points
 function calculateFantasyMetrics(teamState = ffcFantasyState) {
     let spent = 0;
     let totalPts = 0;
     let filledSlots = 0;
+    let teamDelta = 0;
 
     // Driver 1
     let d1Pts = 0;
     if (teamState.driver1) {
         spent += getDriverFantasyPrice(teamState.driver1);
+        teamDelta += getDriverPriceFluctuation(teamState.driver1).delta;
         d1Pts = getDriverFantasyPoints(teamState.driver1);
         if (teamState.turboDriver === teamState.driver1) {
             d1Pts *= 2;
@@ -8373,6 +8837,7 @@ function calculateFantasyMetrics(teamState = ffcFantasyState) {
     let d2Pts = 0;
     if (teamState.driver2) {
         spent += getDriverFantasyPrice(teamState.driver2);
+        teamDelta += getDriverPriceFluctuation(teamState.driver2).delta;
         d2Pts = getDriverFantasyPoints(teamState.driver2);
         if (teamState.turboDriver === teamState.driver2) {
             d2Pts *= 2;
@@ -8385,6 +8850,7 @@ function calculateFantasyMetrics(teamState = ffcFantasyState) {
     let d3Pts = 0;
     if (teamState.driver3) {
         spent += getDriverFantasyPrice(teamState.driver3);
+        teamDelta += getDriverPriceFluctuation(teamState.driver3).delta;
         d3Pts = getDriverFantasyPoints(teamState.driver3);
         if (teamState.turboDriver === teamState.driver3) {
             d3Pts *= 2;
@@ -8397,12 +8863,14 @@ function calculateFantasyMetrics(teamState = ffcFantasyState) {
     let teamPts = 0;
     if (teamState.team) {
         spent += getConstructorFantasyPrice(teamState.team);
+        teamDelta += getTeamPriceFluctuation(teamState.team).delta;
         teamPts = getTeamFantasyPoints(teamState.team);
         totalPts += teamPts;
         filledSlots++;
     }
 
     spent = Math.round(spent * 10) / 10;
+    teamDelta = Math.round(teamDelta * 10) / 10;
     const remaining = Math.round((FANTASY_INITIAL_BUDGET - spent) * 10) / 10;
 
     return {
@@ -8410,6 +8878,7 @@ function calculateFantasyMetrics(teamState = ffcFantasyState) {
         remaining,
         totalPts,
         filledSlots,
+        teamDelta,
         d1Pts,
         d2Pts,
         d3Pts,
@@ -8492,6 +8961,9 @@ function initFantasyLeaderboardRealtime() {
 window.initFantasyLeaderboardRealtime = initFantasyLeaderboardRealtime;
 
 function updateFantasyWithNewStandings() {
+    if (typeof renderAdminMarketSentimentWidget === "function") {
+        renderAdminMarketSentimentWidget();
+    }
     if (typeof ffcFantasyState === "undefined" || !ffcFantasyState) return;
 
     // 1. Refresh user team HUD and slots with latest driver values and points
@@ -8907,6 +9379,7 @@ function renderSlotCard(containerId, slotType, slotIndex, currentItem, pts, isTu
             const flag = getOfficialDriverFlag(currentItem);
             const team = driverData ? driverData.team : "FFC";
             const price = getDriverFantasyPrice(currentItem);
+            const flu = getDriverPriceFluctuation(currentItem);
             const avatarUrl = driverData && driverData.avatarUrl ? driverData.avatarUrl : null;
             const turboClass = isTurbo ? "is-active" : "";
             const turboLabel = isTurbo ? "⭐ Turbo Activo (x2 Pts)" : "⭐ Activar Turbo (x2)";
@@ -8938,7 +9411,10 @@ function renderSlotCard(containerId, slotType, slotIndex, currentItem, pts, isTu
                     <div class="slot-meta-row">
                         <div class="slot-meta-item">
                             <span class="slot-meta-lbl">VALOR</span>
-                            <span class="slot-meta-val price">${price.toFixed(1)}M €</span>
+                            <span class="slot-meta-val price">
+                                ${price.toFixed(1)}M €
+                                <span class="price-delta-badge ${flu.formClass}" title="Fluctuación del valor: ${flu.deltaFormatted}">${flu.deltaFormatted}</span>
+                            </span>
                         </div>
                         <div class="slot-meta-item" style="text-align: right;">
                             <span class="slot-meta-lbl">PUNTOS</span>
@@ -8951,6 +9427,7 @@ function renderSlotCard(containerId, slotType, slotIndex, currentItem, pts, isTu
         } else {
             // Constructor Slot
             const price = getConstructorFantasyPrice(currentItem);
+            const flu = getTeamPriceFluctuation(currentItem);
             const sellBtnHtml = isLocked
                 ? `<button type="button" class="slot-sell-btn is-locked" onclick="handleLockedAction()" title="Mercado bloqueado por carrera">🔒 Bloqueado</button>`
                 : `<button type="button" class="slot-sell-btn" onclick="handleSellSlot('team')">✕ Vender</button>`;
@@ -8971,7 +9448,10 @@ function renderSlotCard(containerId, slotType, slotIndex, currentItem, pts, isTu
                     <div class="slot-meta-row">
                         <div class="slot-meta-item">
                             <span class="slot-meta-lbl">VALOR</span>
-                            <span class="slot-meta-val price">${price.toFixed(1)}M €</span>
+                            <span class="slot-meta-val price">
+                                ${price.toFixed(1)}M €
+                                <span class="price-delta-badge ${flu.formClass}" title="Fluctuación del valor: ${flu.deltaFormatted}">${flu.deltaFormatted}</span>
+                            </span>
                         </div>
                         <div class="slot-meta-item" style="text-align: right;">
                             <span class="slot-meta-lbl">PUNTOS</span>
@@ -9159,7 +9639,8 @@ function renderFantasyMarketGrid() {
         const name = d.driver;
         const team = d.team;
         const pts = getDriverFantasyPoints(name);
-        const price = getDriverFantasyPrice(name);
+        const flu = getDriverPriceFluctuation(name);
+        const price = flu.currentPrice;
         const isOwned = (ffcFantasyState.driver1 === name || ffcFantasyState.driver2 === name || ffcFantasyState.driver3 === name);
         const flag = getOfficialDriverFlag(name);
         const avatarUrl = d.avatarUrl || null;
@@ -9170,6 +9651,7 @@ function renderFantasyMarketGrid() {
             team,
             pts,
             price,
+            flu,
             isOwned,
             flag,
             avatarUrl
@@ -9180,7 +9662,8 @@ function renderFantasyMarketGrid() {
     const allTeams = typeof F1_TEAMS !== "undefined" ? F1_TEAMS : ["Red Bull", "Ferrari", "McLaren", "Mercedes", "Renault", "Williams", "Force India", "Sauber", "Toro Rosso", "Lotus", "HRT", "Virgin"];
     const teamCards = allTeams.map(teamName => {
         const pts = getTeamFantasyPoints(teamName);
-        const price = getConstructorFantasyPrice(teamName);
+        const flu = getTeamPriceFluctuation(teamName);
+        const price = flu.currentPrice;
         const isOwned = ffcFantasyState.team === teamName;
 
         return {
@@ -9189,6 +9672,7 @@ function renderFantasyMarketGrid() {
             team: teamName,
             pts,
             price,
+            flu,
             isOwned,
             flag: "🏭",
             avatarUrl: null
@@ -9199,6 +9683,8 @@ function renderFantasyMarketGrid() {
     let items = [];
     if (filter === "drivers") items = driverCards;
     else if (filter === "teams") items = teamCards;
+    else if (filter === "rising") items = [...driverCards, ...teamCards].filter(i => i.flu && i.flu.delta > 0);
+    else if (filter === "falling") items = [...driverCards, ...teamCards].filter(i => i.flu && i.flu.delta < 0);
     else items = [...driverCards, ...teamCards];
 
     // Filter by affordable
@@ -9219,6 +9705,8 @@ function renderFantasyMarketGrid() {
         if (sortBy === "price-desc") return b.price - a.price;
         if (sortBy === "price-asc") return a.price - b.price;
         if (sortBy === "pts-desc") return b.pts - a.pts;
+        if (sortBy === "rising-desc" || sortBy === "fluct-desc") return (b.flu ? b.flu.delta : 0) - (a.flu ? a.flu.delta : 0);
+        if (sortBy === "falling-desc" || sortBy === "fluct-asc") return (a.flu ? a.flu.delta : 0) - (b.flu ? b.flu.delta : 0);
         if (sortBy === "name-asc") return a.name.localeCompare(b.name);
         return 0;
     });
@@ -9279,10 +9767,14 @@ function renderFantasyMarketGrid() {
                         <span class="ranking-team-pill ${getTeamClass(item.team)}"><span class="team-dot"></span>${escapeHtml(item.team)}</span>
                     </div>
                 </div>
+                ${item.flu ? `<div class="market-form-tag ${item.flu.formClass}">${item.flu.formTag}</div>` : ''}
                 <div class="market-card-stats">
                     <div class="market-stat-item">
                         <span class="market-stat-lbl">PRECIO</span>
-                        <span class="market-stat-val price">${item.price.toFixed(1)}M €</span>
+                        <span class="market-stat-val price">
+                            ${item.price.toFixed(1)}M €
+                            ${item.flu ? `<span class="price-delta-badge ${item.flu.formClass}" title="Fluctuación: ${item.flu.deltaFormatted}">${item.flu.deltaFormatted}</span>` : ''}
+                        </span>
                     </div>
                     <div class="market-stat-item" style="text-align: right;">
                         <span class="market-stat-lbl">PUNTOS REALES</span>
