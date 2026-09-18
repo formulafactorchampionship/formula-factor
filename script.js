@@ -4,19 +4,16 @@
 
 import { initShapeWavesBackground } from "./ShapeWaves.js";
 import { initCalendarBorderGlow } from "./BorderGlow.js";
-import { initCountdownSplitFlaps } from "./SplitFlapText.js";
 
-// Initialize ShapeWaves interactive background canvas, Calendar BorderGlow & Countdown SplitFlaps
+// Initialize ShapeWaves interactive background canvas & Calendar BorderGlow
 if (document.readyState === "loading") {
     document.addEventListener("DOMContentLoaded", () => {
         initShapeWavesBackground();
         initCalendarBorderGlow();
-        initCountdownSplitFlaps();
     });
 } else {
     initShapeWavesBackground();
     initCalendarBorderGlow();
-    initCountdownSplitFlaps();
 }
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
@@ -178,15 +175,15 @@ function updateCountdown() {
     const minsEl = document.getElementById("mins");
     const secsEl = document.getElementById("secs");
 
-    if (difference <= 0) {
-        if (daysEl) daysEl.textContent = "00";
-        if (hoursEl) hoursEl.textContent = "00";
-        if (minsEl) minsEl.textContent = "00";
-        if (secsEl) secsEl.textContent = "00";
+    if (!daysEl || !hoursEl || !minsEl || !secsEl) return;
 
-        if (typeof window.updateCountdownFlaps === "function") {
-            window.updateCountdownFlaps("00", "00", "00", "00");
-        }
+    if (difference <= 0) {
+
+        daysEl.textContent = "00";
+        hoursEl.textContent = "00";
+        minsEl.textContent = "00";
+        secsEl.textContent = "00";
+
         return;
     }
 
@@ -206,19 +203,10 @@ function updateCountdown() {
         (difference / 1000) % 60
     );
 
-    const dStr = String(days).padStart(2, "0");
-    const hStr = String(hours).padStart(2, "0");
-    const mStr = String(minutes).padStart(2, "0");
-    const sStr = String(seconds).padStart(2, "0");
-
-    if (daysEl) daysEl.textContent = dStr;
-    if (hoursEl) hoursEl.textContent = hStr;
-    if (minsEl) minsEl.textContent = mStr;
-    if (secsEl) secsEl.textContent = sStr;
-
-    if (typeof window.updateCountdownFlaps === "function") {
-        window.updateCountdownFlaps(dStr, hStr, mStr, sStr);
-    }
+    daysEl.textContent = String(days).padStart(2, "0");
+    hoursEl.textContent = String(hours).padStart(2, "0");
+    minsEl.textContent = String(minutes).padStart(2, "0");
+    secsEl.textContent = String(seconds).padStart(2, "0");
 }
 
 updateCountdown();
@@ -2980,215 +2968,292 @@ function getOfficialDriverFlag(driverName) {
 }
 
 const OFFICIAL_COUNTRY_FLAGS = [
-    { name: "Afganistán", flag: "🇦🇫" },
-    { name: "Albania", flag: "🇦🇱" },
-    { name: "Alemania", flag: "🇩🇪" },
-    { name: "Andorra", flag: "🇦🇩" },
-    { name: "Angola", flag: "🇦🇴" },
-    { name: "Antigua y Barbuda", flag: "🇦🇬" },
-    { name: "Arabia Saudita", flag: "🇸🇦" },
-    { name: "Argelia", flag: "🇩🇿" },
+    { name: "España", flag: "🇪🇸" },
     { name: "Argentina", flag: "🇦🇷" },
-    { name: "Armenia", flag: "🇦🇲" },
-    { name: "Australia", flag: "🇦🇺" },
-    { name: "Austria", flag: "🇦🇹" },
-    { name: "Azerbaiyán", flag: "🇦🇿" },
-    { name: "Bahamas", flag: "🇧🇸" },
-    { name: "Bangladés", flag: "🇧🇩" },
-    { name: "Barbados", flag: "🇧🇧" },
-    { name: "Baréin", flag: "🇧🇭" },
-    { name: "Bélgica", flag: "🇧🇪" },
-    { name: "Belice", flag: "🇧🇿" },
-    { name: "Benín", flag: "🇧🇯" },
-    { name: "Bielorrusia", flag: "🇧🇾" },
-    { name: "Birmania (Myanmar)", flag: "🇲🇲" },
-    { name: "Bolivia", flag: "🇧🇴" },
-    { name: "Bosnia y Herzegovina", flag: "🇧🇦" },
-    { name: "Botsuana", flag: "🇧🇼" },
-    { name: "Brasil", flag: "🇧🇷" },
-    { name: "Brunéi", flag: "🇧🇳" },
-    { name: "Bulgaria", flag: "🇧🇬" },
-    { name: "Burkina Faso", flag: "🇧🇫" },
-    { name: "Burundi", flag: "🇧🇮" },
-    { name: "Bután", flag: "🇧🇹" },
-    { name: "Cabo Verde", flag: "🇨🇻" },
-    { name: "Camboya", flag: "🇰🇭" },
-    { name: "Camerún", flag: "🇨🇲" },
-    { name: "Canadá", flag: "🇨🇦" },
-    { name: "Catar", flag: "🇶🇦" },
-    { name: "Chad", flag: "🇹🇩" },
+    { name: "México", flag: "🇲🇽" },
     { name: "Chile", flag: "🇨🇱" },
-    { name: "China", flag: "🇨🇳" },
-    { name: "Chipre", flag: "🇨🇾" },
-    { name: "Ciudad del Vaticano", flag: "🇻🇦" },
     { name: "Colombia", flag: "🇨🇴" },
-    { name: "Comoras", flag: "🇰🇲" },
-    { name: "Corea del Norte", flag: "🇰🇵" },
-    { name: "Corea del Sur", flag: "🇰🇷" },
-    { name: "Costa de Marfil", flag: "🇨🇮" },
-    { name: "Costa Rica", flag: "🇨🇷" },
-    { name: "Croacia", flag: "🇭🇷" },
-    { name: "Cuba", flag: "🇨🇺" },
-    { name: "Dinamarca", flag: "🇩🇰" },
-    { name: "Dominica", flag: "🇩🇲" },
-    { name: "Ecuador", flag: "🇪🇨" },
-    { name: "Egipto", flag: "🇪🇬" },
-    { name: "El Salvador", flag: "🇸🇻" },
-    { name: "Emiratos Árabes Unidos", flag: "🇦🇪" },
-    { name: "Eritrea", flag: "🇪🇷" },
+    { name: "Perú", flag: "🇵🇪" },
+    { name: "Uruguay", flag: "🇺🇾" },
+    { name: "Venezuela", flag: "🇻🇪" },
+    { name: "Portugal", flag: "🇵🇹" },
+    { name: "Reino Unido", flag: "🇬🇧" },
     { name: "Escocia", flag: "🏴󠁧󠁢󠁳󠁣󠁴󠁿" },
+    { name: "Francia", flag: "🇫🇷" },
+    { name: "Alemania", flag: "🇩🇪" },
+    { name: "Italia", flag: "🇮🇹" },
+    { name: "Países Bajos", flag: "🇳🇱" },
+    { name: "Mónaco", flag: "🇲🇨" },
+    { name: "Australia", flag: "🇦🇺" },
+    { name: "Brasil", flag: "🇧🇷" },
+    { name: "Estados Unidos", flag: "🇺🇸" },
+    { name: "Canadá", flag: "🇨🇦" },
+    { name: "Japón", flag: "🇯🇵" },
+    { name: "Suiza", flag: "🇨🇭" },
+    { name: "Austria", flag: "🇦🇹" },
+    { name: "Bélgica", flag: "🇧🇪" },
+    { name: "Finlandia", flag: "🇫🇮" },
+    { name: "Dinamarca", flag: "🇩🇰" },
+    { name: "Polonia", flag: "🇵🇱" },
+    
+    // América (resto)
+    { name: "Bolivia", flag: "🇧🇴" },
+    { name: "Costa Rica", flag: "🇨🇷" },
+    { name: "Cuba", flag: "🇨🇺" },
+    { name: "Ecuador", flag: "🇪🇨" },
+    { name: "El Salvador", flag: "🇸🇻" },
+    { name: "Guatemala", flag: "🇬🇹" },
+    { name: "Honduras", flag: "🇭🇳" },
+    { name: "Nicaragua", flag: "🇳🇮" },
+    { name: "Panamá", flag: "🇵🇦" },
+    { name: "Paraguay", flag: "🇵🇾" },
+    { name: "Puerto Rico", flag: "🇵🇷" },
+    { name: "República Dominicana", flag: "🇩🇴" },
+    { name: "Jamaica", flag: "🇯🇲" },
+    { name: "Bahamas", flag: "🇧🇸" },
+    { name: "Haití", flag: "🇭🇹" },
+    { name: "Trinidad y Tobago", flag: "🇹🇹" },
+    { name: "Barbados", flag: "🇧🇧" },
+    { name: "Belice", flag: "🇧🇿" },
+    { name: "Guayana", flag: "🇬🇾" },
+    { name: "Surinam", flag: "🇸🇷" },
+
+    // Europa (resto)
+    { name: "Albania", flag: "🇦🇱" },
+    { name: "Andorra", flag: "🇦🇩" },
+    { name: "Armenia", flag: "🇦🇲" },
+    { name: "Azerbaiyán", flag: "🇦🇿" },
+    { name: "Bielorrusia", flag: "🇧🇾" },
+    { name: "Bosnia y Herzegovina", flag: "🇧🇦" },
+    { name: "Bulgaria", flag: "🇧🇬" },
+    { name: "Chipre", flag: "🇨🇾" },
+    { name: "Croacia", flag: "🇭🇷" },
     { name: "Eslovaquia", flag: "🇸🇰" },
     { name: "Eslovenia", flag: "🇸🇮" },
-    { name: "España", flag: "🇪🇸" },
-    { name: "Estados Unidos", flag: "🇺🇸" },
     { name: "Estonia", flag: "🇪🇪" },
-    { name: "Etiopía", flag: "🇪🇹" },
-    { name: "Filipinas", flag: "🇵🇭" },
-    { name: "Finlandia", flag: "🇫🇮" },
-    { name: "Fiyi", flag: "🇫🇯" },
-    { name: "Francia", flag: "🇫🇷" },
-    { name: "Gabón", flag: "🇬🇦" },
-    { name: "Gambia", flag: "🇬🇲" },
     { name: "Georgia", flag: "🇬🇪" },
-    { name: "Ghana", flag: "🇬🇭" },
-    { name: "Granada", flag: "🇬🇩" },
     { name: "Grecia", flag: "🇬🇷" },
-    { name: "Guatemala", flag: "🇬🇹" },
-    { name: "Guinea", flag: "🇬🇳" },
-    { name: "Guinea-Bisáu", flag: "🇬🇼" },
-    { name: "Guinea Ecuatorial", flag: "🇬🇶" },
-    { name: "Guyana", flag: "🇬🇾" },
-    { name: "Haití", flag: "🇭🇹" },
-    { name: "Honduras", flag: "🇭🇳" },
     { name: "Hungría", flag: "🇭🇺" },
-    { name: "India", flag: "🇮🇳" },
-    { name: "Indonesia", flag: "🇮🇩" },
-    { name: "Irak", flag: "🇮🇶" },
-    { name: "Irán", flag: "🇮🇷" },
     { name: "Irlanda", flag: "🇮🇪" },
     { name: "Islandia", flag: "🇮🇸" },
-    { name: "Islas Marshall", flag: "🇲🇭" },
-    { name: "Islas Salomón", flag: "🇸🇧" },
-    { name: "Israel", flag: "🇮🇱" },
-    { name: "Italia", flag: "🇮🇹" },
-    { name: "Jamaica", flag: "🇯🇲" },
-    { name: "Japón", flag: "🇯🇵" },
-    { name: "Jordania", flag: "🇯🇴" },
-    { name: "Kazajistán", flag: "🇰🇿" },
-    { name: "Kenia", flag: "🇰🇪" },
-    { name: "Kirguistán", flag: "🇰🇬" },
-    { name: "Kiribati", flag: "🇰🇮" },
-    { name: "Kuwait", flag: "🇰🇼" },
-    { name: "Laos", flag: "🇱🇦" },
-    { name: "Lesoto", flag: "🇱🇸" },
     { name: "Letonia", flag: "🇱🇻" },
-    { name: "Líbano", flag: "🇱🇧" },
-    { name: "Liberia", flag: "🇱🇷" },
-    { name: "Libia", flag: "🇱🇾" },
     { name: "Liechtenstein", flag: "🇱🇮" },
     { name: "Lituania", flag: "🇱🇹" },
     { name: "Luxemburgo", flag: "🇱🇺" },
     { name: "Macedonia del Norte", flag: "🇲🇰" },
-    { name: "Madagascar", flag: "🇲🇬" },
-    { name: "Malasia", flag: "🇲🇾" },
-    { name: "Malaui", flag: "🇲🇼" },
-    { name: "Maldivas", flag: "🇲🇻" },
-    { name: "Malí", flag: "🇲🇱" },
     { name: "Malta", flag: "🇲🇹" },
+    { name: "Moldavia", flag: "🇲🇩" },
+    { name: "Montenegro", flag: "🇲🇪" },
+    { name: "Noruega", flag: "🇳🇴" },
+    { name: "Rumania", flag: "🇷🇴" },
+    { name: "Rusia", flag: "🇷🇺" },
+    { name: "San Marino", flag: "🇸🇲" },
+    { name: "Serbia", flag: "🇷🇸" },
+    { name: "Suecia", flag: "🇸🇪" },
+    { name: "Ucrania", flag: "🇺🇦" },
+    { name: "Vaticano", flag: "🇻🇦" },
+    { name: "Inglaterra", flag: "🏴󠁧󠁢󠁥󠁮󠁧󠁿" },
+    { name: "Gales", flag: "🏴󠁧󠁢󠁷󠁬󠁳󠁿" },
+
+    // Asia (resto)
+    { name: "Afganistán", flag: "🇦🇫" },
+    { name: "Arabia Saudita", flag: "🇸🇦" },
+    { name: "Baréin", flag: "🇧🇭" },
+    { name: "Bangladés", flag: "🇧🇩" },
+    { name: "Brunéi", flag: "🇧🇳" },
+    { name: "Bután", flag: "🇧🇹" },
+    { name: "Camboya", flag: "🇰🇭" },
+    { name: "Catar", flag: "🇶🇦" },
+    { name: "China", flag: "🇨🇳" },
+    { name: "Corea del Norte", flag: "🇰🇵" },
+    { name: "Corea del Sur", flag: "🇰🇷" },
+    { name: "Emiratos Árabes Unidos", flag: "🇦🇪" },
+    { name: "Filipinas", flag: "🇵🇭" },
+    { name: "India", flag: "🇮🇳" },
+    { name: "Indonesia", flag: "🇮🇩" },
+    { name: "Irak", flag: "🇮🇶" },
+    { name: "Irán", flag: "🇮🇷" },
+    { name: "Israel", flag: "🇮🇱" },
+    { name: "Jordania", flag: "🇯🇴" },
+    { name: "Kazajistán", flag: "🇰🇿" },
+    { name: "Kirguistán", flag: "🇰🇬" },
+    { name: "Kuwait", flag: "🇰🇼" },
+    { name: "Laos", flag: "🇱🇦" },
+    { name: "Líbano", flag: "🇱🇧" },
+    { name: "Malasia", flag: "🇲🇾" },
+    { name: "Maldivas", flag: "🇲🇻" },
+    { name: "Mongolia", flag: "🇲🇳" },
+    { name: "Birmania", flag: "🇲🇲" },
+    { name: "Nepal", flag: "🇳🇵" },
+    { name: "Omán", flag: "🇴🇲" },
+    { name: "Pakistán", flag: "🇵🇰" },
+    { name: "Palestina", flag: "🇵🇸" },
+    { name: "Singapur", flag: "🇸🇬" },
+    { name: "Siria", flag: "🇸🇾" },
+    { name: "Sri Lanka", flag: "🇱🇰" },
+    { name: "Tailandia", flag: "🇹🇭" },
+    { name: "Taiwán", flag: "🇹🇼" },
+    { name: "Tayikistán", flag: "🇹🇯" },
+    { name: "Timor Oriental", flag: "🇹🇱" },
+    { name: "Turkmenistán", flag: "🇹🇲" },
+    { name: "Turquía", flag: "🇹🇷" },
+    { name: "Uzbekistán", flag: "🇺🇿" },
+    { name: "Vietnam", flag: "🇻🇳" },
+    { name: "Yemen", flag: "🇾🇪" },
+
+    // África
+    { name: "Angola", flag: "🇦🇴" },
+    { name: "Argelia", flag: "🇩🇿" },
+    { name: "Benín", flag: "🇧🇯" },
+    { name: "Botsuana", flag: "🇧🇼" },
+    { name: "Burkina Faso", flag: "🇧🇫" },
+    { name: "Burundi", flag: "🇧🇮" },
+    { name: "Cabo Verde", flag: "🇨🇻" },
+    { name: "Camerún", flag: "🇨🇲" },
+    { name: "República Centroafricana", flag: "🇨🇫" },
+    { name: "Chad", flag: "🇹🇩" },
+    { name: "Comoras", flag: "🇰🇲" },
+    { name: "Congo", flag: "🇨🇬" },
+    { name: "República Democrática del Congo", flag: "🇨🇩" },
+    { name: "Costa de Marfil", flag: "🇨🇮" },
+    { name: "Egipto", flag: "🇪🇬" },
+    { name: "Eritrea", flag: "🇪🇷" },
+    { name: "Esuatini", flag: "🇸🇿" },
+    { name: "Etiopía", flag: "🇪🇹" },
+    { name: "Gabón", flag: "🇬🇦" },
+    { name: "Gambia", flag: "🇬🇲" },
+    { name: "Ghana", flag: "🇬🇭" },
+    { name: "Guinea", flag: "🇬🇳" },
+    { name: "Guinea-Bisáu", flag: "🇬🇼" },
+    { name: "Guinea Ecuatorial", flag: "🇬🇶" },
+    { name: "Kenia", flag: "🇰🇪" },
+    { name: "Lesoto", flag: "🇱🇸" },
+    { name: "Liberia", flag: "🇱🇷" },
+    { name: "Libia", flag: "🇱🇾" },
+    { name: "Madagascar", flag: "🇲🇬" },
+    { name: "Malaui", flag: "🇲🇼" },
+    { name: "Malí", flag: "🇲🇱" },
     { name: "Marruecos", flag: "🇲🇦" },
     { name: "Mauricio", flag: "🇲🇺" },
     { name: "Mauritania", flag: "🇲🇷" },
-    { name: "México", flag: "🇲🇽" },
-    { name: "Micronesia", flag: "🇫🇲" },
-    { name: "Moldavia", flag: "🇲🇩" },
-    { name: "Mónaco", flag: "🇲🇨" },
-    { name: "Mongolia", flag: "🇲🇳" },
-    { name: "Montenegro", flag: "🇲🇪" },
     { name: "Mozambique", flag: "🇲🇿" },
     { name: "Namibia", flag: "🇳🇦" },
-    { name: "Nauru", flag: "🇳🇷" },
-    { name: "Nepal", flag: "🇳🇵" },
-    { name: "Nicaragua", flag: "🇳🇮" },
     { name: "Níger", flag: "🇳🇪" },
     { name: "Nigeria", flag: "🇳🇬" },
-    { name: "Noruega", flag: "🇳🇴" },
-    { name: "Nueva Zelanda", flag: "🇳🇿" },
-    { name: "Omán", flag: "🇴🇲" },
-    { name: "Países Bajos", flag: "🇳🇱" },
-    { name: "Pakistán", flag: "🇵🇰" },
-    { name: "Palaos", flag: "🇵🇼" },
-    { name: "Palestina", flag: "🇵🇸" },
-    { name: "Panamá", flag: "🇵🇦" },
-    { name: "Papúa Nueva Guinea", flag: "🇵🇬" },
-    { name: "Paraguay", flag: "🇵🇾" },
-    { name: "Perú", flag: "🇵🇪" },
-    { name: "Polonia", flag: "🇵🇱" },
-    { name: "Portugal", flag: "🇵🇹" },
-    { name: "Puerto Rico", flag: "🇵🇷" },
-    { name: "Reino Unido", flag: "🇬🇧" },
-    { name: "República Centroafricana", flag: "🇨🇫" },
-    { name: "República Checa", flag: "🇨🇿" },
-    { name: "República del Congo", flag: "🇨🇬" },
-    { name: "República Democrática del Congo", flag: "🇨🇩" },
-    { name: "República Dominicana", flag: "🇩🇴" },
     { name: "Ruanda", flag: "🇷🇼" },
-    { name: "Rumanía", flag: "🇷🇴" },
-    { name: "Rusia", flag: "🇷🇺" },
-    { name: "Samoa", flag: "🇼🇸" },
-    { name: "San Cristóbal y Nieves", flag: "🇰🇳" },
-    { name: "San Marino", flag: "🇸🇲" },
-    { name: "San Vicente y las Granadinas", flag: "🇻🇨" },
-    { name: "Santa Lucía", flag: "🇱🇨" },
     { name: "Santo Tomé y Príncipe", flag: "🇸🇹" },
     { name: "Senegal", flag: "🇸🇳" },
-    { name: "Serbia", flag: "🇷🇸" },
     { name: "Seychelles", flag: "🇸🇨" },
     { name: "Sierra Leona", flag: "🇸🇱" },
-    { name: "Singapur", flag: "🇸🇬" },
-    { name: "Siria", flag: "🇸🇾" },
     { name: "Somalia", flag: "🇸🇴" },
-    { name: "Sri Lanka", flag: "🇱🇰" },
-    { name: "Esuatini (Suazilandia)", flag: "🇸🇿" },
     { name: "Sudáfrica", flag: "🇿🇦" },
     { name: "Sudán", flag: "🇸🇩" },
     { name: "Sudán del Sur", flag: "🇸🇸" },
-    { name: "Suecia", flag: "🇸🇪" },
-    { name: "Suiza", flag: "🇨🇭" },
-    { name: "Surinam", flag: "🇸🇷" },
-    { name: "Tailandia", flag: "🇹🇭" },
-    { name: "Taiwán", flag: "🇹🇼" },
     { name: "Tanzania", flag: "🇹🇿" },
-    { name: "Tayikistán", flag: "🇹🇯" },
-    { name: "Timor Oriental", flag: "🇹🇱" },
     { name: "Togo", flag: "🇹🇬" },
-    { name: "Tonga", flag: "🇹🇴" },
-    { name: "Trinidad y Tobago", flag: "🇹🇹" },
     { name: "Túnez", flag: "🇹🇳" },
-    { name: "Turkmenistán", flag: "🇹🇲" },
-    { name: "Turquía", flag: "🇹🇷" },
-    { name: "Tuvalu", flag: "🇹🇻" },
-    { name: "Ucrania", flag: "🇺🇦" },
     { name: "Uganda", flag: "🇺🇬" },
-    { name: "Uruguay", flag: "🇺🇾" },
-    { name: "Uzbekistán", flag: "🇺🇿" },
-    { name: "Vanuatu", flag: "🇻🇺" },
-    { name: "Venezuela", flag: "🇻🇪" },
-    { name: "Vietnam", flag: "🇻🇳" },
-    { name: "Yemen", flag: "🇾🇪" },
     { name: "Yibuti", flag: "🇩🇯" },
     { name: "Zambia", flag: "🇿🇲" },
     { name: "Zimbabue", flag: "🇿🇼" },
+
+    // Oceanía
+    { name: "Fiyi", flag: "🇫🇯" },
+    { name: "Islas Marshall", flag: "🇲🇭" },
+    { name: "Islas Salomón", flag: "🇸🇧" },
+    { name: "Kiribati", flag: "🇰🇮" },
+    { name: "Micronesia", flag: "🇫🇲" },
+    { name: "Nauru", flag: "🇳🇷" },
+    { name: "Nueva Zelanda", flag: "🇳🇿" },
+    { name: "Palaos", flag: "🇵🇼" },
+    { name: "Papúa Nueva Guinea", flag: "🇵🇬" },
+    { name: "Samoa", flag: "🇼🇸" },
+    { name: "Tonga", flag: "🇹🇴" },
+    { name: "Tuvalu", flag: "🇹🇻" },
+    { name: "Vanuatu", flag: "🇻🇺" },
+
     { name: "Sin Bandera / Genérico", flag: "🏁" }
 ];
 
-const COUNTRY_NAMES_BY_FLAG = {};
-OFFICIAL_COUNTRY_FLAGS.forEach(c => {
-    COUNTRY_NAMES_BY_FLAG[c.flag] = c.name;
-});
+function getCountryCodeFromEmoji(emoji) {
+    if (!emoji || emoji === "🏁") return null;
+    if (emoji === "🏴󠁧󠁢󠁳󠁣󠁴󠁿") return "gb-sct";
+    if (emoji === "🇪🇺") return "eu";
+    const chars = [...emoji];
+    if (chars.length !== 2) return null;
+    const code = chars.map(c => String.fromCharCode(c.codePointAt(0) - 127397)).join('').toLowerCase();
+    return code.length === 2 ? code : null;
+}
+
+function getDriverFlagHtml(driverName, size = 18) {
+    const flagEmoji = (typeof getOfficialDriverFlag === "function") ? getOfficialDriverFlag(driverName) : "🏁";
+    const code = getCountryCodeFromEmoji(flagEmoji);
+    if (code) {
+        return `<img src="https://flagcdn.com/w40/${code}.png" class="driver-flag-img" alt="${code}" width="${size}" height="${Math.round(size * 0.75)}" onerror="this.outerHTML='<span class=\\'driver-flag-emoji\\'>${flagEmoji}</span>'">`;
+    }
+    return `<span class="driver-flag-emoji">${flagEmoji || "🏁"}</span>`;
+}
+
+const COUNTRY_NAMES_BY_FLAG = {
+    "🇪🇸": "España",
+    "🇵🇹": "Portugal",
+    "🇦🇷": "Argentina",
+    "🇨🇴": "Colombia",
+    "🇧🇷": "Brasil",
+    "🇨🇭": "Suiza",
+    "🏴󠁧󠁢󠁳󠁣󠁴󠁿": "Escocia",
+    "🇬🇧": "Reino Unido",
+    "🇧🇬": "Bulgaria",
+    "🇯🇵": "Japón",
+    "🇮🇹": "Italia",
+    "🇨🇿": "República Checa",
+    "🇳🇬": "Nigeria",
+    "🇦🇹": "Austria",
+    "🇹🇷": "Turquía",
+    "🇷🇺": "Rusia",
+    "🇫🇷": "Francia",
+    "🇲🇽": "México",
+    "🇨🇱": "Chile",
+    "🇺🇾": "Uruguay",
+    "🇵🇪": "Perú",
+    "🇺🇸": "Estados Unidos",
+    "🇩🇪": "Alemania",
+    "🏁": "Internacional / FFC"
+};
 
 function getCountryNameByFlag(flag) {
     if (!flag) return "Internacional / FFC";
-    return COUNTRY_NAMES_BY_FLAG[flag] || "Oficial FIA / FFC";
+    if (COUNTRY_NAMES_BY_FLAG[flag]) return COUNTRY_NAMES_BY_FLAG[flag];
+    const found = OFFICIAL_COUNTRY_FLAGS.find(c => c.flag === flag);
+    return found ? found.name : "Oficial FIA / FFC";
+}
+
+function extractFlagFromCountryString(str) {
+    if (!str) return "🏁";
+    const trimmed = str.trim();
+    if (trimmed === "🏴󠁧󠁢󠁳󠁣󠁴󠁿") return "🏴󠁧󠁢󠁳󠁣󠁴󠁿";
+    const regMatch = trimmed.match(/^[\u{1F1E6}-\u{1F1FF}]{2}/u);
+    if (regMatch) return regMatch[0];
+    if (trimmed.startsWith("🏴󠁧󠁢󠁳󠁣󠁴󠁿")) return "🏴󠁧󠁢󠁳󠁣󠁴󠁿";
+    const surrogateMatch = trimmed.match(/^[\uD800-\uDBFF][\uDC00-\uDFFF]/);
+    if (surrogateMatch) return surrogateMatch[0];
+    for (const c of OFFICIAL_COUNTRY_FLAGS) {
+        if (trimmed.includes(c.flag)) return c.flag;
+        if (trimmed.toLowerCase() === c.name.toLowerCase()) return c.flag;
+    }
+    return trimmed.substring(0, 2) || "🏁";
+}
+
+function initAllCountriesDatalist() {
+    let datalist = document.getElementById("allCountriesDatalist");
+    if (!datalist) {
+        datalist = document.createElement("datalist");
+        datalist.id = "allCountriesDatalist";
+        document.body.appendChild(datalist);
+    }
+    datalist.innerHTML = OFFICIAL_COUNTRY_FLAGS.map(c => 
+        `<option value="${c.flag} ${c.name}">${c.flag} ${c.name}</option>`
+    ).join("");
 }
 
 function getOfficialDriverRank(driverName) {
@@ -4171,10 +4236,11 @@ function initDriverStatsModal() {
 
     // Delegated click handler on the entire document for any element with data-driver or round card
     document.addEventListener("click", (e) => {
-        // Do not open driver cards or team modals when interacting inside the Admin Panel or Admin Modals
-        if (e.target.closest("#adminPanelOverlay, .admin-panel-overlay, .admin-panel, #adminPanelModal")) {
+        // Prevent opening driver card if click is within the admin panel, overlay, or admin tables
+        if (e.target.closest("#adminPanelOverlay, .admin-panel-card, #adminDriversTableBody, .admin-table, .admin-panel, .admin-tab-pane, .admin-add-driver-card")) {
             return;
         }
+
         // Direct redirection if clicking a round card inside the modal
         const roundCard = e.target.closest(".round-card-mini, [data-race-round]");
         if (roundCard) {
@@ -4702,11 +4768,13 @@ function initTeamStatsModal() {
 // Initialize modals on script load / DOM ready
 if (document.readyState === "loading") {
     document.addEventListener("DOMContentLoaded", () => {
+        initAllCountriesDatalist();
         initStandingsViewTabs();
         initDriverStatsModal();
         initTeamStatsModal();
     });
 } else {
+    initAllCountriesDatalist();
     initStandingsViewTabs();
     initDriverStatsModal();
     initTeamStatsModal();
@@ -5537,13 +5605,13 @@ function renderAdminDriversTab(filterText = "") {
     const lowerFilter = (filterText || "").trim().toLowerCase();
     const filtered = lowerFilter
         ? roster.filter(r => {
+            const driverMatches = r.driver.toLowerCase().includes(lowerFilter);
+            const teamMatches = r.team.toLowerCase().includes(lowerFilter);
             const flag = r.flag || getOfficialDriverFlag(r.driver);
-            const countryName = getCountryNameByFlag(flag) || "";
-            return r.driver.toLowerCase().includes(lowerFilter) ||
-                   r.team.toLowerCase().includes(lowerFilter) ||
-                   flag.toLowerCase().includes(lowerFilter) ||
-                   countryName.toLowerCase().includes(lowerFilter);
-          })
+            const countryName = getCountryNameByFlag(flag);
+            const countryMatches = countryName.toLowerCase().includes(lowerFilter);
+            return driverMatches || teamMatches || countryMatches;
+        })
         : roster;
 
     filtered.forEach((item, index) => {
@@ -5569,24 +5637,21 @@ function renderAdminDriversTab(filterText = "") {
             teamOptions += `<option value="${escapeHtml(team)}" ${isSelected ? "selected" : ""}>${escapeHtml(team)}</option>`;
         });
 
-        let flagOptions = "";
-        let matchedFlag = false;
-        OFFICIAL_COUNTRY_FLAGS.forEach(c => {
-            const isSelected = effectiveFlag === c.flag;
-            if (isSelected) matchedFlag = true;
-            flagOptions += `<option value="${c.flag}" ${isSelected ? "selected" : ""}>${c.flag} ${escapeHtml(c.name)}</option>`;
-        });
-        if (!matchedFlag && effectiveFlag && effectiveFlag !== "🏁") {
-            flagOptions = `<option value="${escapeHtml(effectiveFlag)}" selected>${escapeHtml(effectiveFlag)} Personalizada</option>` + flagOptions;
-        }
+        const flagName = getCountryNameByFlag(effectiveFlag);
+        const flagDisplayVal = effectiveFlag && flagName ? `${effectiveFlag} ${flagName}` : (effectiveFlag || "🏁 Genérico");
 
         tr.innerHTML = `
             <td style="font-weight: bold; color: var(--gold); text-align: center;">${actualIndex + 1}</td>
             <td style="font-weight: 600; color: #fff;">${escapeHtml(item.driver)}</td>
             <td>
-                <select class="admin-pilot-flag-select" data-pilot-id="${pilotId}" data-driver="${escapeHtml(item.driver)}">
-                    ${flagOptions}
-                </select>
+                <input type="text" class="admin-pilot-flag-select admin-select" 
+                       list="allCountriesDatalist" 
+                       data-pilot-id="${pilotId}" 
+                       data-driver="${escapeHtml(item.driver)}" 
+                       value="${escapeHtml(flagDisplayVal)}"
+                       style="width: 100%;"
+                       placeholder="🔍 Buscar país..."
+                       autocomplete="off">
             </td>
             <td>
                 <select class="admin-pilot-team-select" data-pilot-id="${pilotId}" data-driver="${escapeHtml(item.driver)}">
@@ -5606,12 +5671,15 @@ function renderAdminDriversTab(filterText = "") {
                 pilotId,
                 driver: item.driver,
                 team: teamSelect ? teamSelect.value : effectiveTeam,
-                flag: flagSelect ? flagSelect.value : effectiveFlag
+                flag: flagSelect ? extractFlagFromCountryString(flagSelect.value) : effectiveFlag
             });
         };
 
         if (teamSelect) teamSelect.addEventListener("change", syncPending);
-        if (flagSelect) flagSelect.addEventListener("change", syncPending);
+        if (flagSelect) {
+            flagSelect.addEventListener("change", syncPending);
+            flagSelect.addEventListener("input", syncPending);
+        }
 
         adminDriversTableBody.appendChild(tr);
     });
@@ -6657,7 +6725,7 @@ if (adminSaveDriversBtn) {
                 const pilotId = teamSel.dataset.pilotId || getPilotDocId(teamSel.dataset.driver);
                 const driverName = teamSel.dataset.driver;
                 const newTeam = teamSel.value;
-                const newFlag = flagSel ? flagSel.value : "🏁";
+                const newFlag = flagSel ? extractFlagFromCountryString(flagSel.value) : "🏁";
                 if (pilotId && driverName) {
                     pendingTeamChanges.set(pilotId, { pilotId, driver: driverName, team: newTeam, flag: newFlag });
                 }
@@ -6733,7 +6801,7 @@ if (adminNewPilotForm) {
         const flagSelect = document.getElementById("newPilotFlag");
         const name = nameInput ? nameInput.value.trim() : "";
         const team = teamSelect ? teamSelect.value : "HRT";
-        const flag = flagSelect ? flagSelect.value : "🇪🇸";
+        const flag = flagSelect ? extractFlagFromCountryString(flagSelect.value) : "🇪🇸";
 
         if (!name) return;
 
@@ -6778,55 +6846,6 @@ if (adminSearchPilotInput) {
     adminSearchPilotInput.addEventListener("input", () => {
         renderAdminDriversTab(adminSearchPilotInput.value);
     });
-}
-
-function initAdminCountrySelects() {
-    const newPilotFlag = document.getElementById("newPilotFlag");
-    const datalist = document.getElementById("worldCountriesDatalist");
-    const flagSearchInput = document.getElementById("newPilotFlagSearch");
-
-    if (newPilotFlag) {
-        let opts = "";
-        OFFICIAL_COUNTRY_FLAGS.forEach(c => {
-            opts += `<option value="${c.flag}">${c.flag} ${escapeHtml(c.name)}</option>`;
-        });
-        newPilotFlag.innerHTML = opts;
-    }
-
-    if (datalist) {
-        let datalistOpts = "";
-        OFFICIAL_COUNTRY_FLAGS.forEach(c => {
-            datalistOpts += `<option value="${c.flag} ${c.name}">${c.name}</option>`;
-        });
-        datalist.innerHTML = datalistOpts;
-    }
-
-    if (flagSearchInput && newPilotFlag) {
-        flagSearchInput.addEventListener("input", () => {
-            const val = flagSearchInput.value.trim().toLowerCase();
-            if (!val) return;
-            const match = OFFICIAL_COUNTRY_FLAGS.find(c =>
-                c.name.toLowerCase().includes(val) ||
-                c.flag.includes(val) ||
-                `${c.flag} ${c.name}`.toLowerCase().includes(val)
-            );
-            if (match) {
-                newPilotFlag.value = match.flag;
-            }
-        });
-
-        newPilotFlag.addEventListener("change", () => {
-            const match = OFFICIAL_COUNTRY_FLAGS.find(c => c.flag === newPilotFlag.value);
-            if (match) {
-                flagSearchInput.value = `${match.flag} ${match.name}`;
-            }
-        });
-    }
-}
-
-document.addEventListener("DOMContentLoaded", initAdminCountrySelects);
-if (document.readyState === "complete" || document.readyState === "interactive") {
-    initAdminCountrySelects();
 }
 
 // Toggle Standings Rows (Top 10 vs Full) with Smooth Animations

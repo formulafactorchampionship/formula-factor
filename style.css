@@ -644,15 +644,15 @@ button {
     gap: 6px;
     height: 34px;
     padding: 0 13px;
-    background: linear-gradient(135deg, rgba(214, 180, 92, 0.15), rgba(214, 180, 92, 0.05));
-    border: 1px solid rgba(214, 180, 92, 0.35);
+    background: rgba(214, 180, 92, 0.04);
+    border: 1px solid rgba(214, 180, 92, 0.25);
     color: var(--gold-light, #f5e4b2);
     font-family: "Barlow Condensed", sans-serif;
     font-weight: 800;
     font-size: 12.5px;
     letter-spacing: 0.8px;
     cursor: pointer;
-    border-radius: 6px;
+    border-radius: 4px; /* Crisp corners */
     transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
     text-transform: uppercase;
     white-space: nowrap;
@@ -663,7 +663,7 @@ button {
     background: var(--gold, #d6b45c);
     border-color: var(--gold, #d6b45c);
     color: #06080d;
-    box-shadow: 0 0 14px rgba(214, 180, 92, 0.35);
+    box-shadow: none;
     transform: translateY(-1px);
 }
 
@@ -685,31 +685,32 @@ button {
 
 /* Logged in state for header button */
 .auth-header-btn.is-logged-in {
-    background: rgba(214, 180, 92, 0.12);
-    border-color: rgba(214, 180, 92, 0.4);
+    background: rgba(214, 180, 92, 0.05);
+    border-color: rgba(214, 180, 92, 0.3);
     color: #ffffff;
     padding: 0 11px;
 }
 
 .auth-header-btn.is-logged-in:hover {
-    background: rgba(214, 180, 92, 0.22);
+    background: rgba(214, 180, 92, 0.15);
     border-color: var(--gold, #d6b45c);
     color: #ffffff;
 }
 
 .user-header-avatar {
-    width: 20px;
-    height: 20px;
-    border-radius: 50%;
-    background: linear-gradient(135deg, var(--gold), var(--gold-light));
-    color: #05070a;
+    width: 22px;
+    height: 22px;
+    border-radius: 3px; /* Match crisp style */
+    background: #0d121d;
+    border: 1px solid var(--gold);
+    color: var(--gold);
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    font-size: 10px;
+    font-size: 10.5px;
     font-weight: 900;
     font-family: "Barlow Condensed", sans-serif;
-    box-shadow: 0 0 6px rgba(214, 180, 92, 0.4);
+    box-shadow: none;
     flex-shrink: 0;
 }
 
@@ -734,64 +735,65 @@ button {
     border-color: rgba(214, 180, 92, 0.4);
 }
 
-/* User Profile Menu (Dropdown) */
+/* User Profile Menu (Dropdown) - Formal Executive Redesign */
 .user-profile-menu {
-    min-width: 280px;
-    max-width: 320px;
-    padding: 12px;
-    background: #080c14;
-    border: 1px solid rgba(214, 180, 92, 0.4);
-    border-radius: 10px;
-    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.9), 0 0 25px rgba(214, 180, 92, 0.12);
+    min-width: 320px;
+    max-width: 340px;
+    padding: 20px;
+    background: #06090e; /* Obsidian Black */
+    border: 1px solid rgba(214, 180, 92, 0.25); /* Ultra-fine gold border */
+    border-radius: 4px; /* Crisp technical corners */
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.95);
 }
 
 .user-profile-header-card {
     display: flex;
     align-items: center;
-    gap: 12px;
-    padding: 6px 6px 12px 6px;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-    margin-bottom: 10px;
+    gap: 16px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    margin-bottom: 16px;
 }
 
 .user-profile-avatar-large {
-    width: 48px;
-    height: 48px;
-    border-radius: 50%;
-    background: linear-gradient(135deg, var(--gold, #d6b45c), #e10600);
-    color: #ffffff;
+    width: 52px;
+    height: 52px;
+    border-radius: 4px; /* Crisp technical style */
+    background: linear-gradient(135deg, #0e1420, #080c14);
+    color: var(--gold, #d6b45c);
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 20px;
+    font-size: 22px;
     font-weight: 900;
     font-family: "Barlow Condensed", sans-serif;
-    box-shadow: 0 0 12px rgba(214, 180, 92, 0.4);
     flex-shrink: 0;
-    border: 2px solid rgba(255, 255, 255, 0.2);
+    border: 1px solid rgba(214, 180, 92, 0.4);
 }
 
 .user-profile-meta-card {
     display: flex;
     flex-direction: column;
-    gap: 2px;
+    gap: 3px;
     overflow: hidden;
 }
 
 .user-profile-name-card {
     font-family: "Barlow Condensed", sans-serif;
-    font-size: 17px;
-    font-weight: 800;
+    font-size: 20px;
+    font-weight: 900;
     letter-spacing: 0.5px;
     color: #ffffff;
+    text-transform: uppercase;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
 }
 
 .user-profile-email-card {
-    font-size: 11px;
-    color: #94a3b8;
+    font-size: 11.5px;
+    color: #64748b;
+    font-family: "Inter", sans-serif;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -800,146 +802,158 @@ button {
 .user-profile-status-pill {
     font-family: "Barlow Condensed", sans-serif;
     font-size: 9px;
-    font-weight: 800;
-    letter-spacing: 1px;
-    padding: 2px 6px;
-    border-radius: 10px;
-    background: rgba(16, 185, 129, 0.15);
-    border: 1px solid rgba(16, 185, 129, 0.4);
+    font-weight: 900;
+    letter-spacing: 1.5px;
+    padding: 2px 8px;
+    border-radius: 2px;
+    background: rgba(16, 185, 129, 0.08);
+    border: 1px solid rgba(16, 185, 129, 0.25);
     color: #10b981;
     align-self: flex-start;
-    margin-top: 2px;
+    margin-top: 4px;
+    text-transform: uppercase;
 }
 
 .user-profile-blocks {
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: 16px;
 }
 
+/* Flatten hierarchy: seamless boxes instead of card-in-card */
 .profile-section-box {
-    background: #0d121d;
-    border: 1px solid rgba(255, 255, 255, 0.12);
-    border-radius: 8px;
-    padding: 10px 12px;
+    background: transparent;
+    border: none;
+    padding: 0;
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    gap: 12px;
 }
 
 .box-header-tag {
     display: flex;
     align-items: center;
-    gap: 6px;
-    padding-bottom: 4px;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    gap: 8px;
+    padding-bottom: 6px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    margin-bottom: 4px;
+}
+
+.box-header-icon {
+    font-size: 13px;
+    opacity: 0.8;
 }
 
 .box-header-title {
     font-family: "Barlow Condensed", sans-serif;
-    font-size: 12px;
+    font-size: 11px;
     font-weight: 900;
     color: var(--gold, #d6b45c);
-    letter-spacing: 1px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
 }
 
 .settings-items-list {
     display: flex;
     flex-direction: column;
-    gap: 6px;
+    gap: 8px;
 }
 
 .setting-row-btn {
     width: 100%;
-    padding: 8px 10px;
-    border-radius: 6px;
+    padding: 10px 14px;
+    border-radius: 4px;
     font-family: "Barlow Condensed", sans-serif;
-    font-size: 12px;
-    font-weight: 800;
-    letter-spacing: 0.5px;
+    font-size: 12.5px;
+    font-weight: 900;
+    letter-spacing: 1px;
+    text-transform: uppercase;
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 6px;
+    gap: 8px;
     cursor: pointer;
     transition: all 0.2s ease;
     box-sizing: border-box;
 }
 
 .setting-row-btn.unlink-btn {
-    background: rgba(239, 68, 68, 0.12);
-    border: 1px solid rgba(239, 68, 68, 0.35);
+    background: rgba(239, 68, 68, 0.04);
+    border: 1px solid rgba(239, 68, 68, 0.2);
     color: #f87171;
 }
 
 .setting-row-btn.unlink-btn:hover {
-    background: rgba(239, 68, 68, 0.25);
+    background: #ef4444;
     border-color: #ef4444;
     color: #ffffff;
 }
 
 .setting-row-btn.admin-btn {
-    background: rgba(214, 180, 92, 0.12);
-    border: 1px solid rgba(214, 180, 92, 0.35);
+    background: rgba(214, 180, 92, 0.04);
+    border: 1px solid rgba(214, 180, 92, 0.25);
     color: var(--gold, #d6b45c);
 }
 
 .setting-row-btn.admin-btn:hover {
-    background: rgba(214, 180, 92, 0.25);
+    background: var(--gold, #d6b45c);
     border-color: var(--gold, #d6b45c);
-    color: #ffffff;
+    color: #000000;
 }
 
 .setting-row-btn.logout-btn {
-    background: rgba(225, 6, 0, 0.15);
-    border: 1px solid rgba(225, 6, 0, 0.4);
-    color: #ffffff;
+    background: rgba(239, 68, 68, 0.05);
+    border: 1px solid rgba(239, 68, 68, 0.2);
+    color: #f87171;
 }
 
 .setting-row-btn.logout-btn:hover {
-    background: #e10600;
-    box-shadow: 0 0 10px rgba(225, 6, 0, 0.4);
+    background: #ef4444;
+    border-color: #ef4444;
+    color: #ffffff;
 }
 
 .setting-row-item {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 6px 8px;
-    background: rgba(0, 0, 0, 0.25);
-    border-radius: 6px;
-    font-size: 11.5px;
-    color: #cbd5e1;
+    padding: 8px 10px;
+    background: #090e16;
+    border: 1px solid rgba(255, 255, 255, 0.04);
+    border-radius: 4px;
+    font-size: 12px;
+    color: #94a3b8;
 }
 
 .setting-lang-opts {
     display: flex;
-    gap: 4px;
+    gap: 6px;
 }
 
 .lang-mini-btn {
     background: #06090e;
-    border: 1px solid rgba(255, 255, 255, 0.15);
-    color: #8c929c;
-    font-size: 10px;
-    font-weight: 700;
-    padding: 2px 6px;
-    border-radius: 4px;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    color: #64748b;
+    font-size: 10.5px;
+    font-weight: 800;
+    padding: 3px 8px;
+    border-radius: 3px;
     cursor: pointer;
+    transition: all 0.2s ease;
 }
 
 .lang-mini-btn.active, .lang-mini-btn:hover {
     border-color: var(--gold, #d6b45c);
     color: #ffffff;
-    background: rgba(214, 180, 92, 0.2);
+    background: rgba(214, 180, 92, 0.1);
 }
 
 /* Setting Row - Timezone in Profile */
 .setting-row-item.setting-row-tz {
     flex-direction: column;
     align-items: stretch;
-    gap: 6px;
-    padding: 7px 8px;
+    gap: 8px;
+    padding: 10px 10px;
 }
 
 .setting-tz-header {
@@ -947,7 +961,7 @@ button {
     align-items: center;
     justify-content: space-between;
     gap: 8px;
-    font-size: 11.5px;
+    font-size: 12px;
     color: #cbd5e1;
 }
 
@@ -1089,19 +1103,56 @@ button {
     border-top: 1px solid rgba(255, 255, 255, 0.08);
 }
 
+.btn-customize-card-trigger {
+    font-family: "Barlow Condensed", sans-serif;
+    font-size: 12px;
+    font-weight: 900;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+    background: var(--gold, #d6b45c);
+    color: #000000 !important;
+    border: 1px solid var(--gold, #d6b45c);
+    border-radius: 4px;
+    padding: 10px 14px;
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    box-sizing: border-box;
+}
+
+.btn-customize-card-trigger:hover {
+    background: #e5c77a;
+    border-color: #e5c77a;
+    transform: translateY(-1px);
+}
+
+.btn-customize-card-trigger.btn-view-my-card {
+    background: rgba(255, 255, 255, 0.04) !important;
+    border: 1px solid rgba(255, 255, 255, 0.12) !important;
+    color: #cbd5e1 !important;
+}
+
+.btn-customize-card-trigger.btn-view-my-card:hover {
+    border-color: var(--gold, #d6b45c) !important;
+    color: #ffffff !important;
+}
+
 .user-logout-btn {
     width: 100%;
     display: flex;
     align-items: center;
     justify-content: center;
     gap: 8px;
-    padding: 9px 12px;
-    background: rgba(239, 68, 68, 0.1);
-    border: 1px solid rgba(239, 68, 68, 0.3);
+    padding: 10px 14px;
+    background: rgba(239, 68, 68, 0.04);
+    border: 1px solid rgba(239, 68, 68, 0.2);
     color: #f87171;
     font-family: "Barlow Condensed", sans-serif;
     font-size: 12.5px;
-    font-weight: 800;
+    font-weight: 900;
     letter-spacing: 1px;
     text-transform: uppercase;
     border-radius: 4px;
@@ -1113,7 +1164,7 @@ button {
     background: #ef4444;
     border-color: #ef4444;
     color: #ffffff;
-    box-shadow: 0 0 12px rgba(239, 68, 68, 0.35);
+    box-shadow: none;
 }
 
 .menu-btn {
@@ -1878,31 +1929,23 @@ button {
 .count-box {
     padding: 16px 8px 14px 8px;
     background: #080b12;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.07);
+    border-radius: 10px;
     text-align: center;
     transition: transform 0.2s ease, border-color 0.2s ease, background 0.2s ease;
-    box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.5);
+    box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.4);
 }
 
 .count-box:hover {
     transform: translateY(-2px);
-    border-color: rgba(214, 180, 92, 0.4);
+    border-color: rgba(214, 180, 92, 0.35);
     background: #0d121c;
-}
-
-.count-flap-wrapper {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 76px;
-    margin-bottom: 6px;
 }
 
 .count-box strong {
     display: block;
     font-family: "Barlow Condensed", sans-serif;
-    font-size: 52px;
+    font-size: 32px;
     font-weight: 900;
     line-height: 1;
     color: #ffffff;
@@ -1916,33 +1959,13 @@ button {
 
 .count-box span {
     display: block;
-    margin-top: 8px;
+    margin-top: 6px;
     font-family: "Barlow Condensed", sans-serif;
-    font-size: 12px;
+    font-size: 11px;
     font-weight: 800;
-    color: #8a99ad;
-    letter-spacing: 1.8px;
+    color: #697585;
+    letter-spacing: 1.5px;
     text-transform: uppercase;
-}
-
-@media (max-width: 768px) {
-    .count-flap-wrapper {
-        min-height: 52px;
-    }
-    .count-flap-wrapper .split-flap-text {
-        --split-flap-font-size: 38px !important;
-        --split-flap-gap: 4px !important;
-    }
-}
-
-@media (max-width: 480px) {
-    .count-flap-wrapper {
-        min-height: 44px;
-    }
-    .count-flap-wrapper .split-flap-text {
-        --split-flap-font-size: 30px !important;
-        --split-flap-gap: 3px !important;
-    }
 }
 
 .next-race-time-row {
@@ -7241,107 +7264,108 @@ footer {
 }
 
 /* =========================================================
-   USER DRIVER CLAIM & VERIFICATION SYSTEM
+   USER DRIVER CLAIM & VERIFICATION SYSTEM - FORMAL REDESIGN
 ========================================================= */
 
 .user-claim-box {
-    margin-top: 10px;
-    padding: 10px;
-    background: rgba(15, 23, 36, 0.9);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 6px;
+    margin-top: 8px;
+    padding: 0;
+    background: transparent;
+    border: none;
+    border-radius: 0;
 }
 
 .claim-notice-banner {
     display: flex;
-    gap: 8px;
+    gap: 12px;
     align-items: flex-start;
-    margin-bottom: 8px;
-    background: rgba(225, 6, 0, 0.08);
-    border: 1px dashed rgba(225, 6, 0, 0.3);
-    padding: 8px;
-    border-radius: 5px;
+    margin-bottom: 12px;
+    background: rgba(225, 6, 0, 0.02);
+    border: 1px dashed rgba(225, 6, 0, 0.2);
+    padding: 12px;
+    border-radius: 4px;
 }
 
 .claim-icon {
-    font-size: 16px;
+    font-size: 18px;
     line-height: 1;
-    margin-top: 2px;
+    margin-top: 1px;
 }
 
 .claim-notice-info strong {
     display: block;
     font-family: "Barlow Condensed", sans-serif;
-    font-size: 13px;
-    font-weight: 800;
+    font-size: 13.5px;
+    font-weight: 900;
     color: #ffffff;
     letter-spacing: 0.5px;
 }
 
 .claim-notice-info p {
     font-size: 11px;
-    color: #a0a6b2;
-    margin: 2px 0 0 0;
-    line-height: 1.35;
+    color: #94a3b8;
+    margin: 4px 0 0 0;
+    line-height: 1.45;
 }
 
 .claim-notice-info p strong {
     display: inline;
-    color: #ff4d4d;
-    font-weight: 700;
+    color: #ff5252;
+    font-weight: 800;
 }
 
 .claim-discord-ticket-btn {
     display: inline-flex;
     align-items: center;
-    gap: 7px;
-    margin-top: 6px;
-    background: #5865f2;
-    color: #ffffff !important;
+    gap: 8px;
+    margin-top: 8px;
+    background: rgba(88, 101, 242, 0.08);
+    border: 1px solid rgba(88, 101, 242, 0.25);
+    color: #8e92f2 !important;
     text-decoration: none;
     font-family: "Barlow Condensed", sans-serif;
     font-size: 11.5px;
-    font-weight: 800;
-    letter-spacing: 0.6px;
-    padding: 5px 10px;
+    font-weight: 900;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+    padding: 6px 12px;
     border-radius: 4px;
-    box-shadow: 0 2px 8px rgba(88, 101, 242, 0.4);
     transition: all 0.2s ease;
 }
 
 .claim-discord-ticket-btn:hover {
-    background: #4752c4;
-    transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(88, 101, 242, 0.6);
+    background: #5865f2;
     color: #ffffff !important;
 }
 
 .claim-step-label {
     font-family: "Barlow Condensed", sans-serif;
-    font-size: 10px;
-    font-weight: 800;
-    letter-spacing: 0.8px;
-    color: #a0a6b2;
-    margin-top: 2px;
+    font-size: 10.5px;
+    font-weight: 900;
+    letter-spacing: 1px;
+    color: #64748b;
+    margin-bottom: 4px;
+    display: block;
+    text-transform: uppercase;
 }
 
 .user-claim-form {
     display: flex;
     flex-direction: column;
-    gap: 6px;
+    gap: 8px;
 }
 
 .claim-input-group {
     display: flex;
-    gap: 6px;
+    gap: 8px;
 }
 
 .claim-input-group input {
     flex: 1;
-    background: #06090e;
-    border: 1px solid rgba(255, 255, 255, 0.18);
+    background: #080d14;
+    border: 1px solid rgba(255, 255, 255, 0.08);
     color: #ffffff;
-    padding: 6px 10px;
+    padding: 8px 12px;
     font-family: "Barlow Condensed", sans-serif;
     font-size: 13px;
     font-weight: 700;
@@ -7352,8 +7376,7 @@ footer {
 
 .claim-input-group input:focus {
     outline: none;
-    border-color: #e10600;
-    box-shadow: 0 0 8px rgba(225, 6, 0, 0.4);
+    border-color: var(--gold, #d6b45c);
 }
 
 .claim-notice-msg {
@@ -7361,22 +7384,22 @@ footer {
     font-weight: 600;
     line-height: 1.3;
     display: block;
-    margin-top: 2px;
+    margin-top: 4px;
 }
 
 /* Verified Card inside User Profile */
 .verified-card-inner {
     display: flex;
     align-items: center;
-    gap: 10px;
-    background: rgba(16, 185, 129, 0.1);
-    border: 1px solid rgba(16, 185, 129, 0.35);
-    padding: 8px 10px;
-    border-radius: 5px;
+    gap: 12px;
+    background: rgba(16, 185, 129, 0.02);
+    border: 1px solid rgba(16, 185, 129, 0.2);
+    padding: 12px;
+    border-radius: 4px;
 }
 
 .verified-check {
-    font-size: 18px;
+    font-size: 20px;
 }
 
 .verified-info {
@@ -7387,31 +7410,33 @@ footer {
 
 .verified-tag {
     font-family: "Barlow Condensed", sans-serif;
-    font-size: 9.5px;
+    font-size: 10px;
     font-weight: 900;
     color: #10b981;
-    letter-spacing: 1px;
+    letter-spacing: 1.5px;
 }
 
 .verified-name {
     font-family: "Barlow Condensed", sans-serif;
-    font-size: 16px;
-    font-weight: 800;
+    font-size: 18px;
+    font-weight: 900;
     color: #ffffff;
     letter-spacing: 0.5px;
     line-height: 1.1;
 }
 
 .verified-team {
-    font-size: 11px;
+    font-family: "Barlow Condensed", sans-serif;
+    font-size: 12px;
     color: var(--gold, #d6b45c);
-    font-weight: 600;
+    font-weight: 800;
+    letter-spacing: 0.5px;
 }
 
 .btn-unlink-icon {
     background: none;
     border: none;
-    color: #8c929c;
+    color: #64748b;
     font-size: 13px;
     cursor: pointer;
     padding: 4px;
@@ -7421,7 +7446,7 @@ footer {
 
 .btn-unlink-icon:hover {
     color: #ff4d4d;
-    background: rgba(255, 77, 77, 0.15);
+    background: rgba(255, 77, 77, 0.1);
 }
 
 /* ADMIN VERIFICATION STYLES */

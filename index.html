@@ -13,7 +13,6 @@
 
     <link rel="stylesheet" href="style.css?v=20260918_v3">
     <link rel="stylesheet" href="BorderGlow.css">
-    <link rel="stylesheet" href="SplitFlapText.css">
     <script>
         // Early instant hook for FFC Fantasy Portal
         window.openFantasyPortal = function() {
@@ -459,30 +458,22 @@
             <div class="countdown">
 
                 <div class="count-box">
-                    <div class="count-flap-wrapper" id="days-flap">
-                        <strong id="days">00</strong>
-                    </div>
+                    <strong id="days">00</strong>
                     <span id="labelDays">DÍAS</span>
                 </div>
 
                 <div class="count-box">
-                    <div class="count-flap-wrapper" id="hours-flap">
-                        <strong id="hours">00</strong>
-                    </div>
+                    <strong id="hours">00</strong>
                     <span id="labelHours">HRS</span>
                 </div>
 
                 <div class="count-box">
-                    <div class="count-flap-wrapper" id="mins-flap">
-                        <strong id="mins">00</strong>
-                    </div>
+                    <strong id="mins">00</strong>
                     <span id="labelMins">MIN</span>
                 </div>
 
                 <div class="count-box count-box-secs">
-                    <div class="count-flap-wrapper" id="secs-flap">
-                        <strong id="secs">00</strong>
-                    </div>
+                    <strong id="secs">00</strong>
                     <span id="labelSecs">SEG</span>
                 </div>
 
@@ -2558,15 +2549,7 @@
                             </div>
                             <div class="admin-field">
                                 <label for="newPilotFlag">País / Bandera</label>
-                                <div class="admin-country-picker-group" style="display: flex; gap: 8px; flex-wrap: wrap;">
-                                    <input type="text" id="newPilotFlagSearch" list="worldCountriesDatalist" placeholder="🔍 Buscar país (ej. Japón)..." autocomplete="off" style="flex: 1; min-width: 140px; padding: 7px 10px; background: rgba(15, 23, 42, 0.8); border: 1px solid rgba(255, 255, 255, 0.15); border-radius: 6px; color: #fff; font-size: 13px;">
-                                    <select id="newPilotFlag" required style="flex: 1; min-width: 140px;">
-                                        <!-- Populated dynamically with all world countries -->
-                                    </select>
-                                </div>
-                                <datalist id="worldCountriesDatalist">
-                                    <!-- Populated dynamically -->
-                                </datalist>
+                                <input type="text" id="newPilotFlag" list="allCountriesDatalist" class="admin-select" placeholder="🔍 Buscar país (ej. Colombia)..." required autocomplete="off" value="🇪🇸 España">
                             </div>
                             <div class="admin-field">
                                 <label for="newPilotTeam">Equipo Asignado</label>
@@ -2600,7 +2583,7 @@
                             <p class="admin-field-hint">Selecciona la bandera o el equipo correspondiente en los desplegables para cambiar el país o escudería de cualquier piloto.</p>
                         </div>
                         <div class="admin-drivers-search">
-                            <input type="text" id="adminSearchPilotInput" placeholder="🔍 Buscar piloto, equipo o país (ej. España, Japón)..." autocomplete="off">
+                            <input type="text" id="adminSearchPilotInput" placeholder="🔍 Buscar piloto..." autocomplete="off">
                         </div>
                     </div>
 
