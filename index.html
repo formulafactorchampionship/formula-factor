@@ -200,10 +200,15 @@
                                 </div>
                             </div>
 
-                            <!-- Customize Driver Card Button (ALWAYS visible inside Profile section) -->
-                            <button type="button" class="btn-customize-card-trigger" id="openCardCustomizerPopupBtn">
-                                🎨 Personalizar Tarjeta
-                            </button>
+                            <!-- Customize & View Driver Card Buttons inside Profile section -->
+                            <div class="profile-card-btn-row" style="display: flex; gap: 8px; margin-top: 8px;">
+                                <button type="button" class="btn-customize-card-trigger" id="openCardCustomizerPopupBtn" style="flex: 1.2;">
+                                    🎨 Personalizar Tarjeta
+                                </button>
+                                <button type="button" class="btn-customize-card-trigger btn-view-my-card" id="openMyDriverCardBtn" style="flex: 1; background: rgba(214, 180, 92, 0.14); border-color: rgba(214, 180, 92, 0.35); color: #fce79a;" title="Abrir mi tarjeta oficial">
+                                    👁️ Ver Tarjeta
+                                </button>
+                            </div>
                         </div>
 
                         <!-- BOX 2: SETTINGS -->
@@ -2074,6 +2079,37 @@
         <div class="card-editor-header">
             <h2 class="card-editor-title">🎨 PERSONALIZAR TU TARJETA DE PILOTO</h2>
             <p>Los cambios se guardarán en Firebase y se reflejarán públicamente en tu ficha de piloto.</p>
+        </div>
+
+        <!-- Live Preview of Driver Card -->
+        <div class="card-editor-preview-container">
+            <span class="modal-sub-label">VISTA PREVIA EN TIEMPO REAL DE TU TARJETA</span>
+            <div class="card-live-preview-box" id="cardLivePreviewBox">
+                <div class="preview-card-strip" id="previewCardStrip"></div>
+                <div class="preview-card-header">
+                    <div class="preview-avatar-wrap" id="previewAvatarWrap">
+                        <img src="" id="previewAvatarImg" class="preview-avatar-img" alt="Avatar" style="display: none;">
+                        <span id="previewAvatarFallback" class="preview-avatar-fallback">🏎️</span>
+                    </div>
+                    <div class="preview-info">
+                        <div class="preview-name-row">
+                            <span id="previewFlag" class="preview-flag">🏁</span>
+                            <span id="previewDriverName" class="preview-name">Tu Piloto</span>
+                            <span class="verify-badge-verified" style="display: inline-block; font-size: 9px; padding: 2px 5px;">VERIFICADO ✅</span>
+                        </div>
+                        <div class="preview-meta-row">
+                            <span id="previewTeamPill" class="driver-modal-team-pill">PILOTO OFICIAL</span>
+                            <span id="previewDorsal" class="preview-dorsal-tag">#00</span>
+                        </div>
+                    </div>
+                </div>
+                <div id="previewBioBox" class="preview-bio-box" style="display: none;">
+                    <p id="previewBioText" class="preview-bio-text"></p>
+                </div>
+                <div id="previewSocialBox" class="preview-social-box" style="display: none;">
+                    <div id="previewSocialGrid" class="driver-social-grid"></div>
+                </div>
+            </div>
         </div>
 
         <form id="userCardEditForm" class="card-edit-form">

@@ -2394,11 +2394,20 @@ function renderStandingsOnPage(drivers) {
                 const d1 = sorted[0];
                 driverLeaderRow.setAttribute("data-driver", d1.driver);
                 driverLeaderRow.setAttribute("title", `Ver estadísticas de ${d1.driver}`);
+                if (d1.cardColor) {
+                    driverLeaderRow.style.borderColor = `${d1.cardColor}90`;
+                } else {
+                    driverLeaderRow.style.borderColor = "";
+                }
+                const d1Avatar = (d1.avatarUrl && d1.avatarUrl.trim()) ? `<img src="${escapeHtml(d1.avatarUrl.trim())}" class="ranking-leader-avatar" alt="${escapeHtml(d1.driver)}" onerror="this.style.display='none'">` : "";
+                const d1Flag = d1.customFlag ? `<span style="font-size: 16px; margin-right: 4px;">${escapeHtml(d1.customFlag)}</span>` : "";
+
                 driverLeaderRow.innerHTML = `
                     <div class="ranking-leader-left">
                         <span class="ranking-leader-pos">1.</span>
+                        ${d1Avatar}
                         <div class="ranking-leader-info">
-                            <span class="ranking-leader-name driver-clickable" data-driver="${escapeHtml(d1.driver)}">${escapeHtml(d1.driver)}</span>
+                            <span class="ranking-leader-name driver-clickable" data-driver="${escapeHtml(d1.driver)}">${d1Flag}${escapeHtml(d1.driver)}</span>
                             <div class="ranking-leader-meta">
                                 <span class="ranking-team-pill ${getTeamClass(d1.team)} team-clickable" data-team="${escapeHtml(d1.team)}" title="Ver equipo ${escapeHtml(d1.team)}"><span class="team-dot"></span>${escapeHtml(d1.team)}</span>
                             </div>
@@ -2427,12 +2436,17 @@ function renderStandingsOnPage(drivers) {
             let p3Html = "";
 
             if (d2) {
+                const d2Avatar = (d2.avatarUrl && d2.avatarUrl.trim()) ? `<img src="${escapeHtml(d2.avatarUrl.trim())}" class="ranking-driver-avatar" alt="${escapeHtml(d2.driver)}" onerror="this.style.display='none'">` : "";
+                const d2Flag = d2.customFlag ? `<span style="margin-right: 4px;">${escapeHtml(d2.customFlag)}</span>` : "";
+                const d2Border = d2.cardColor ? `style="border-color: ${d2.cardColor}80;"` : "";
+
                 p2Html = `
-                    <div class="ranking-podium-col ranking-p2 driver-card-clickable" id="driverP2Col" data-driver="${escapeHtml(d2.driver)}" title="Ver estadísticas de ${escapeHtml(d2.driver)}">
+                    <div class="ranking-podium-col ranking-p2 driver-card-clickable" id="driverP2Col" data-driver="${escapeHtml(d2.driver)}" title="Ver estadísticas de ${escapeHtml(d2.driver)}" ${d2Border}>
                         <div class="ranking-podium-left">
                             <span class="ranking-podium-pos">2.</span>
+                            ${d2Avatar}
                             <div class="ranking-podium-info">
-                                <span class="ranking-podium-name driver-clickable" data-driver="${escapeHtml(d2.driver)}">${escapeHtml(d2.driver)}</span>
+                                <span class="ranking-podium-name driver-clickable" data-driver="${escapeHtml(d2.driver)}">${d2Flag}${escapeHtml(d2.driver)}</span>
                                 <div class="ranking-podium-meta">
                                     <span class="ranking-team-pill ${getTeamClass(d2.team)} team-clickable" data-team="${escapeHtml(d2.team)}" title="Ver equipo ${escapeHtml(d2.team)}"><span class="team-dot"></span>${escapeHtml(d2.team)}</span>
                                 </div>
@@ -2449,12 +2463,17 @@ function renderStandingsOnPage(drivers) {
             }
 
             if (d3) {
+                const d3Avatar = (d3.avatarUrl && d3.avatarUrl.trim()) ? `<img src="${escapeHtml(d3.avatarUrl.trim())}" class="ranking-driver-avatar" alt="${escapeHtml(d3.driver)}" onerror="this.style.display='none'">` : "";
+                const d3Flag = d3.customFlag ? `<span style="margin-right: 4px;">${escapeHtml(d3.customFlag)}</span>` : "";
+                const d3Border = d3.cardColor ? `style="border-color: ${d3.cardColor}80;"` : "";
+
                 p3Html = `
-                    <div class="ranking-podium-col ranking-p3 driver-card-clickable" id="driverP3Col" data-driver="${escapeHtml(d3.driver)}" title="Ver estadísticas de ${escapeHtml(d3.driver)}">
+                    <div class="ranking-podium-col ranking-p3 driver-card-clickable" id="driverP3Col" data-driver="${escapeHtml(d3.driver)}" title="Ver estadísticas de ${escapeHtml(d3.driver)}" ${d3Border}>
                         <div class="ranking-podium-left">
                             <span class="ranking-podium-pos">3.</span>
+                            ${d3Avatar}
                             <div class="ranking-podium-info">
-                                <span class="ranking-podium-name driver-clickable" data-driver="${escapeHtml(d3.driver)}">${escapeHtml(d3.driver)}</span>
+                                <span class="ranking-podium-name driver-clickable" data-driver="${escapeHtml(d3.driver)}">${d3Flag}${escapeHtml(d3.driver)}</span>
                                 <div class="ranking-podium-meta">
                                     <span class="ranking-team-pill ${getTeamClass(d3.team)} team-clickable" data-team="${escapeHtml(d3.team)}" title="Ver equipo ${escapeHtml(d3.team)}"><span class="team-dot"></span>${escapeHtml(d3.team)}</span>
                                 </div>
@@ -2482,6 +2501,9 @@ function renderStandingsOnPage(drivers) {
                 rowDiv.className = "ranking-row driver-row-clickable";
                 rowDiv.setAttribute("data-driver", d.driver);
                 rowDiv.setAttribute("title", `Ver estadísticas de ${d.driver}`);
+                if (d.cardColor) {
+                    rowDiv.style.borderLeft = `3px solid ${d.cardColor}`;
+                }
                 if (idx >= 10) {
                     if (!isStandingsExpanded) {
                         rowDiv.classList.add("standings-row-hidden");
@@ -2491,9 +2513,12 @@ function renderStandingsOnPage(drivers) {
                         rowDiv.style.setProperty("--row-delay", `${delayStep * 15}ms`);
                     }
                 }
+                const dAvatar = (d.avatarUrl && d.avatarUrl.trim()) ? `<img src="${escapeHtml(d.avatarUrl.trim())}" class="ranking-driver-avatar" alt="${escapeHtml(d.driver)}" onerror="this.style.display='none'">` : "";
+                const dFlag = d.customFlag ? `<span style="margin-right: 4px;">${escapeHtml(d.customFlag)}</span>` : "";
+
                 rowDiv.innerHTML = `
                     <span class="ranking-row-pos">${idx + 1}</span>
-                    <span class="ranking-row-name driver-clickable" data-driver="${escapeHtml(d.driver)}">${escapeHtml(d.driver)}</span>
+                    <span class="ranking-row-name driver-clickable" data-driver="${escapeHtml(d.driver)}">${dAvatar}${dFlag}${escapeHtml(d.driver)}</span>
                     <span class="ranking-team-cell"><span class="ranking-team-pill ${getTeamClass(d.team)} team-clickable" data-team="${escapeHtml(d.team)}" title="Ver equipo ${escapeHtml(d.team)}"><span class="team-dot"></span>${escapeHtml(d.team)}</span></span>
                     <span class="ranking-row-pts">${Number(d.pts)}</span>
                 `;
@@ -2820,15 +2845,38 @@ function findDriverStats(driverName) {
         });
     }
 
+    const pilotDoc = (currentPilotos || []).find(p => normalizeDriverKey(p.driver) === clean) || {};
+    const isUserClaimed = activeUserData && activeUserData.claimedDriver && normalizeDriverKey(activeUserData.claimedDriver) === clean;
+    const userCustom = isUserClaimed ? activeUserData : {};
+
+    const cardColor = userCustom.cardColor || pilotDoc.cardColor || match.cardColor || null;
+    const avatarUrl = userCustom.avatarUrl !== undefined ? userCustom.avatarUrl : (pilotDoc.avatarUrl || match.avatarUrl || null);
+    const customFlag = userCustom.customFlag || pilotDoc.customFlag || match.customFlag || null;
+    const bio = userCustom.bio !== undefined ? userCustom.bio : (pilotDoc.bio || match.bio || null);
+    const socialTwitch = userCustom.socialTwitch !== undefined ? userCustom.socialTwitch : (pilotDoc.socialTwitch || match.socialTwitch || null);
+    const socialYoutube = userCustom.socialYoutube !== undefined ? userCustom.socialYoutube : (pilotDoc.socialYoutube || match.socialYoutube || null);
+    const socialTwitter = userCustom.socialTwitter !== undefined ? userCustom.socialTwitter : (pilotDoc.socialTwitter || match.socialTwitter || null);
+    const socialDiscord = userCustom.socialDiscord !== undefined ? userCustom.socialDiscord : (pilotDoc.socialDiscord || match.socialDiscord || null);
+    const isVerified = userCustom.isVerified !== undefined ? !!userCustom.isVerified : (pilotDoc.isVerified !== undefined ? !!pilotDoc.isVerified : !!match.isVerified);
+
     return {
         driver: match.driver,
         team: match.team,
         pos: match.pos,
         pts: match.pts,
         number: match.number,
-        flag: match.flag,
+        flag: customFlag || match.flag || "🏁",
         dif: match.dif,
         rounds: match.r,
+        avatarUrl,
+        cardColor,
+        customFlag,
+        bio,
+        socialTwitch,
+        socialYoutube,
+        socialTwitter,
+        socialDiscord,
+        isVerified,
         stats: {
             wins,
             podiums,
@@ -2860,7 +2908,7 @@ function openDriverStatsModal(driverName) {
         strip.className = `driver-modal-strip ${teamCls}`;
         if (data.cardColor) {
             strip.style.backgroundColor = data.cardColor;
-            strip.style.boxShadow = `0 0 15px ${data.cardColor}`;
+            strip.style.boxShadow = `0 0 20px ${data.cardColor}`;
         } else {
             strip.style.backgroundColor = "";
             strip.style.boxShadow = "";
@@ -2868,9 +2916,11 @@ function openDriverStatsModal(driverName) {
     }
     if (cardEl) {
         if (data.cardColor) {
-            cardEl.style.borderColor = `${data.cardColor}aa`;
+            cardEl.style.borderColor = data.cardColor;
+            cardEl.style.boxShadow = `0 25px 70px rgba(0, 0, 0, 0.85), 0 0 30px ${data.cardColor}40`;
         } else {
             cardEl.style.borderColor = "";
+            cardEl.style.boxShadow = "";
         }
     }
 
@@ -2878,21 +2928,42 @@ function openDriverStatsModal(driverName) {
     const avatarBox = document.getElementById("driverModalAvatarBox");
     const avatarImg = document.getElementById("driverModalAvatarImg");
     if (avatarBox && avatarImg) {
-        if (data.avatarUrl) {
-            avatarImg.src = data.avatarUrl;
+        if (data.avatarUrl && data.avatarUrl.trim()) {
+            avatarImg.src = data.avatarUrl.trim();
             avatarBox.style.display = "block";
-            if (data.cardColor) avatarBox.style.borderColor = data.cardColor;
+            if (data.cardColor) {
+                avatarBox.style.borderColor = data.cardColor;
+                avatarBox.style.boxShadow = `0 0 15px ${data.cardColor}60`;
+            } else {
+                avatarBox.style.borderColor = "var(--gold, #d6b45c)";
+                avatarBox.style.boxShadow = "0 0 12px rgba(214, 180, 92, 0.3)";
+            }
+            avatarImg.onerror = () => {
+                avatarBox.style.display = "none";
+            };
+            avatarImg.onload = () => {
+                avatarBox.style.display = "block";
+            };
         } else {
             avatarBox.style.display = "none";
             avatarImg.src = "";
         }
     }
 
-    // Dorsal
+    // Dorsal Number
     const dorsalEl = document.getElementById("driverModalDorsal");
     if (dorsalEl) {
         const dorsalVal = data.number ? `#${data.number}` : `#${data.pos}`;
         dorsalEl.textContent = dorsalVal;
+        if (data.cardColor) {
+            dorsalEl.style.borderColor = `${data.cardColor}80`;
+            dorsalEl.style.color = data.cardColor;
+            dorsalEl.style.background = `${data.cardColor}18`;
+        } else {
+            dorsalEl.style.borderColor = "";
+            dorsalEl.style.color = "";
+            dorsalEl.style.background = "";
+        }
     }
 
     // Flag & Name
@@ -2914,7 +2985,11 @@ function openDriverStatsModal(driverName) {
         if (data.bio && data.bio.trim()) {
             bioText.textContent = data.bio.trim();
             bioBox.style.display = "block";
-            if (data.cardColor) bioBox.style.borderLeftColor = data.cardColor;
+            if (data.cardColor) {
+                bioBox.style.borderLeftColor = data.cardColor;
+            } else {
+                bioBox.style.borderLeftColor = "var(--gold, #d6b45c)";
+            }
         } else {
             bioBox.style.display = "none";
             bioText.textContent = "";
@@ -2928,47 +3003,51 @@ function openDriverStatsModal(driverName) {
         socialGrid.innerHTML = "";
         let count = 0;
 
-        if (data.socialTwitch) {
+        if (data.socialTwitch && data.socialTwitch.trim()) {
             count++;
             const a = document.createElement("a");
             a.className = "social-pill social-pill-twitch";
             a.target = "_blank";
             a.rel = "noopener noreferrer";
-            const userStr = data.socialTwitch.replace("https://twitch.tv/", "").replace("https://www.twitch.tv/", "").replace("@", "");
+            const userStr = data.socialTwitch.trim().replace("https://twitch.tv/", "").replace("https://www.twitch.tv/", "").replace("@", "");
             a.href = data.socialTwitch.startsWith("http") ? data.socialTwitch : `https://twitch.tv/${userStr}`;
             a.innerHTML = `👾 Twitch: ${userStr}`;
+            if (data.cardColor) a.style.borderColor = `${data.cardColor}60`;
             socialGrid.appendChild(a);
         }
 
-        if (data.socialYoutube) {
+        if (data.socialYoutube && data.socialYoutube.trim()) {
             count++;
             const a = document.createElement("a");
             a.className = "social-pill social-pill-youtube";
             a.target = "_blank";
             a.rel = "noopener noreferrer";
-            const ytStr = data.socialYoutube.replace("https://youtube.com/", "").replace("https://www.youtube.com/", "");
+            const ytStr = data.socialYoutube.trim().replace("https://youtube.com/", "").replace("https://www.youtube.com/", "");
             a.href = data.socialYoutube.startsWith("http") ? data.socialYoutube : `https://youtube.com/${ytStr}`;
             a.innerHTML = `📺 YouTube: ${ytStr}`;
+            if (data.cardColor) a.style.borderColor = `${data.cardColor}60`;
             socialGrid.appendChild(a);
         }
 
-        if (data.socialTwitter) {
+        if (data.socialTwitter && data.socialTwitter.trim()) {
             count++;
             const a = document.createElement("a");
             a.className = "social-pill social-pill-twitter";
             a.target = "_blank";
             a.rel = "noopener noreferrer";
-            const twStr = data.socialTwitter.replace("https://x.com/", "").replace("https://twitter.com/", "").replace("@", "");
+            const twStr = data.socialTwitter.trim().replace("https://x.com/", "").replace("https://twitter.com/", "").replace("@", "");
             a.href = data.socialTwitter.startsWith("http") ? data.socialTwitter : `https://x.com/${twStr}`;
             a.innerHTML = `🐦 @${twStr}`;
+            if (data.cardColor) a.style.borderColor = `${data.cardColor}60`;
             socialGrid.appendChild(a);
         }
 
-        if (data.socialDiscord) {
+        if (data.socialDiscord && data.socialDiscord.trim()) {
             count++;
             const span = document.createElement("span");
             span.className = "social-pill social-pill-discord";
-            span.innerHTML = `💬 Discord: ${data.socialDiscord}`;
+            span.innerHTML = `💬 Discord: ${data.socialDiscord.trim()}`;
+            if (data.cardColor) span.style.borderColor = `${data.cardColor}60`;
             socialGrid.appendChild(span);
         }
 
@@ -7314,6 +7393,128 @@ if (editCardColor && editCardColorHex) {
     });
 }
 
+// Live Card Preview in Customizer Modal
+function updateCardLivePreview() {
+    const previewStrip = document.getElementById("previewCardStrip");
+    const previewBox = document.getElementById("cardLivePreviewBox");
+    const previewAvatarImg = document.getElementById("previewAvatarImg");
+    const previewAvatarFallback = document.getElementById("previewAvatarFallback");
+    const previewAvatarWrap = document.getElementById("previewAvatarWrap");
+    const previewFlag = document.getElementById("previewFlag");
+    const previewDriverName = document.getElementById("previewDriverName");
+    const previewTeamPill = document.getElementById("previewTeamPill");
+    const previewDorsal = document.getElementById("previewDorsal");
+    const previewBioBox = document.getElementById("previewBioBox");
+    const previewBioText = document.getElementById("previewBioText");
+    const previewSocialBox = document.getElementById("previewSocialBox");
+    const previewSocialGrid = document.getElementById("previewSocialGrid");
+
+    const color = (editCardColor ? editCardColor.value : "#e10600") || "#e10600";
+    const avatarUrl = editCardAvatar ? editCardAvatar.value.trim() : "";
+    const flag = editCardFlag ? editCardFlag.value.trim() : "";
+    const bio = editCardBio ? editCardBio.value.trim() : "";
+    const driverName = (activeUserData && activeUserData.claimedDriver) ? activeUserData.claimedDriver : "Tu Piloto";
+    const teamName = (activeUserData && activeUserData.claimedTeam) ? activeUserData.claimedTeam : "Piloto Oficial";
+
+    // Color accents
+    if (previewStrip) {
+        previewStrip.style.background = color;
+        previewStrip.style.boxShadow = `0 0 12px ${color}`;
+    }
+    if (previewBox) {
+        previewBox.style.borderColor = `${color}90`;
+        previewBox.style.boxShadow = `0 0 20px ${color}25`;
+    }
+    if (previewAvatarWrap) {
+        previewAvatarWrap.style.borderColor = color;
+    }
+    if (previewDorsal) {
+        previewDorsal.style.color = color;
+        previewDorsal.style.borderColor = `${color}60`;
+        previewDorsal.style.background = `${color}15`;
+    }
+
+    // Avatar
+    if (previewAvatarImg && previewAvatarFallback) {
+        if (avatarUrl) {
+            previewAvatarImg.src = avatarUrl;
+            previewAvatarImg.style.display = "block";
+            previewAvatarFallback.style.display = "none";
+            previewAvatarImg.onerror = () => {
+                previewAvatarImg.style.display = "none";
+                previewAvatarFallback.style.display = "block";
+            };
+        } else {
+            previewAvatarImg.src = "";
+            previewAvatarImg.style.display = "none";
+            previewAvatarFallback.style.display = "block";
+        }
+    }
+
+    // Name & Flag
+    if (previewFlag) previewFlag.textContent = flag || "🏁";
+    if (previewDriverName) previewDriverName.textContent = driverName;
+    if (previewTeamPill) previewTeamPill.textContent = teamName;
+
+    // Bio
+    if (previewBioBox && previewBioText) {
+        if (bio) {
+            previewBioText.textContent = bio;
+            previewBioBox.style.display = "block";
+            previewBioBox.style.borderLeftColor = color;
+        } else {
+            previewBioBox.style.display = "none";
+            previewBioText.textContent = "";
+        }
+    }
+
+    // Socials
+    if (previewSocialBox && previewSocialGrid) {
+        previewSocialGrid.innerHTML = "";
+        let socialCount = 0;
+
+        const twitchVal = editCardTwitch ? editCardTwitch.value.trim() : "";
+        const ytVal = editCardYoutube ? editCardYoutube.value.trim() : "";
+        const twVal = editCardTwitter ? editCardTwitter.value.trim() : "";
+        const dcVal = editCardDiscord ? editCardDiscord.value.trim() : "";
+
+        if (twitchVal) {
+            socialCount++;
+            const pill = document.createElement("span");
+            pill.className = "social-pill social-pill-twitch";
+            pill.style.borderColor = `${color}60`;
+            pill.textContent = `👾 ${twitchVal.replace("@", "")}`;
+            previewSocialGrid.appendChild(pill);
+        }
+        if (ytVal) {
+            socialCount++;
+            const pill = document.createElement("span");
+            pill.className = "social-pill social-pill-youtube";
+            pill.style.borderColor = `${color}60`;
+            pill.textContent = `📺 ${ytVal}`;
+            previewSocialGrid.appendChild(pill);
+        }
+        if (twVal) {
+            socialCount++;
+            const pill = document.createElement("span");
+            pill.className = "social-pill social-pill-twitter";
+            pill.style.borderColor = `${color}60`;
+            pill.textContent = `🐦 ${twVal.startsWith("@") ? twVal : "@" + twVal}`;
+            previewSocialGrid.appendChild(pill);
+        }
+        if (dcVal) {
+            socialCount++;
+            const pill = document.createElement("span");
+            pill.className = "social-pill social-pill-discord";
+            pill.style.borderColor = `${color}60`;
+            pill.textContent = `💬 ${dcVal}`;
+            previewSocialGrid.appendChild(pill);
+        }
+
+        previewSocialBox.style.display = socialCount > 0 ? "block" : "none";
+    }
+}
+
 // Populate User Customizer Form
 function populateUserCardEditor(data) {
     if (!data) return;
@@ -7328,6 +7529,31 @@ function populateUserCardEditor(data) {
     if (editCardYoutube) editCardYoutube.value = data.socialYoutube || "";
     if (editCardTwitter) editCardTwitter.value = data.socialTwitter || "";
     if (editCardDiscord) editCardDiscord.value = data.socialDiscord || "";
+
+    updateCardLivePreview();
+}
+
+// Live update preview on inputs
+[editCardAvatar, editCardColor, editCardFlag, editCardBio, editCardTwitch, editCardYoutube, editCardTwitter, editCardDiscord].forEach(input => {
+    if (input) {
+        input.addEventListener("input", () => {
+            if (input === editCardColor && editCardColorHex) {
+                editCardColorHex.textContent = editCardColor.value.toUpperCase();
+            }
+            updateCardLivePreview();
+        });
+    }
+});
+
+// View My Driver Card Button in Profile dropdown
+const openMyDriverCardBtn = document.getElementById("openMyDriverCardBtn");
+if (openMyDriverCardBtn) {
+    openMyDriverCardBtn.addEventListener("click", (e) => {
+        if (e) e.stopPropagation();
+        closeAllDropdowns();
+        const driverName = (activeUserData && activeUserData.claimedDriver) ? activeUserData.claimedDriver : (currentPilotos && currentPilotos[0] ? currentPilotos[0].driver : "Dieguiosk");
+        openDriverStatsModal(driverName);
+    });
 }
 
 // Save Custom Card Data to Firebase
@@ -7386,11 +7612,6 @@ if (userCardEditForm) {
 
             await batch.commit();
 
-            if (editCardNotice) {
-                editCardNotice.textContent = "✓ ¡Tarjeta de piloto actualizada en Firebase!";
-                editCardNotice.style.color = "#10b981";
-            }
-
             // Update in-memory pilot data in currentPilotos
             const targetP = (currentPilotos || []).find(p => (p.id || getPilotDocId(p.driver)) === pilotDocId || normalizeDriverKey(p.driver) === normalizeDriverKey(pilotName));
             if (targetP) {
@@ -7402,13 +7623,28 @@ if (userCardEditForm) {
                 ...customPayload
             };
 
+            updateCardLivePreview();
+
+            // Refresh matrix & standings
+            renderStandingsOnPage(currentPilotos);
+            renderFfcMatrixTable();
+
             // Refresh open driver stats modal if viewing own card
             if (currentOpenModalDriver && normalizeDriverKey(currentOpenModalDriver) === normalizeDriverKey(pilotName)) {
                 openDriverStatsModal(pilotName);
             }
 
-            // Refresh matrix & standings
-            renderFfcMatrixTable();
+            if (editCardNotice) {
+                editCardNotice.innerHTML = `✓ ¡Tarjeta de piloto actualizada en Firebase! <button type="button" id="noticeOpenCardBtn" style="background: none; border: none; color: #fce79a; font-weight: bold; text-decoration: underline; cursor: pointer; margin-left: 6px;">👁️ Ver Mi Tarjeta Oficial &rarr;</button>`;
+                editCardNotice.style.color = "#10b981";
+                const noticeBtn = document.getElementById("noticeOpenCardBtn");
+                if (noticeBtn) {
+                    noticeBtn.addEventListener("click", () => {
+                        closeCardEditorModal();
+                        openDriverStatsModal(pilotName);
+                    });
+                }
+            }
 
         } catch (err) {
             console.error("Error al guardar tarjeta de piloto:", err);
