@@ -7374,6 +7374,9 @@ footer {
     font-weight: 700;
     color: var(--gold) !important;
     letter-spacing: 0.8px;
+    cursor: pointer !important;
+    user-select: none;
+    text-decoration: none;
     transition: all 0.2s ease;
 }
 
@@ -7383,6 +7386,27 @@ footer {
     border-color: var(--gold);
     color: #fff !important;
     box-shadow: 0 0 14px rgba(214, 180, 92, 0.2);
+}
+
+.btn-fantasy-hero {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: linear-gradient(135deg, rgba(214, 180, 92, 0.25), rgba(214, 180, 92, 0.1));
+    border: 1px solid rgba(214, 180, 92, 0.45);
+    color: var(--gold-light) !important;
+    font-weight: 800;
+    cursor: pointer;
+    box-shadow: 0 4px 15px rgba(214, 180, 92, 0.15);
+    transition: all 0.2s ease;
+}
+
+.btn-fantasy-hero:hover {
+    background: linear-gradient(135deg, rgba(214, 180, 92, 0.4), rgba(214, 180, 92, 0.2));
+    border-color: var(--gold);
+    color: #ffffff !important;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(214, 180, 92, 0.3);
 }
 
 .fantasy-nav-badge {

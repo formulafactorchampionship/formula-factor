@@ -978,7 +978,12 @@ function renderTimezoneOptions() {
             btn.className = `tz-option${isActive ? " active" : ""}`;
             btn.setAttribute("role", "option");
             btn.setAttribute("aria-selected", isActive ? "true" : "false");
-            btn.dataset.tz = tz.id;
+            btn.setAttribute("data-tz", tz && tz.id ? tz.id : "");
+            try {
+                if (btn.dataset) {
+                    btn.dataset.tz = tz && tz.id ? tz.id : "";
+                }
+            } catch (e) {}
 
             btn.innerHTML = `
                 <span class="tz-flag">${tz.flagSvg}</span>
@@ -6528,6 +6533,7 @@ const resetBackBtn = document.getElementById("resetBackBtn");
 
 let activeUserAuth = null;
 let currentAuthTab = "login";
+let isFantasyModuleInitialized = false;
 
 // Helper: Show Alert inside Auth Modal
 function showAuthAlert(message, type = "error") {
@@ -6671,11 +6677,13 @@ function renderUserAuthState(user) {
         if (headerAdminBtn) {
             headerAdminBtn.style.display = isAdmin ? "inline-flex" : "none";
         }
-        if (typeof syncUserFantasyTeamFromCloud === "function") {
-            syncUserFantasyTeamFromCloud(user);
-        }
-        if (typeof renderFantasyPortal === "function") {
-            renderFantasyPortal();
+        if (isFantasyModuleInitialized) {
+            if (typeof syncUserFantasyTeamFromCloud === "function") {
+                syncUserFantasyTeamFromCloud(user);
+            }
+            if (typeof renderFantasyPortal === "function") {
+                renderFantasyPortal();
+            }
         }
 
     } else {
@@ -6697,7 +6705,7 @@ function renderUserAuthState(user) {
         if (headerAdminBtn) {
             headerAdminBtn.style.display = "none";
         }
-        if (typeof renderFantasyPortal === "function") {
+        if (isFantasyModuleInitialized && typeof renderFantasyPortal === "function") {
             renderFantasyPortal();
         }
     }
@@ -8272,6 +8280,7 @@ async function syncUserFantasyTeamFromCloud(user) {
 
 // Navigation Functions
 function openFantasyPortal() {
+    isFantasyModuleInitialized = true;
     const mainContent = document.getElementById("mainSiteContent");
     const fantasyView = document.getElementById("fantasyView");
     const navFantasy = document.getElementById("navFantasy");
@@ -8288,17 +8297,26 @@ function openFantasyPortal() {
 
     // Close mobile nav drawer if open
     const navLinks = document.querySelector(".nav-links");
-    if (navLinks && navLinks.classList.contains("active")) {
+    if (navLinks) {
         navLinks.classList.remove("active");
+        navLinks.classList.remove("mobile-open");
     }
 
     // Set URL hash cleanly
-    if (window.location.hash !== "#fantasy") {
-        window.history.pushState(null, "", "#fantasy");
+    try {
+        if (window.location.hash !== "#fantasy") {
+            window.history.pushState(null, "", "#fantasy");
+        }
+    } catch (e) {
+        try {
+            window.location.hash = "#fantasy";
+        } catch (err) {}
     }
 
     renderFantasyPortal();
 }
+window.openFantasyPortal = openFantasyPortal;
+window._renderFantasyPortalInternal = renderFantasyPortal;
 
 function closeFantasyPortal(targetAnchor = null) {
     const mainContent = document.getElementById("mainSiteContent");
@@ -8309,17 +8327,32 @@ function closeFantasyPortal(targetAnchor = null) {
     if (mainContent) mainContent.style.display = "block";
     if (navFantasy) navFantasy.classList.remove("active");
 
+    const navLinks = document.querySelector(".nav-links");
+    if (navLinks) {
+        navLinks.classList.remove("active");
+        navLinks.classList.remove("mobile-open");
+    }
+
     if (targetAnchor && targetAnchor !== "#fantasy") {
-        window.location.hash = targetAnchor;
-        const targetEl = document.querySelector(targetAnchor);
-        if (targetEl) {
-            targetEl.scrollIntoView({ behavior: "smooth" });
-        }
+        try {
+            window.location.hash = targetAnchor;
+            const targetEl = document.querySelector(targetAnchor);
+            if (targetEl) {
+                targetEl.scrollIntoView({ behavior: "smooth" });
+            }
+        } catch (e) {}
     } else {
-        window.history.pushState(null, "", window.location.pathname);
+        try {
+            window.history.pushState(null, "", window.location.pathname);
+        } catch (e) {
+            try {
+                window.location.hash = "";
+            } catch (err) {}
+        }
         window.scrollTo({ top: 0, behavior: "smooth" });
     }
 }
+window.closeFantasyPortal = closeFantasyPortal;
 
 // Fantasy Sub-Tab Switching
 function switchFantasySubTab(tabName) {
@@ -8976,12 +9009,27 @@ function renderFantasyPortal() {
 
 // Initial Wire-Up for Fantasy System
 function initFantasyLeague() {
+    isFantasyModuleInitialized = true;
     loadFantasyTeamFromStorage();
+
+    // Export global helpers to window
+    window.switchFantasySubTab = switchFantasySubTab;
+    window.setMarketFilter = setMarketFilter;
+    window.requireFantasyAuth = requireFantasyAuth;
+    window.handleEmptySlotClick = handleEmptySlotClick;
 
     // 1. Navigation Button Listeners
     const navFantasy = document.getElementById("navFantasy");
     if (navFantasy) {
         navFantasy.addEventListener("click", (e) => {
+            e.preventDefault();
+            openFantasyPortal();
+        });
+    }
+
+    const heroBtnFantasy = document.getElementById("heroBtnFantasy");
+    if (heroBtnFantasy) {
+        heroBtnFantasy.addEventListener("click", (e) => {
             e.preventDefault();
             openFantasyPortal();
         });

@@ -12,6 +12,33 @@
     <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;500;600;700;800;900&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
     <link rel="stylesheet" href="style.css">
+    <script>
+        // Early instant hook for FFC Fantasy Portal
+        window.openFantasyPortal = function() {
+            var main = document.getElementById("mainSiteContent");
+            var fView = document.getElementById("fantasyView");
+            var nF = document.getElementById("navFantasy");
+            if (main) main.style.display = "none";
+            if (fView) fView.style.display = "block";
+            if (nF) nF.classList.add("active");
+            var navLinks = document.querySelector(".nav-links");
+            if (navLinks) {
+                navLinks.classList.remove("mobile-open");
+                navLinks.classList.remove("active");
+            }
+            try {
+                if (window.location.hash !== "#fantasy") {
+                    window.history.pushState(null, "", "#fantasy");
+                }
+            } catch (e) {
+                try { window.location.hash = "#fantasy"; } catch (err) {}
+            }
+            window.scrollTo({ top: 0, behavior: "smooth" });
+            if (window._renderFantasyPortalInternal) {
+                window._renderFantasyPortalInternal();
+            }
+        };
+    </script>
 </head>
 
 <body>
@@ -34,7 +61,7 @@
             <a href="#calendar" id="navCalendar">CALENDARIO</a>
             <a href="#races" id="navRaces">CARRERAS</a>
             <a href="#info" id="navInfo">INFORMACIÓN</a>
-            <a href="#fantasy" class="nav-fantasy-link" id="navFantasy" title="FFC Fantasy League">
+            <a href="#fantasy" class="nav-fantasy-link" id="navFantasy" title="FFC Fantasy League" onclick="if(window.openFantasyPortal){window.openFantasyPortal();return false;}">
                 <span class="fantasy-nav-badge">100M€</span>
                 <span id="navFantasyText">FANTASY</span>
             </a>
@@ -300,6 +327,10 @@
 
             <a href="#calendar" class="btn btn-secondary" id="heroBtnCalendar">
                 VER CALENDARIO
+            </a>
+
+            <a href="#fantasy" class="btn btn-fantasy-hero" id="heroBtnFantasy" onclick="if(window.openFantasyPortal){window.openFantasyPortal();return false;}">
+                <span>🏆</span> FANTASY LEAGUE (100M€)
             </a>
 
         </div>
