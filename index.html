@@ -172,13 +172,18 @@
                                 <!-- Estado NO Verificado -->
                                 <div id="userClaimUnverified" class="user-claim-unverified">
                                     <div class="claim-notice-banner">
-                                        <span class="claim-icon">🔑</span>
+                                        <span class="claim-icon">🎫</span>
                                         <div class="claim-notice-info">
-                                            <strong>Vincular perfil de piloto</strong>
-                                            <p>Solicita el código a un admin por Discord: <strong>hermesalo</strong> o <strong>adriii.lr</strong></p>
+                                            <strong>¿ERES PILOTO OFICIAL DE LA FFC?</strong>
+                                            <p>Para obtener tu código de vinculación, debes <strong>abrir un ticket</strong> en el servidor oficial de Discord de la FFC. Los comisarios te entregarán tu código exclusivo.</p>
+                                            <a href="https://discord.gg/4k8kPsP6Mb" target="_blank" rel="noopener noreferrer" class="claim-discord-ticket-btn" id="claimDiscordTicketBtn">
+                                                <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028c.462-.63.874-1.295 1.226-1.994.021-.041.001-.09-.041-.106a13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.929 1.793 8.18 1.793 12.061 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.894.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.028zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.956-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.956 2.418-2.157 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.946 2.418-2.157 2.418z"/></svg>
+                                                <span>Abrir Ticket en Discord FFC ↗</span>
+                                            </a>
                                         </div>
                                     </div>
                                     <form id="userClaimForm" class="user-claim-form">
+                                        <label for="userClaimCodeInput" class="claim-step-label">¿YA TIENES TU CÓDIGO DEL TICKET?</label>
                                         <div class="claim-input-group">
                                             <input type="text" id="userClaimCodeInput" placeholder="Código (ej: FF-8A9201)" required autocomplete="off">
                                             <button type="submit" class="btn btn-primary btn-sm" id="userClaimSubmitBtn">Vincular</button>
@@ -2083,7 +2088,10 @@
 
         <!-- Live Preview of Driver Card -->
         <div class="card-editor-preview-container">
-            <span class="modal-sub-label">VISTA PREVIA EN TIEMPO REAL DE TU TARJETA</span>
+            <div class="preview-title-row">
+                <span class="modal-sub-label">VISTA PREVIA EN TIEMPO REAL DE TU TARJETA</span>
+                <span class="preview-badge-live">EN VIVO</span>
+            </div>
             <div class="card-live-preview-box" id="cardLivePreviewBox">
                 <div class="preview-card-strip" id="previewCardStrip"></div>
                 <div class="preview-card-header">
@@ -2113,44 +2121,138 @@
         </div>
 
         <form id="userCardEditForm" class="card-edit-form">
-            <div class="card-edit-field">
-                <label for="editCardAvatar">FOTO DE PERFIL / AVATAR (URL)</label>
-                <input type="url" id="editCardAvatar" class="claim-input" placeholder="https://ejemplo.com/mi-foto.jpg">
-            </div>
-
-            <div class="card-edit-row-2">
-                <div class="card-edit-field">
-                    <label for="editCardColor">COLOR DE TARJETA</label>
+            <!-- SECCIÓN 1: COLOR Y ESTILO -->
+            <div class="card-edit-group">
+                <div class="card-group-header">
+                    <span class="card-group-num">1</span>
+                    <span class="card-group-title">COLOR DE TU TARJETA & ESCUDERÍA</span>
+                </div>
+                <div class="color-preset-grid" id="colorPresetGrid">
+                    <button type="button" class="color-swatch-btn" data-color="#e10600" title="Ferrari Red" style="--swatch-color: #e10600;"></button>
+                    <button type="button" class="color-swatch-btn" data-color="#ff8000" title="McLaren Papaya" style="--swatch-color: #ff8000;"></button>
+                    <button type="button" class="color-swatch-btn" data-color="#00594f" title="Aston Martin Green" style="--swatch-color: #00594f;"></button>
+                    <button type="button" class="color-swatch-btn" data-color="#0600ef" title="Red Bull Blue" style="--swatch-color: #0600ef;"></button>
+                    <button type="button" class="color-swatch-btn" data-color="#00d2be" title="Mercedes Teal" style="--swatch-color: #00d2be;"></button>
+                    <button type="button" class="color-swatch-btn" data-color="#00a3e0" title="Williams Blue" style="--swatch-color: #00a3e0;"></button>
+                    <button type="button" class="color-swatch-btn" data-color="#facc15" title="Renault Yellow" style="--swatch-color: #facc15;"></button>
+                    <button type="button" class="color-swatch-btn" data-color="#d6b45c" title="FFC Champion Gold" style="--swatch-color: #d6b45c;"></button>
+                    <button type="button" class="color-swatch-btn" data-color="#8b5cf6" title="Neon Violet" style="--swatch-color: #8b5cf6;"></button>
+                    <button type="button" class="color-swatch-btn" data-color="#10b981" title="Turbo Mint" style="--swatch-color: #10b981;"></button>
+                </div>
+                <div class="custom-color-row">
+                    <span class="custom-color-label">O elige cualquier color:</span>
                     <div class="color-picker-wrapper">
                         <input type="color" id="editCardColor" value="#e10600">
                         <span id="editCardColorHex" class="color-hex-label">#E10600</span>
                     </div>
                 </div>
-                <div class="card-edit-field">
-                    <label for="editCardFlag">BANDERA / PAÍS (EMOJI)</label>
-                    <input type="text" id="editCardFlag" class="claim-input" placeholder="Ej: 🇪🇸 o 🇲🇽" maxlength="8">
+            </div>
+
+            <!-- SECCIÓN 2: AVATAR / FOTO -->
+            <div class="card-edit-group">
+                <div class="card-group-header">
+                    <span class="card-group-num">2</span>
+                    <span class="card-group-title">FOTO DE PERFIL O AVATAR</span>
+                </div>
+                <div class="avatar-controls-container">
+                    <div class="avatar-quick-presets" id="avatarQuickPresets">
+                        <span class="avatar-preset-label">Avatares FFC:</span>
+                        <button type="button" class="avatar-preset-btn" data-avatar="helmet-gold" title="Casco Oro">🏆 Oro</button>
+                        <button type="button" class="avatar-preset-btn" data-avatar="helmet-red" title="Casco Rojo">🔴 Rojo</button>
+                        <button type="button" class="avatar-preset-btn" data-avatar="helmet-blue" title="Casco Azul">🔵 Azul</button>
+                        <button type="button" class="avatar-preset-btn" data-avatar="helmet-green" title="Casco Verde">🟢 Verde</button>
+                        <button type="button" class="avatar-preset-btn avatar-btn-clear" id="btnRemoveAvatar" title="Quitar foto">🧹 Quitar</button>
+                    </div>
+                    
+                    <div class="avatar-upload-row">
+                        <button type="button" class="btn-avatar-upload" id="btnTriggerAvatarFile">
+                            <span>📁 Subir desde tu equipo (PC/Móvil)</span>
+                        </button>
+                        <input type="file" id="editCardFileInput" accept="image/*" style="display: none;">
+                        <span class="avatar-upload-or">o pega un enlace de imagen:</span>
+                    </div>
+                    <input type="url" id="editCardAvatar" class="claim-input" placeholder="https://ejemplo.com/tu-foto.jpg">
                 </div>
             </div>
 
-            <div class="card-edit-field">
-                <label for="editCardBio">BIOGRAFÍA / DESCRIPCIÓN</label>
-                <textarea id="editCardBio" class="claim-textarea" rows="2" placeholder="Resumen de tu estilo de conducción, periféricos, logros..." maxlength="300"></textarea>
-            </div>
-
-            <div class="card-edit-field">
-                <label>REDES SOCIALES & CONTACTO</label>
-                <div class="social-input-grid">
-                    <input type="text" id="editCardTwitch" class="claim-input" placeholder="Twitch (ej: mi_canal)">
-                    <input type="text" id="editCardYoutube" class="claim-input" placeholder="YouTube (ej: mi_canal)">
-                    <input type="text" id="editCardTwitter" class="claim-input" placeholder="X/Twitter (ej: @handle)">
-                    <input type="text" id="editCardDiscord" class="claim-input" placeholder="Discord Tag (ej: usuario)">
+            <!-- SECCIÓN 3: BANDERA / NACIONALIDAD -->
+            <div class="card-edit-group">
+                <div class="card-group-header">
+                    <span class="card-group-num">3</span>
+                    <span class="card-group-title">BANDERA Y NACIONALIDAD</span>
+                </div>
+                <div class="flag-preset-grid" id="flagPresetGrid">
+                    <button type="button" class="flag-chip-btn" data-flag="🇪🇸" title="España">🇪🇸 ES</button>
+                    <button type="button" class="flag-chip-btn" data-flag="🇲🇽" title="México">🇲🇽 MX</button>
+                    <button type="button" class="flag-chip-btn" data-flag="🇦🇷" title="Argentina">🇦🇷 AR</button>
+                    <button type="button" class="flag-chip-btn" data-flag="🇨🇴" title="Colombia">🇨🇴 CO</button>
+                    <button type="button" class="flag-chip-btn" data-flag="🇨🇱" title="Chile">🇨🇱 CL</button>
+                    <button type="button" class="flag-chip-btn" data-flag="🇺🇾" title="Uruguay">🇺🇾 UY</button>
+                    <button type="button" class="flag-chip-btn" data-flag="🇧🇷" title="Brasil">🇧🇷 BR</button>
+                    <button type="button" class="flag-chip-btn" data-flag="🇵🇪" title="Perú">🇵🇪 PE</button>
+                    <button type="button" class="flag-chip-btn" data-flag="🇺🇸" title="USA">🇺🇸 US</button>
+                    <button type="button" class="flag-chip-btn" data-flag="🇬🇧" title="UK">🇬🇧 UK</button>
+                    <button type="button" class="flag-chip-btn" data-flag="🇫🇷" title="Francia">🇫🇷 FR</button>
+                    <button type="button" class="flag-chip-btn" data-flag="🇮🇹" title="Italia">🇮🇹 IT</button>
+                    <button type="button" class="flag-chip-btn" data-flag="🇩🇪" title="Alemania">🇩🇪 DE</button>
+                    <button type="button" class="flag-chip-btn" data-flag="🏁" title="FFC Racing">🏁 FFC</button>
+                </div>
+                <div class="flag-input-row">
+                    <span class="custom-color-label">Personalizada:</span>
+                    <input type="text" id="editCardFlag" class="claim-input flag-input-compact" placeholder="Ej: 🇪🇸" maxlength="8">
                 </div>
             </div>
 
-            <div class="card-edit-actions" style="margin-top: 10px;">
-                <button type="submit" class="btn btn-primary btn-sm" id="saveDriverCardBtn" style="width: 100%;">⚡ Guardar Cambios en Firebase</button>
-                <span id="editCardNotice" class="claim-notice-msg" style="text-align: center; margin-top: 6px; display: block;"></span>
+            <!-- SECCIÓN 4: BIOGRAFÍA / ESTILO DE PILOTO -->
+            <div class="card-edit-group">
+                <div class="card-group-header">
+                    <span class="card-group-num">4</span>
+                    <span class="card-group-title">BIOGRAFÍA Y PERIFÉRICOS</span>
+                    <span class="bio-char-count" id="bioCharCounter">0/300</span>
+                </div>
+                <div class="bio-suggestions-row">
+                    <span class="bio-suggest-label">Ideas rápidas:</span>
+                    <button type="button" class="bio-tag-btn" data-tag="🎮 Mando PS5">🎮 Mando</button>
+                    <button type="button" class="bio-tag-btn" data-tag="🕹️ Volante G29">🕹️ Volante G29</button>
+                    <button type="button" class="bio-tag-btn" data-tag="🏎️ Fanatec DD">🏎️ Fanatec DD</button>
+                    <button type="button" class="bio-tag-btn" data-tag="🌧️ Especialista en lluvia">🌧️ Lluvia</button>
+                    <button type="button" class="bio-tag-btn" data-tag="⚡ Agresivo al límite">⚡ Agresivo</button>
+                    <button type="button" class="bio-tag-btn" data-tag="🛡️ Ritmo constante">🛡️ Consistente</button>
+                </div>
+                <textarea id="editCardBio" class="claim-textarea" rows="2" placeholder="Resumen de tu estilo de conducción, periféricos, aspiraciones en FFC..." maxlength="300"></textarea>
             </div>
+
+            <!-- SECCIÓN 5: REDES SOCIALES -->
+            <div class="card-edit-group">
+                <div class="card-group-header">
+                    <span class="card-group-num">5</span>
+                    <span class="card-group-title">REDES SOCIALES & CONTACTO</span>
+                </div>
+                <div class="social-input-grid-visual">
+                    <div class="social-input-item">
+                        <span class="social-input-icon twitch">👾</span>
+                        <input type="text" id="editCardTwitch" class="claim-input" placeholder="Twitch (usuario)">
+                    </div>
+                    <div class="social-input-item">
+                        <span class="social-input-icon youtube">📺</span>
+                        <input type="text" id="editCardYoutube" class="claim-input" placeholder="YouTube (canal)">
+                    </div>
+                    <div class="social-input-item">
+                        <span class="social-input-icon twitter">🐦</span>
+                        <input type="text" id="editCardTwitter" class="claim-input" placeholder="X / Twitter (@handle)">
+                    </div>
+                    <div class="social-input-item">
+                        <span class="social-input-icon discord">💬</span>
+                        <input type="text" id="editCardDiscord" class="claim-input" placeholder="Discord (usuario)">
+                    </div>
+                </div>
+            </div>
+
+            <div class="card-edit-actions" style="margin-top: 14px; display: flex; gap: 8px;">
+                <button type="submit" class="btn btn-primary btn-sm" id="saveDriverCardBtn" style="flex: 1.5; padding: 10px 16px; font-size: 13px;">⚡ Guardar Cambios en Firebase</button>
+                <button type="button" class="btn-card-secondary-view" id="modalViewOfficialCardBtn" style="flex: 1; padding: 10px 12px; font-size: 13px;">👁️ Ver Tarjeta</button>
+            </div>
+            <span id="editCardNotice" class="claim-notice-msg" style="text-align: center; margin-top: 8px; display: block;"></span>
         </form>
     </div>
 </div>

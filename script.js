@@ -7515,16 +7515,62 @@ function updateCardLivePreview() {
     }
 }
 
+function getPresetHelmetSvg(primaryColor) {
+    const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="100" height="100">
+        <circle cx="50" cy="50" r="48" fill="#080c14" stroke="${primaryColor}" stroke-width="3"/>
+        <path d="M22 56 C22 34 35 20 54 20 C73 20 84 33 84 54 C84 68 76 78 62 80 L36 80 C26 76 22 66 22 56 Z" fill="${primaryColor}"/>
+        <path d="M38 34 C44 30 62 30 76 38 C79 40 80 44 80 49 L58 49 C46 49 38 43 38 34 Z" fill="#0b111e" stroke="#ffffff" stroke-width="1.2"/>
+        <path d="M42 42 C52 38 68 40 76 44" stroke="#ffffff" stroke-width="1" stroke-linecap="round" opacity="0.6"/>
+        <circle cx="48" cy="62" r="5" fill="#0b111e"/>
+        <path d="M34 68 L68 68" stroke="#0b111e" stroke-width="3" stroke-linecap="round"/>
+        <path d="M50 20 L50 28" stroke="#ffffff" stroke-width="2" stroke-linecap="round"/>
+    </svg>`;
+    return `data:image/svg+xml;utf8,${encodeURIComponent(svg)}`;
+}
+
+function syncActiveColorSwatch(color) {
+    const swatches = document.querySelectorAll(".color-swatch-btn");
+    swatches.forEach(sw => {
+        const swColor = sw.getAttribute("data-color");
+        if (swColor && swColor.toLowerCase() === (color || "").toLowerCase()) {
+            sw.classList.add("active");
+        } else {
+            sw.classList.remove("active");
+        }
+    });
+}
+
+function syncActiveFlagChip(flag) {
+    const chips = document.querySelectorAll(".flag-chip-btn");
+    chips.forEach(ch => {
+        const chFlag = ch.getAttribute("data-flag");
+        if (chFlag && chFlag === (flag || "").trim()) {
+            ch.classList.add("active");
+        } else {
+            ch.classList.remove("active");
+        }
+    });
+}
+
 // Populate User Customizer Form
 function populateUserCardEditor(data) {
     if (!data) return;
     if (editCardAvatar) editCardAvatar.value = data.avatarUrl || "";
     if (editCardColor) {
-        editCardColor.value = data.cardColor || "#e10600";
-        if (editCardColorHex) editCardColorHex.textContent = (data.cardColor || "#e10600").toUpperCase();
+        const color = data.cardColor || "#e10600";
+        editCardColor.value = color;
+        if (editCardColorHex) editCardColorHex.textContent = color.toUpperCase();
+        syncActiveColorSwatch(color);
     }
-    if (editCardFlag) editCardFlag.value = data.customFlag || "";
-    if (editCardBio) editCardBio.value = data.bio || "";
+    if (editCardFlag) {
+        editCardFlag.value = data.customFlag || "";
+        syncActiveFlagChip(data.customFlag || "");
+    }
+    const bioCharCounter = document.getElementById("bioCharCounter");
+    if (editCardBio) {
+        editCardBio.value = data.bio || "";
+        if (bioCharCounter) bioCharCounter.textContent = `${(data.bio || "").length}/300`;
+    }
     if (editCardTwitch) editCardTwitch.value = data.socialTwitch || "";
     if (editCardYoutube) editCardYoutube.value = data.socialYoutube || "";
     if (editCardTwitter) editCardTwitter.value = data.socialTwitter || "";
@@ -7537,13 +7583,159 @@ function populateUserCardEditor(data) {
 [editCardAvatar, editCardColor, editCardFlag, editCardBio, editCardTwitch, editCardYoutube, editCardTwitter, editCardDiscord].forEach(input => {
     if (input) {
         input.addEventListener("input", () => {
-            if (input === editCardColor && editCardColorHex) {
-                editCardColorHex.textContent = editCardColor.value.toUpperCase();
+            if (input === editCardColor) {
+                if (editCardColorHex) editCardColorHex.textContent = editCardColor.value.toUpperCase();
+                syncActiveColorSwatch(editCardColor.value);
+            }
+            if (input === editCardFlag) {
+                syncActiveFlagChip(editCardFlag.value);
+            }
+            if (input === editCardBio) {
+                const counter = document.getElementById("bioCharCounter");
+                if (counter) counter.textContent = `${editCardBio.value.length}/300`;
             }
             updateCardLivePreview();
         });
     }
 });
+
+// Color Swatch Picker Clicks
+const colorPresetGrid = document.getElementById("colorPresetGrid");
+if (colorPresetGrid) {
+    colorPresetGrid.addEventListener("click", (e) => {
+        const btn = e.target.closest(".color-swatch-btn");
+        if (!btn) return;
+        const color = btn.getAttribute("data-color");
+        if (color && editCardColor) {
+            editCardColor.value = color;
+            if (editCardColorHex) editCardColorHex.textContent = color.toUpperCase();
+            syncActiveColorSwatch(color);
+            updateCardLivePreview();
+        }
+    });
+}
+
+// Flag Preset Clicks
+const flagPresetGrid = document.getElementById("flagPresetGrid");
+if (flagPresetGrid) {
+    flagPresetGrid.addEventListener("click", (e) => {
+        const btn = e.target.closest(".flag-chip-btn");
+        if (!btn) return;
+        const flag = btn.getAttribute("data-flag");
+        if (flag && editCardFlag) {
+            editCardFlag.value = flag;
+            syncActiveFlagChip(flag);
+            updateCardLivePreview();
+        }
+    });
+}
+
+// Avatar Presets & Clear
+const avatarQuickPresets = document.getElementById("avatarQuickPresets");
+if (avatarQuickPresets) {
+    avatarQuickPresets.addEventListener("click", (e) => {
+        const btn = e.target.closest(".avatar-preset-btn");
+        if (!btn) return;
+        const preset = btn.getAttribute("data-avatar");
+        if (preset === "helmet-gold") {
+            if (editCardAvatar) editCardAvatar.value = getPresetHelmetSvg("#d6b45c");
+        } else if (preset === "helmet-red") {
+            if (editCardAvatar) editCardAvatar.value = getPresetHelmetSvg("#e10600");
+        } else if (preset === "helmet-blue") {
+            if (editCardAvatar) editCardAvatar.value = getPresetHelmetSvg("#0600ef");
+        } else if (preset === "helmet-green") {
+            if (editCardAvatar) editCardAvatar.value = getPresetHelmetSvg("#00594f");
+        } else if (btn.id === "btnRemoveAvatar") {
+            if (editCardAvatar) editCardAvatar.value = "";
+        }
+        updateCardLivePreview();
+    });
+}
+
+// Avatar File Upload via offscreen Canvas
+const editCardFileInput = document.getElementById("editCardFileInput");
+const btnTriggerAvatarFile = document.getElementById("btnTriggerAvatarFile");
+if (btnTriggerAvatarFile && editCardFileInput) {
+    btnTriggerAvatarFile.addEventListener("click", () => editCardFileInput.click());
+
+    editCardFileInput.addEventListener("change", (e) => {
+        const file = e.target.files && e.target.files[0];
+        if (!file) return;
+
+        if (!file.type.startsWith("image/")) {
+            return;
+        }
+
+        const reader = new FileReader();
+        reader.onload = (event) => {
+            const img = new Image();
+            img.onload = () => {
+                const canvas = document.createElement("canvas");
+                const MAX_SIZE = 180;
+                let width = img.width;
+                let height = img.height;
+
+                if (width > height) {
+                    if (width > MAX_SIZE) {
+                        height = Math.round((height * MAX_SIZE) / width);
+                        width = MAX_SIZE;
+                    }
+                } else {
+                    if (height > MAX_SIZE) {
+                        width = Math.round((width * MAX_SIZE) / height);
+                        height = MAX_SIZE;
+                    }
+                }
+
+                canvas.width = width;
+                canvas.height = height;
+                const ctx = canvas.getContext("2d");
+                ctx.drawImage(img, 0, 0, width, height);
+
+                const dataUrl = canvas.toDataURL("image/jpeg", 0.85);
+                if (editCardAvatar) {
+                    editCardAvatar.value = dataUrl;
+                    updateCardLivePreview();
+                }
+            };
+            img.src = event.target.result;
+        };
+        reader.readAsDataURL(file);
+    });
+}
+
+// Bio Suggestions
+const bioSuggestionsRow = document.querySelector(".bio-suggestions-row");
+if (bioSuggestionsRow) {
+    bioSuggestionsRow.addEventListener("click", (e) => {
+        const btn = e.target.closest(".bio-tag-btn");
+        if (!btn) return;
+        const tag = btn.getAttribute("data-tag");
+        if (!tag || !editCardBio) return;
+
+        const current = editCardBio.value.trim();
+        if (!current) {
+            editCardBio.value = tag;
+        } else if (!current.includes(tag)) {
+            if (current.length + tag.length + 3 <= 300) {
+                editCardBio.value = `${current} | ${tag}`;
+            }
+        }
+        const counter = document.getElementById("bioCharCounter");
+        if (counter) counter.textContent = `${editCardBio.value.length}/300`;
+        updateCardLivePreview();
+    });
+}
+
+// Modal View Official Card Button
+const modalViewOfficialCardBtn = document.getElementById("modalViewOfficialCardBtn");
+if (modalViewOfficialCardBtn) {
+    modalViewOfficialCardBtn.addEventListener("click", () => {
+        closeCardEditorModal();
+        const driverName = (activeUserData && activeUserData.claimedDriver) ? activeUserData.claimedDriver : (currentPilotos && currentPilotos[0] ? currentPilotos[0].driver : "Dieguiosk");
+        openDriverStatsModal(driverName);
+    });
+}
 
 // View My Driver Card Button in Profile dropdown
 const openMyDriverCardBtn = document.getElementById("openMyDriverCardBtn");
