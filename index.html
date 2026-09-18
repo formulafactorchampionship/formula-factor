@@ -46,37 +46,40 @@
 <header class="navbar">
     <div class="nav-inner">
 
-        <a href="#home" class="brand">
+        <a href="#home" class="brand" title="Formula Factor Championship 2010">
             <img
                 class="brand-logo"
                 src="https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fwww.gridfinder.com%2F_next%2Fimage%3Furl%3Dhttps%3A%252F%252Fgridfinder-wordpress.s3.us-east-2.amazonaws.com%252Fcommunity_logo_7scznez19uu_logoImg%253Fts%253D1778668047402%26w%3D3840%26q%3D75&f=1&nofb=1&ipt=f22017e767bf424bd12cd4071662088d3e245ebaf0b655d5c97b7c2a37d9445c"
                 alt="Formula Factor Championship"
             >
-            <span class="brand-name">FORMULA FACTOR</span>
+            <div class="brand-text-wrap">
+                <span class="brand-name">FORMULA FACTOR</span>
+                <span class="brand-subtag">CHAMPIONSHIP</span>
+            </div>
         </a>
 
         <nav class="nav-links">
-            <a href="#home" id="navHome">INICIO</a>
-            <a href="#standings" id="navStandings">CLASIFICACIÓN</a>
-            <a href="#calendar" id="navCalendar">CALENDARIO</a>
-            <a href="#races" id="navRaces">CARRERAS</a>
-            <a href="#info" id="navInfo">INFORMACIÓN</a>
-            <a href="#compare" class="nav-compare-link" id="navCompare" title="Comparador de Pilotos (Cara a Cara)" onclick="if(window.openDriverComparison){window.openDriverComparison();return false;}">
+            <a href="#home" id="navHome" class="nav-item">INICIO</a>
+            <a href="#standings" id="navStandings" class="nav-item">CLASIFICACIÓN</a>
+            <a href="#calendar" id="navCalendar" class="nav-item">CALENDARIO</a>
+            <a href="#races" id="navRaces" class="nav-item">CARRERAS</a>
+            <a href="#info" id="navInfo" class="nav-item">INFORMACIÓN</a>
+            <a href="#compare" class="nav-item nav-compare-link" id="navCompare" title="Comparador de Pilotos (Cara a Cara)" onclick="if(window.openDriverComparison){window.openDriverComparison();return false;}">
                 <span class="compare-nav-badge">⚔️</span>
                 <span id="navCompareText">COMPARADOR</span>
             </a>
-            <a href="#fantasy" class="nav-fantasy-link" id="navFantasy" title="FFC Fantasy League" onclick="if(window.openFantasyPortal){window.openFantasyPortal();return false;}">
+            <a href="#fantasy" class="nav-item nav-fantasy-link" id="navFantasy" title="FFC Fantasy League" onclick="if(window.openFantasyPortal){window.openFantasyPortal();return false;}">
                 <span class="fantasy-nav-badge">75M€</span>
                 <span id="navFantasyText">FANTASY</span>
             </a>
         </nav>
 
         <div class="nav-actions">
-            <!-- Desplegable de Idioma (ES / EN con bandera de Reino Unido) -->
+            <!-- Desplegable de Idioma (ES / EN) -->
             <div class="custom-dropdown lang-dropdown" id="langDropdown">
                 <button type="button" class="dropdown-trigger lang-trigger" id="langDropdownBtn" aria-haspopup="listbox" aria-expanded="false" title="Cambiar idioma / Change language">
                     <span class="trigger-flag" id="currentLangFlag">
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 17" width="22" height="15" class="flag-svg" aria-hidden="true">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 17" width="20" height="14" class="flag-svg" aria-hidden="true">
                             <rect width="24" height="17" fill="#c60b1e"/>
                             <rect y="4.25" width="24" height="8.5" fill="#ffc400"/>
                             <circle cx="6.5" cy="8.5" r="2.2" fill="#c60b1e"/>
@@ -85,14 +88,14 @@
                         </svg>
                     </span>
                     <span class="trigger-code" id="currentLangCode">ES</span>
-                    <svg class="dropdown-chevron" viewBox="0 0 10 6" width="9" height="5" aria-hidden="true">
+                    <svg class="dropdown-chevron" viewBox="0 0 10 6" width="8" height="5" aria-hidden="true">
                         <path d="M1 1L5 5L9 1" stroke="currentColor" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
                     </svg>
                 </button>
                 <div class="dropdown-menu lang-menu" id="langDropdownMenu" role="listbox" aria-label="Cambiar idioma">
                     <button type="button" class="dropdown-option active" id="langOptEs" data-lang="es" role="option" aria-selected="true">
                         <span class="option-flag">
-                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 17" width="22" height="15" class="flag-svg" aria-hidden="true">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 17" width="20" height="14" class="flag-svg" aria-hidden="true">
                                 <rect width="24" height="17" fill="#c60b1e"/>
                                 <rect y="4.25" width="24" height="8.5" fill="#ffc400"/>
                                 <circle cx="6.5" cy="8.5" r="2.2" fill="#c60b1e"/>
@@ -106,7 +109,7 @@
                     </button>
                     <button type="button" class="dropdown-option" id="langOptEn" data-lang="en" role="option" aria-selected="false">
                         <span class="option-flag">
-                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 60 30" width="22" height="15" class="flag-svg" aria-hidden="true" style="border-radius:2px;overflow:hidden;">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 60 30" width="20" height="14" class="flag-svg" aria-hidden="true" style="border-radius:2px;overflow:hidden;">
                                 <rect width="60" height="30" fill="#012169"/>
                                 <path d="M0 0 L60 30 M60 0 L0 30" stroke="#FFFFFF" stroke-width="6"/>
                                 <path d="M0 0 L30 15 M60 30 L30 15" stroke="#C8102E" stroke-width="2"/>
@@ -122,14 +125,18 @@
                 </div>
             </div>
 
+            <!-- Discord Button -->
             <a
                 class="discord-btn"
                 href="https://discord.gg/4k8kPsP6Mb"
                 target="_blank"
                 rel="noopener noreferrer"
-                title="Discord"
+                title="Unirse al servidor oficial de Discord"
             >
-                <span>DISCORD ↗</span>
+                <svg viewBox="0 0 24 24" width="15" height="15" fill="currentColor" aria-hidden="true">
+                    <path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028c.462-.63.874-1.295 1.226-1.994.021-.041.001-.09-.041-.106a13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.929 1.793 8.18 1.793 12.061 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.893.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.028zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.956-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.956 2.418-2.157 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.946 2.418-2.157 2.418z"/>
+                </svg>
+                <span class="discord-label">DISCORD</span>
             </a>
 
             <!-- Botón de Acceso Rápido de Administración (Solo visible para cuentas autorizadas) -->
@@ -140,15 +147,15 @@
                 <span class="header-admin-label" id="headerAdminBtnLabel">ADMIN</span>
             </button>
 
-            <!-- Botón de Inicio de Sesión (a la derecha de Discord) -->
+            <!-- Botón de Inicio de Sesión / Perfil -->
             <div class="custom-dropdown user-auth-dropdown" id="userAuthDropdown">
                 <button type="button" class="auth-header-btn" id="authHeaderBtn" aria-haspopup="dialog" aria-expanded="false" title="Iniciar sesión con email y contraseña">
                     <span class="auth-btn-icon-wrap" id="authBtnIconWrap">
-                        <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor" aria-hidden="true">
+                        <svg viewBox="0 0 24 24" width="13" height="13" fill="currentColor" aria-hidden="true">
                             <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
                         </svg>
                     </span>
-                    <span class="auth-btn-label" id="authBtnLabel">INICIAR SESIÓN</span>
+                    <span class="auth-btn-label" id="authBtnLabel">ACCEDER</span>
                 </button>
 
                 <!-- Menú desplegable cuando el usuario ha iniciado sesión -->
