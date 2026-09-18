@@ -2590,7 +2590,7 @@ const ffc2010SeasonDrivers = [
 ];
 
 const defaultSettings = {
-    discordUrl: "https://discord.gg/4k8kPsP6Mb",
+    discordUrl: "https://discord.gg/NXFPWd6eg",
     xUrl: "https://x.com/F0RMULAF4CTOR",
     instagramUrl: "https://www.instagram.com/formulafactorchampionship",
     season: "01",
@@ -8965,6 +8965,7 @@ const ffcFantasyState = {
     driver3: null,
     team: null,
     turboDriver: null,
+    roundLineups: {},
     currentFilter: "all",
     searchQuery: "",
     sortBy: "price-desc",
@@ -9428,6 +9429,147 @@ function isFantasyScoringRace(raceKey, race) {
     return false;
 }
 
+// Get base points for a driver in a single race
+function getDriverPointsInRace(driverName, race) {
+    if (!driverName || !race || !Array.isArray(race.drivers)) return 0;
+    const norm = normalizeDriverKey(driverName);
+    let pts = 0;
+
+    race.drivers.forEach((d, idx) => {
+        if (!d || !d.driver) return;
+        if (normalizeDriverKey(d.driver) === norm) {
+            if (d.status !== "DSQ") {
+                const pos = Number(d.pos) || (idx + 1);
+                if (pos >= 1 && pos <= 10) {
+                    pts += (F1_POINTS_MAP[pos] || 0);
+                }
+            }
+        }
+    });
+
+    // Fastest lap bonus (+1 pt)
+    if (race.fastest && race.fastest !== "TBA") {
+        const rawName = race.fastest.split("·")[0].trim();
+        if (rawName && normalizeDriverKey(rawName) === norm) {
+            pts += (typeof F1_FASTEST_LAP_PTS !== "undefined" ? F1_FASTEST_LAP_PTS : 1);
+        }
+    }
+
+    return pts;
+}
+
+// Get base points for a constructor in a single race
+function getConstructorPointsInRace(teamName, race) {
+    if (!teamName || !race || !Array.isArray(race.drivers)) return 0;
+    const cleanTeam = teamName.trim().toLowerCase();
+    let pts = 0;
+
+    race.drivers.forEach((d, idx) => {
+        if (!d || !d.driver) return;
+        const dTeam = (d.team || getDriverTeam(d.driver) || "").trim().toLowerCase();
+        if (dTeam === cleanTeam) {
+            if (d.status !== "DSQ") {
+                const pos = Number(d.pos) || (idx + 1);
+                if (pos >= 1 && pos <= 10) {
+                    pts += (F1_POINTS_MAP[pos] || 0);
+                }
+            }
+        }
+    });
+
+    if (race.fastest && race.fastest !== "TBA") {
+        const rawName = race.fastest.split("·")[0].trim();
+        if (rawName) {
+            const flDriverTeam = (getDriverTeam(rawName) || "").trim().toLowerCase();
+            if (flDriverTeam === cleanTeam) {
+                pts += (typeof F1_FASTEST_LAP_PTS !== "undefined" ? F1_FASTEST_LAP_PTS : 1);
+            }
+        }
+    }
+
+    return pts;
+}
+
+// Get list of all completed scoring races
+function getCompletedScoringRaces() {
+    const rMap = (typeof raceResults !== "undefined" && raceResults) ? raceResults : {};
+    const list = [];
+    Object.entries(rMap).forEach(([rKey, race]) => {
+        if (isFantasyScoringRace(rKey, race)) {
+            list.push({ key: rKey, race: race });
+        }
+    });
+    return list;
+}
+
+// Calculate score earned by a specific lineup in a specific race
+function getLineupScoreInRace(lineup, race) {
+    if (!lineup || !race) return 0;
+    let score = 0;
+
+    if (lineup.driver1) {
+        let p = getDriverPointsInRace(lineup.driver1, race);
+        if (lineup.turboDriver === lineup.driver1) p *= 2;
+        score += p;
+    }
+    if (lineup.driver2) {
+        let p = getDriverPointsInRace(lineup.driver2, race);
+        if (lineup.turboDriver === lineup.driver2) p *= 2;
+        score += p;
+    }
+    if (lineup.driver3) {
+        let p = getDriverPointsInRace(lineup.driver3, race);
+        if (lineup.turboDriver === lineup.driver3) p *= 2;
+        score += p;
+    }
+    if (lineup.team) {
+        score += getConstructorPointsInRace(lineup.team, race);
+    }
+
+    return score;
+}
+
+// Calculate frozen round-by-round fantasy points for a team
+function calculateFantasyTeamPoints(teamState) {
+    if (!teamState) return { totalPts: 0, roundScores: {} };
+
+    const completedRaces = getCompletedScoringRaces();
+    let totalPts = 0;
+    const roundScores = {};
+
+    if (!teamState.roundLineups) {
+        teamState.roundLineups = {};
+    }
+
+    completedRaces.forEach(({ key, race }) => {
+        let lineup = teamState.roundLineups[key];
+
+        if (!lineup) {
+            const hasAnyOtherRoundLineup = Object.keys(teamState.roundLineups).length > 0;
+            if (!hasAnyOtherRoundLineup) {
+                lineup = {
+                    driver1: teamState.driver1,
+                    driver2: teamState.driver2,
+                    driver3: teamState.driver3,
+                    team: teamState.team,
+                    turboDriver: teamState.turboDriver
+                };
+                teamState.roundLineups[key] = { ...lineup };
+            }
+        }
+
+        if (lineup) {
+            const rPts = getLineupScoreInRace(lineup, race);
+            roundScores[key] = rPts;
+            totalPts += rPts;
+        } else {
+            roundScores[key] = 0;
+        }
+    });
+
+    return { totalPts, roundScores };
+}
+
 // Get accumulated fantasy points for a driver (from Round 10 onwards)
 function getDriverFantasyPoints(driverName) {
     if (!driverName) return 0;
@@ -9437,27 +9579,7 @@ function getDriverFantasyPoints(driverName) {
     const rMap = (typeof raceResults !== "undefined" && raceResults) ? raceResults : {};
     Object.entries(rMap).forEach(([rKey, race]) => {
         if (!isFantasyScoringRace(rKey, race)) return;
-        if (!Array.isArray(race.drivers)) return;
-
-        race.drivers.forEach((d, idx) => {
-            if (!d || !d.driver) return;
-            if (normalizeDriverKey(d.driver) === norm) {
-                if (d.status !== "DSQ") {
-                    const pos = Number(d.pos) || (idx + 1);
-                    if (pos >= 1 && pos <= 10) {
-                        pts += (F1_POINTS_MAP[pos] || 0);
-                    }
-                }
-            }
-        });
-
-        // Fastest lap bonus (+1 pt)
-        if (race.fastest && race.fastest !== "TBA") {
-            const rawName = race.fastest.split("·")[0].trim();
-            if (rawName && normalizeDriverKey(rawName) === norm) {
-                pts += (typeof F1_FASTEST_LAP_PTS !== "undefined" ? F1_FASTEST_LAP_PTS : 1);
-            }
-        }
+        pts += getDriverPointsInRace(norm, race);
     });
 
     return pts;
@@ -9466,36 +9588,12 @@ function getDriverFantasyPoints(driverName) {
 // Get accumulated fantasy points for a constructor (from Round 10 onwards)
 function getTeamFantasyPoints(teamName) {
     if (!teamName) return 0;
-    const cleanTeam = teamName.trim().toLowerCase();
     let pts = 0;
 
     const rMap = (typeof raceResults !== "undefined" && raceResults) ? raceResults : {};
     Object.entries(rMap).forEach(([rKey, race]) => {
         if (!isFantasyScoringRace(rKey, race)) return;
-        if (!Array.isArray(race.drivers)) return;
-
-        race.drivers.forEach((d, idx) => {
-            if (!d || !d.driver) return;
-            const dTeam = (d.team || getDriverTeam(d.driver) || "").trim().toLowerCase();
-            if (dTeam === cleanTeam) {
-                if (d.status !== "DSQ") {
-                    const pos = Number(d.pos) || (idx + 1);
-                    if (pos >= 1 && pos <= 10) {
-                        pts += (F1_POINTS_MAP[pos] || 0);
-                    }
-                }
-            }
-        });
-
-        if (race.fastest && race.fastest !== "TBA") {
-            const rawName = race.fastest.split("·")[0].trim();
-            if (rawName) {
-                const flDriverTeam = (getDriverTeam(rawName) || "").trim().toLowerCase();
-                if (flDriverTeam === cleanTeam) {
-                    pts += (typeof F1_FASTEST_LAP_PTS !== "undefined" ? F1_FASTEST_LAP_PTS : 1);
-                }
-            }
-        }
+        pts += getConstructorPointsInRace(teamName, race);
     });
 
     return pts;
@@ -9504,7 +9602,6 @@ function getTeamFantasyPoints(teamName) {
 // Calculate team budget, value, fluctuation equity and points
 function calculateFantasyMetrics(teamState = ffcFantasyState) {
     let spent = 0;
-    let totalPts = 0;
     let filledSlots = 0;
     let teamDelta = 0;
 
@@ -9517,7 +9614,6 @@ function calculateFantasyMetrics(teamState = ffcFantasyState) {
         if (teamState.turboDriver === teamState.driver1) {
             d1Pts *= 2;
         }
-        totalPts += d1Pts;
         filledSlots++;
     }
 
@@ -9530,7 +9626,6 @@ function calculateFantasyMetrics(teamState = ffcFantasyState) {
         if (teamState.turboDriver === teamState.driver2) {
             d2Pts *= 2;
         }
-        totalPts += d2Pts;
         filledSlots++;
     }
 
@@ -9543,7 +9638,6 @@ function calculateFantasyMetrics(teamState = ffcFantasyState) {
         if (teamState.turboDriver === teamState.driver3) {
             d3Pts *= 2;
         }
-        totalPts += d3Pts;
         filledSlots++;
     }
 
@@ -9553,7 +9647,6 @@ function calculateFantasyMetrics(teamState = ffcFantasyState) {
         spent += getConstructorFantasyPrice(teamState.team);
         teamDelta += getTeamPriceFluctuation(teamState.team).delta;
         teamPts = getTeamFantasyPoints(teamState.team);
-        totalPts += teamPts;
         filledSlots++;
     }
 
@@ -9561,10 +9654,13 @@ function calculateFantasyMetrics(teamState = ffcFantasyState) {
     teamDelta = Math.round(teamDelta * 10) / 10;
     const remaining = Math.round((FANTASY_INITIAL_BUDGET - spent) * 10) / 10;
 
+    const { totalPts, roundScores } = calculateFantasyTeamPoints(teamState);
+
     return {
         spent,
         remaining,
         totalPts,
+        roundScores,
         filledSlots,
         teamDelta,
         d1Pts,
@@ -9591,6 +9687,7 @@ function loadFantasyTeamFromStorage() {
                 ffcFantasyState.driver3 = parsed.driver3 || null;
                 ffcFantasyState.team = parsed.team || null;
                 ffcFantasyState.turboDriver = parsed.turboDriver || null;
+                ffcFantasyState.roundLineups = parsed.roundLineups || {};
             }
         } else if (user) {
             ffcFantasyState.teamName = `Escudería de ${user.displayName || user.email.split('@')[0]}`;
@@ -9691,6 +9788,7 @@ async function saveFantasyTeamToStorage() {
             driver3: ffcFantasyState.driver3,
             team: ffcFantasyState.team,
             turboDriver: ffcFantasyState.turboDriver,
+            roundLineups: ffcFantasyState.roundLineups || {},
             updatedAt: new Date().toISOString()
         };
         localStorage.setItem(userKey, JSON.stringify(dataToSave));
@@ -9710,6 +9808,7 @@ async function saveFantasyTeamToStorage() {
                 driver3: ffcFantasyState.driver3,
                 team: ffcFantasyState.team,
                 turboDriver: ffcFantasyState.turboDriver,
+                roundLineups: ffcFantasyState.roundLineups || {},
                 totalPoints: metrics.totalPts,
                 teamValue: metrics.spent,
                 updatedAt: new Date().toISOString()
@@ -9811,6 +9910,7 @@ async function syncUserFantasyTeamFromCloud(user) {
             ffcFantasyState.driver3 = teamData.driver3 || null;
             ffcFantasyState.team = teamData.team || null;
             ffcFantasyState.turboDriver = teamData.turboDriver || null;
+            ffcFantasyState.roundLineups = teamData.roundLineups || {};
             
             const userKey = "ffc_fantasy_team_" + cleanDocId;
             const dataToSave = {
@@ -9820,6 +9920,7 @@ async function syncUserFantasyTeamFromCloud(user) {
                 driver3: ffcFantasyState.driver3,
                 team: ffcFantasyState.team,
                 turboDriver: ffcFantasyState.turboDriver,
+                roundLineups: ffcFantasyState.roundLineups,
                 updatedAt: new Date().toISOString()
             };
             try {
@@ -10569,6 +10670,7 @@ async function renderFantasyLeaderboard() {
             driver3: ffcFantasyState.driver3,
             team: ffcFantasyState.team,
             turboDriver: ffcFantasyState.turboDriver,
+            roundLineups: ffcFantasyState.roundLineups || {},
             totalPoints: myMetrics.totalPts,
             teamValue: myMetrics.spent,
             isUserTeam: true
@@ -10588,7 +10690,8 @@ async function renderFantasyLeaderboard() {
             driver2: t.driver2,
             driver3: t.driver3,
             team: t.team,
-            turboDriver: t.turboDriver
+            turboDriver: t.turboDriver,
+            roundLineups: t.roundLineups || {}
         });
         t.totalPoints = m.totalPts;
         t.teamValue = m.spent;
