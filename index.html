@@ -11,7 +11,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;500;600;700;800;900&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="style.css?v=20260918_v3">
     <script>
         // Early instant hook for FFC Fantasy Portal
         window.openFantasyPortal = function() {
@@ -317,12 +317,8 @@
         </div>
 
         <h1 id="heroTitle">
-            CORRE<br>
-            RUEDA A<br>
-            RUEDA<br>
-            EN LA PARRILLA<br>
-            FORMULA<br>
-            FACTOR
+            CORRE RUEDA A RUEDA<br>
+            EN LA PARRILLA <span class="gold-text-glow">FFC</span>
         </h1>
 
         <p class="hero-description" id="heroDescription">
@@ -390,30 +386,33 @@
 
     <aside class="next-race-card">
 
-        <div class="card-top">
-            <span class="live-dot"></span>
-            <span id="nextRaceCardTopText">PRÓXIMA CARRERA</span>
+        <div class="next-race-header-row">
+            <div class="card-top">
+                <span class="live-dot"></span>
+                <span id="nextRaceCardTopText">PRÓXIMA CARRERA</span>
+            </div>
+
+            <div class="round-label" id="nextRaceRound">
+                ROUND 10
+            </div>
         </div>
 
-        <div class="round-label" id="nextRaceRound">
-            ROUND 10
+        <div class="next-race-info-block">
+            <div class="lightning">//</div>
+
+            <div class="next-label" id="nextRaceNextLabel">
+                SIGUIENTE RONDA
+            </div>
+
+            <h2 id="nextRaceTitle">
+                NÜRBURGRING<br>
+                GP
+            </h2>
+
+            <p class="location" id="nextRaceLocation">
+                NÜRBURGRING · EUROPE
+            </p>
         </div>
-
-        <div class="lightning">//</div>
-
-        <div class="next-label" id="nextRaceNextLabel">
-            SIGUIENTE RONDA
-        </div>
-
-        <h2 id="nextRaceTitle">
-            NÜRBURGRING<br>
-            GP
-        </h2>
-
-        <p class="location" id="nextRaceLocation">
-            NÜRBURGRING ·<br>
-            EUROPE
-        </p>
 
         <div class="countdown">
 
@@ -432,17 +431,26 @@
                 <span id="labelMins">MIN</span>
             </div>
 
-            <div class="count-box">
+            <div class="count-box count-box-secs">
                 <strong id="secs">00</strong>
                 <span id="labelSecs">SEG</span>
             </div>
 
         </div>
 
-        <div class="race-date" id="nextRaceDateText">
-            20 SEP · 16:30<br>
-            <span>CEST</span>
+        <div class="next-race-time-row">
+            <span class="race-start-label" id="raceStartTimeLabel">HORA DE INICIO</span>
+            <div class="race-date" id="nextRaceDateText">
+                20 SEP · 16:30 <span>CEST</span>
+            </div>
         </div>
+
+        <a href="#calendar" class="next-race-details-btn" id="nextRaceDetailsBtn">
+            <span id="nextRaceDetailsBtnText">DETALLES DEL CIRCUITO Y EVENTO</span>
+            <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor" aria-hidden="true">
+                <path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.41z"/>
+            </svg>
+        </a>
 
     </aside>
 

@@ -261,7 +261,7 @@ const translations = {
         },
         hero: {
             eyebrow: "TEMPORADA 1 · FORMULA FACTOR CHAMPIONSHIP",
-            title: "CORRE<br>RUEDA A<br>RUEDA<br>EN LA PARRILLA<br>FORMULA<br>FACTOR",
+            title: "CORRE RUEDA A RUEDA<br>EN LA PARRILLA <span class=\"gold-text-glow\">FFC</span>",
             description: "Una liga de sim racing competitiva, limpia y abierta a pilotos que quieren correr, competir y disfrutar del motorsport.",
             btnStandings: "VER CLASIFICACIÓN",
             btnCalendar: "VER CALENDARIO"
@@ -277,6 +277,8 @@ const translations = {
         nextRace: {
             cardTop: "PRÓXIMA CARRERA",
             nextLabel: "SIGUIENTE RONDA",
+            raceStartTime: "HORA DE INICIO",
+            circuitDetails: "DETALLES DEL CIRCUITO Y EVENTO",
             days: "DÍAS",
             hours: "HRS",
             mins: "MIN",
@@ -410,7 +412,7 @@ const translations = {
         },
         hero: {
             eyebrow: "SEASON 1 · FORMULA FACTOR CHAMPIONSHIP",
-            title: "RACE<br>WHEEL-TO-<br>WHEEL<br>ON THE<br>FORMULA<br>FACTOR GRID",
+            title: "RACE WHEEL-TO-WHEEL<br>ON THE <span class=\"gold-text-glow\">FFC GRID</span>",
             description: "A competitive, clean sim racing league open to drivers who want to race, compete, and enjoy motorsport.",
             btnStandings: "VIEW STANDINGS",
             btnCalendar: "VIEW CALENDAR"
@@ -426,6 +428,8 @@ const translations = {
         nextRace: {
             cardTop: "NEXT RACE",
             nextLabel: "NEXT ROUND",
+            raceStartTime: "RACE START TIME",
+            circuitDetails: "CIRCUIT & EVENT DETAILS",
             days: "DAYS",
             hours: "HRS",
             mins: "MIN",
@@ -649,6 +653,10 @@ function applyTranslations(lang) {
     if (lblM) lblM.textContent = dict.nextRace.mins;
     const lblS = document.getElementById("labelSecs");
     if (lblS) lblS.textContent = dict.nextRace.secs;
+    const rstLabel = document.getElementById("raceStartTimeLabel");
+    if (rstLabel && dict.nextRace.raceStartTime) rstLabel.textContent = dict.nextRace.raceStartTime;
+    const nrdBtnText = document.getElementById("nextRaceDetailsBtnText");
+    if (nrdBtnText && dict.nextRace.circuitDetails) nrdBtnText.textContent = dict.nextRace.circuitDetails;
 
     // Stats
     const stSeason = document.getElementById("statLabelSeason");
@@ -920,7 +928,7 @@ function formatRaceForTimezone(dateTimeStr, targetTz, lang = currentLanguage) {
         month,
         time: `${hour}:${minute}`,
         tzName,
-        dateTextCard: `${day} ${month} · ${hour}:${minute}<br><span>${tzName}</span>`,
+        dateTextCard: `${day} ${month} · ${hour}:${minute} <span>${tzName}</span>`,
         fullTimeStr: `${hour}:${minute} ${tzName}`
     };
 }
@@ -2298,12 +2306,7 @@ function renderNextRaceOnPage(race) {
         }
     }
     if (nextRaceLocationEl) {
-        if (race.location && race.location.includes(" · ")) {
-            const parts = race.location.split(" · ");
-            nextRaceLocationEl.innerHTML = `${parts[0]} ·<br>${parts[1]}`;
-        } else {
-            nextRaceLocationEl.textContent = race.location || "";
-        }
+        nextRaceLocationEl.textContent = race.location || "";
     }
 
     // Convert date and time to the selected timezone
@@ -2336,7 +2339,7 @@ function renderNextRaceOnPage(race) {
         }
     } else if (nextRaceDateTextEl) {
         if (race.dateText && race.dateText.includes(" CEST")) {
-            nextRaceDateTextEl.innerHTML = `${race.dateText.replace(" CEST", "")}<br><span>CEST</span>`;
+            nextRaceDateTextEl.innerHTML = `${race.dateText.replace(" CEST", "")} <span>CEST</span>`;
         } else {
             nextRaceDateTextEl.textContent = race.dateText || "";
         }
