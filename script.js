@@ -404,6 +404,18 @@ const translations = {
             adminPanelBtn: "PANEL DE CONTROL",
             btnLogout: "CERRAR SESIÓN",
             welcome: "Bienvenido"
+        },
+        claim: {
+            title: "¿ERES PILOTO OFICIAL DE LA FFC?",
+            desc: "Para obtener tu código de vinculación, debes <strong>abrir un ticket</strong> en el servidor oficial de Discord de la FFC. Los comisarios te entregarán tu código exclusivo.",
+            ticketBtn: "Abrir Ticket en Discord FFC ↗",
+            stepLabel: "¿YA TIENES TU CÓDIGO DEL TICKET?",
+            codePlaceholder: "Código (ej: FF-8A9201)",
+            submitBtn: "Vincular",
+            verifiedTag: "PILOTO VERIFICADO",
+            unlinkBtn: "🔓 Desvincular Piloto",
+            customizeBtn: "🎨 Personalizar Tarjeta",
+            viewCardBtn: "👁️ Ver Tarjeta"
         }
     },
     en: {
@@ -561,6 +573,18 @@ const translations = {
             adminPanelBtn: "ADMIN PANEL",
             btnLogout: "LOG OUT",
             welcome: "Welcome"
+        },
+        claim: {
+            title: "ARE YOU AN OFFICIAL FFC DRIVER?",
+            desc: "To get your linking code, you must <strong>open a ticket</strong> on the official FFC Discord server. Stewards will issue your exclusive code.",
+            ticketBtn: "Open Ticket on FFC Discord ↗",
+            stepLabel: "ALREADY HAVE YOUR TICKET CODE?",
+            codePlaceholder: "Code (e.g. FF-8A9201)",
+            submitBtn: "Link",
+            verifiedTag: "VERIFIED DRIVER",
+            unlinkBtn: "🔓 Unlink Driver",
+            customizeBtn: "🎨 Customize Card",
+            viewCardBtn: "👁️ View Card"
         }
     }
 };
@@ -841,6 +865,42 @@ function applyTranslations(lang) {
         }
         const uAdminBtn = document.getElementById("userAdminBtnText");
         if (uAdminBtn && dict.auth && dict.auth.adminPanelBtn) uAdminBtn.textContent = dict.auth.adminPanelBtn;
+    }
+
+    // Driver Claim / Verification Card translations
+    if (dict.claim) {
+        const cTitle = document.getElementById("claimNoticeTitle");
+        if (cTitle) cTitle.textContent = dict.claim.title;
+
+        const cDesc = document.getElementById("claimNoticeDesc");
+        if (cDesc) cDesc.innerHTML = dict.claim.desc;
+
+        const cBtn = document.getElementById("claimDiscordTicketBtnText");
+        if (cBtn) cBtn.textContent = dict.claim.ticketBtn;
+
+        const cStep = document.getElementById("claimStepLabel");
+        if (cStep) cStep.textContent = dict.claim.stepLabel;
+
+        const cCode = document.getElementById("userClaimCodeInput");
+        if (cCode) cCode.placeholder = dict.claim.codePlaceholder;
+
+        const cSubmit = document.getElementById("userClaimSubmitBtn");
+        if (cSubmit) cSubmit.textContent = dict.claim.submitBtn;
+
+        const cTag = document.getElementById("verifiedTagText");
+        if (cTag) cTag.textContent = dict.claim.verifiedTag;
+
+        const cUnlink = document.getElementById("userUnlinkDriverBtn");
+        if (cUnlink) {
+            const span = cUnlink.querySelector("span");
+            if (span) span.textContent = dict.claim.unlinkBtn;
+        }
+
+        const cCust = document.getElementById("openCardCustomizerPopupBtn");
+        if (cCust) cCust.textContent = dict.claim.customizeBtn;
+
+        const cView = document.getElementById("openMyDriverCardBtn");
+        if (cView) cView.textContent = dict.claim.viewCardBtn;
     }
 
     // Calendar cards status & country
