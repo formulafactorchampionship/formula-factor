@@ -6674,6 +6674,9 @@ function renderUserAuthState(user) {
         if (typeof syncUserFantasyTeamFromCloud === "function") {
             syncUserFantasyTeamFromCloud(user);
         }
+        if (typeof renderFantasyPortal === "function") {
+            renderFantasyPortal();
+        }
 
     } else {
         // User logged out
@@ -6693,6 +6696,9 @@ function renderUserAuthState(user) {
         }
         if (headerAdminBtn) {
             headerAdminBtn.style.display = "none";
+        }
+        if (typeof renderFantasyPortal === "function") {
+            renderFantasyPortal();
         }
     }
 }
@@ -7972,7 +7978,7 @@ const FANTASY_INITIAL_BUDGET = 100.0;
 const FANTASY_LOCAL_STORAGE_KEY = "ffc_fantasy_team_v2";
 
 const ffcFantasyState = {
-    teamName: "Apex Factor Racing",
+    teamName: "Mi Escudería FFC",
     driver1: null,
     driver2: null,
     driver3: null,
@@ -7984,17 +7990,33 @@ const ffcFantasyState = {
     activeSubTab: "team"
 };
 
-// Benchmark default community teams for fantasy leaderboard
-const DEFAULT_FANTASY_LEADERBOARD = [
-    { teamName: "Scuderia Factor V8", managerName: "Carlos Alonso", driver1: "Dieguiosk", driver2: "Sbinn", driver3: "AMF", team: "HRT", turboDriver: "Dieguiosk" },
-    { teamName: "Red Line Motorsport", managerName: "Muntii SimRacing", driver1: "Muntii", driver2: "Licha", driver3: "TheWereGH", team: "Red Bull", turboDriver: "Muntii" },
-    { teamName: "V10 Apex Predators", managerName: "Lucas SimHQ", driver1: "Novitaa", driver2: "BigTheo", driver3: "Gold", team: "Ferrari", turboDriver: "Novitaa" },
-    { teamName: "Silver Arrow Factor", managerName: "Adrian GP", driver1: "Suforr", driver2: "IvánR", driver3: "Viktolo", team: "Mercedes", turboDriver: "IvánR" },
-    { teamName: "Toro SimSport", managerName: "Mateo R.", driver1: "Sbinn", driver2: "Victor", driver3: "Farlonso", team: "Toro Rosso", turboDriver: "Sbinn" },
-    { teamName: "Overcut Racing Club", managerName: "Danilo F1", driver1: "Licha", driver2: "TheWereGH", driver3: "Baena", team: "Sauber", turboDriver: "TheWereGH" },
-    { teamName: "Papaya Factor Speed", managerName: "Enzo McLaren", driver1: "Victor", driver2: "Gold", driver3: "AMF", team: "McLaren", turboDriver: "Victor" },
-    { teamName: "Williams Historic GP", managerName: "Soria Fanatic", driver1: "Gold", driver2: "AMF", driver3: "ElMamut", team: "Williams", turboDriver: "Gold" }
-];
+// Fantasy Auth & Session Helpers
+function getFantasyCurrentUser() {
+    if (typeof activeUserAuth !== "undefined" && activeUserAuth && activeUserAuth.email) {
+        return activeUserAuth;
+    }
+    if (typeof LocalAuthStore !== "undefined") {
+        const u = LocalAuthStore.getCurrentUser();
+        if (u && u.email) return u;
+    }
+    return null;
+}
+
+function isFantasyUserLoggedIn() {
+    return Boolean(getFantasyCurrentUser());
+}
+
+function requireFantasyAuth() {
+    if (!isFantasyUserLoggedIn()) {
+        if (typeof openUserAuthModal === "function") {
+            openUserAuthModal("login");
+        } else {
+            alert("Debes iniciar sesión con tu cuenta para jugar a la FFC Fantasy.");
+        }
+        return false;
+    }
+    return true;
+}
 
 // Helper: Get Official Driver Data from live standings or dataset
 function getFantasyDriverData(driverName) {
@@ -8028,22 +8050,23 @@ function getFantasyDriverData(driverName) {
     return { driver: driverName, team: "FFC", pts: 0 };
 }
 
-// Calculate Dynamic Driver Fantasy Price
+// Calculate Balanced Dynamic Driver Fantasy Price
 function getDriverFantasyPrice(driverName) {
     const d = getFantasyDriverData(driverName);
     const pts = d ? (Number(d.pts) || 0) : 0;
-    // Scales smoothly from 6.0M€ (0 pts) to 28.5M€ (153 pts)
-    let price = 6.0 + (pts * 0.147);
+    // Balanced scale: Base 8.0M€ (0 pts) to ~31.0M€ (153 pts)
+    let price = 8.0 + (pts * 0.15);
+    price = Math.max(8.0, Math.min(32.0, price));
     return Math.round(price * 10) / 10;
 }
 
-// Calculate Dynamic Constructor Fantasy Price
+// Calculate Balanced Dynamic Constructor Fantasy Price
 function getConstructorFantasyPrice(teamName) {
     if (!teamName) return 15.0;
     const pts = getTeamCurrentPoints(teamName);
-    // Scales smoothly between 9.5M€ and 30.0M€
-    let price = 8.0 + (pts * 0.103);
-    price = Math.max(9.5, Math.min(30.0, price));
+    // Balanced scale: Base 11.0M€ (28 pts) to 28.5M€ (213 pts)
+    let price = 11.0 + (pts * 0.082);
+    price = Math.max(11.0, Math.min(30.0, price));
     return Math.round(price * 10) / 10;
 }
 
@@ -8144,17 +8167,23 @@ function calculateFantasyMetrics(teamState = ffcFantasyState) {
 // Local and Cloud Persistence
 function loadFantasyTeamFromStorage() {
     try {
-        const raw = localStorage.getItem(FANTASY_LOCAL_STORAGE_KEY);
+        const user = getFantasyCurrentUser();
+        const userKey = user && user.email 
+            ? ("ffc_fantasy_team_" + user.email.toLowerCase().trim().replace(/[^a-z0-9_]/g, "_")) 
+            : FANTASY_LOCAL_STORAGE_KEY;
+        const raw = localStorage.getItem(userKey) || localStorage.getItem(FANTASY_LOCAL_STORAGE_KEY);
         if (raw) {
             const parsed = JSON.parse(raw);
             if (parsed && typeof parsed === "object") {
-                ffcFantasyState.teamName = parsed.teamName || "Mi Escudería FFC";
+                ffcFantasyState.teamName = parsed.teamName || (user ? `Escudería de ${user.displayName || user.email.split('@')[0]}` : "Mi Escudería FFC");
                 ffcFantasyState.driver1 = parsed.driver1 || null;
                 ffcFantasyState.driver2 = parsed.driver2 || null;
                 ffcFantasyState.driver3 = parsed.driver3 || null;
                 ffcFantasyState.team = parsed.team || null;
                 ffcFantasyState.turboDriver = parsed.turboDriver || null;
             }
+        } else if (user) {
+            ffcFantasyState.teamName = `Escudería de ${user.displayName || user.email.split('@')[0]}`;
         }
     } catch (e) {
         console.warn("Error loading fantasy team from local storage:", e);
@@ -8163,6 +8192,11 @@ function loadFantasyTeamFromStorage() {
 
 async function saveFantasyTeamToStorage() {
     try {
+        const user = getFantasyCurrentUser();
+        const userKey = user && user.email 
+            ? ("ffc_fantasy_team_" + user.email.toLowerCase().trim().replace(/[^a-z0-9_]/g, "_")) 
+            : FANTASY_LOCAL_STORAGE_KEY;
+
         const dataToSave = {
             teamName: ffcFantasyState.teamName,
             driver1: ffcFantasyState.driver1,
@@ -8172,12 +8206,12 @@ async function saveFantasyTeamToStorage() {
             turboDriver: ffcFantasyState.turboDriver,
             updatedAt: new Date().toISOString()
         };
+        localStorage.setItem(userKey, JSON.stringify(dataToSave));
         localStorage.setItem(FANTASY_LOCAL_STORAGE_KEY, JSON.stringify(dataToSave));
 
         // Sync with Cloud Firestore if user is authenticated
-        const currentUser = typeof LocalAuthStore !== "undefined" ? LocalAuthStore.getCurrentUser() : null;
-        if (currentUser && currentUser.email && typeof db !== "undefined") {
-            const cleanDocId = currentUser.email.toLowerCase().trim().replace(/[^a-z0-9_]/g, "_");
+        if (user && user.email && typeof db !== "undefined") {
+            const cleanDocId = user.email.toLowerCase().trim().replace(/[^a-z0-9_]/g, "_");
             const metrics = calculateFantasyMetrics();
             
             // 1. Update user profile document
@@ -8195,8 +8229,8 @@ async function saveFantasyTeamToStorage() {
             try {
                 await setDoc(doc(db, "fantasy_leaderboard", cleanDocId), {
                     userId: cleanDocId,
-                    managerName: currentUser.displayName || currentUser.email.split("@")[0],
-                    email: currentUser.email,
+                    managerName: user.displayName || user.email.split("@")[0],
+                    email: user.email,
                     teamName: ffcFantasyState.teamName,
                     driver1: ffcFantasyState.driver1,
                     driver2: ffcFantasyState.driver2,
@@ -8322,6 +8356,15 @@ function switchFantasySubTab(tabName) {
 
 // Render HUD metrics
 function renderFantasyHUD() {
+    const isLogged = isFantasyUserLoggedIn();
+    const currentUser = getFantasyCurrentUser();
+
+    // Toggle Login Requirement Banner
+    const authBanner = document.getElementById("fantasyAuthBanner");
+    if (authBanner) {
+        authBanner.style.display = isLogged ? "none" : "flex";
+    }
+
     const metrics = calculateFantasyMetrics();
 
     const budgetEl = document.getElementById("fantasyBudgetRemaining");
@@ -8347,15 +8390,44 @@ function renderFantasyHUD() {
     const valueEl = document.getElementById("fantasyTeamValue");
     const slotsCountEl = document.getElementById("fantasySlotsCount");
     if (valueEl) valueEl.textContent = `${metrics.spent.toFixed(1)}M €`;
-    if (slotsCountEl) slotsCountEl.textContent = `${metrics.filledSlots} / 4 Fichajes completados`;
+    if (slotsCountEl) {
+        slotsCountEl.textContent = isLogged 
+            ? `${metrics.filledSlots} / 4 Fichajes completados`
+            : "Inicia sesión para jugar";
+    }
 
     const ptsEl = document.getElementById("fantasyTotalPts");
     if (ptsEl) ptsEl.innerHTML = `${metrics.totalPts} <span class="pts-unit">PTS</span>`;
 
+    // Rank HUD Card
+    const rankEl = document.getElementById("fantasyRankPosition");
+    const rankSub = document.getElementById("fantasyRankSub");
+    if (!isLogged) {
+        if (rankEl) rankEl.textContent = "🔒 Inicia Sesión";
+        if (rankSub) rankSub.textContent = "Para competir en la liga";
+    } else {
+        if (rankSub) rankSub.textContent = "Clasificación General";
+    }
+
     // Team name input
     const teamNameInput = document.getElementById("fantasyTeamNameInput");
+    const saveHint = document.getElementById("fantasySaveHint");
     if (teamNameInput && document.activeElement !== teamNameInput) {
-        teamNameInput.value = ffcFantasyState.teamName;
+        if (isLogged) {
+            teamNameInput.value = ffcFantasyState.teamName || `Escudería de ${currentUser.displayName || currentUser.email.split('@')[0]}`;
+            teamNameInput.disabled = false;
+            teamNameInput.placeholder = "Nombre de tu Escudería";
+            if (saveHint) {
+                saveHint.textContent = `Manager: ${currentUser.displayName || currentUser.email.split('@')[0]} · Sincronizado en la nube`;
+            }
+        } else {
+            teamNameInput.value = "";
+            teamNameInput.disabled = true;
+            teamNameInput.placeholder = "Inicia sesión para gestionar tu equipo";
+            if (saveHint) {
+                saveHint.textContent = "Debes iniciar sesión para guardar tu escudería";
+            }
+        }
     }
 }
 
@@ -8364,16 +8436,18 @@ function renderSlotCard(containerId, slotType, slotIndex, currentItem, pts, isTu
     const container = document.getElementById(containerId);
     if (!container) return;
 
+    const isLogged = isFantasyUserLoggedIn();
+
     if (!currentItem) {
         // Empty Slot State
         const label = slotType === "driver" ? `Piloto ${slotIndex}` : "Constructor";
         const icon = slotType === "driver" ? "🏎️" : "🏭";
         container.innerHTML = `
             <div class="slot-empty-body" onclick="handleEmptySlotClick('${slotType}')">
-                <div class="slot-empty-icon">${icon}</div>
-                <div class="slot-empty-title">+ Fichar ${label}</div>
-                <div class="slot-empty-sub">Vacante disponible</div>
-                <button type="button" class="slot-empty-btn">Ir al Mercado</button>
+                <div class="slot-empty-icon">${isLogged ? icon : "🔒"}</div>
+                <div class="slot-empty-title">${isLogged ? `+ Fichar ${label}` : `${label} Bloqueado`}</div>
+                <div class="slot-empty-sub">${isLogged ? "Vacante disponible" : "Inicia sesión para fichar"}</div>
+                <button type="button" class="slot-empty-btn">${isLogged ? "Ir al Mercado" : "Iniciar Sesión"}</button>
             </div>
         `;
     } else {
@@ -8464,6 +8538,7 @@ function renderFantasySlots() {
 
 // Empty Slot Click Handler
 window.handleEmptySlotClick = function(slotType) {
+    if (!requireFantasyAuth()) return;
     if (slotType === "driver") {
         setMarketFilter("drivers");
     } else {
@@ -8474,6 +8549,8 @@ window.handleEmptySlotClick = function(slotType) {
 
 // Sell Slot Handler
 window.handleSellSlot = function(slotKey) {
+    if (!requireFantasyAuth()) return;
+
     if (slotKey === "driver1") {
         if (ffcFantasyState.turboDriver === ffcFantasyState.driver1) ffcFantasyState.turboDriver = null;
         ffcFantasyState.driver1 = null;
@@ -8502,6 +8579,7 @@ window.handleSellSlot = function(slotKey) {
 
 // Toggle Turbo Driver Handler
 window.handleToggleTurbo = function(driverName) {
+    if (!requireFantasyAuth()) return;
     if (!driverName) return;
     ffcFantasyState.turboDriver = driverName;
     saveFantasyTeamToStorage();
@@ -8511,6 +8589,7 @@ window.handleToggleTurbo = function(driverName) {
 
 // Sign Driver Action
 window.handleSignDriver = function(driverName) {
+    if (!requireFantasyAuth()) return;
     if (!driverName) return;
 
     // Check if already signed
@@ -8549,6 +8628,7 @@ window.handleSignDriver = function(driverName) {
 
 // Sign Constructor Action
 window.handleSignConstructor = function(teamName) {
+    if (!requireFantasyAuth()) return;
     if (!teamName) return;
 
     if (ffcFantasyState.team === teamName) return;
@@ -8676,13 +8756,16 @@ function renderFantasyMarketGrid() {
     }
 
     const driverSlotsFull = Boolean(ffcFantasyState.driver1 && ffcFantasyState.driver2 && ffcFantasyState.driver3);
+    const isLogged = isFantasyUserLoggedIn();
 
     grid.innerHTML = items.map(item => {
         const isDriver = item.type === "driver";
         const canAfford = item.price <= metrics.remaining;
         
         let actionBtnHtml = "";
-        if (item.isOwned) {
+        if (!isLogged) {
+            actionBtnHtml = `<button type="button" class="market-action-btn sign-btn" onclick="requireFantasyAuth()" title="Inicia sesión para fichar">🔒 Iniciar Sesión para Fichar</button>`;
+        } else if (item.isOwned) {
             actionBtnHtml = `<button type="button" class="market-action-btn owned-btn" onclick="handleSellFromMarket('${item.type}', '${escapeHtml(item.name)}')">Fichado ✓ (Vender)</button>`;
         } else if (isDriver && driverSlotsFull) {
             actionBtnHtml = `<button type="button" class="market-action-btn" disabled>3/3 Pilotos Lleno</button>`;
@@ -8726,6 +8809,7 @@ function renderFantasyMarketGrid() {
 
 // Sell Item Directly from Market
 window.handleSellFromMarket = function(type, name) {
+    if (!requireFantasyAuth()) return;
     if (type === "driver") {
         if (ffcFantasyState.driver1 === name) handleSellSlot("driver1");
         else if (ffcFantasyState.driver2 === name) handleSellSlot("driver2");
@@ -8740,89 +8824,109 @@ async function renderFantasyLeaderboard() {
     const tbody = document.getElementById("fantasyLeaderboardBody");
     if (!tbody) return;
 
-    let teamsList = [...DEFAULT_FANTASY_LEADERBOARD];
+    const isLogged = isFantasyUserLoggedIn();
+    const currentUser = getFantasyCurrentUser();
 
-    // Attempt to fetch live community teams from Firestore
+    let teamsList = [];
+
+    // Attempt to fetch live registered community teams from Firestore
     if (typeof db !== "undefined") {
         try {
-            const q = query(collection(db, "fantasy_leaderboard"), limit(25));
+            const q = query(collection(db, "fantasy_leaderboard"), limit(50));
             const snap = await getDocs(q);
             if (!snap.empty) {
-                const cloudTeams = [];
                 snap.forEach(d => {
                     const data = d.data();
                     if (data && data.teamName) {
-                        cloudTeams.push(data);
+                        teamsList.push(data);
                     }
                 });
-                if (cloudTeams.length > 0) {
-                    teamsList = cloudTeams;
-                }
             }
         } catch (e) {
             console.warn("Could not load fantasy leaderboard from cloud:", e);
         }
     }
 
-    // Always recalculate current user's team live
-    const currentUser = typeof LocalAuthStore !== "undefined" ? LocalAuthStore.getCurrentUser() : null;
-    const userEmail = currentUser ? currentUser.email : null;
-    const userDisplayName = currentUser ? (currentUser.displayName || currentUser.email.split("@")[0]) : "Tú (Manager)";
-    const myMetrics = calculateFantasyMetrics();
+    // Always recalculate current user's team live if logged in
+    if (isLogged && currentUser) {
+        const userEmail = currentUser.email;
+        const userDisplayName = currentUser.displayName || (userEmail ? userEmail.split("@")[0] : "Manager FFC");
+        const myMetrics = calculateFantasyMetrics();
 
-    // Replace or insert current user's team in the list
-    const existingUserIndex = teamsList.findIndex(t => 
-        (userEmail && t.email && t.email.toLowerCase() === userEmail.toLowerCase()) || 
-        t.isUserTeam === true
-    );
+        const cleanDocId = userEmail ? userEmail.toLowerCase().trim().replace(/[^a-z0-9_]/g, "_") : null;
 
-    const myTeamEntry = {
-        teamName: ffcFantasyState.teamName || "Mi Escudería FFC",
-        managerName: userDisplayName,
-        driver1: ffcFantasyState.driver1,
-        driver2: ffcFantasyState.driver2,
-        driver3: ffcFantasyState.driver3,
-        team: ffcFantasyState.team,
-        turboDriver: ffcFantasyState.turboDriver,
-        totalPoints: myMetrics.totalPts,
-        teamValue: myMetrics.spent,
-        isUserTeam: true
-    };
+        // Replace or insert current user's team in the list
+        const existingUserIndex = teamsList.findIndex(t => 
+            (userEmail && t.email && t.email.toLowerCase() === userEmail.toLowerCase()) || 
+            (cleanDocId && t.userId === cleanDocId) ||
+            t.isUserTeam === true
+        );
 
-    if (existingUserIndex >= 0) {
-        teamsList[existingUserIndex] = myTeamEntry;
-    } else {
-        teamsList.push(myTeamEntry);
+        const myTeamEntry = {
+            teamName: ffcFantasyState.teamName || `Escudería de ${userDisplayName}`,
+            managerName: userDisplayName,
+            email: userEmail,
+            driver1: ffcFantasyState.driver1,
+            driver2: ffcFantasyState.driver2,
+            driver3: ffcFantasyState.driver3,
+            team: ffcFantasyState.team,
+            turboDriver: ffcFantasyState.turboDriver,
+            totalPoints: myMetrics.totalPts,
+            teamValue: myMetrics.spent,
+            isUserTeam: true
+        };
+
+        if (existingUserIndex >= 0) {
+            teamsList[existingUserIndex] = { ...teamsList[existingUserIndex], ...myTeamEntry };
+        } else if (ffcFantasyState.driver1 || ffcFantasyState.driver2 || ffcFantasyState.driver3 || ffcFantasyState.team) {
+            teamsList.push(myTeamEntry);
+        }
     }
 
-    // Recalculate points for benchmark teams dynamically based on current standings
+    // Recalculate points dynamically based on current standings for all teams
     teamsList.forEach(t => {
-        if (!t.isUserTeam) {
-            const m = calculateFantasyMetrics({
-                driver1: t.driver1,
-                driver2: t.driver2,
-                driver3: t.driver3,
-                team: t.team,
-                turboDriver: t.turboDriver
-            });
-            t.totalPoints = m.totalPts;
-            t.teamValue = m.spent;
-        }
+        const m = calculateFantasyMetrics({
+            driver1: t.driver1,
+            driver2: t.driver2,
+            driver3: t.driver3,
+            team: t.team,
+            turboDriver: t.turboDriver
+        });
+        t.totalPoints = m.totalPts;
+        t.teamValue = m.spent;
     });
 
     // Sort leaderboard by points descending
     teamsList.sort((a, b) => (b.totalPoints || 0) - (a.totalPoints || 0));
 
     // Update User Rank HUD Card
-    const myRankIndex = teamsList.findIndex(t => t.isUserTeam);
     const rankEl = document.getElementById("fantasyRankPosition");
     if (rankEl) {
-        rankEl.textContent = myRankIndex >= 0 ? `#${myRankIndex + 1} / ${teamsList.length}` : "-";
+        if (isLogged) {
+            const myRankIndex = teamsList.findIndex(t => t.isUserTeam);
+            rankEl.textContent = myRankIndex >= 0 ? `#${myRankIndex + 1} / ${teamsList.length}` : "-";
+        } else {
+            rankEl.textContent = "🔒 Inicia Sesión";
+        }
+    }
+
+    // If leaderboard has no teams yet
+    if (teamsList.length === 0) {
+        tbody.innerHTML = `
+            <tr>
+                <td colspan="5" style="text-align: center; padding: 48px 20px; color: #94a3b8;">
+                    <div style="font-size: 32px; margin-bottom: 8px;">🏎️</div>
+                    <div style="font-size: 15px; font-weight: 700; color: #f1f5f9; margin-bottom: 4px;">Aún no hay escuderías registradas</div>
+                    <div style="font-size: 13px; color: #64748b;">${isLogged ? "¡Configura tu alineación en 'Mi Escudería' para liderar la clasificación!" : "Inicia sesión con tu cuenta para crear tu equipo y competir en la liga."}</div>
+                </td>
+            </tr>
+        `;
+        return;
     }
 
     // Render Table Rows
     tbody.innerHTML = teamsList.map((t, idx) => {
-        const isMe = t.isUserTeam;
+        const isMe = Boolean(t.isUserTeam);
         const pos = idx + 1;
         let posClass = "lb-pos";
         if (pos === 1) posClass += " pos-1";
@@ -8946,16 +9050,18 @@ function initFantasyLeague() {
     const saveHint = document.getElementById("fantasySaveHint");
 
     const saveTeamName = () => {
+        if (!requireFantasyAuth()) return;
         if (!teamNameInput) return;
         const val = teamNameInput.value.trim();
         if (val) {
             ffcFantasyState.teamName = val;
             saveFantasyTeamToStorage();
             if (saveHint) {
-                saveHint.textContent = "✓ ¡Nombre guardado!";
+                saveHint.textContent = "✓ ¡Nombre guardado en tu perfil!";
                 saveHint.style.color = "#4ade80";
                 setTimeout(() => {
-                    saveHint.textContent = "Sincronizado con tu perfil";
+                    const u = getFantasyCurrentUser();
+                    saveHint.textContent = u ? `Manager: ${u.displayName || u.email.split('@')[0]} · Sincronizado en la nube` : "Sincronizado con tu perfil";
                     saveHint.style.color = "#6b7280";
                 }, 2500);
             }
@@ -8975,6 +9081,7 @@ function initFantasyLeague() {
     const resetBtn = document.getElementById("fantasyResetTeamBtn");
     if (resetBtn) {
         resetBtn.addEventListener("click", () => {
+            if (!requireFantasyAuth()) return;
             if (confirm("¿Estás seguro de que deseas reiniciar tu escudería y vender todos tus pilotos y constructor para recuperar los 100.0M€?")) {
                 ffcFantasyState.driver1 = null;
                 ffcFantasyState.driver2 = null;
@@ -8987,6 +9094,16 @@ function initFantasyLeague() {
                 if (ffcFantasyState.activeSubTab === "market") {
                     renderFantasyMarketGrid();
                 }
+            }
+        });
+    }
+
+    // Login Prompt Banner Button
+    const loginPromptBtn = document.getElementById("fantasyLoginPromptBtn");
+    if (loginPromptBtn) {
+        loginPromptBtn.addEventListener("click", () => {
+            if (typeof openUserAuthModal === "function") {
+                openUserAuthModal("login");
             }
         });
     }
