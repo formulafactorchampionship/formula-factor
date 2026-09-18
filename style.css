@@ -1878,23 +1878,31 @@ button {
 .count-box {
     padding: 16px 8px 14px 8px;
     background: #080b12;
-    border: 1px solid rgba(255, 255, 255, 0.07);
-    border-radius: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
     text-align: center;
     transition: transform 0.2s ease, border-color 0.2s ease, background 0.2s ease;
-    box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.4);
+    box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.5);
 }
 
 .count-box:hover {
     transform: translateY(-2px);
-    border-color: rgba(214, 180, 92, 0.35);
+    border-color: rgba(214, 180, 92, 0.4);
     background: #0d121c;
+}
+
+.count-flap-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 76px;
+    margin-bottom: 6px;
 }
 
 .count-box strong {
     display: block;
     font-family: "Barlow Condensed", sans-serif;
-    font-size: 32px;
+    font-size: 52px;
     font-weight: 900;
     line-height: 1;
     color: #ffffff;
@@ -1908,13 +1916,33 @@ button {
 
 .count-box span {
     display: block;
-    margin-top: 6px;
+    margin-top: 8px;
     font-family: "Barlow Condensed", sans-serif;
-    font-size: 11px;
+    font-size: 12px;
     font-weight: 800;
-    color: #697585;
-    letter-spacing: 1.5px;
+    color: #8a99ad;
+    letter-spacing: 1.8px;
     text-transform: uppercase;
+}
+
+@media (max-width: 768px) {
+    .count-flap-wrapper {
+        min-height: 52px;
+    }
+    .count-flap-wrapper .split-flap-text {
+        --split-flap-font-size: 38px !important;
+        --split-flap-gap: 4px !important;
+    }
+}
+
+@media (max-width: 480px) {
+    .count-flap-wrapper {
+        min-height: 44px;
+    }
+    .count-flap-wrapper .split-flap-text {
+        --split-flap-font-size: 30px !important;
+        --split-flap-gap: 3px !important;
+    }
 }
 
 .next-race-time-row {

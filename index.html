@@ -13,6 +13,7 @@
 
     <link rel="stylesheet" href="style.css?v=20260918_v3">
     <link rel="stylesheet" href="BorderGlow.css">
+    <link rel="stylesheet" href="SplitFlapText.css">
     <script>
         // Early instant hook for FFC Fantasy Portal
         window.openFantasyPortal = function() {
@@ -458,22 +459,30 @@
             <div class="countdown">
 
                 <div class="count-box">
-                    <strong id="days">00</strong>
+                    <div class="count-flap-wrapper" id="days-flap">
+                        <strong id="days">00</strong>
+                    </div>
                     <span id="labelDays">DÍAS</span>
                 </div>
 
                 <div class="count-box">
-                    <strong id="hours">00</strong>
+                    <div class="count-flap-wrapper" id="hours-flap">
+                        <strong id="hours">00</strong>
+                    </div>
                     <span id="labelHours">HRS</span>
                 </div>
 
                 <div class="count-box">
-                    <strong id="mins">00</strong>
+                    <div class="count-flap-wrapper" id="mins-flap">
+                        <strong id="mins">00</strong>
+                    </div>
                     <span id="labelMins">MIN</span>
                 </div>
 
                 <div class="count-box count-box-secs">
-                    <strong id="secs">00</strong>
+                    <div class="count-flap-wrapper" id="secs-flap">
+                        <strong id="secs">00</strong>
+                    </div>
                     <span id="labelSecs">SEG</span>
                 </div>
 
@@ -2549,36 +2558,15 @@
                             </div>
                             <div class="admin-field">
                                 <label for="newPilotFlag">País / Bandera</label>
-                                <select id="newPilotFlag" required>
-                                    <option value="🇪🇸">🇪🇸 España</option>
-                                    <option value="🇦🇷">🇦🇷 Argentina</option>
-                                    <option value="🇲🇽">🇲🇽 México</option>
-                                    <option value="🇨🇱">🇨🇱 Chile</option>
-                                    <option value="🇨🇴">🇨🇴 Colombia</option>
-                                    <option value="🇵🇪">🇵🇪 Perú</option>
-                                    <option value="🇺🇾">🇺🇾 Uruguay</option>
-                                    <option value="🇻🇪">🇻🇪 Venezuela</option>
-                                    <option value="🇵🇹">🇵🇹 Portugal</option>
-                                    <option value="🇬🇧">🇬🇧 Reino Unido</option>
-                                    <option value="🏴󠁧󠁢󠁳󠁣󠁴󠁿">🏴󠁧󠁢󠁳󠁣󠁴󠁿 Escocia</option>
-                                    <option value="🇫🇷">🇫🇷 Francia</option>
-                                    <option value="🇩🇪">🇩🇪 Alemania</option>
-                                    <option value="🇮🇹">🇮🇹 Italia</option>
-                                    <option value="🇳🇱">🇳🇱 Países Bajos</option>
-                                    <option value="🇲🇨">🇲🇨 Mónaco</option>
-                                    <option value="🇦🇺">🇦🇺 Australia</option>
-                                    <option value="🇧🇷">🇧🇷 Brasil</option>
-                                    <option value="🇺🇸">🇺🇸 Estados Unidos</option>
-                                    <option value="🇨🇦">🇨🇦 Canadá</option>
-                                    <option value="🇯🇵">🇯🇵 Japón</option>
-                                    <option value="🇨🇭">🇨🇭 Suiza</option>
-                                    <option value="🇦🇹">🇦🇹 Austria</option>
-                                    <option value="🇧🇪">🇧🇪 Bélgica</option>
-                                    <option value="🇫🇮">🇫🇮 Finlandia</option>
-                                    <option value="🇩🇰">🇩🇰 Dinamarca</option>
-                                    <option value="🇵🇱">🇵🇱 Polonia</option>
-                                    <option value="🏁">🏁 Genérico</option>
-                                </select>
+                                <div class="admin-country-picker-group" style="display: flex; gap: 8px; flex-wrap: wrap;">
+                                    <input type="text" id="newPilotFlagSearch" list="worldCountriesDatalist" placeholder="🔍 Buscar país (ej. Japón)..." autocomplete="off" style="flex: 1; min-width: 140px; padding: 7px 10px; background: rgba(15, 23, 42, 0.8); border: 1px solid rgba(255, 255, 255, 0.15); border-radius: 6px; color: #fff; font-size: 13px;">
+                                    <select id="newPilotFlag" required style="flex: 1; min-width: 140px;">
+                                        <!-- Populated dynamically with all world countries -->
+                                    </select>
+                                </div>
+                                <datalist id="worldCountriesDatalist">
+                                    <!-- Populated dynamically -->
+                                </datalist>
                             </div>
                             <div class="admin-field">
                                 <label for="newPilotTeam">Equipo Asignado</label>
@@ -2612,7 +2600,7 @@
                             <p class="admin-field-hint">Selecciona la bandera o el equipo correspondiente en los desplegables para cambiar el país o escudería de cualquier piloto.</p>
                         </div>
                         <div class="admin-drivers-search">
-                            <input type="text" id="adminSearchPilotInput" placeholder="🔍 Buscar piloto..." autocomplete="off">
+                            <input type="text" id="adminSearchPilotInput" placeholder="🔍 Buscar piloto, equipo o país (ej. España, Japón)..." autocomplete="off">
                         </div>
                     </div>
 
