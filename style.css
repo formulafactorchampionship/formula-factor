@@ -15366,6 +15366,108 @@ input:focus, select:focus, textarea:focus {
     box-shadow: none !important;
 }
 
+/* =========================================================
+   FANTASY LEAGUE DASHBOARD STRICT 90-DEGREE REFINEMENTS
+   ========================================================= */
+.fantasy-subtabs-nav {
+    background: #0b0f15 !important;
+    border: 1px solid #1e293b !important;
+    border-radius: 0px !important;
+    padding: 4px !important;
+    gap: 4px !important;
+    box-shadow: none !important;
+}
+
+.fantasy-subtab-btn {
+    border-radius: 0px !important;
+    border: 1px solid transparent !important;
+    background: transparent !important;
+    color: #cbd5e1 !important;
+    font-weight: 700 !important;
+}
+
+.fantasy-subtab-btn:hover {
+    background: rgba(255, 255, 255, 0.04) !important;
+    color: #fff !important;
+}
+
+.fantasy-subtab-btn.active {
+    background: #1e293b !important;
+    color: var(--gold) !important;
+    border-color: rgba(214, 180, 92, 0.4) !important;
+    border-bottom: 1px solid rgba(214, 180, 92, 0.4) !important;
+    font-weight: 800 !important;
+}
+
+.market-filter-pill {
+    border-radius: 0px !important;
+    border: 1px solid #1e293b !important;
+    background: #090d14 !important;
+    color: #cbd5e1 !important;
+    font-weight: 700 !important;
+}
+
+.market-filter-pill:hover {
+    border-color: rgba(214, 180, 92, 0.4) !important;
+    color: #fff !important;
+}
+
+.market-filter-pill.active {
+    background: var(--gold) !important;
+    color: #05070a !important;
+    border-color: var(--gold) !important;
+    font-weight: 800 !important;
+}
+
+.market-card,
+.slot-filled-card,
+.slot-empty-card,
+.fantasy-rule-card,
+.fantasy-hud-card,
+.fantasy-team-name-bar,
+.fantasy-slot-card,
+.market-card-stats,
+.fantasy-btn-gold,
+.fantasy-btn-gold-primary,
+.fantasy-btn-ghost,
+.market-action-btn,
+.fantasy-team-name-input,
+.market-search-input,
+.market-sort-select,
+.tab-counter-pill,
+.market-form-tag,
+.price-delta-badge,
+.hud-delta-badge {
+    border-radius: 0px !important;
+}
+
+.market-form-tag,
+.price-delta-badge,
+.hud-delta-badge {
+    background: #090d14 !important;
+    border: 1px solid #1e293b !important;
+    color: #cbd5e1 !important;
+    padding: 2px 6px !important;
+    font-size: 10px !important;
+    font-weight: 700 !important;
+    text-transform: uppercase !important;
+}
+
+.market-form-tag.trend-up,
+.price-delta-badge.delta-up,
+.hud-delta-badge.delta-up {
+    color: #86efac !important;
+    border-color: rgba(74, 222, 128, 0.3) !important;
+}
+
+.market-form-tag.trend-down,
+.price-delta-badge.delta-down,
+.hud-delta-badge.delta-down {
+    color: #fca5a5 !important;
+    border-color: rgba(239, 68, 68, 0.3) !important;
+}
+
+
 
 
 
