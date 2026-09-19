@@ -174,15 +174,15 @@ export function initCobeGlobe(containerId) {
             phi: 3.8,
             theta: 0.15,
             dark: 1,
-            diffuse: 1.2,
-            mapSamples: 16000,
-            mapBrightness: 6,
+            diffuse: 1.25,
+            mapSamples: 20000,
+            mapBrightness: 8,
             baseColor: [0.1, 0.15, 0.25], 
             markerColor: [0.0, 0.85, 1.0], 
             glowColor: [0.15, 0.22, 0.35], 
             markerElevation: 0.15,
             markers: formattedMarkers,
-            opacity: 0.9,
+            opacity: 0.95,
             onRender: (state) => {
                 if (!isPaused) {
                     phi += 0.003; 

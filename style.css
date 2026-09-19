@@ -1223,7 +1223,7 @@ button {
     max-height: 95vw;
     z-index: 1;
     pointer-events: auto;
-    opacity: 0.65;
+    opacity: 0.85;
     display: flex;
     justify-content: center;
     align-items: center;

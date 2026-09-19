@@ -2605,12 +2605,12 @@ const defaultDriverRoster = [
 
 /* Official FFC 2010 Season Dataset (Exact mapping from Championship Spreadsheet) */
 const ffc2010SeasonDrivers = [
-    { pos: 1, number: 23, flag: "🇵🇹", driver: "Dieguiosk", team: "HRT", r: ["15", "10", "13*", "6", "25", "18", "25", "16*", "25", "--", "--", "--", "--", "--", "--"], pts: 153, dif: "--" },
+    { pos: 1, number: 23, flag: "🇦🇱", driver: "Dieguiosk", team: "HRT", r: ["15", "10", "13*", "6", "25", "18", "25", "16*", "25", "--", "--", "--", "--", "--", "--"], pts: 153, dif: "--" },
     { pos: 2, number: 99, flag: "🇪🇸", driver: "Muntii", team: "Red Bull", r: ["--", "(18)", "10", "18", "18", "6", "15", "25", "15", "--", "--", "--", "--", "--", "--"], pts: 125, dif: "-28" },
     { pos: 3, number: 26, flag: "🇪🇸", driver: "Novitaa", team: "Red Bull", r: ["--", "--", "--", "9*", "15", "(26*)", "2", "(18)", "(18)", "--", "--", "--", "--", "--", "--"], pts: 88, dif: "-65" },
     { pos: 4, number: 5, flag: "🇪🇸", driver: "BigTheo", team: "Ferrari", r: ["18", "12", "8", "12", "13*", "--", "OUT", "1", "--", "--", "--", "--", "--", "--", "--"], pts: 64, dif: "-89" },
     { pos: 5, number: 92, flag: "🇪🇸", driver: "Suforr", team: "Mercedes", r: ["--", "OUT", "--", "(25)", "10", "OUT", "13*", "OUT", "5*", "--", "--", "--", "--", "--", "--"], pts: 53, dif: "-100" },
-    { pos: 6, number: 7, flag: "🇮🇹", driver: "IvánR", team: "HRT", r: ["(26*)", "(26*)", "OUT", "OUT", "--", "--", "--", "--", "--", "--", "--", "--", "--", "--", "--"], pts: 52, dif: "-101" },
+    { pos: 6, number: 7, flag: "🇲🇦", driver: "IvánR", team: "HRT", r: ["(26*)", "(26*)", "OUT", "OUT", "--", "--", "--", "--", "--", "--", "--", "--", "--", "--", "--"], pts: 52, dif: "-101" },
     { pos: 7, number: 88, flag: "🇪🇸", driver: "Sbinn", team: "Toro Rosso", r: ["OUT", "--", "25", "10", "--", "OUT", "OUT", "--", "--", "--", "--", "--", "--", "--", "--"], pts: 35, dif: "-118" },
     { pos: 8, number: 27, flag: "🇦🇷", driver: "Licha", team: "Ferrari", r: ["--", "--", "4", "2", "4", "1", "10", "10", "2", "--", "--", "--", "--", "--", "--"], pts: 33, dif: "-120" },
     { pos: 9, number: 21, flag: "🇪🇸", driver: "TheWereGH", team: "Sauber", r: ["12", "6", "--", "1", "OUT", "2", "1", "4", "6", "--", "--", "--", "--", "--", "--"], pts: 32, dif: "-121" },
@@ -3067,15 +3067,72 @@ const officialDriverOrder = {
     "galogb": 44
 };
 
+function getPersistentDriverFlag(driverName) {
+    if (!driverName) return null;
+    const clean = driverName.trim().toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+    try {
+        const raw = localStorage.getItem("ffc_custom_driver_flags");
+        if (raw) {
+            const parsed = JSON.parse(raw);
+            if (parsed && typeof parsed === "object" && parsed[clean]) {
+                return parsed[clean];
+            }
+        }
+    } catch (e) {}
+    return null;
+}
+
+function savePersistentDriverFlag(driverName, flag) {
+    if (!driverName || !flag) return;
+    const clean = driverName.trim().toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+    try {
+        const raw = localStorage.getItem("ffc_custom_driver_flags");
+        const parsed = raw ? (JSON.parse(raw) || {}) : {};
+        parsed[clean] = flag;
+        localStorage.setItem("ffc_custom_driver_flags", JSON.stringify(parsed));
+    } catch (e) {}
+
+    // Synchronize in-memory ffc2010SeasonDrivers
+    if (typeof ffc2010SeasonDrivers !== "undefined" && Array.isArray(ffc2010SeasonDrivers)) {
+        const found = ffc2010SeasonDrivers.find(d => 
+            d.driver && d.driver.trim().toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "") === clean
+        );
+        if (found) found.flag = flag;
+    }
+
+    // Synchronize in-memory currentPilotos
+    if (typeof currentPilotos !== "undefined" && Array.isArray(currentPilotos)) {
+        const found = currentPilotos.find(d => 
+            d.driver && d.driver.trim().toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "") === clean
+        );
+        if (found) {
+            found.flag = flag;
+            found.customFlag = flag;
+        }
+    }
+}
+
 function getOfficialDriverFlag(driverName) {
     if (!driverName) return "🏁";
     const clean = driverName.trim().toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+
+    // 1. Check in-memory currentPilotos from Firestore
     if (typeof currentPilotos !== "undefined" && Array.isArray(currentPilotos) && currentPilotos.length > 0) {
         const found = currentPilotos.find(d => 
             d.driver && d.driver.trim().toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "") === clean
         );
         if (found && (found.flag || found.customFlag)) return found.flag || found.customFlag;
     }
+
+    // 2. Check persistent user-saved flags from localStorage
+    const cachedFlag = getPersistentDriverFlag(driverName);
+    if (cachedFlag) return cachedFlag;
+
+    // 3. User-defined official defaults
+    if (clean === "dieguiosk") return "🇦🇱";
+    if (clean === "ivanr") return "🇲🇦";
+
+    // 4. Fallback to ffc2010SeasonDrivers
     if (typeof ffc2010SeasonDrivers !== "undefined" && Array.isArray(ffc2010SeasonDrivers)) {
         const found = ffc2010SeasonDrivers.find(d => 
             d.driver && d.driver.trim().toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "") === clean
@@ -3811,7 +3868,7 @@ function getDynamicSeasonMatrixData() {
             }
         });
 
-        const officialFlag = meta.flag || getOfficialDriverFlag(driverName) || "🏁";
+        const officialFlag = driverObj.flag || driverObj.customFlag || getOfficialDriverFlag(driverName) || meta.flag || "🏁";
 
         return {
             pos,
@@ -3825,7 +3882,7 @@ function getDynamicSeasonMatrixData() {
             dif,
             avatarUrl: driverObj.avatarUrl || null,
             cardColor: driverObj.cardColor || null,
-            customFlag: null,
+            customFlag: driverObj.customFlag || driverObj.flag || officialFlag,
             bio: driverObj.bio || null,
             socialTwitch: driverObj.socialTwitch || null,
             socialYoutube: driverObj.socialYoutube || null,
@@ -6366,6 +6423,11 @@ function initFirestoreListeners() {
             const claimedEmail = data.claimedByEmail || (verifiedUserInfo ? verifiedUserInfo.email : null);
             const claimedUid = data.claimedByUid || (verifiedUserInfo ? verifiedUserInfo.uid : null);
 
+            const resolvedFlag = data.flag || data.customFlag || (verifiedUserInfo ? verifiedUserInfo.customFlag : null) || getOfficialDriverFlag(dName);
+            if (data.flag || data.customFlag) {
+                savePersistentDriverFlag(dName, data.flag || data.customFlag);
+            }
+
             driverMap.set(norm, {
                 id: docSnap.id,
                 driver: data.driver || docSnap.id,
@@ -6378,8 +6440,8 @@ function initFirestoreListeners() {
                 isVerified: isVerifiedDriver,
                 avatarUrl: data.avatarUrl || (verifiedUserInfo ? verifiedUserInfo.avatarUrl : null),
                 cardColor: data.cardColor || (verifiedUserInfo ? verifiedUserInfo.cardColor : null),
-                flag: data.flag || data.customFlag || (verifiedUserInfo ? verifiedUserInfo.customFlag : null),
-                customFlag: data.customFlag || data.flag || (verifiedUserInfo ? verifiedUserInfo.customFlag : null),
+                flag: resolvedFlag,
+                customFlag: resolvedFlag,
                 bio: data.bio || (verifiedUserInfo ? verifiedUserInfo.bio : null),
                 socialTwitch: data.socialTwitch || (verifiedUserInfo ? verifiedUserInfo.socialTwitch : null),
                 socialYoutube: data.socialYoutube || (verifiedUserInfo ? verifiedUserInfo.socialYoutube : null),
@@ -6909,11 +6971,14 @@ if (adminSaveStandingsBtn) {
                     const verifiedUserInfo = (typeof window !== "undefined" && window.globalVerifiedUsersMap) ? window.globalVerifiedUsersMap.get(norm) : null;
                     const isVer = Boolean((existingP && (existingP.isVerified || existingP.claimedByEmail || existingP.claimedByUid)) || (verifiedUserInfo && verifiedUserInfo.isVerified));
 
+                    const resolvedFlag = (existingP && (existingP.flag || existingP.customFlag)) || getOfficialDriverFlag(name);
                     list.push({
                         ...(existingP || {}),
                         id: pilotId,
                         driver: name,
                         team: officialTeam,
+                        flag: resolvedFlag,
+                        customFlag: resolvedFlag,
                         pts,
                         isVerified: isVer,
                         claimedByEmail: (existingP && existingP.claimedByEmail) || (verifiedUserInfo ? verifiedUserInfo.email : null),
@@ -6938,7 +7003,9 @@ if (adminSaveStandingsBtn) {
                 const pPayload = {
                     driver: p.driver,
                     team: p.team,
-                    pts: Number(p.pts) || 0
+                    pts: Number(p.pts) || 0,
+                    flag: p.flag || p.customFlag || getOfficialDriverFlag(p.driver),
+                    customFlag: p.customFlag || p.flag || getOfficialDriverFlag(p.driver)
                 };
                 if (p.isVerified !== undefined) pPayload.isVerified = p.isVerified;
                 if (p.claimedByEmail) pPayload.claimedByEmail = p.claimedByEmail;
@@ -7196,12 +7263,14 @@ if (adminSaveDriversBtn) {
                 if (flag) {
                     updateData.flag = flag;
                     updateData.customFlag = flag;
+                    savePersistentDriverFlag(driver, flag);
                 }
                 batch.set(doc(db, "pilotos", pilotId), updateData, { merge: true });
 
                 // Also update local currentPilotos if available
                 if (typeof currentPilotos !== "undefined" && Array.isArray(currentPilotos)) {
-                    const match = currentPilotos.find(p => p.id === pilotId || p.driver === driver);
+                    const norm = normalizeDriverKey(driver);
+                    const match = currentPilotos.find(p => (p.id && p.id === pilotId) || (p.driver && normalizeDriverKey(p.driver) === norm));
                     if (match) {
                         match.team = team;
                         if (flag) {
@@ -7222,6 +7291,12 @@ if (adminSaveDriversBtn) {
 
             if (typeof currentPilotos !== "undefined" && typeof renderStandingsOnPage === "function") {
                 renderStandingsOnPage(currentPilotos);
+            }
+            if (typeof renderFfcMatrixTable === "function") {
+                renderFfcMatrixTable();
+            }
+            if (currentOpenModalDriver && typeof openDriverStatsModal === "function") {
+                openDriverStatsModal(currentOpenModalDriver);
             }
             renderAdminDriversTab(adminSearchPilotInput ? adminSearchPilotInput.value : "");
         } catch (err) {
@@ -7454,11 +7529,14 @@ function calculateAllStandingsFromRaces(racesMap = raceResults, baseDriverList =
         if (!d.driver) return;
         const k = normalizeDriverKey(d.driver);
         if (!driversMap.has(k)) {
+            const initialFlag = d.flag || d.customFlag || getOfficialDriverFlag(d.driver);
             driversMap.set(k, {
                 id: getPilotDocId(d.driver),
                 driver: d.driver,
                 team: getDriverTeam(d.driver) || d.team || "Independent",
-                pts: 0
+                pts: 0,
+                flag: initialFlag,
+                customFlag: initialFlag
             });
             finishesMap.set(k, {});
         }
@@ -7472,12 +7550,15 @@ function calculateAllStandingsFromRaces(racesMap = raceResults, baseDriverList =
     sourcesToPreserve.forEach(d => {
         if (!d || !d.driver) return;
         const k = normalizeDriverKey(d.driver);
+        const resolvedFlag = d.flag || d.customFlag || getOfficialDriverFlag(d.driver);
         if (!driversMap.has(k)) {
             driversMap.set(k, {
                 id: d.id || getPilotDocId(d.driver),
                 driver: d.driver,
                 team: getDriverTeam(d.driver) || d.team || "Independent",
-                pts: 0
+                pts: 0,
+                flag: resolvedFlag,
+                customFlag: resolvedFlag
             });
             finishesMap.set(k, {});
         }
@@ -7489,7 +7570,8 @@ function calculateAllStandingsFromRaces(racesMap = raceResults, baseDriverList =
         if (d.verificationCode) entry.verificationCode = d.verificationCode;
         if (d.avatarUrl) entry.avatarUrl = d.avatarUrl;
         if (d.cardColor) entry.cardColor = d.cardColor;
-        if (d.customFlag || d.flag) entry.customFlag = d.customFlag || d.flag;
+        entry.flag = resolvedFlag;
+        entry.customFlag = resolvedFlag;
         if (d.bio) entry.bio = d.bio;
         if (d.socialTwitch) entry.socialTwitch = d.socialTwitch;
         if (d.socialYoutube) entry.socialYoutube = d.socialYoutube;
@@ -7588,7 +7670,9 @@ async function recalculateAndSyncStandings(racesMap = raceResults) {
             const pPayload = {
                 driver: p.driver,
                 team: p.team || getDriverTeam(p.driver) || "Independent",
-                pts: Number(p.pts) || 0
+                pts: Number(p.pts) || 0,
+                flag: p.flag || p.customFlag || getOfficialDriverFlag(p.driver),
+                customFlag: p.customFlag || p.flag || getOfficialDriverFlag(p.driver)
             };
             if (p.isVerified !== undefined) pPayload.isVerified = p.isVerified;
             if (p.claimedByEmail) pPayload.claimedByEmail = p.claimedByEmail;
