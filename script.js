@@ -10973,8 +10973,12 @@ function populateUserCardEditor(data) {
 
     const bioCharCounter = document.getElementById("bioCharCounter");
     if (editCardBio) {
-        editCardBio.value = data.bio || "";
-        if (bioCharCounter) bioCharCounter.textContent = `${(data.bio || "").length}/300`;
+        let bioVal = data.bio || "";
+        if (!bioVal || bioVal.toLowerCase().includes("sexo")) {
+            bioVal = "Official FFC driver competing in the 2010 Championship season.";
+        }
+        editCardBio.value = bioVal;
+        if (bioCharCounter) bioCharCounter.textContent = `${bioVal.length}/300`;
     }
     if (editCardTwitch) editCardTwitch.value = data.socialTwitch || "";
     if (editCardYoutube) editCardYoutube.value = data.socialYoutube || "";

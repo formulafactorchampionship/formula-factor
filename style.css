@@ -15304,7 +15304,9 @@ input:focus, select:focus, textarea:focus {
 .btn-avatar-upload,
 .social-input-item,
 .btn-card-secondary-view,
-.verify-badge-verified {
+.verify-badge-verified,
+.card-live-preview-box,
+.card-live-preview-box .verify-badge-verified {
     border-radius: 0px !important;
 }
 
@@ -15338,6 +15340,32 @@ input:focus, select:focus, textarea:focus {
     font-weight: 600;
     letter-spacing: 0.3px;
 }
+
+/* =========================================================
+   HEADER & NAVIGATION 90-DEGREE SHARP ARCHITECTURE
+   ========================================================= */
+.nav-links {
+    background: none !important;
+    border: none !important;
+    box-shadow: none !important;
+    padding: 0 !important;
+    border-radius: 0px !important;
+}
+
+.nav-links a,
+.nav-compare-link,
+.nav-fantasy-link,
+.discord-btn,
+.header-admin-btn,
+.auth-header-btn,
+.dropdown-trigger {
+    border-radius: 0px !important;
+}
+
+.nav-fantasy-link {
+    box-shadow: none !important;
+}
+
 
 
 
