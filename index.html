@@ -2651,7 +2651,10 @@
                                 <option value="UPCOMING">⏳ Próxima / Pendiente (Aún no disputada)</option>
                             </select>
                         </div>
-                        <div class="admin-race-status-actions">
+                        <div class="admin-race-status-actions" style="display: flex; gap: 8px; flex-wrap: wrap;">
+                            <button type="button" id="adminSetAsNextRaceBtn" class="btn btn-secondary btn-sm" style="display: inline-flex; align-items: center; gap: 6px; padding: 6px 14px; font-size: 12px;" title="Fijar esta cita como la próxima carrera activa y marcar las anteriores como finalizadas">
+                                <span>🎯</span> <span>Fijar como Próxima</span>
+                            </button>
                             <button type="button" id="adminToggleRaceStatusBtn" class="btn btn-primary btn-sm" style="display: inline-flex; align-items: center; gap: 6px; padding: 6px 14px; font-size: 12px;">
                                 <span>🏁</span> <span id="adminToggleRaceStatusBtnLabel">Marcar como Acabada</span>
                             </button>
@@ -2660,7 +2663,7 @@
 
                     <div class="admin-auto-sync-banner">
                         <div>
-                            <span>⚡ <strong>Sincronización Automática:</strong> Al marcar una carrera como <strong>Acabada</strong>, el sistema avanza el calendario automáticamente a la siguiente cita y actualiza la cuenta atrás del Hero con la fecha y hora de la nueva carrera.</span>
+                            <span>⚡ <strong>Sincronización Automática:</strong> Al marcar una carrera como <strong>Próxima</strong>, la anterior (y todas las previas en el calendario) se marca automáticamente como <strong>Finalizada</strong>. Del mismo modo, al marcar una carrera como <strong>Acabada</strong>, el calendario avanza y el Hero actualiza su cuenta atrás.</span>
                         </div>
                     </div>
 

@@ -2626,6 +2626,142 @@ function refreshAllCalendarCards() {
     });
 }
 
+function findRaceKeyFromNextRace(raceObj) {
+    if (!raceObj) return null;
+    if (typeof raceObj === "string") {
+        const str = raceObj.toLowerCase().trim();
+        if (SEASON_RACE_ORDER.includes(str)) return str;
+        for (const key of SEASON_RACE_ORDER) {
+            const meta = seasonRacesMeta[key];
+            if (meta) {
+                if (meta.title && str.includes(meta.title.toLowerCase())) return key;
+                if (meta.round && str.includes(meta.round.toLowerCase())) return key;
+                if (meta.location && str.includes(meta.location.toLowerCase())) return key;
+            }
+        }
+        return null;
+    }
+
+    const round = (raceObj.round || "").toLowerCase();
+    const title = (raceObj.title || "").toLowerCase();
+
+    for (const key of SEASON_RACE_ORDER) {
+        const meta = seasonRacesMeta[key];
+        const preset = (typeof OFFICIAL_GP_PRESETS !== "undefined") ? OFFICIAL_GP_PRESETS[key] : null;
+        if (meta) {
+            if (round && meta.round && round.includes(meta.round.toLowerCase())) return key;
+            if (title && meta.title && (title.includes(meta.title.toLowerCase()) || meta.title.toLowerCase().includes(title))) return key;
+        }
+        if (preset) {
+            if (round && preset.round && round.includes(preset.round.toLowerCase())) return key;
+            if (title && preset.title && (title.includes(preset.title.toLowerCase()) || preset.title.toLowerCase().includes(title))) return key;
+        }
+    }
+
+    const roundMatch = round.match(/\d+/);
+    if (roundMatch) {
+        const roundNum = parseInt(roundMatch[0], 10);
+        if (roundNum >= 1 && roundNum <= SEASON_RACE_ORDER.length) {
+            return SEASON_RACE_ORDER[roundNum - 1];
+        }
+    }
+
+    return null;
+}
+window.findRaceKeyFromNextRace = findRaceKeyFromNextRace;
+
+async function ensurePreviousRacesCompletedForNextRace(targetRaceKey, autoSaveFirestore = true) {
+    if (!targetRaceKey || !SEASON_RACE_ORDER.includes(targetRaceKey)) return [];
+
+    const targetIndex = SEASON_RACE_ORDER.indexOf(targetRaceKey);
+    const affectedPriorKeys = [];
+
+    // All races preceding targetRaceKey in the season order MUST be marked as COMPLETED
+    for (let i = 0; i < targetIndex; i++) {
+        const prevKey = SEASON_RACE_ORDER[i];
+        let prevData = raceResults[prevKey] || seasonRacesMeta[prevKey] || {};
+
+        if (!isRaceFinished(prevData)) {
+            const meta = seasonRacesMeta[prevKey] || {
+                round: `ROUND ${String(i + 1).padStart(2, "0")}`,
+                title: prevKey.toUpperCase(),
+                location: prevKey.toUpperCase(),
+                date: "TBA"
+            };
+
+            const updatedPrev = {
+                ...prevData,
+                status: "COMPLETED",
+                round: prevData.round || meta.round,
+                title: prevData.title || meta.title,
+                location: prevData.location || meta.location,
+                date: prevData.date || meta.date || "TBA"
+            };
+
+            // If it had no drivers, fill with default positions from standings
+            if (!Array.isArray(updatedPrev.drivers) || updatedPrev.drivers.length === 0) {
+                const currentStandings = getSavedStandings();
+                if (currentStandings && currentStandings.length > 0) {
+                    updatedPrev.drivers = currentStandings.slice(0, 10).map((d, idx) => ({
+                        pos: idx + 1,
+                        driver: d.driver,
+                        team: d.team || getDriverTeam(d.driver),
+                        status: "FINISHED"
+                    }));
+                }
+            }
+
+            if (!updatedPrev.winner || updatedPrev.winner === "TBA") {
+                if (updatedPrev.drivers && updatedPrev.drivers[0]) {
+                    updatedPrev.winner = updatedPrev.drivers[0].driver;
+                }
+            }
+
+            raceResults[prevKey] = updatedPrev;
+            affectedPriorKeys.push(prevKey);
+
+            if (autoSaveFirestore && typeof db !== "undefined") {
+                try {
+                    await setDoc(doc(db, "carreras", prevKey), updatedPrev);
+                } catch (err) {
+                    console.error(`Error auto-saving completed previous race ${prevKey} to Firestore:`, err);
+                }
+            }
+        }
+    }
+
+    // Ensure the target race itself is marked as UPCOMING
+    let targetData = raceResults[targetRaceKey] || seasonRacesMeta[targetRaceKey] || {};
+    if (isRaceFinished(targetData)) {
+        const targetMeta = seasonRacesMeta[targetRaceKey] || {};
+        const updatedTarget = {
+            ...targetData,
+            status: "UPCOMING",
+            round: targetData.round || targetMeta.round,
+            title: targetData.title || targetMeta.title,
+            location: targetData.location || targetMeta.location,
+            date: targetData.date || targetMeta.date || "TBA"
+        };
+        raceResults[targetRaceKey] = updatedTarget;
+        if (autoSaveFirestore && typeof db !== "undefined") {
+            try {
+                await setDoc(doc(db, "carreras", targetRaceKey), updatedTarget);
+            } catch (err) {
+                console.error(`Error saving target upcoming race ${targetRaceKey} to Firestore:`, err);
+            }
+        }
+    }
+
+    refreshAllCalendarCards();
+    await syncCalendarAndNextRace(autoSaveFirestore);
+    if (affectedPriorKeys.length > 0) {
+        await recalculateAndSyncStandings(raceResults);
+    }
+
+    return affectedPriorKeys;
+}
+window.ensurePreviousRacesCompletedForNextRace = ensurePreviousRacesCompletedForNextRace;
+
 async function syncCalendarAndNextRace(autoSaveFirestore = true) {
     const nextKey = determineNextUpcomingRaceKey(raceResults);
     refreshAllCalendarCards();
@@ -3312,6 +3448,7 @@ const adminSelectRace = document.getElementById("adminSelectRace");
 const adminRaceStatusBar = document.getElementById("adminRaceStatusBar");
 const adminRaceStatusBadge = document.getElementById("adminRaceStatusBadge");
 const adminRaceStatusSelect = document.getElementById("adminRaceStatusSelect");
+const adminSetAsNextRaceBtn = document.getElementById("adminSetAsNextRaceBtn");
 const adminToggleRaceStatusBtn = document.getElementById("adminToggleRaceStatusBtn");
 const adminToggleRaceStatusBtnLabel = document.getElementById("adminToggleRaceStatusBtnLabel");
 const adminFastestDriver = document.getElementById("adminFastestDriver");
@@ -7352,17 +7489,23 @@ if (nextRaceForm) {
 
         try {
             if (raceSaveNotice) {
-                raceSaveNotice.textContent = "Guardando en Firestore...";
+                raceSaveNotice.textContent = "Guardando en Firestore y actualizando carreras previas...";
                 raceSaveNotice.style.color = "var(--gold)";
             }
             await setDoc(doc(db, "configuracion", "proxima_carrera"), updated);
             currentNextRace = updated;
             renderNextRaceOnPage(updated);
 
+            // Automatically complete all preceding races in the season order
+            const targetKey = findRaceKeyFromNextRace(updated);
+            if (targetKey) {
+                await ensurePreviousRacesCompletedForNextRace(targetKey, true);
+            }
+
             if (raceSaveNotice) {
-                raceSaveNotice.textContent = "✓ Próxima carrera guardada en Firestore";
+                raceSaveNotice.textContent = "✓ Próxima carrera guardada. Carrera(s) anterior(es) marcada(s) como finalizada(s).";
                 raceSaveNotice.style.color = "#3fb950";
-                setTimeout(() => { raceSaveNotice.textContent = ""; }, 3000);
+                setTimeout(() => { if (raceSaveNotice) raceSaveNotice.textContent = ""; }, 4000);
             }
         } catch (err) {
             console.error("Error saving next race to Firestore:", err);
@@ -8405,16 +8548,25 @@ if (raceResultsForm) {
             await setDoc(doc(db, "carreras", raceKey), updatedRace);
 
             raceResults[raceKey] = updatedRace;
+
+            // If marked as UPCOMING / PRÓXIMA, automatically ensure all previous races are marked as COMPLETED
+            if (chosenStatus === "UPCOMING") {
+                await ensurePreviousRacesCompletedForNextRace(raceKey, true);
+            } else {
+                // Automatically synchronize calendar progression & update hero countdown
+                await syncCalendarAndNextRace(true);
+                // Automatically recalculate points & standings for drivers and teams
+                await recalculateAndSyncStandings(raceResults);
+            }
+
             populateRaceResultsEditor(raceKey);
 
-            // Automatically synchronize calendar progression & update hero countdown
-            await syncCalendarAndNextRace(true);
-
-            // Automatically recalculate points & standings for drivers and teams
-            await recalculateAndSyncStandings(raceResults);
-
             if (raceResultsSaveNotice) {
-                raceResultsSaveNotice.textContent = `✓ Resultados de ${meta.title} guardados. Calendario y próxima carrera actualizados.`;
+                const prevIndex = SEASON_RACE_ORDER.indexOf(raceKey) - 1;
+                const prevTitle = prevIndex >= 0 ? (seasonRacesMeta[SEASON_RACE_ORDER[prevIndex]]?.title || SEASON_RACE_ORDER[prevIndex].toUpperCase()) : null;
+                raceResultsSaveNotice.textContent = chosenStatus === "UPCOMING" && prevTitle
+                    ? `✓ ${meta.title} guardada como PRÓXIMA. Carrera anterior (${prevTitle}) marcada como FINALIZADA.`
+                    : `✓ Resultados de ${meta.title} guardados. Calendario y próxima carrera actualizados.`;
                 raceResultsSaveNotice.style.color = "#3fb950";
                 setTimeout(() => { if (raceResultsSaveNotice) raceResultsSaveNotice.textContent = ""; }, 4000);
             }
@@ -8422,6 +8574,54 @@ if (raceResultsForm) {
             console.error("Error saving race to Firestore:", err);
             if (raceResultsSaveNotice) {
                 raceResultsSaveNotice.textContent = "Error al guardar en Firestore: " + err.message;
+                raceResultsSaveNotice.style.color = "#f85149";
+            }
+        }
+    });
+}
+
+// Admin Set As Next Race Button ("Fijar como Próxima")
+if (adminSetAsNextRaceBtn) {
+    adminSetAsNextRaceBtn.addEventListener("click", async (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+
+        const raceKey = (adminSelectRace && adminSelectRace.value) ? adminSelectRace.value : "australia";
+        if (!raceKey) return;
+
+        const meta = seasonRacesMeta[raceKey] || {
+            round: "ROUND",
+            title: raceKey.toUpperCase(),
+            location: raceKey.toUpperCase(),
+            date: "TBA"
+        };
+
+        if (raceResultsSaveNotice) {
+            raceResultsSaveNotice.textContent = `Fijando ${meta.title} como próxima carrera y marcando anteriores como finalizadas...`;
+            raceResultsSaveNotice.style.color = "var(--gold)";
+        }
+
+        try {
+            await ensurePreviousRacesCompletedForNextRace(raceKey, true);
+            populateRaceResultsEditor(raceKey);
+            if (typeof populateAdminForms === "function") {
+                populateAdminForms();
+            }
+
+            const prevIndex = SEASON_RACE_ORDER.indexOf(raceKey) - 1;
+            const prevTitle = prevIndex >= 0 ? (seasonRacesMeta[SEASON_RACE_ORDER[prevIndex]]?.title || SEASON_RACE_ORDER[prevIndex].toUpperCase()) : null;
+
+            if (raceResultsSaveNotice) {
+                raceResultsSaveNotice.textContent = prevTitle
+                    ? `✓ ${meta.title} fijada como PRÓXIMA carrera. Carrera anterior (${prevTitle}) marcada como FINALIZADA.`
+                    : `✓ ${meta.title} fijada como PRÓXIMA carrera del calendario.`;
+                raceResultsSaveNotice.style.color = "#3fb950";
+                setTimeout(() => { if (raceResultsSaveNotice) raceResultsSaveNotice.textContent = ""; }, 4500);
+            }
+        } catch (err) {
+            console.error("Error setting race as next:", err);
+            if (raceResultsSaveNotice) {
+                raceResultsSaveNotice.textContent = "Error al fijar como próxima: " + err.message;
                 raceResultsSaveNotice.style.color = "#f85149";
             }
         }
@@ -8450,7 +8650,7 @@ if (adminToggleRaceStatusBtn) {
 
         if (raceResultsSaveNotice) {
             raceResultsSaveNotice.textContent = isCurrentlyCompleted 
-                ? `Marcando ${meta.title} como pendiente...` 
+                ? `Marcando ${meta.title} como próxima y completando las anteriores...` 
                 : `Marcando ${meta.title} como finalizada y avanzando calendario...`;
             raceResultsSaveNotice.style.color = "var(--gold)";
         }
@@ -8505,21 +8705,31 @@ if (adminToggleRaceStatusBtn) {
 
         // Instant local update
         raceResults[raceKey] = updatedRace;
-        populateRaceResultsEditor(raceKey);
 
         try {
             await setDoc(doc(db, "carreras", raceKey), updatedRace);
 
-            // Automatically advance calendar progression and recalculate countdown
-            await syncCalendarAndNextRace(true);
+            if (newStatus === "UPCOMING") {
+                // When marking this race as UPCOMING/PRÓXIMA, also ensure previous races are completed
+                await ensurePreviousRacesCompletedForNextRace(raceKey, true);
+            } else {
+                // Automatically advance calendar progression and recalculate countdown
+                await syncCalendarAndNextRace(true);
+                // Recalculate standings
+                await recalculateAndSyncStandings(raceResults);
+            }
 
-            // Recalculate standings
-            await recalculateAndSyncStandings(raceResults);
+            populateRaceResultsEditor(raceKey);
 
             if (raceResultsSaveNotice) {
+                const prevIndex = SEASON_RACE_ORDER.indexOf(raceKey) - 1;
+                const prevTitle = prevIndex >= 0 ? (seasonRacesMeta[SEASON_RACE_ORDER[prevIndex]]?.title || SEASON_RACE_ORDER[prevIndex].toUpperCase()) : null;
+
                 raceResultsSaveNotice.textContent = newStatus === "COMPLETED"
                     ? `✓ ${meta.title} marcada como ACABADA. Próxima carrera actualizada en el calendario y hero con countdown.`
-                    : `✓ ${meta.title} marcada como PENDIENTE. Calendario sincronizado.`;
+                    : (prevTitle 
+                        ? `✓ ${meta.title} marcada como PRÓXIMA. Carrera anterior (${prevTitle}) marcada como FINALIZADA.`
+                        : `✓ ${meta.title} marcada como PRÓXIMA / PENDIENTE.`);
                 raceResultsSaveNotice.style.color = "#3fb950";
                 setTimeout(() => { if (raceResultsSaveNotice) raceResultsSaveNotice.textContent = ""; }, 4500);
             }
@@ -8535,7 +8745,7 @@ if (adminToggleRaceStatusBtn) {
 
 // Direct Race Status Select Change Listener
 if (adminRaceStatusSelect) {
-    adminRaceStatusSelect.addEventListener("change", () => {
+    adminRaceStatusSelect.addEventListener("change", async () => {
         const val = adminRaceStatusSelect.value;
         const isComp = val === "COMPLETED";
         if (adminRaceStatusBadge) {
@@ -8547,6 +8757,13 @@ if (adminRaceStatusSelect) {
         }
         if (adminToggleRaceStatusBtn) {
             adminToggleRaceStatusBtn.className = isComp ? "btn btn-secondary btn-sm" : "btn btn-primary btn-sm";
+        }
+        if (!isComp) {
+            const raceKey = (adminSelectRace && adminSelectRace.value) ? adminSelectRace.value : "australia";
+            if (raceKey) {
+                await ensurePreviousRacesCompletedForNextRace(raceKey, true);
+                populateRaceResultsEditor(raceKey);
+            }
         }
     });
 }
