@@ -2680,6 +2680,17 @@ const adminLogoutBtn = document.getElementById("adminLogoutBtn");
 const adminTabButtons = document.querySelectorAll(".admin-tab-btn");
 const adminTabPanes = document.querySelectorAll(".admin-tab-pane");
 
+// Admin Quick Ops Bar Elements
+const adminQuickNextRace = document.getElementById("adminQuickNextRace");
+const adminQuickDriversCount = document.getElementById("adminQuickDriversCount");
+const adminQuickVerifiedCount = document.getElementById("adminQuickVerifiedCount");
+const adminQuickLiveStatus = document.getElementById("adminQuickLiveStatus");
+const adminQuickFantasyStatus = document.getElementById("adminQuickFantasyStatus");
+
+// Admin Tab Count Badges
+const adminTabDriversBadge = document.getElementById("adminTabDriversBadge");
+const adminTabVerifyBadge = document.getElementById("adminTabVerifyBadge");
+
 // Next Race Target Elements
 const nextRaceRoundEl = document.getElementById("nextRaceRound");
 const nextRaceTitleEl = document.getElementById("nextRaceTitle");
@@ -2687,6 +2698,7 @@ const nextRaceLocationEl = document.getElementById("nextRaceLocation");
 const nextRaceDateTextEl = document.getElementById("nextRaceDateText");
 
 const nextRaceForm = document.getElementById("nextRaceForm");
+const adminQuickGpPreset = document.getElementById("adminQuickGpPreset");
 const adminRaceRound = document.getElementById("adminRaceRound");
 const adminRaceTitle = document.getElementById("adminRaceTitle");
 const adminRaceLocation = document.getElementById("adminRaceLocation");
@@ -2695,6 +2707,14 @@ const adminRaceTemp = document.getElementById("adminRaceTemp");
 const adminRaceWeather = document.getElementById("adminRaceWeather");
 const adminRaceDateTime = document.getElementById("adminRaceDateTime");
 const raceSaveNotice = document.getElementById("raceSaveNotice");
+
+// Live Preview Replica Elements
+const previewMockRound = document.getElementById("previewMockRound");
+const previewMockTitle = document.getElementById("previewMockTitle");
+const previewMockLocation = document.getElementById("previewMockLocation");
+const previewMockDateText = document.getElementById("previewMockDateText");
+const previewMockWeatherIcon = document.getElementById("previewMockWeatherIcon");
+const previewMockWeatherTemp = document.getElementById("previewMockWeatherTemp");
 
 // Standings Target Elements
 const standingsTableBody = document.getElementById("standingsTableBody");
@@ -2708,6 +2728,7 @@ const teamLeaderRow = document.getElementById("teamLeaderRow");
 const teamPodiumSplit = document.getElementById("teamPodiumSplit");
 const teamRowsList = document.getElementById("teamRowsList");
 const adminStandingsTableBody = document.getElementById("adminStandingsTableBody");
+const adminStandingsSearchInput = document.getElementById("adminStandingsSearchInput");
 const adminAddDriverBtn = document.getElementById("adminAddDriverBtn");
 const adminRecalcStandingsBtn = document.getElementById("adminRecalcStandingsBtn");
 const adminSaveStandingsBtn = document.getElementById("adminSaveStandingsBtn");
@@ -2748,6 +2769,7 @@ const newPilotTeam = document.getElementById("newPilotTeam");
 const adminAddNewPilotBtn = document.getElementById("adminAddNewPilotBtn");
 const adminPilotTotalCount = document.getElementById("adminPilotTotalCount");
 const adminSearchPilotInput = document.getElementById("adminSearchPilotInput");
+const adminFilterTeamSelect = document.getElementById("adminFilterTeamSelect");
 const adminDriversTableBody = document.getElementById("adminDriversTableBody");
 const driversSaveNotice = document.getElementById("driversSaveNotice");
 const adminSaveDriversBtn = document.getElementById("adminSaveDriversBtn");
@@ -5708,19 +5730,32 @@ function renderAdminDriversTab(filterText = "") {
     adminDriversTableBody.innerHTML = "";
 
     const roster = getOfficialDriverRoster();
-    if (adminPilotTotalCount) adminPilotTotalCount.textContent = roster.length;
+    if (adminTabDriversBadge) adminTabDriversBadge.textContent = roster.length;
+    if (adminQuickDriversCount) adminQuickDriversCount.textContent = `${roster.length} Pilotos`;
 
-    const lowerFilter = (filterText || "").trim().toLowerCase();
-    const filtered = lowerFilter
-        ? roster.filter(r => {
-            const driverMatches = r.driver.toLowerCase().includes(lowerFilter);
-            const teamMatches = r.team.toLowerCase().includes(lowerFilter);
-            const flag = r.flag || getOfficialDriverFlag(r.driver);
-            const countryName = getCountryNameByFlag(flag);
-            const countryMatches = countryName.toLowerCase().includes(lowerFilter);
-            return driverMatches || teamMatches || countryMatches;
-        })
-        : roster;
+    const selectedTeam = adminFilterTeamSelect ? adminFilterTeamSelect.value.trim().toLowerCase() : "";
+    const lowerFilter = (filterText || (adminSearchPilotInput ? adminSearchPilotInput.value : "")).trim().toLowerCase();
+
+    const filtered = roster.filter(r => {
+        if (selectedTeam && r.team.toLowerCase() !== selectedTeam) {
+            return false;
+        }
+        if (!lowerFilter) return true;
+        const driverMatches = r.driver.toLowerCase().includes(lowerFilter);
+        const teamMatches = r.team.toLowerCase().includes(lowerFilter);
+        const flag = r.flag || getOfficialDriverFlag(r.driver);
+        const countryName = getCountryNameByFlag(flag);
+        const countryMatches = countryName.toLowerCase().includes(lowerFilter);
+        return driverMatches || teamMatches || countryMatches;
+    });
+
+    if (adminPilotTotalCount) {
+        if (filtered.length !== roster.length) {
+            adminPilotTotalCount.textContent = `${filtered.length} / ${roster.length}`;
+        } else {
+            adminPilotTotalCount.textContent = roster.length;
+        }
+    }
 
     filtered.forEach((item, index) => {
         const actualIndex = roster.indexOf(item);
@@ -6093,6 +6128,59 @@ function populateRaceResultsEditor(raceKey) {
     renderRacePositionsTable(driversToRender);
 }
 
+// Official GP Presets Map for Quick Loader
+const OFFICIAL_GP_PRESETS = {
+    australia: { round: "ROUND 01", title: "AUSTRALIAN GP", location: "MELBOURNE · ALBERT PARK", dateText: "28 MAR · 17:00 CEST", weatherTemp: "24°C", weatherCondition: "sunny" },
+    malaysia: { round: "ROUND 02", title: "MALAYSIAN GP", location: "SEPANG · KUALA LUMPUR", dateText: "04 APR · 16:00 CEST", weatherTemp: "31°C", weatherCondition: "partly-cloudy" },
+    bahrain: { round: "ROUND 03", title: "BAHRAIN GP", location: "SAKHIR · DESERT CIRCUIT", dateText: "14 MAR · 18:00 CEST", weatherTemp: "28°C", weatherCondition: "sunny" },
+    turkey: { round: "ROUND 04", title: "TURKISH GP", location: "ISTANBUL PARK · TURKEY", dateText: "30 MAY · 15:00 CEST", weatherTemp: "25°C", weatherCondition: "sunny" },
+    spain: { round: "ROUND 05", title: "SPANISH GP", location: "CIRCUIT DE BARCELONA-CATALUNYA", dateText: "09 MAY · 15:00 CEST", weatherTemp: "23°C", weatherCondition: "sunny" },
+    italy: { round: "ROUND 06", title: "ITALIAN GP", location: "AUTODROMO NAZIONALE MONZA", dateText: "12 SEP · 15:00 CEST", weatherTemp: "26°C", weatherCondition: "sunny" },
+    austria: { round: "ROUND 07", title: "AUSTRIAN GP", location: "RED BULL RING · SPIELBERG", dateText: "04 JUL · 15:00 CEST", weatherTemp: "21°C", weatherCondition: "partly-cloudy" },
+    silverstone: { round: "ROUND 08", title: "BRITISH GP", location: "SILVERSTONE CIRCUIT · UK", dateText: "11 JUL · 16:00 CEST", weatherTemp: "19°C", weatherCondition: "cloudy" },
+    hockenheim: { round: "ROUND 09", title: "GERMAN GP", location: "HOCKENHEIMRING · GERMANY", dateText: "25 JUL · 15:00 CEST", weatherTemp: "24°C", weatherCondition: "sunny" },
+    nurburgring: { round: "ROUND 10", title: "NÜRBURGRING GP", location: "NÜRBURGRING · EUROPE", dateText: "20 SEP · 16:30 CEST", weatherTemp: "22°C", weatherCondition: "sunny" },
+    hungary: { round: "ROUND 11", title: "HUNGARIAN GP", location: "HUNGARORING · BUDAPEST", dateText: "01 AUG · 15:00 CEST", weatherTemp: "29°C", weatherCondition: "sunny" },
+    belgium: { round: "ROUND 12", title: "BELGIAN GP", location: "CIRCUIT DE SPA-FRANCORCHAMPS", dateText: "29 AUG · 15:00 CEST", weatherTemp: "18°C", weatherCondition: "rainy" },
+    singapore: { round: "ROUND 13", title: "SINGAPORE GP", location: "MARINA BAY STREET CIRCUIT", dateText: "26 SEP · 20:00 CEST", weatherTemp: "30°C", weatherCondition: "partly-cloudy" },
+    cota: { round: "ROUND 14", title: "UNITED STATES GP", location: "CIRCUIT OF THE AMERICAS · AUSTIN", dateText: "24 OCT · 20:00 CEST", weatherTemp: "27°C", weatherCondition: "sunny" },
+    brazil: { round: "ROUND 15", title: "BRAZILIAN GP", location: "AUTÓDROMO JOSÉ CARLOS PACE · INTERLAGOS", dateText: "07 NOV · 18:00 CEST", weatherTemp: "25°C", weatherCondition: "rainy" }
+};
+
+// Update Admin Live Preview replica in real-time
+function updateAdminLivePreview() {
+    const roundVal = adminRaceRound ? adminRaceRound.value.trim() : "";
+    const titleVal = adminRaceTitle ? adminRaceTitle.value.trim() : "";
+    const locVal = adminRaceLocation ? adminRaceLocation.value.trim() : "";
+    const dateVal = adminRaceDateText ? adminRaceDateText.value.trim() : "";
+    let tempVal = adminRaceTemp ? adminRaceTemp.value.trim() : "22°C";
+    if (tempVal && !tempVal.includes("°")) tempVal += "°C";
+    const weatherVal = adminRaceWeather ? adminRaceWeather.value : "sunny";
+
+    if (previewMockRound) previewMockRound.textContent = roundVal || "ROUND 10";
+    if (previewMockTitle) previewMockTitle.textContent = titleVal || "GRAN PREMIO";
+    if (previewMockLocation) previewMockLocation.textContent = locVal || "CIRCUITO · PAÍS";
+    if (previewMockDateText) previewMockDateText.textContent = dateVal || "PRÓXIMAMENTE";
+
+    let icon = "☀️";
+    if (weatherVal === "partly-cloudy") icon = "⛅";
+    else if (weatherVal === "cloudy") icon = "☁️";
+    else if (weatherVal === "rainy") icon = "🌧️";
+    else if (weatherVal === "storm") icon = "🌩️";
+
+    if (previewMockWeatherIcon) previewMockWeatherIcon.textContent = icon;
+    if (previewMockWeatherTemp) previewMockWeatherTemp.textContent = tempVal;
+
+    // Synchronize Quick KPI Operations Bar
+    if (adminQuickNextRace) {
+        if (roundVal && titleVal) {
+            adminQuickNextRace.textContent = `${roundVal}: ${titleVal}`;
+        } else {
+            adminQuickNextRace.textContent = roundVal || titleVal || "RACE PREP";
+        }
+    }
+}
+
 // Populate Admin Forms from current stored states
 function populateAdminForms() {
     const race = getSavedNextRace();
@@ -6104,18 +6192,26 @@ function populateAdminForms() {
     if (adminRaceWeather) adminRaceWeather.value = race.weatherCondition || "sunny";
     if (adminRaceDateTime) adminRaceDateTime.value = race.dateTime || "";
 
+    // Sync Live Preview immediately
+    updateAdminLivePreview();
+
     const standings = getSavedStandings();
     renderAdminStandingsEditor(standings);
 
     const settings = getSavedSettings();
+    const isLive = Boolean(settings.liveMode);
     if (adminLiveMode) {
-        adminLiveMode.checked = Boolean(settings.liveMode);
+        adminLiveMode.checked = isLive;
     }
     if (adminSwitchStatusText) {
-        const isLive = Boolean(settings.liveMode);
         adminSwitchStatusText.textContent = isLive ? "MODO DIRECTO ACTIVADO" : "MODO DIRECTO DESACTIVADO";
         adminSwitchStatusText.classList.toggle("is-active", isLive);
     }
+    if (adminQuickLiveStatus) {
+        adminQuickLiveStatus.textContent = isLive ? "🔴 EN DIRECTO" : "OFFLINE";
+        adminQuickLiveStatus.style.color = isLive ? "#f85149" : "#8c929c";
+    }
+
     if (adminTwitchChannel) adminTwitchChannel.value = settings.twitchChannel || "https://www.twitch.tv/driezzz12";
     if (adminLiveTitle) adminLiveTitle.value = settings.liveTitle || "ESTAMOS EN DIRECTO";
     if (adminLiveRaceTitle) adminLiveRaceTitle.value = settings.liveRaceTitle || "";
@@ -6127,14 +6223,19 @@ function populateAdminForms() {
     if (adminStatRounds) adminStatRounds.value = settings.rounds || "";
     if (adminStatDrivers) adminStatDrivers.value = settings.drivers || "";
 
+    const isFantasyLocked = Boolean(settings.fantasyLocked);
     if (adminFantasyLocked) {
-        adminFantasyLocked.checked = Boolean(settings.fantasyLocked);
+        adminFantasyLocked.checked = isFantasyLocked;
     }
     if (adminFantasyLockStatusText) {
-        const isFantasyLocked = Boolean(settings.fantasyLocked);
         adminFantasyLockStatusText.textContent = isFantasyLocked ? "🔒 MERCADO BLOQUEADO (CARRERA EN CURSO)" : "MERCADO ABIERTO (FICHAJES ACTIVOS)";
         adminFantasyLockStatusText.classList.toggle("is-active", isFantasyLocked);
     }
+    if (adminQuickFantasyStatus) {
+        adminQuickFantasyStatus.textContent = isFantasyLocked ? "🔒 BLOQUEADO" : "⚡ ABIERTO";
+        adminQuickFantasyStatus.style.color = isFantasyLocked ? "var(--gold-light)" : "#3fb950";
+    }
+
     if (adminFantasyLockMessage) {
         adminFantasyLockMessage.value = settings.fantasyLockMessage || "Mercado de fichajes congelado por Gran Premio en curso.";
     }
@@ -6540,6 +6641,87 @@ if (nextRaceForm) {
                 raceSaveNotice.textContent = "Error al guardar en Firestore: " + err.message;
                 raceSaveNotice.style.color = "#f85149";
             }
+        }
+    });
+}
+
+// Preset Quick Loader
+if (adminQuickGpPreset) {
+    adminQuickGpPreset.addEventListener("change", (e) => {
+        const key = e.target.value;
+        if (!key || !OFFICIAL_GP_PRESETS[key]) return;
+        const preset = OFFICIAL_GP_PRESETS[key];
+        if (adminRaceRound) adminRaceRound.value = preset.round;
+        if (adminRaceTitle) adminRaceTitle.value = preset.title;
+        if (adminRaceLocation) adminRaceLocation.value = preset.location;
+        if (adminRaceDateText) adminRaceDateText.value = preset.dateText;
+        if (adminRaceTemp) adminRaceTemp.value = preset.weatherTemp;
+        if (adminRaceWeather) adminRaceWeather.value = preset.weatherCondition;
+        updateAdminLivePreview();
+    });
+}
+
+// Live Preview Real-Time Input Synchronization
+[adminRaceRound, adminRaceTitle, adminRaceLocation, adminRaceDateText, adminRaceTemp].forEach(inputEl => {
+    if (inputEl) {
+        inputEl.addEventListener("input", updateAdminLivePreview);
+    }
+});
+if (adminRaceWeather) {
+    adminRaceWeather.addEventListener("change", updateAdminLivePreview);
+}
+
+// Standings Search Filter
+if (adminStandingsSearchInput) {
+    adminStandingsSearchInput.addEventListener("input", (e) => {
+        const val = e.target.value.toLowerCase().trim();
+        if (!adminStandingsTableBody) return;
+        const rows = adminStandingsTableBody.querySelectorAll("tr");
+        rows.forEach(r => {
+            const inputName = r.querySelector(".driver-name-input");
+            const teamBadge = r.querySelector(".team-locked-badge");
+            const name = inputName ? inputName.value.toLowerCase() : "";
+            const team = teamBadge ? teamBadge.textContent.toLowerCase() : "";
+            if (!val || name.includes(val) || team.includes(val)) {
+                r.style.display = "";
+            } else {
+                r.style.display = "none";
+            }
+        });
+    });
+}
+
+// Drivers Team Filter Listener
+if (adminFilterTeamSelect) {
+    adminFilterTeamSelect.addEventListener("change", () => {
+        renderAdminDriversTab();
+    });
+}
+
+// Verification Status Filter Listener
+if (adminFilterVerifyStatus) {
+    adminFilterVerifyStatus.addEventListener("change", () => {
+        renderAdminVerifyTab();
+    });
+}
+
+// Live & Fantasy Quick KPI Listeners
+if (adminLiveMode) {
+    adminLiveMode.addEventListener("change", () => {
+        const isLive = adminLiveMode.checked;
+        if (adminQuickLiveStatus) {
+            adminQuickLiveStatus.textContent = isLive ? "🔴 EN DIRECTO" : "OFFLINE";
+            adminQuickLiveStatus.style.color = isLive ? "#f85149" : "#8c929c";
+        }
+    });
+}
+
+if (adminFantasyLocked) {
+    adminFantasyLocked.addEventListener("change", () => {
+        const isLocked = adminFantasyLocked.checked;
+        if (adminQuickFantasyStatus) {
+            adminQuickFantasyStatus.textContent = isLocked ? "🔒 BLOQUEADO" : "⚡ ABIERTO";
+            adminQuickFantasyStatus.style.color = isLocked ? "var(--gold-light)" : "#3fb950";
         }
     });
 }
@@ -8503,6 +8685,11 @@ const adminGeneratedDriverName = document.getElementById("adminGeneratedDriverNa
 const adminGeneratedCodeDisplay = document.getElementById("adminGeneratedCodeDisplay");
 const adminCopyCodeBtn = document.getElementById("adminCopyCodeBtn");
 const adminSearchVerifyPilotInput = document.getElementById("adminSearchVerifyPilotInput");
+const adminFilterVerifyStatus = document.getElementById("adminFilterVerifyStatus");
+const adminVerifyTotalPilots = document.getElementById("adminVerifyTotalPilots");
+const adminVerifyCountVerified = document.getElementById("adminVerifyCountVerified");
+const adminVerifyCountActiveCodes = document.getElementById("adminVerifyCountActiveCodes");
+const adminVerifyCountPending = document.getElementById("adminVerifyCountPending");
 const adminVerifyTableBody = document.getElementById("adminVerifyTableBody");
 
 // Helper: Generate unique verification code
@@ -8716,6 +8903,28 @@ function renderAdminVerifyTab(filterTerm = "") {
 
     const list = (currentPilotos && currentPilotos.length > 0) ? currentPilotos : getSavedStandings();
 
+    // Calculate Verification Statistics & KPI Badges
+    let verifiedCount = 0;
+    let codeActiveCount = 0;
+    let pendingCount = 0;
+
+    list.forEach(p => {
+        if (p.isVerified || p.claimedByEmail) {
+            verifiedCount++;
+        } else if (p.verificationCode) {
+            codeActiveCount++;
+        } else {
+            pendingCount++;
+        }
+    });
+
+    if (adminVerifyTotalPilots) adminVerifyTotalPilots.textContent = list.length;
+    if (adminVerifyCountVerified) adminVerifyCountVerified.textContent = verifiedCount;
+    if (adminVerifyCountActiveCodes) adminVerifyCountActiveCodes.textContent = codeActiveCount;
+    if (adminVerifyCountPending) adminVerifyCountPending.textContent = pendingCount;
+    if (adminTabVerifyBadge) adminTabVerifyBadge.textContent = verifiedCount;
+    if (adminQuickVerifiedCount) adminQuickVerifiedCount.textContent = `${verifiedCount} / ${list.length}`;
+
     // Populate Select Dropdown
     const currentSelVal = adminVerifyDriverSelect.value;
     adminVerifyDriverSelect.innerHTML = `<option value="">-- Seleccionar piloto oficial --</option>`;
@@ -8728,9 +8937,19 @@ function renderAdminVerifyTab(filterTerm = "") {
         adminVerifyDriverSelect.appendChild(opt);
     });
 
-    // Populate Table
-    const searchKey = filterTerm.trim().toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+    // Populate Table with Status & Search Filters
+    const statusFilter = adminFilterVerifyStatus ? adminFilterVerifyStatus.value : "all";
+    const searchKey = (filterTerm || (adminSearchVerifyPilotInput ? adminSearchVerifyPilotInput.value : "")).trim().toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+    
     const filtered = list.filter(p => {
+        const isVer = Boolean(p.isVerified || p.claimedByEmail);
+        const hasCode = Boolean(p.verificationCode && !isVer);
+        const isPend = !isVer && !hasCode;
+
+        if (statusFilter === "verified" && !isVer) return false;
+        if (statusFilter === "code" && !hasCode) return false;
+        if (statusFilter === "pending" && !isPend) return false;
+
         if (!searchKey) return true;
         const nameNorm = p.driver.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
         const teamNorm = p.team.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
@@ -8745,7 +8964,7 @@ function renderAdminVerifyTab(filterTerm = "") {
         adminVerifyTableBody.innerHTML = `
             <tr>
                 <td colspan="7" style="text-align: center; padding: 20px; color: #8c929c;">
-                    No se encontraron pilotos que coincidan con la búsqueda.
+                    No se encontraron pilotos que coincidan con la búsqueda o filtro.
                 </td>
             </tr>
         `;

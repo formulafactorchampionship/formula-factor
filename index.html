@@ -2318,68 +2318,196 @@
 <div class="admin-panel-overlay" id="adminPanelOverlay" aria-hidden="true">
     <div class="admin-panel-card">
         <header class="admin-panel-header">
-            <div>
-                <div class="admin-card-badge">FFC // ADMIN PANEL</div>
-                <h2>MENÚ DE ADMINISTRACIÓN</h2>
+            <div class="admin-header-brand">
+                <div class="admin-card-badge">FFC // TORRE DE CONTROL &bull; GESTIÓN OFICIAL</div>
+                <h2>PANEL DE ADMINISTRACIÓN</h2>
                 <div class="admin-status-indicator">
                     <span class="live-dot"></span>
-                    <span>Sesión de Administrador Activa</span>
+                    <span id="adminSessionInfo">Sesión de Administrador Activa</span>
                 </div>
             </div>
             <div class="admin-header-actions">
-                <button id="adminLogoutBtn" class="admin-logout-btn" type="button">Cerrar Sesión</button>
+                <button id="adminLogoutBtn" class="admin-logout-btn" type="button">
+                    <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true" style="margin-right: 5px; vertical-align: middle;"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+                    Cerrar Sesión
+                </button>
                 <button id="adminPanelClose" class="admin-modal-close-btn" aria-label="Cerrar panel">&times;</button>
             </div>
         </header>
 
+        <!-- ADMIN QUICK KPI OPERATIONS STRIP -->
+        <div class="admin-quick-ops-bar" id="adminQuickOpsBar">
+            <div class="admin-quick-op-item" title="Próximo Gran Premio configurado">
+                <span class="admin-quick-op-icon">🏁</span>
+                <div class="admin-quick-op-text">
+                    <span class="admin-quick-op-label">Próxima Carrera</span>
+                    <strong class="admin-quick-op-val" id="adminQuickNextRace">ROUND 10</strong>
+                </div>
+            </div>
+            <div class="admin-quick-op-item" title="Total de pilotos en el censo">
+                <span class="admin-quick-op-icon">🏎️</span>
+                <div class="admin-quick-op-text">
+                    <span class="admin-quick-op-label">Pilotos en Grid</span>
+                    <strong class="admin-quick-op-val" id="adminQuickDriversCount">44 Pilotos</strong>
+                </div>
+            </div>
+            <div class="admin-quick-op-item" title="Cuentas verificadas oficialmente">
+                <span class="admin-quick-op-icon">🔑</span>
+                <div class="admin-quick-op-text">
+                    <span class="admin-quick-op-label">Verificados</span>
+                    <strong class="admin-quick-op-val" id="adminQuickVerifiedCount">0</strong>
+                </div>
+            </div>
+            <div class="admin-quick-op-item" title="Estado de la retransmisión Twitch">
+                <span class="admin-quick-op-icon">🔴</span>
+                <div class="admin-quick-op-text">
+                    <span class="admin-quick-op-label">Modo Directo</span>
+                    <strong class="admin-quick-op-val" id="adminQuickLiveStatus">OFFLINE</strong>
+                </div>
+            </div>
+            <div class="admin-quick-op-item" title="Estado del mercado Fantasy">
+                <span class="admin-quick-op-icon">💹</span>
+                <div class="admin-quick-op-text">
+                    <span class="admin-quick-op-label">Mercado Fantasy</span>
+                    <strong class="admin-quick-op-val" id="adminQuickFantasyStatus">ABIERTO</strong>
+                </div>
+            </div>
+        </div>
+
         <nav class="admin-tabs">
-            <button type="button" class="admin-tab-btn active" data-tab="tab-next-race">Próxima Carrera</button>
-            <button type="button" class="admin-tab-btn" data-tab="tab-race-results">Resultados de Carreras</button>
-            <button type="button" class="admin-tab-btn" data-tab="tab-standings">Clasificación</button>
-            <button type="button" class="admin-tab-btn" data-tab="tab-drivers">Pilotos &amp; Equipos</button>
-            <button type="button" class="admin-tab-btn" data-tab="tab-verify">Verificación de Pilotos</button>
-            <button type="button" class="admin-tab-btn" data-tab="tab-settings">Ajustes Generales</button>
+            <button type="button" class="admin-tab-btn active" data-tab="tab-next-race">
+                <span class="admin-tab-icon">🏁</span>
+                <span class="admin-tab-title">Próxima Carrera</span>
+            </button>
+            <button type="button" class="admin-tab-btn" data-tab="tab-race-results">
+                <span class="admin-tab-icon">🏆</span>
+                <span class="admin-tab-title">Resultados de Carreras</span>
+            </button>
+            <button type="button" class="admin-tab-btn" data-tab="tab-standings">
+                <span class="admin-tab-icon">📊</span>
+                <span class="admin-tab-title">Clasificación</span>
+            </button>
+            <button type="button" class="admin-tab-btn" data-tab="tab-drivers">
+                <span class="admin-tab-icon">🏎️</span>
+                <span class="admin-tab-title">Pilotos &amp; Equipos</span>
+                <span class="admin-tab-pill-badge" id="adminTabDriversBadge">44</span>
+            </button>
+            <button type="button" class="admin-tab-btn" data-tab="tab-verify">
+                <span class="admin-tab-icon">🔑</span>
+                <span class="admin-tab-title">Verificación de Pilotos</span>
+                <span class="admin-tab-pill-badge admin-tab-badge-gold" id="adminTabVerifyBadge">0</span>
+            </button>
+            <button type="button" class="admin-tab-btn" data-tab="tab-settings">
+                <span class="admin-tab-icon">⚙️</span>
+                <span class="admin-tab-title">Ajustes Generales</span>
+            </button>
         </nav>
 
         <div class="admin-panel-body">
             <!-- TAB 1: PRÓXIMA CARRERA -->
             <div class="admin-tab-pane active" id="tab-next-race">
+                <div class="admin-tab-intro">
+                    <div class="admin-card-badge">CALENDARIO &amp; CUENTA REGRESIVA</div>
+                    <h3>CONFIGURACIÓN DEL PRÓXIMO GRAN PREMIO</h3>
+                    <p class="admin-field-hint">
+                        Personaliza los datos del Gran Premio que se mostrarán en la portada principal, el circuito, el clima y la cuenta regresiva en vivo.
+                    </p>
+                </div>
+
+                <!-- PRESET QUICK LOADER -->
+                <div class="admin-preset-strip">
+                    <div class="admin-preset-label">
+                        <span class="admin-preset-icon">⚡</span>
+                        <span>Plantilla rápida de Gran Premio:</span>
+                    </div>
+                    <select id="adminQuickGpPreset" class="admin-preset-select">
+                        <option value="">-- Seleccionar Gran Premio oficial (Auto-completar datos) --</option>
+                        <option value="australia">ROUND 01 — AUSTRALIA (Albert Park)</option>
+                        <option value="malaysia">ROUND 02 — MALAYSIA (Sepang)</option>
+                        <option value="bahrain">ROUND 03 — BAHRAIN (Sakhir)</option>
+                        <option value="turkey">ROUND 04 — TURKEY (Istanbul Park)</option>
+                        <option value="spain">ROUND 05 — SPAIN (Barcelona)</option>
+                        <option value="italy">ROUND 06 — ITALY (Monza)</option>
+                        <option value="austria">ROUND 07 — AUSTRIA (Red Bull Ring)</option>
+                        <option value="silverstone">ROUND 08 — GREAT BRITAIN (Silverstone)</option>
+                        <option value="hockenheim">ROUND 09 — GERMANY (Hockenheim)</option>
+                        <option value="nurburgring">ROUND 10 — EUROPE (Nürburgring GP)</option>
+                        <option value="hungary">ROUND 11 — HUNGARY (Hungaroring)</option>
+                        <option value="belgium">ROUND 12 — BELGIUM (Spa-Francorchamps)</option>
+                        <option value="singapore">ROUND 13 — SINGAPORE (Marina Bay)</option>
+                        <option value="cota">ROUND 14 — USA (COTA)</option>
+                        <option value="brazil">ROUND 15 — BRAZIL (Interlagos)</option>
+                    </select>
+                </div>
+
                 <form id="nextRaceForm">
-                    <div class="admin-form-grid">
-                        <div class="admin-field">
-                            <label for="adminRaceRound">Ronda del Campeonato</label>
-                            <input type="text" id="adminRaceRound" placeholder="Ej: ROUND 10" required>
+                    <div class="admin-next-race-layout">
+                        <div class="admin-next-race-form-col">
+                            <div class="admin-form-grid">
+                                <div class="admin-field">
+                                    <label for="adminRaceRound">Ronda del Campeonato</label>
+                                    <input type="text" id="adminRaceRound" placeholder="Ej: ROUND 10" required>
+                                </div>
+                                <div class="admin-field">
+                                    <label for="adminRaceTitle">Nombre del Gran Premio</label>
+                                    <input type="text" id="adminRaceTitle" placeholder="Ej: NÜRBURGRING GP" required>
+                                </div>
+                                <div class="admin-field">
+                                    <label for="adminRaceLocation">Circuito y Región</label>
+                                    <input type="text" id="adminRaceLocation" placeholder="Ej: NÜRBURGRING · EUROPE" required>
+                                </div>
+                                <div class="admin-field">
+                                    <label for="adminRaceDateText">Texto de Fecha Visible</label>
+                                    <input type="text" id="adminRaceDateText" placeholder="Ej: 20 SEP · 16:30 CEST" required>
+                                </div>
+                                <div class="admin-field">
+                                    <label for="adminRaceTemp">Temperatura del Circuito (°C)</label>
+                                    <input type="text" id="adminRaceTemp" placeholder="Ej: 22°C o 22" value="22°C" required>
+                                </div>
+                                <div class="admin-field">
+                                    <label for="adminRaceWeather">Previsión Meteorológica / Clima</label>
+                                    <select id="adminRaceWeather" class="admin-select" required>
+                                        <option value="sunny">☀️ Soleado / Despejado</option>
+                                        <option value="partly-cloudy">⛅ Parcialmente Nublado</option>
+                                        <option value="cloudy">☁️ Nublado</option>
+                                        <option value="rainy">🌧️ Lluvia / Pista Mojada</option>
+                                        <option value="storm">🌩️ Tormenta Intensa</option>
+                                    </select>
+                                </div>
+                                <div class="admin-field admin-field-full">
+                                    <label for="adminRaceDateTime">Fecha y Hora de la Carrera (Cuenta Regresiva)</label>
+                                    <input type="datetime-local" id="adminRaceDateTime" required>
+                                    <small class="admin-field-hint">Ajusta la fecha y hora oficial para que el contador en vivo sincronice automáticamente.</small>
+                                </div>
+                            </div>
                         </div>
-                        <div class="admin-field">
-                            <label for="adminRaceTitle">Nombre del Gran Premio</label>
-                            <input type="text" id="adminRaceTitle" placeholder="Ej: NÜRBURGRING GP" required>
-                        </div>
-                        <div class="admin-field">
-                            <label for="adminRaceLocation">Circuito y Región</label>
-                            <input type="text" id="adminRaceLocation" placeholder="Ej: NÜRBURGRING · EUROPE" required>
-                        </div>
-                        <div class="admin-field">
-                            <label for="adminRaceDateText">Texto de Fecha Visible</label>
-                            <input type="text" id="adminRaceDateText" placeholder="Ej: 20 SEP · 16:30 CEST" required>
-                        </div>
-                        <div class="admin-field">
-                            <label for="adminRaceTemp">Temperatura del Circuito (°C)</label>
-                            <input type="text" id="adminRaceTemp" placeholder="Ej: 22°C o 22" value="22°C" required>
-                        </div>
-                        <div class="admin-field admin-field-full">
-                            <label for="adminRaceWeather">Previsión Meteorológica / Clima</label>
-                            <select id="adminRaceWeather" class="admin-select" required>
-                                <option value="sunny">☀️ Soleado / Despejado</option>
-                                <option value="partly-cloudy">⛅ Parcialmente Nublado</option>
-                                <option value="cloudy">☁️ Nublado</option>
-                                <option value="rainy">🌧️ Lluvia / Pista Mojada</option>
-                                <option value="storm">🌩️ Tormenta Intensa</option>
-                            </select>
-                        </div>
-                        <div class="admin-field admin-field-full">
-                            <label for="adminRaceDateTime">Fecha y Hora de la Carrera (Cuenta Regresiva)</label>
-                            <input type="datetime-local" id="adminRaceDateTime" required>
-                            <small class="admin-field-hint">Ajusta la fecha y hora oficial para que el contador en vivo sincronice automáticamente.</small>
+
+                        <!-- LIVE PREVIEW HERO CARD -->
+                        <div class="admin-next-race-preview-col">
+                            <div class="admin-preview-box">
+                                <div class="admin-preview-box-header">
+                                    <span class="admin-preview-badge">VISTA PREVIA EN TIEMPO REAL</span>
+                                    <span class="admin-preview-sub">Aspecto en la portada</span>
+                                </div>
+                                <div class="admin-preview-card-body">
+                                    <div class="admin-preview-meta-row">
+                                        <span class="admin-preview-round" id="previewMockRound">ROUND 10</span>
+                                        <div class="admin-preview-weather" id="previewMockWeather">
+                                            <span id="previewMockWeatherIcon">☀️</span>
+                                            <span id="previewMockWeatherTemp">22°C</span>
+                                        </div>
+                                    </div>
+                                    <h4 class="admin-preview-title" id="previewMockTitle">NÜRBURGRING GP</h4>
+                                    <div class="admin-preview-location" id="previewMockLocation">NÜRBURGRING · EUROPE</div>
+                                    <div class="admin-preview-footer">
+                                        <span class="admin-preview-date" id="previewMockDateText">20 SEP · 16:30 CEST</span>
+                                        <span class="admin-preview-countdown-tag">
+                                            <span class="admin-preview-dot"></span>
+                                            Cuenta Regresiva Activa
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
 
@@ -2392,9 +2520,17 @@
 
             <!-- TAB 2: RESULTADOS DE CARRERAS -->
             <div class="admin-tab-pane" id="tab-race-results">
+                <div class="admin-tab-intro">
+                    <div class="admin-card-badge">PUNTUACIÓN Y TIEMPOS</div>
+                    <h3>RESULTADOS OFICIALES DE GRANDES PREMIOS</h3>
+                    <p class="admin-field-hint">
+                        Selecciona cualquier Gran Premio de la temporada para cargar, revisar o registrar los tiempos de pole, vuelta rápida, piloto del día y el orden de llegada.
+                    </p>
+                </div>
+
                 <form id="raceResultsForm">
                     <div class="admin-results-selector-box">
-                        <div class="admin-field admin-field-full">
+                        <div class="admin-field admin-field-full" style="margin-bottom: 0;">
                             <label for="adminSelectRace">SELECCIONAR CARRERA DE LA TEMPORADA</label>
                             <select id="adminSelectRace" class="admin-select" required>
                                 <option value="australia">ROUND 01 — AUSTRALIA (Albert Park)</option>
@@ -2417,47 +2553,72 @@
                         </div>
                     </div>
 
-                    <div class="admin-results-section-divider">
-                        <span>DESTACADOS & VUELTA RÁPIDA</span>
-                    </div>
-
-                    <div class="admin-form-grid">
-                        <div class="admin-field">
-                            <label for="adminFastestDriver">VUELTA RÁPIDA (PILOTO) *</label>
-                            <select id="adminFastestDriver" class="admin-select" required>
-                                <!-- Populated dynamically with registered drivers -->
-                            </select>
-                        </div>
-                        <div class="admin-field">
-                            <label for="adminFastestTime">TIEMPO VUELTA RÁPIDA *</label>
-                            <input type="text" id="adminFastestTime" placeholder="Ej: 1:14.395" required>
-                        </div>
-
-                        <div class="admin-field">
-                            <label for="adminPoleDriver">POLE POSITION (PILOTO)</label>
-                            <select id="adminPoleDriver" class="admin-select">
-                                <!-- Populated dynamically with registered drivers -->
-                            </select>
-                        </div>
-                        <div class="admin-field">
-                            <label for="adminPoleTime">TIEMPO DE POLE</label>
-                            <input type="text" id="adminPoleTime" placeholder="Ej: 1:14.751">
+                    <div class="admin-highlights-grid">
+                        <!-- VUELTA RÁPIDA -->
+                        <div class="admin-highlight-card">
+                            <div class="admin-highlight-header">
+                                <span class="admin-highlight-icon">⚡</span>
+                                <span class="admin-highlight-title">VUELTA RÁPIDA (+1 PT)</span>
+                            </div>
+                            <div class="admin-field" style="margin-bottom: 8px;">
+                                <label for="adminFastestDriver">Piloto Vuelta Rápida *</label>
+                                <select id="adminFastestDriver" class="admin-select" required>
+                                    <!-- Populated dynamically with registered drivers -->
+                                </select>
+                            </div>
+                            <div class="admin-field">
+                                <label for="adminFastestTime">Tiempo Vuelta Rápida *</label>
+                                <input type="text" id="adminFastestTime" placeholder="Ej: 1:14.395" required>
+                            </div>
                         </div>
 
-                        <div class="admin-field">
-                            <label for="adminDriverDay">PILOTO DEL DÍA</label>
-                            <select id="adminDriverDay" class="admin-select">
-                                <!-- Populated dynamically with registered drivers -->
-                            </select>
+                        <!-- POLE POSITION -->
+                        <div class="admin-highlight-card">
+                            <div class="admin-highlight-header">
+                                <span class="admin-highlight-icon">🏁</span>
+                                <span class="admin-highlight-title">POLE POSITION</span>
+                            </div>
+                            <div class="admin-field" style="margin-bottom: 8px;">
+                                <label for="adminPoleDriver">Piloto Pole Position</label>
+                                <select id="adminPoleDriver" class="admin-select">
+                                    <!-- Populated dynamically with registered drivers -->
+                                </select>
+                            </div>
+                            <div class="admin-field">
+                                <label for="adminPoleTime">Tiempo de Pole</label>
+                                <input type="text" id="adminPoleTime" placeholder="Ej: 1:14.751">
+                            </div>
                         </div>
-                        <div class="admin-field">
-                            <label for="adminRaceDateInput">FECHA / TEXTO DE LA CARRERA</label>
-                            <input type="text" id="adminRaceDateInput" placeholder="Ej: 20 SEP">
+
+                        <!-- PILOTO DEL DÍA Y FECHA -->
+                        <div class="admin-highlight-card">
+                            <div class="admin-highlight-header">
+                                <span class="admin-highlight-icon">⭐</span>
+                                <span class="admin-highlight-title">PILOTO DEL DÍA &amp; FECHA</span>
+                            </div>
+                            <div class="admin-field" style="margin-bottom: 8px;">
+                                <label for="adminDriverDay">Piloto del Día</label>
+                                <select id="adminDriverDay" class="admin-select">
+                                    <!-- Populated dynamically with registered drivers -->
+                                </select>
+                            </div>
+                            <div class="admin-field">
+                                <label for="adminRaceDateInput">Fecha / Texto del GP</label>
+                                <input type="text" id="adminRaceDateInput" placeholder="Ej: 20 SEP">
+                            </div>
                         </div>
-                        <div class="admin-field admin-field-full">
-                            <label for="adminRaceReplayUrl">ENLACE DE REPETICIÓN / VIDEO DE LA CARRERA (YOUTUBE / TWITCH)</label>
-                            <input type="url" id="adminRaceReplayUrl" placeholder="https://www.youtube.com/watch?v=... o https://twitch.tv/videos/...">
-                            <span class="admin-field-hint">Si incluyes un enlace de repetición, aparecerá un botón rojo "VER REPETICIÓN" en la esquina de la tarjeta y en los resultados del GP.</span>
+
+                        <!-- REPETICIÓN / VIDEO -->
+                        <div class="admin-highlight-card">
+                            <div class="admin-highlight-header">
+                                <span class="admin-highlight-icon">🎥</span>
+                                <span class="admin-highlight-title">TRANSMISIÓN &amp; REPETICIÓN</span>
+                            </div>
+                            <div class="admin-field">
+                                <label for="adminRaceReplayUrl">Enlace de Repetición (YouTube / Twitch)</label>
+                                <input type="url" id="adminRaceReplayUrl" placeholder="https://www.youtube.com/watch?v=... o https://twitch.tv/videos/...">
+                                <span class="admin-field-hint">Al agregar el enlace, aparecerá el botón "VER REPETICIÓN" en la portada y en los resultados del GP.</span>
+                            </div>
                         </div>
                     </div>
 
@@ -2506,12 +2667,19 @@
                 </form>
             </div>
 
-            <!-- TAB 2: CLASIFICACIÓN -->
+            <!-- TAB 3: CLASIFICACIÓN -->
             <div class="admin-tab-pane" id="tab-standings">
+                <div class="admin-tab-intro">
+                    <div class="admin-card-badge">MUNDIAL DE PILOTOS</div>
+                    <h3>TABLA GENERAL DE PUNTOS Y CLASIFICACIÓN</h3>
+                    <p class="admin-field-hint">
+                        Modifica los puntos acumulados de cada piloto o utiliza el recálculo automático para sincronizar toda la tabla con base en los resultados oficiales de carrera.
+                    </p>
+                </div>
+
                 <div class="admin-standings-toolbar">
-                    <div>
-                        <h4>Tabla de Pilotos y Puntos</h4>
-                        <p class="admin-field-hint">Modifica los puntos acumulados de cada piloto o usa el recálculo automático basado en los resultados de carrera oficiales.</p>
+                    <div class="admin-standings-search-wrap">
+                        <input type="text" id="adminStandingsSearchInput" placeholder="🔍 Buscar piloto o equipo en la clasificación..." class="admin-filter-input" autocomplete="off">
                     </div>
                     <div class="admin-toolbar-btns">
                         <button type="button" class="btn btn-secondary btn-sm" id="adminRecalcStandingsBtn" title="Recalcular puntos automáticamente según los resultados de todas las carreras">⚡ Recalcular desde Carreras</button>
@@ -2526,8 +2694,8 @@
                                 <th style="width: 50px;">POS</th>
                                 <th>PILOTO</th>
                                 <th>EQUIPO (OFICIAL)</th>
-                                <th style="width: 90px;">PTS</th>
-                                <th style="width: 70px;">ACCIÓN</th>
+                                <th style="width: 100px;">PTS</th>
+                                <th style="width: 70px; text-align: center;">ACCIÓN</th>
                             </tr>
                         </thead>
                         <tbody id="adminStandingsTableBody">
@@ -2542,7 +2710,7 @@
                 </div>
             </div>
 
-            <!-- TAB: PILOTOS & EQUIPOS -->
+            <!-- TAB 4: PILOTOS & EQUIPOS -->
             <div class="admin-tab-pane" id="tab-drivers">
                 <div class="admin-tab-intro">
                     <div class="admin-card-badge">CENSO OFICIAL</div>
@@ -2597,8 +2765,23 @@
                             <h4>PILOTOS REGISTRADOS (<span id="adminPilotTotalCount">44</span>)</h4>
                             <p class="admin-field-hint">Selecciona la bandera o el equipo correspondiente en los desplegables para cambiar el país o escudería de cualquier piloto.</p>
                         </div>
-                        <div class="admin-drivers-search">
-                            <input type="text" id="adminSearchPilotInput" placeholder="🔍 Buscar piloto..." autocomplete="off">
+                        <div class="admin-drivers-filters">
+                            <select id="adminFilterTeamSelect" class="admin-filter-select" title="Filtrar por escudería">
+                                <option value="">Todas las escuderías</option>
+                                <option value="Red Bull">Red Bull</option>
+                                <option value="Ferrari">Ferrari</option>
+                                <option value="McLaren">McLaren</option>
+                                <option value="Mercedes">Mercedes</option>
+                                <option value="Renault">Renault</option>
+                                <option value="Williams">Williams</option>
+                                <option value="Force India">Force India</option>
+                                <option value="Sauber">Sauber</option>
+                                <option value="Toro Rosso">Toro Rosso</option>
+                                <option value="Lotus">Lotus</option>
+                                <option value="HRT">HRT</option>
+                                <option value="Virgin">Virgin</option>
+                            </select>
+                            <input type="text" id="adminSearchPilotInput" placeholder="🔍 Buscar piloto..." class="admin-filter-input" autocomplete="off">
                         </div>
                     </div>
 
@@ -2626,7 +2809,7 @@
                 </div>
             </div>
 
-            <!-- TAB: VERIFICACIÓN DE PILOTOS -->
+            <!-- TAB 5: VERIFICACIÓN DE PILOTOS -->
             <div class="admin-tab-pane" id="tab-verify">
                 <div class="admin-tab-intro">
                     <div class="admin-card-badge">CÓDIGOS DE VERIFICACIÓN</div>
@@ -2635,6 +2818,26 @@
                         Genera un código único para cada piloto que lo solicite por Discord (<strong>hermesalo</strong> o <strong>adriii.lr</strong>). 
                         Entrega el código al piloto para que lo introduzca en su perfil de la web y vincule su cuenta oficialmente en la base de datos de Firestore.
                     </p>
+                </div>
+
+                <!-- VERIFY SUMMARY KPIS -->
+                <div class="admin-verify-kpi-row">
+                    <div class="admin-verify-kpi-card">
+                        <span class="admin-verify-kpi-label">TOTAL PILOTOS</span>
+                        <strong class="admin-verify-kpi-val" id="adminVerifyTotalPilots">44</strong>
+                    </div>
+                    <div class="admin-verify-kpi-card verified">
+                        <span class="admin-verify-kpi-label">CUENTAS VERIFICADAS</span>
+                        <strong class="admin-verify-kpi-val" id="adminVerifyCountVerified">0</strong>
+                    </div>
+                    <div class="admin-verify-kpi-card code-active">
+                        <span class="admin-verify-kpi-label">CÓDIGOS ACTIVOS</span>
+                        <strong class="admin-verify-kpi-val" id="adminVerifyCountActiveCodes">0</strong>
+                    </div>
+                    <div class="admin-verify-kpi-card pending">
+                        <span class="admin-verify-kpi-label">SIN RECLAMAR</span>
+                        <strong class="admin-verify-kpi-val" id="adminVerifyCountPending">44</strong>
+                    </div>
                 </div>
 
                 <div class="admin-verify-generator-card">
@@ -2666,8 +2869,14 @@
                             <h4 style="margin: 0; color: #fff; font-family: 'Barlow Condensed', sans-serif; font-size: 18px;">Censo de Verificación en Firestore</h4>
                             <p class="admin-field-hint" style="margin: 2px 0 0 0;">Lista de pilotos registrados, códigos activos y cuentas vinculadas.</p>
                         </div>
-                        <div class="admin-drivers-search">
-                            <input type="text" id="adminSearchVerifyPilotInput" placeholder="🔍 Buscar piloto..." autocomplete="off">
+                        <div class="admin-verify-filters">
+                            <select id="adminFilterVerifyStatus" class="admin-filter-select" title="Filtrar por estado">
+                                <option value="">Todos los estados</option>
+                                <option value="verified">✅ Solo Verificados</option>
+                                <option value="code">⚡ Solo con Código Activo</option>
+                                <option value="pending">⚪ Sin Código / Pendientes</option>
+                            </select>
+                            <input type="text" id="adminSearchVerifyPilotInput" placeholder="🔍 Buscar piloto..." class="admin-filter-input" autocomplete="off">
                         </div>
                     </div>
 
@@ -2692,16 +2901,23 @@
                 </div>
             </div>
 
-            <!-- TAB 4: AJUSTES GENERALES -->
+            <!-- TAB 6: AJUSTES GENERALES -->
             <div class="admin-tab-pane" id="tab-settings">
-                <form id="generalSettingsForm">
+                <div class="admin-tab-intro">
+                    <div class="admin-card-badge">SISTEMA &amp; CONTROL</div>
+                    <h3>AJUSTES GENERALES DEL CAMPEONATO</h3>
+                    <p class="admin-field-hint">
+                        Configura la retransmisión oficial en directo, los parámetros de mercado de la FFC Fantasy League, enlaces a redes sociales y datos de la temporada.
+                    </p>
+                </div>
 
-                    <!-- MODO DIRECTO / TRANSMISIÓN TWITCH -->
-                    <div class="admin-live-settings-card">
+                <form id="generalSettingsForm">
+                    <!-- MÓDULO 1: MODO DIRECTO / TRANSMISIÓN TWITCH -->
+                    <div class="admin-settings-section-card">
                         <div class="admin-live-header">
                             <div class="admin-live-badge">
                                 <span class="admin-live-dot"></span>
-                                RETRANSMISIÓN TWITCH
+                                RETRANSMISIÓN TWITCH &bull; MODO DIRECTO
                             </div>
                             <label class="admin-switch-label" for="adminLiveMode">
                                 <span class="admin-switch-text" id="adminSwitchStatusText">MODO DIRECTO DESACTIVADO</span>
@@ -2737,12 +2953,12 @@
                         </div>
                     </div>
 
-                    <!-- BLOQUEO DEL MERCADO FANTASY (CARRERA EN CURSO) -->
-                    <div class="admin-live-settings-card" style="border-color: rgba(214, 180, 92, 0.4); background: linear-gradient(135deg, rgba(28, 22, 12, 0.95), rgba(12, 16, 24, 0.95)); margin-top: 20px;">
+                    <!-- MÓDULO 2: FFC FANTASY LEAGUE (MERCADO & PRECIOS) -->
+                    <div class="admin-settings-section-card fantasy-border" style="margin-top: 20px;">
                         <div class="admin-live-header">
-                            <div class="admin-live-badge" style="background: rgba(214, 180, 92, 0.15); color: var(--gold); border-color: rgba(214, 180, 92, 0.4);">
+                            <div class="admin-live-badge fantasy-badge">
                                 <span>🏎️</span>
-                                FFC FANTASY LEAGUE · BLOQUEO DE MERCADO
+                                FFC FANTASY LEAGUE &bull; BLOQUEO DE MERCADO
                             </div>
                             <label class="admin-switch-label" for="adminFantasyLocked">
                                 <span class="admin-switch-text" id="adminFantasyLockStatusText">MERCADO ABIERTO (FICHAJES ACTIVOS)</span>
@@ -2756,85 +2972,87 @@
                             Activa este bloqueo antes o durante una carrera oficial para <strong>congelar las alineaciones</strong>. Mientras esté activado, los participantes no podrán fichar, vender pilotos ni cambiar su Turbo Driver.
                         </p>
 
-                        <div class="admin-form-grid" style="margin-bottom: 0;">
+                        <div class="admin-form-grid" style="margin-bottom: 16px;">
                             <div class="admin-field admin-field-full">
                                 <label for="adminFantasyLockMessage">Mensaje para los Usuarios cuando el Mercado esté Bloqueado</label>
                                 <input type="text" id="adminFantasyLockMessage" placeholder="Mercado de fichajes congelado por Gran Premio en curso." value="Mercado de fichajes congelado por Gran Premio en curso.">
                             </div>
                         </div>
-                    </div>
 
-                    <!-- FLUCTUACIÓN DINÁMICA DE PRECIOS FANTASY -->
-                    <div class="admin-live-settings-card" style="border-color: rgba(74, 222, 128, 0.35); background: linear-gradient(135deg, rgba(12, 28, 18, 0.95), rgba(10, 16, 24, 0.95)); margin-top: 16px;">
-                        <div class="admin-live-header">
-                            <div class="admin-live-badge" style="background: rgba(74, 222, 128, 0.15); color: #4ade80; border-color: rgba(74, 222, 128, 0.4);">
-                                <span>📈</span>
-                                FFC FANTASY · FLUCTUACIÓN DINÁMICA DE PRECIOS
-                            </div>
-                            <label class="admin-switch-label" for="adminFantasyFluctuation">
-                                <span class="admin-switch-text" id="adminFantasyFluctuationStatusText">FLUCTUACIÓN ACTIVADA (EN VIVO)</span>
-                                <div class="admin-switch">
-                                    <input type="checkbox" id="adminFantasyFluctuation" checked>
-                                    <span class="admin-slider"></span>
+                        <!-- FLUCTUACIÓN DINÁMICA DE PRECIOS -->
+                        <div class="admin-sub-card">
+                            <div class="admin-live-header" style="margin-bottom: 8px;">
+                                <div class="admin-live-badge" style="background: rgba(74, 222, 128, 0.15); color: #4ade80; border-color: rgba(74, 222, 128, 0.4);">
+                                    <span>📈</span>
+                                    FLUCTUACIÓN DINÁMICA DE PRECIOS
                                 </div>
-                            </label>
-                        </div>
-                        <p class="admin-field-hint" style="margin-top: 10px; margin-bottom: 16px;">
-                            Calcula y actualiza automáticamente el valor de mercado de pilotos y constructores tras cada carrera según sus puntos y rendimiento en pista.
-                        </p>
-
-                        <div class="admin-form-grid" style="margin-bottom: 12px;">
-                            <div class="admin-field">
-                                <label for="adminFantasyVolatility">Volatilidad / Factor de Cambio</label>
-                                <select id="adminFantasyVolatility" class="admin-select-input">
-                                    <option value="1.0" selected>Estándar (±0.1M€ a ±1.0M€ por GP)</option>
-                                    <option value="1.5">Alta Volatilidad (±0.2M€ a ±1.5M€ por GP)</option>
-                                    <option value="0.5">Moderada / Estable (±0.05M€ a ±0.5M€ por GP)</option>
-                                </select>
+                                <label class="admin-switch-label" for="adminFantasyFluctuation">
+                                    <span class="admin-switch-text" id="adminFantasyFluctuationStatusText">FLUCTUACIÓN ACTIVADA (EN VIVO)</span>
+                                    <div class="admin-switch">
+                                        <input type="checkbox" id="adminFantasyFluctuation" checked>
+                                        <span class="admin-slider"></span>
+                                    </div>
+                                </label>
                             </div>
-                            <div class="admin-field">
-                                <label>Acción Rápida de Mercado</label>
-                                <button type="button" class="fantasy-btn-gold" id="adminRecalculatePricesBtn" style="width: 100%; height: 42px; margin-top: 2px;">
-                                    <span>🔄 Recalcular y Aplicar Precios</span>
-                                </button>
-                            </div>
-                        </div>
+                            <p class="admin-field-hint" style="margin-bottom: 14px;">
+                                Calcula y actualiza automáticamente el valor de mercado de pilotos y constructores tras cada carrera según sus puntos y rendimiento en pista.
+                            </p>
 
-                        <div id="adminMarketSentimentWidget" class="admin-market-sentiment-box"></div>
+                            <div class="admin-form-grid" style="margin-bottom: 12px;">
+                                <div class="admin-field">
+                                    <label for="adminFantasyVolatility">Volatilidad / Factor de Cambio</label>
+                                    <select id="adminFantasyVolatility" class="admin-select">
+                                        <option value="1.0" selected>Estándar (±0.1M€ a ±1.0M€ por GP)</option>
+                                        <option value="1.5">Alta Volatilidad (±0.2M€ a ±1.5M€ por GP)</option>
+                                        <option value="0.5">Moderada / Estable (±0.05M€ a ±0.5M€ por GP)</option>
+                                    </select>
+                                </div>
+                                <div class="admin-field">
+                                    <label>Acción Rápida de Mercado</label>
+                                    <button type="button" class="fantasy-btn-gold" id="adminRecalculatePricesBtn" style="width: 100%; height: 42px; margin-top: 2px;">
+                                        <span>🔄 Recalcular y Aplicar Precios</span>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div id="adminMarketSentimentWidget" class="admin-market-sentiment-box"></div>
+                        </div>
                     </div>
 
-                    <div class="admin-tab-intro" style="margin-top: 24px; padding-bottom: 12px; border-bottom: 1px solid rgba(255,255,255,0.08);">
+                    <!-- MÓDULO 3: REDES OFICIALES Y DATOS GLOBALES -->
+                    <div class="admin-settings-section-card" style="margin-top: 20px;">
                         <div class="admin-card-badge">REDES &amp; ESTADÍSTICAS</div>
-                        <h4 style="margin: 6px 0 0 0; font-family: 'Barlow Condensed', sans-serif; font-size: 18px; color: #fff; letter-spacing: 1px;">ENLACES OFICIALES Y DATOS GLOBALES</h4>
+                        <h4 style="margin: 6px 0 14px 0; font-family: 'Barlow Condensed', sans-serif; font-size: 18px; color: #fff; letter-spacing: 1px;">ENLACES OFICIALES Y DATOS GLOBALES</h4>
+
+                        <div class="admin-form-grid">
+                            <div class="admin-field admin-field-full">
+                                <label for="adminDiscordUrl">Enlace de Servidor de Discord</label>
+                                <input type="url" id="adminDiscordUrl" placeholder="https://discord.gg/...">
+                            </div>
+                            <div class="admin-field">
+                                <label for="adminXUrl">Enlace de X (Twitter)</label>
+                                <input type="url" id="adminXUrl" placeholder="https://x.com/F0RMULAF4CTOR">
+                            </div>
+                            <div class="admin-field">
+                                <label for="adminInstagramUrl">Enlace de Instagram</label>
+                                <input type="url" id="adminInstagramUrl" placeholder="https://www.instagram.com/formulafactorchampionship">
+                            </div>
+                            <div class="admin-field">
+                                <label for="adminStatSeason">Temporada Actual</label>
+                                <input type="text" id="adminStatSeason" placeholder="01">
+                            </div>
+                            <div class="admin-field">
+                                <label for="adminStatRounds">Total de Rounds</label>
+                                <input type="text" id="adminStatRounds" placeholder="15">
+                            </div>
+                            <div class="admin-field">
+                                <label for="adminStatDrivers">Pilotos en Grid</label>
+                                <input type="text" id="adminStatDrivers" placeholder="44">
+                            </div>
+                        </div>
                     </div>
 
-                    <div class="admin-form-grid">
-                        <div class="admin-field admin-field-full">
-                            <label for="adminDiscordUrl">Enlace de Servidor de Discord</label>
-                            <input type="url" id="adminDiscordUrl" placeholder="https://discord.gg/...">
-                        </div>
-                        <div class="admin-field">
-                            <label for="adminXUrl">Enlace de X (Twitter)</label>
-                            <input type="url" id="adminXUrl" placeholder="https://x.com/F0RMULAF4CTOR">
-                        </div>
-                        <div class="admin-field">
-                            <label for="adminInstagramUrl">Enlace de Instagram</label>
-                            <input type="url" id="adminInstagramUrl" placeholder="https://www.instagram.com/formulafactorchampionship">
-                        </div>
-                        <div class="admin-field">
-                            <label for="adminStatSeason">Temporada Actual</label>
-                            <input type="text" id="adminStatSeason" placeholder="01">
-                        </div>
-                        <div class="admin-field">
-                            <label for="adminStatRounds">Total de Rounds</label>
-                            <input type="text" id="adminStatRounds" placeholder="15">
-                        </div>
-                        <div class="admin-field">
-                            <label for="adminStatDrivers">Pilotos en Grid</label>
-                            <input type="text" id="adminStatDrivers" placeholder="44">
-                        </div>
-                    </div>
-
+                    <!-- MÓDULO 4: ZONA DE MANTENIMIENTO -->
                     <div class="admin-danger-zone">
                         <div>
                             <strong>Restablecer Datos de Fábrica</strong>
