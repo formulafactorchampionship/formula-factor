@@ -347,7 +347,7 @@ const translations = {
             fantasy: "FANTASY"
         },
         hero: {
-            eyebrow: "TEMPORADA 1 · FORMULA FACTOR CHAMPIONSHIP",
+            eyebrow: "TEMPORADA 1 FORMULA FACTOR CHAMPIONSHIP",
             title: "CORRE RUEDA A RUEDA<br>EN LA PARRILLA <span class=\"gold-text-glow\">FFC</span>",
             tagGps: "15 GRANDES PREMIOS",
             tagDrivers: "44 PILOTOS INSCRITOS",
@@ -445,7 +445,15 @@ const translations = {
             p1: "Formula Factor Championship es una competición en Assetto Corsa diseñada para reunir a pilotos amantes de la simulación y del automovilismo, especialmente de la Fórmula 1 de las eras V8 y V10.",
             p2: "Este campeonato ofrece carreras competitivas y de alto realismo. Buscamos recrear la experiencia de un campeonato profesional de motorsport. A lo largo de la temporada, los pilotos deberán demostrar no solo velocidad, sino también constancia, estrategia y capacidad de adaptación para alzarse con el título.",
             p3: "El campeonato constará de diversas citas en diferentes circuitos, con un sistema de puntuación basado en el sistema oficial de la Fórmula 1. Además, se promueve el respeto entre pilotos, el juego limpio en pista y una comunidad sana donde disfrutar de carreras igualadas.",
-            disclaimer: "Aviso: Es imprescindible estar en el servidor de Discord para estar al día de los cambios y poder unirse a un equipo.",
+            card1Title: "Simulación Realista",
+            card1Desc: "Físicas de competición y configuración profesional de monoplazas para recrear la exigencia real de un campeonato del mundo de motorsport.",
+            card2Title: "Sistema Oficial F1",
+            card2Desc: "Sistema de puntuación oficial de la FIA, donde cada punto cuenta y la constancia en pista premia al verdadero campeón de la temporada.",
+            card3Title: "Fair Play y Respeto",
+            card3Desc: "Promovemos el juego limpio, el compañerismo y el respeto absoluto en pista para disfrutar de batallas rueda a rueda memorables y seguras.",
+            card4Title: "Comunidad Activa",
+            card4Desc: "Organización profesional con transmisiones en directo, mercado de fichajes Fantasy y gestión centralizada a través de nuestra comunidad en Discord.",
+            disclaimerHtml: "<strong>Aviso Importante:</strong> Es imprescindible formar parte del servidor oficial de Discord para estar al día de los comunicados, normativas y fichajes de equipos.",
             socialsKicker: "ENLACES OFICIALES Y REDES SOCIALES"
         },
         modal: {
@@ -639,7 +647,57 @@ const translations = {
             commentTextPlaceholder: "Escribe un comentario sobre esta noticia...",
             commentSubmitBtn: "<span>💬</span> Publicar Comentario",
             noComments: "No hay comentarios todavía. ¡Sé el primero en opinar sobre esta noticia!",
-            officialBadge: "OFICIAL FFC"
+            officialBadge: "OFICIAL FFC",
+            compare: {
+                title: "⚔️ COMPARADOR DE PILOTOS",
+                sub: "Análisis cara a cara: duelo directo en pista, puntos, victorias, ritmo y fiabilidad",
+                presets: "DUELOS RECOMENDADOS:",
+                driverA: "PILOTO A (ESQUINA ROJA)",
+                driverB: "PILOTO B (ESQUINA AZUL)",
+                swapTitle: "Intercambiar pilotos",
+                modeMutual: "SOLO CARRERAS COINCIDENTES (JUSTO)",
+                modeMutualTitle: "Solo evalúa Grandes Premios donde ambos pilotos tomaron la salida",
+                modeAll: "TEMPORADA COMPLETA (15 GPs)",
+                modeAllTitle: "Evalúa las 15 rondas del calendario de la temporada completa",
+                modeInfoMutual: "Modo Justo activo: Se analizan exclusivamente las carreras donde ambos compitieron en pista. Las ausencias no otorgan victorias al rival.",
+                modeInfoAll: "Modo Temporada Completa activo: Se evalúan todas las rondas del calendario (15 GPs). Las ausencias cuentan como victoria para el piloto presente.",
+                h2hVerdict: "DUELO DIRECTO EN PISTA",
+                h2hSub: "Carreras terminadas por delante",
+                metricsTitle: "COMPARATIVA ESTADÍSTICA DETALLADA",
+                metricsSub: "TEMPORADA FFC 2010 OFICIAL",
+                skillsTitle: "ÍNDICE DE RENDIMIENTO & DESTREZAS",
+                skillsSub: "MÉTRICAS NORMALIZADAS DE PILOTAJE",
+                roundsTitle: "DUELOS RONDA POR RONDA (R1 - R15)",
+                roundsSub: "RESULTADOS DIRECTOS EN CADA GRAN PREMIO",
+                thRound: "RONDA",
+                thGp: "GRAN PREMIO",
+                thDuel: "DUELO GP",
+                thDiff: "DIF. PTS",
+                tie: "Empate",
+                noMatch: "Sin coincidencia",
+                noMatchTitle: "Solo uno participó: no suma victoria en Modo Justo",
+                didNotParticipate: "NO PARTICIPÓ",
+                metrics: {
+                    avgPts: "PROMEDIO PTS / GP",
+                    mutualPts: "PUNTOS EN DUELOS DIRECTOS",
+                    podiumEff: "EFECTIVIDAD EN PODIOS",
+                    winEff: "EFECTIVIDAD EN VICTORIAS",
+                    racesEntered: "CARRERAS DISPUTADAS",
+                    totalPts: "PUNTOS TOTALES",
+                    champPos: "POSICIÓN EN EL MUNDIAL",
+                    poles: "POLE POSITIONS",
+                    fastestLaps: "VUELTAS RÁPIDAS",
+                    reliability: "FIABILIDAD EN CARRERA",
+                    fantasyValue: "VALOR FANTASY FFC"
+                },
+                skills: {
+                    racePace: "🏎️ RITMO DE CARRERA",
+                    qualyPace: "⏱️ RITMO DE CLASIFICACIÓN",
+                    reliability: "🛡️ FIABILIDAD MECÁNICA",
+                    consistency: "🎯 REGULARIDAD EN TOP 10",
+                    podiumEff: "🏆 EFECTIVIDAD EN PODIOS"
+                }
+            }
         }
     },
     en: {
@@ -654,7 +712,7 @@ const translations = {
             fantasy: "FANTASY"
         },
         hero: {
-            eyebrow: "SEASON 1 · FORMULA FACTOR CHAMPIONSHIP",
+            eyebrow: "SEASON 1 FORMULA FACTOR CHAMPIONSHIP",
             title: "RACE WHEEL-TO-WHEEL<br>ON THE <span class=\"gold-text-glow\">FFC GRID</span>",
             tagGps: "15 GRAND PRIX",
             tagDrivers: "44 REGISTERED DRIVERS",
@@ -752,7 +810,15 @@ const translations = {
             p1: "Formula Factor Championship is a competition in Assetto Corsa designed to bring together drivers that love motorsport simulation, especially Formula 1 from the V8 and V10 eras.",
             p2: "This championship offers competitive and highly realistic races. We aim to recreate the experience of a professional motorsport championship. Throughout the season, drivers must demonstrate not only speed, but also consistency, strategy, and adaptability to win the championship title.",
             p3: "The championship will consist of several races held on different circuits, and the scoring system will be based on the current Formula 1 system. Furthermore, the championship promotes respect among drivers, fair play on the track, and the development of a community where participants can enjoy competitive racing in a fair and sporting environment.",
-            disclaimer: "Disclaimer: You need to be on the Discord server to stay updated on changes and to be able to join a team.",
+            card1Title: "Realistic Simulation",
+            card1Desc: "Competitive physics and professional car setups designed to recreate the real-world demands of a professional motorsport world championship.",
+            card2Title: "Official F1 System",
+            card2Desc: "Official FIA scoring system where every point matters and consistency on track rewards the true champion of the season.",
+            card3Title: "Fair Play & Respect",
+            card3Desc: "We promote clean racing, camaraderie, and absolute mutual respect on track to ensure memorable and safe wheel-to-wheel battles.",
+            card4Title: "Active Community",
+            card4Desc: "Professional organization featuring live broadcasts, Fantasy transfer market, and centralized league management through our Discord hub.",
+            disclaimerHtml: "<strong>Important Notice:</strong> Joining the official Discord server is mandatory to stay updated on league announcements, regulations, and team signings.",
             socialsKicker: "OFFICIAL LINKS & SOCIAL MEDIA"
         },
         modal: {
@@ -946,12 +1012,63 @@ const translations = {
             commentTextPlaceholder: "Write a comment on this news...",
             commentSubmitBtn: "<span>💬</span> Post Comment",
             noComments: "No comments yet. Be the first to comment on this news article!",
-            officialBadge: "OFFICIAL FFC"
+            officialBadge: "OFFICIAL FFC",
+            compare: {
+                title: "⚔️ DRIVER COMPARATOR",
+                sub: "Face-to-face analysis: direct track duel, points, wins, pace & reliability",
+                presets: "RECOMMENDED DUELS:",
+                driverA: "DRIVER A (RED CORNER)",
+                driverB: "DRIVER B (BLUE CORNER)",
+                swapTitle: "Swap drivers",
+                modeMutual: "MATCHING RACES ONLY (FAIR)",
+                modeMutualTitle: "Only evaluates Grands Prix where both drivers started",
+                modeAll: "FULL SEASON (15 GPS)",
+                modeAllTitle: "Evaluates all 15 rounds of the full season calendar",
+                modeInfoMutual: "Fair Mode active: Only races where both competed on track are analyzed. Absences do not award wins to the rival.",
+                modeInfoAll: "Full Season Mode active: Evaluates all rounds on the calendar (15 GPs). Absences count as a win for the present driver.",
+                h2hVerdict: "DIRECT ON-TRACK DUEL",
+                h2hSub: "Races finished ahead",
+                metricsTitle: "DETAILED STATISTICAL COMPARISON",
+                metricsSub: "OFFICIAL FFC SEASON 2010",
+                skillsTitle: "PERFORMANCE & SKILLS INDEX",
+                skillsSub: "NORMALIZED DRIVING METRICS",
+                roundsTitle: "ROUND-BY-ROUND DUELS (R1 - R15)",
+                roundsSub: "DIRECT RESULTS IN EACH GRAND PRIX",
+                thRound: "ROUND",
+                thGp: "GRAND PRIX",
+                thDuel: "GP DUEL",
+                thDiff: "PTS DIFF",
+                tie: "Tie",
+                noMatch: "No match",
+                noMatchTitle: "Only one participated: no win awarded in Fair Mode",
+                didNotParticipate: "DID NOT START",
+                metrics: {
+                    avgPts: "AVG PTS / GP",
+                    mutualPts: "POINTS IN DIRECT DUELS",
+                    podiumEff: "PODIUM EFFICIENCY",
+                    winEff: "WIN EFFICIENCY",
+                    racesEntered: "RACES ENTERED",
+                    totalPts: "TOTAL POINTS",
+                    champPos: "CHAMPIONSHIP POSITION",
+                    poles: "POLE POSITIONS",
+                    fastestLaps: "FASTEST LAPS",
+                    reliability: "RACE RELIABILITY",
+                    fantasyValue: "FFC FANTASY VALUE"
+                },
+                skills: {
+                    racePace: "🏎️ RACE PACE",
+                    qualyPace: "⏱️ QUALY PACE",
+                    reliability: "🛡️ MECHANICAL RELIABILITY",
+                    consistency: "🎯 TOP 10 CONSISTENCY",
+                    podiumEff: "🏆 PODIUM EFFICIENCY"
+                }
+            }
         }
     }
 };
 
 let currentLanguage = "es";
+let compareMode = "mutual"; // "mutual" (Fair H2H - only shared races) or "all" (Full season)
 
 function updateCalendarCards(lang) {
     const cards = document.querySelectorAll(".calendar-card");
@@ -1148,8 +1265,30 @@ function applyTranslations(lang) {
     if (in2) in2.textContent = dict.info.p2;
     const in3 = document.getElementById("infoP3");
     if (in3) in3.textContent = dict.info.p3;
-    const inDisc = document.getElementById("infoDisclaimer");
-    if (inDisc) inDisc.textContent = dict.info.disclaimer;
+
+    const infoCardTitle1 = document.getElementById("infoCardTitle1");
+    if (infoCardTitle1) infoCardTitle1.textContent = dict.info.card1Title;
+    const infoCardDesc1 = document.getElementById("infoCardDesc1");
+    if (infoCardDesc1) infoCardDesc1.textContent = dict.info.card1Desc;
+
+    const infoCardTitle2 = document.getElementById("infoCardTitle2");
+    if (infoCardTitle2) infoCardTitle2.textContent = dict.info.card2Title;
+    const infoCardDesc2 = document.getElementById("infoCardDesc2");
+    if (infoCardDesc2) infoCardDesc2.textContent = dict.info.card2Desc;
+
+    const infoCardTitle3 = document.getElementById("infoCardTitle3");
+    if (infoCardTitle3) infoCardTitle3.textContent = dict.info.card3Title;
+    const infoCardDesc3 = document.getElementById("infoCardDesc3");
+    if (infoCardDesc3) infoCardDesc3.textContent = dict.info.card3Desc;
+
+    const infoCardTitle4 = document.getElementById("infoCardTitle4");
+    if (infoCardTitle4) infoCardTitle4.textContent = dict.info.card4Title;
+    const infoCardDesc4 = document.getElementById("infoCardDesc4");
+    if (infoCardDesc4) infoCardDesc4.textContent = dict.info.card4Desc;
+
+    const infoDisclaimerText = document.getElementById("infoDisclaimerText");
+    if (infoDisclaimerText && dict.info.disclaimerHtml) infoDisclaimerText.innerHTML = dict.info.disclaimerHtml;
+
     const inSoc = document.getElementById("socialsKicker");
     if (inSoc) inSoc.textContent = dict.info.socialsKicker;
 
@@ -1642,6 +1781,69 @@ function applyTranslations(lang) {
                 const cachedComments = loadCachedComments(window.ffcActiveReadingArticle.id);
                 renderCommentsList(cachedComments, window.ffcActiveReadingArticle.id);
             }
+        }
+    }
+
+    // Driver Comparator Modal translations
+    const cmp = dict.compare || (dict.news && dict.news.compare);
+    if (cmp) {
+        const lblCompareTitle = document.getElementById("lblCompareTitle");
+        if (lblCompareTitle) lblCompareTitle.textContent = cmp.title;
+        const lblCompareSub = document.getElementById("lblCompareSub");
+        if (lblCompareSub) lblCompareSub.textContent = cmp.sub;
+        const lblComparePresets = document.getElementById("lblComparePresets");
+        if (lblComparePresets) lblComparePresets.textContent = cmp.presets;
+        const lblSelectDriverA = document.getElementById("lblSelectDriverA");
+        if (lblSelectDriverA) lblSelectDriverA.textContent = cmp.driverA;
+        const lblSelectDriverB = document.getElementById("lblSelectDriverB");
+        if (lblSelectDriverB) lblSelectDriverB.textContent = cmp.driverB;
+        const compareSwapBtn = document.getElementById("compareSwapBtn");
+        if (compareSwapBtn) compareSwapBtn.title = cmp.swapTitle;
+        const lblModeMutual = document.getElementById("lblModeMutual");
+        if (lblModeMutual) lblModeMutual.textContent = cmp.modeMutual;
+        const btnCompareModeMutual = document.getElementById("btnCompareModeMutual");
+        if (btnCompareModeMutual) btnCompareModeMutual.title = cmp.modeMutualTitle;
+        const lblModeAll = document.getElementById("lblModeAll");
+        if (lblModeAll) lblModeAll.textContent = cmp.modeAll;
+        const btnCompareModeAll = document.getElementById("btnCompareModeAll");
+        if (btnCompareModeAll) btnCompareModeAll.title = cmp.modeAllTitle;
+
+        const compareModeInfoText = document.getElementById("compareModeInfoText");
+        if (compareModeInfoText && typeof compareMode !== "undefined") {
+            compareModeInfoText.textContent = compareMode === "mutual" ? cmp.modeInfoMutual : cmp.modeInfoAll;
+        }
+
+        const lblH2HVerdict = document.getElementById("lblH2HVerdict");
+        if (lblH2HVerdict) lblH2HVerdict.textContent = cmp.h2hVerdict;
+        const lblH2HVerdictSub = document.getElementById("lblH2HVerdictSub");
+        if (lblH2HVerdictSub) lblH2HVerdictSub.textContent = cmp.h2hSub;
+
+        const lblMetricsTitle = document.getElementById("lblMetricsTitle");
+        if (lblMetricsTitle) lblMetricsTitle.textContent = cmp.metricsTitle;
+        const lblMetricsSub = document.getElementById("lblMetricsSub");
+        if (lblMetricsSub) lblMetricsSub.textContent = cmp.metricsSub;
+        const lblSkillsTitle = document.getElementById("lblSkillsTitle");
+        if (lblSkillsTitle) lblSkillsTitle.textContent = cmp.skillsTitle;
+        const lblSkillsSub = document.getElementById("lblSkillsSub");
+        if (lblSkillsSub) lblSkillsSub.textContent = cmp.skillsSub;
+        const lblCompareRoundsTitle = document.getElementById("lblCompareRoundsTitle");
+        if (lblCompareRoundsTitle) lblCompareRoundsTitle.textContent = cmp.roundsTitle;
+        const lblCompareRoundsSub = document.getElementById("lblCompareRoundsSub");
+        if (lblCompareRoundsSub) lblCompareRoundsSub.textContent = cmp.roundsSub;
+
+        const thRoundCol = document.getElementById("thRoundCol");
+        if (thRoundCol) thRoundCol.textContent = cmp.thRound;
+        const thGpCol = document.getElementById("thGpCol");
+        if (thGpCol) thGpCol.textContent = cmp.thGp;
+        const thDuelCol = document.getElementById("thDuelCol");
+        if (thDuelCol) thDuelCol.textContent = cmp.thDuel;
+        const thDiffCol = document.getElementById("thDiffCol");
+        if (thDiffCol) thDiffCol.textContent = cmp.thDiff;
+    }
+
+    if (typeof document.getElementById("driverCompareOverlay") !== "undefined" && document.getElementById("driverCompareOverlay")?.classList.contains("is-active")) {
+        if (typeof compareDriverA !== "undefined" && typeof compareDriverB !== "undefined") {
+            renderDriverComparison(compareDriverA, compareDriverB);
         }
     }
 
@@ -4254,12 +4456,12 @@ function renderStandingsOnPage(drivers) {
                 rowDiv.className = "ranking-row driver-row-clickable";
                 rowDiv.setAttribute("data-driver", d.driver);
                 rowDiv.setAttribute("title", `Ver estadísticas de ${d.driver}`);
-                if (idx >= 10) {
+                if (idx >= 12) {
                     if (!isStandingsExpanded) {
                         rowDiv.classList.add("standings-row-hidden");
                     } else {
                         rowDiv.classList.add("standings-row-revealed");
-                        const delayStep = Math.min(idx - 10, 25);
+                        const delayStep = Math.min(idx - 12, 25);
                         rowDiv.style.setProperty("--row-delay", `${delayStep * 15}ms`);
                     }
                 }
@@ -4391,12 +4593,12 @@ function renderStandingsOnPage(drivers) {
                 rowDiv.className = "ranking-row driver-row-clickable";
                 rowDiv.setAttribute("data-driver", d.driver);
                 rowDiv.setAttribute("title", `Ver estadísticas de ${d.driver}`);
-                if (idx >= 10) {
+                if (idx >= 12) {
                     if (!isStandingsExpanded) {
                         rowDiv.classList.add("standings-row-hidden");
                     } else {
                         rowDiv.classList.add("standings-row-revealed");
-                        const delayStep = Math.min(idx - 10, 25);
+                        const delayStep = Math.min(idx - 12, 25);
                         rowDiv.style.setProperty("--row-delay", `${delayStep * 15}ms`);
                     }
                 }
@@ -4421,12 +4623,12 @@ function renderStandingsOnPage(drivers) {
         sorted.forEach((d, idx) => {
             const tr = document.createElement("tr");
             if (idx === 0) tr.classList.add("leader");
-            if (idx >= 10) {
+            if (idx >= 12) {
                 if (!isStandingsExpanded) {
                     tr.classList.add("standings-row-hidden");
                 } else {
                     tr.classList.add("standings-row-revealed");
-                    const delayStep = Math.min(idx - 10, 25);
+                    const delayStep = Math.min(idx - 12, 25);
                     tr.style.setProperty("--row-delay", `${delayStep * 15}ms`);
                 }
             }
@@ -5936,7 +6138,7 @@ function updateStandingsToggleUI(totalCount) {
     const label = document.getElementById("standingsToggleLabel");
     if (!btn || !label) return;
 
-    if (totalCount <= 10) {
+    if (totalCount <= 12) {
         btn.parentElement.style.display = "none";
         return;
     }
@@ -5945,13 +6147,13 @@ function updateStandingsToggleUI(totalCount) {
     const isEn = typeof currentLanguage !== "undefined" && currentLanguage === "en";
 
     if (isStandingsExpanded) {
-        label.textContent = isEn ? "SHOW LESS (TOP 10)" : "MOSTRAR MENOS (TOP 10)";
+        label.textContent = isEn ? "SHOW LESS (TOP 12)" : "MOSTRAR MENOS (TOP 12)";
         btn.classList.add("is-expanded");
         btn.setAttribute("aria-expanded", "true");
     } else {
         label.textContent = isEn
-            ? `VIEW FULL STANDINGS (P11 - P${totalCount})`
-            : `VER CLASIFICACIÓN COMPLETA (P11 - P${totalCount})`;
+            ? `VIEW FULL STANDINGS (P13 - P${totalCount})`
+            : `VER CLASIFICACIÓN COMPLETA (P13 - P${totalCount})`;
         btn.classList.remove("is-expanded");
         btn.setAttribute("aria-expanded", "false");
     }
@@ -8135,7 +8337,7 @@ if (toggleStandingsBtn) {
                 const posEl = row.querySelector(".ranking-row-pos, td:first-child");
                 if (posEl) {
                     const posNum = parseInt(posEl.textContent.trim().replace(/\D/g, ""), 10);
-                    if (posNum > 10) {
+                    if (posNum > 12) {
                         extraRows.push(row);
                     }
                 }
@@ -8149,8 +8351,8 @@ if (toggleStandingsBtn) {
                 const isEn = typeof currentLanguage !== "undefined" && currentLanguage === "en";
                 if (label) {
                     label.textContent = isEn
-                        ? `VIEW FULL STANDINGS (P11 - P${saved.length})`
-                        : `VER CLASIFICACIÓN COMPLETA (P11 - P${saved.length})`;
+                        ? `VIEW FULL STANDINGS (P13 - P${saved.length})`
+                        : `VER CLASIFICACIÓN COMPLETA (P13 - P${saved.length})`;
                 }
 
                 // Add collapse animations in reverse order
@@ -13084,7 +13286,7 @@ if (document.readyState === "loading") {
 
 let compareDriverA = null;
 let compareDriverB = null;
-let compareMode = "mutual"; // "mutual" (Fair H2H - only shared races) or "all" (Full season)
+compareMode = "mutual"; // "mutual" (Fair H2H - only shared races) or "all" (Full season)
 
 // Switch between Fair (Mutual) and Full Season modes
 function setComparatorMode(mode) {
@@ -13363,13 +13565,12 @@ function renderComparatorHeroCard(slot, stats, fantasyPrice) {
     const posEl = document.getElementById(`comparePos${prefix}`);
     const priceEl = document.getElementById(`comparePrice${prefix}`);
     const dorsalEl = document.getElementById(`compareDorsal${prefix}`);
-    const avatarImg = document.getElementById(`compareAvatarImg${prefix}`);
+    const avatarNumEl = document.getElementById(`compareAvatarNum${prefix}`);
     const verifiedEl = document.getElementById(`compareVerified${prefix}`);
 
     const driverName = stats.driver;
     const flag = (typeof getOfficialDriverFlag === "function") ? getOfficialDriverFlag(driverName) : (stats.flag || "🏁");
     const dorsal = (typeof getDriverDorsalNumber === "function") ? getDriverDorsalNumber(driverName) : (stats.dorsal || "#" + (stats.pos || 1));
-    const avatarUrl = (typeof getDriverAvatarUrl === "function") ? getDriverAvatarUrl(driverName) : (stats.photo || `https://api.dicebear.com/7.x/bottts/svg?seed=${encodeURIComponent(driverName)}`);
 
     if (nameEl) nameEl.textContent = driverName;
     if (flagEl) flagEl.innerHTML = getFlagHtml(flag, 20);
@@ -13381,10 +13582,7 @@ function renderComparatorHeroCard(slot, stats, fantasyPrice) {
     if (posEl) posEl.textContent = `P${stats.pos || 1} · ${stats.pts || 0} PTS (${stats.racesCount || 1} GPs)`;
     if (priceEl) priceEl.textContent = `${fantasyPrice.toFixed(1)}M€`;
     if (dorsalEl) dorsalEl.textContent = dorsal;
-    if (avatarImg) {
-        avatarImg.src = avatarUrl;
-        avatarImg.alt = driverName;
-    }
+    if (avatarNumEl) avatarNumEl.textContent = dorsal.replace("#", "");
     if (verifiedEl) {
         const isVer = (typeof isDriverAccountVerified === "function") ? isDriverAccountVerified(driverName) : false;
         verifiedEl.style.display = isVer ? "inline-block" : "none";
@@ -13671,10 +13869,34 @@ function renderComparatorScoreboard(h2h, statsA, statsB) {
     }
 }
 
+function getComparatorDict() {
+    const t = typeof translations !== "undefined" ? translations : null;
+    const lang = typeof currentLanguage !== "undefined" ? currentLanguage : "es";
+    if (t && t[lang]) {
+        if (t[lang].compare) return t[lang].compare;
+        if (t[lang].news && t[lang].news.compare) return t[lang].news.compare;
+    }
+    if (t && t.es) {
+        if (t.es.compare) return t.es.compare;
+        if (t.es.news && t.es.news.compare) return t.es.news.compare;
+    }
+    return {
+        metrics: {},
+        skills: {},
+        tie: "Empate",
+        noMatch: "Sin coincidencia",
+        noMatchTitle: "Solo uno participó: no suma victoria en Modo Justo",
+        didNotParticipate: "NO PARTICIPÓ"
+    };
+}
+
 // Render Comparative Metrics with relative interactive balance bars (Fair Mode support)
 function renderComparatorMetricsGrid(statsA, statsB, priceA, priceB, h2h) {
     const grid = document.getElementById("compareMetricsGrid");
     if (!grid) return;
+
+    const cmpDict = getComparatorDict();
+    const mKeys = cmpDict.metrics || {};
 
     // Derived normalized metrics
     const racesA = statsA.racesCount || 1;
@@ -13696,7 +13918,7 @@ function renderComparatorMetricsGrid(statsA, statsB, priceA, priceB, h2h) {
 
     const metrics = [
         {
-            name: "PROMEDIO PTS / GP",
+            name: mKeys.avgPts || "PROMEDIO PTS / GP",
             valA: parseFloat(avgPtsA),
             valB: parseFloat(avgPtsB),
             dispA: `${avgPtsA} pts / GP`,
@@ -13704,7 +13926,7 @@ function renderComparatorMetricsGrid(statsA, statsB, priceA, priceB, h2h) {
             higherIsBetter: true
         },
         ...(isMutualMode && h2h.mutualRoundsCount > 0 ? [{
-            name: `PUNTOS EN DUELOS DIRECTOS (${h2h.mutualRoundsCount} GPs)`,
+            name: `${mKeys.mutualPts || "PUNTOS EN DUELOS DIRECTOS"} (${h2h.mutualRoundsCount} GPs)`,
             valA: h2h.mutualPtsA,
             valB: h2h.mutualPtsB,
             dispA: `${h2h.mutualPtsA} pts`,
@@ -13712,7 +13934,7 @@ function renderComparatorMetricsGrid(statsA, statsB, priceA, priceB, h2h) {
             higherIsBetter: true
         }] : []),
         {
-            name: "EFECTIVIDAD EN PODIOS",
+            name: mKeys.podiumEff || "EFECTIVIDAD EN PODIOS",
             valA: podiumRateA,
             valB: podiumRateB,
             dispA: `${statsA.podiums} de ${racesA} (${podiumRateA}%)`,
@@ -13720,7 +13942,7 @@ function renderComparatorMetricsGrid(statsA, statsB, priceA, priceB, h2h) {
             higherIsBetter: true
         },
         {
-            name: "EFECTIVIDAD EN VICTORIAS",
+            name: mKeys.winEff || "EFECTIVIDAD EN VICTORIAS",
             valA: winRateA,
             valB: winRateB,
             dispA: `${statsA.wins} de ${racesA} (${winRateA}%)`,
@@ -13728,7 +13950,7 @@ function renderComparatorMetricsGrid(statsA, statsB, priceA, priceB, h2h) {
             higherIsBetter: true
         },
         {
-            name: "CARRERAS DISPUTADAS",
+            name: mKeys.racesEntered || "CARRERAS DISPUTADAS",
             valA: racesA,
             valB: racesB,
             dispA: `${racesA} GPs`,
@@ -13736,7 +13958,7 @@ function renderComparatorMetricsGrid(statsA, statsB, priceA, priceB, h2h) {
             higherIsBetter: true
         },
         {
-            name: "PUNTOS TOTALES",
+            name: mKeys.totalPts || "PUNTOS TOTALES",
             valA: statsA.pts,
             valB: statsB.pts,
             dispA: `${statsA.pts} pts`,
@@ -13744,7 +13966,7 @@ function renderComparatorMetricsGrid(statsA, statsB, priceA, priceB, h2h) {
             higherIsBetter: true
         },
         {
-            name: "POSICIÓN EN EL MUNDIAL",
+            name: mKeys.champPos || "POSICIÓN EN EL MUNDIAL",
             valA: statsA.pos,
             valB: statsB.pos,
             dispA: `P${statsA.pos}`,
@@ -13752,7 +13974,7 @@ function renderComparatorMetricsGrid(statsA, statsB, priceA, priceB, h2h) {
             higherIsBetter: false // Lower position number is better
         },
         {
-            name: "POLE POSITIONS",
+            name: mKeys.poles || "POLE POSITIONS",
             valA: statsA.poles,
             valB: statsB.poles,
             dispA: `${statsA.poles} poles`,
@@ -13760,7 +13982,7 @@ function renderComparatorMetricsGrid(statsA, statsB, priceA, priceB, h2h) {
             higherIsBetter: true
         },
         {
-            name: "VUELTAS RÁPIDAS",
+            name: mKeys.fastestLaps || "VUELTAS RÁPIDAS",
             valA: statsA.fastestLaps,
             valB: statsB.fastestLaps,
             dispA: `${statsA.fastestLaps} VR`,
@@ -13768,7 +13990,7 @@ function renderComparatorMetricsGrid(statsA, statsB, priceA, priceB, h2h) {
             higherIsBetter: true
         },
         {
-            name: "FIABILIDAD EN CARRERA",
+            name: mKeys.reliability || "FIABILIDAD EN CARRERA",
             valA: relA,
             valB: relB,
             dispA: `${relA}% (${statsA.dnfCount || 0} DNF)`,
@@ -13776,7 +13998,7 @@ function renderComparatorMetricsGrid(statsA, statsB, priceA, priceB, h2h) {
             higherIsBetter: true
         },
         {
-            name: "VALOR FANTASY FFC",
+            name: mKeys.fantasyValue || "VALOR FANTASY FFC",
             valA: priceA,
             valB: priceB,
             dispA: `${priceA.toFixed(1)}M€`,
@@ -13818,14 +14040,10 @@ function renderComparatorMetricsGrid(statsA, statsB, priceA, priceB, h2h) {
             }
         }
 
-        const crownA = isWinnerA ? `<span class="metric-crown" title="Mejor registro">👑</span>` : ``;
-        const crownB = isWinnerB ? `<span class="metric-crown" title="Mejor registro">👑</span>` : ``;
-
         return `
             <div class="compare-metric-row">
                 <div class="compare-metric-header">
                     <div class="metric-val val-a ${isWinnerA ? 'is-winner' : ''}">
-                        ${isWinnerA ? crownA : ''}
                         <span>${m.dispA}</span>
                     </div>
                     <div class="metric-name-wrap">
@@ -13833,7 +14051,6 @@ function renderComparatorMetricsGrid(statsA, statsB, priceA, priceB, h2h) {
                     </div>
                     <div class="metric-val val-b ${isWinnerB ? 'is-winner' : ''}">
                         <span>${m.dispB}</span>
-                        ${isWinnerB ? crownB : ''}
                     </div>
                 </div>
                 <div class="metric-bar-track">
@@ -13850,6 +14067,9 @@ function renderComparatorMetricsGrid(statsA, statsB, priceA, priceB, h2h) {
 function renderComparatorSkillsGrid(statsA, statsB) {
     const grid = document.getElementById("compareSkillsGrid");
     if (!grid) return;
+
+    const cmpDict = getComparatorDict();
+    const sKeys = cmpDict.skills || {};
 
     const racesA = Math.max(1, statsA.racesCount || 1);
     const racesB = Math.max(1, statsB.racesCount || 1);
@@ -13875,11 +14095,11 @@ function renderComparatorSkillsGrid(statsA, statsB) {
     const podScoreB = Math.min(99, Math.round((statsB.podiums / racesB) * 90 + 10));
 
     const skills = [
-        { name: "🏎️ RITMO DE CARRERA", scoreA: racePaceA, scoreB: racePaceB },
-        { name: "⏱️ RITMO DE CLASIFICACIÓN", scoreA: qualySpeedA, scoreB: qualySpeedB },
-        { name: "🛡️ FIABILIDAD MECÁNICA", scoreA: relScoreA, scoreB: relScoreB },
-        { name: "🎯 REGULARIDAD EN TOP 10", scoreA: regScoreA, scoreB: regScoreB },
-        { name: "🏆 EFECTIVIDAD EN PODIOS", scoreA: podScoreA, scoreB: podScoreB }
+        { name: sKeys.racePace || "🏎️ RITMO DE CARRERA", scoreA: racePaceA, scoreB: racePaceB },
+        { name: sKeys.qualyPace || "⏱️ RITMO DE CLASIFICACIÓN", scoreA: qualySpeedA, scoreB: qualySpeedB },
+        { name: sKeys.reliability || "🛡️ FIABILIDAD MECÁNICA", scoreA: relScoreA, scoreB: relScoreB },
+        { name: sKeys.consistency || "🎯 REGULARIDAD EN TOP 10", scoreA: regScoreA, scoreB: regScoreB },
+        { name: sKeys.podiumEff || "🏆 EFECTIVIDAD EN PODIOS", scoreA: podScoreA, scoreB: podScoreB }
     ];
 
     grid.innerHTML = skills.map(s => `
@@ -13912,6 +14132,8 @@ function renderComparatorRoundsTable(statsA, statsB, h2h) {
     if (thA) thA.textContent = statsA.driver.toUpperCase();
     if (thB) thB.textContent = statsB.driver.toUpperCase();
 
+    const cmpDict = getComparatorDict();
+
     const data = h2h || computeDriverHeadToHeadDuels(statsA, statsB, compareMode);
 
     tbody.innerHTML = data.roundDuels.map(d => {
@@ -13924,10 +14146,10 @@ function renderComparatorRoundsTable(statsA, statsB, h2h) {
             } else if (d.winner === "B") {
                 duelBadge = `<span class="round-winner-chip winner-b">🔵 ${escapeHTML(statsB.driver)}</span>`;
             } else if (d.winner === "TIE") {
-                duelBadge = `<span class="round-winner-chip winner-tie">➖ Empate</span>`;
+                duelBadge = `<span class="round-winner-chip winner-tie">➖ ${cmpDict.tie || "Empate"}</span>`;
             } else if (d.winner === "NON_MUTUAL") {
                 isNonMutual = true;
-                duelBadge = `<span class="round-winner-chip chip-non-mutual" title="Solo uno participó: no suma victoria en Modo Justo">⚪ Sin coincidencia</span>`;
+                duelBadge = `<span class="round-winner-chip chip-non-mutual" title="${escapeHTML(cmpDict.noMatchTitle || "Solo uno participó: no suma victoria en Modo Justo")}">⚪ ${cmpDict.noMatch || "Sin coincidencia"}</span>`;
             }
         }
 
@@ -13939,7 +14161,7 @@ function renderComparatorRoundsTable(statsA, statsB, h2h) {
             const isWinnerA = d.winner === "A";
             dispA = `<span class="round-driver-val ${isWinnerA ? 'is-ahead' : ''}" style="${isWinnerA ? 'color: #fca5a5;' : 'color: #cbd5e1;'}">${escapeHTML(d.resA.pos)} (${d.ptsA} pts)${poleTag}${vrTag}</span>`;
         } else if (d.isCompleted) {
-            dispA = `<span style="color: #64748b; font-size: 11px;">NO PARTICIPÓ</span>`;
+            dispA = `<span style="color: #64748b; font-size: 11px;">${cmpDict.didNotParticipate || "NO PARTICIPÓ"}</span>`;
         }
 
         // Format Driver B Result Cell
@@ -13950,7 +14172,7 @@ function renderComparatorRoundsTable(statsA, statsB, h2h) {
             const isWinnerB = d.winner === "B";
             dispB = `<span class="round-driver-val ${isWinnerB ? 'is-ahead' : ''}" style="${isWinnerB ? 'color: #93c5fd;' : 'color: #cbd5e1;'}">${escapeHTML(d.resB.pos)} (${d.ptsB} pts)${poleTag}${vrTag}</span>`;
         } else if (d.isCompleted) {
-            dispB = `<span style="color: #64748b; font-size: 11px;">NO PARTICIPÓ</span>`;
+            dispB = `<span style="color: #64748b; font-size: 11px;">${cmpDict.didNotParticipate || "NO PARTICIPÓ"}</span>`;
         }
 
         // Difference in Points
@@ -16597,10 +16819,16 @@ if (document.readyState === "loading") {
     document.addEventListener("DOMContentLoaded", () => {
         initNewsRealtimeSync();
         initNewsSystemEvents();
+        if (typeof lucide !== 'undefined' && lucide.createIcons) {
+            lucide.createIcons();
+        }
     });
 } else {
     initNewsRealtimeSync();
     initNewsSystemEvents();
+    if (typeof lucide !== 'undefined' && lucide.createIcons) {
+        lucide.createIcons();
+    }
 }
 
 

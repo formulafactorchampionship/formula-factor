@@ -19,6 +19,9 @@
     <meta property="og:title" content="Formula Factor Championship | FFC">
     <meta property="og:description" content="Formula Factor Championship — Competitive Sim Racing Championship">
 
+    <link rel="icon" type="image/png" href="favicon.png">
+    <link rel="apple-touch-icon" href="favicon.png">
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;500;600;700;800;900&family=Inter:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -53,6 +56,7 @@
             }
         };
     </script>
+    <script src="https://unpkg.com/lucide@latest"></script>
 </head>
 
 <body>
@@ -331,16 +335,8 @@
     <div class="hero-content" id="heroContentStandard">
 
         <div class="hero-header-row">
-            <div class="starting-lights-gantry" aria-label="Starting Lights">
-                <span class="light-unit"><span class="light-bulb active"></span></span>
-                <span class="light-unit"><span class="light-bulb active"></span></span>
-                <span class="light-unit"><span class="light-bulb active"></span></span>
-                <span class="light-unit"><span class="light-bulb active"></span></span>
-                <span class="light-unit"><span class="light-bulb active"></span></span>
-            </div>
-
             <div class="eyebrow" id="heroEyebrow">
-                TEMPORADA 1 · FORMULA FACTOR CHAMPIONSHIP
+                TEMPORADA 1 FORMULA FACTOR CHAMPIONSHIP
             </div>
         </div>
 
@@ -380,7 +376,7 @@
             </a>
 
             <a href="#fantasy" class="btn btn-fantasy-hero" id="heroBtnFantasy" onclick="if(window.openFantasyPortal){window.openFantasyPortal();return false;}">
-                <span>🏆</span> FANTASY LEAGUE (75M€)
+                <span>🏆</span> FANTASY LEAGUE
             </a>
 
         </div>
@@ -467,7 +463,6 @@
                     <div class="next-race-weather-pill" id="nextRaceWeatherPill">
                         <span class="weather-icon" id="nextRaceWeatherIcon">☀️</span>
                         <span class="weather-temp" id="nextRaceWeatherTemp">22°C</span>
-                        <span class="weather-divider">•</span>
                         <span class="weather-cond" id="nextRaceWeatherCond">SOLEADO</span>
                     </div>
                 </div>
@@ -614,16 +609,13 @@
 
     <div class="standings-view-selector" id="standingsViewSelector">
         <button type="button" class="standings-view-tab active" id="tabStandingsCards" data-view="cards">
-            <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V5h14v14zM7 10h2v7H7zm4-3h2v10h-2zm4 6h2v4h-2z"/></svg>
             <span id="tabLabelCards">VISTA RESUMEN &amp; PODIO</span>
         </button>
         <button type="button" class="standings-view-tab" id="tabStandingsMatrix" data-view="matrix">
-            <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M3 3v18h18V3H3zm8 16H5v-4h6v4zm0-6H5V9h6v4zm0-6H5V5h6v2zm8 12h-6v-4h6v4zm0-6h-6V9h6v4zm0-6h-6V5h6v2z"/></svg>
             <span id="tabLabelMatrix">TABLA OFICIAL FFC 2010 SEASON</span>
         </button>
         <button type="button" class="standings-view-tab standings-compare-btn" id="btnStandingsCompare" data-view="compare" onclick="if(window.openDriverComparison){window.openDriverComparison();return false;}">
-            <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M9.01 14H2v2h7.01v3L13 15l-3.99-4v3zm5.98-1v-3H22V8h-7.01V5L11 9l3.99 4z"/></svg>
-            <span id="tabLabelCompare">⚔️ COMPARADOR CARA A CARA</span>
+            <span id="tabLabelCompare">COMPARADOR CARA A CARA</span>
         </button>
     </div>
 
@@ -651,21 +643,21 @@
                         <th class="th-pos">Pos.</th>
                         <th class="th-driver">Driver</th>
                         <th class="th-team">Team</th>
-                        <th class="th-race" title="Round 1: Australia">🇦🇺<br><small>R1</small></th>
-                        <th class="th-race" title="Round 2: Malaysia">🇲🇾<br><small>R2</small></th>
-                        <th class="th-race" title="Round 3: Bahrain">🇧🇭<br><small>R3</small></th>
-                        <th class="th-race" title="Round 4: Turkey">🇹🇷<br><small>R4</small></th>
-                        <th class="th-race" title="Round 5: Spain">🇪🇸<br><small>R5</small></th>
-                        <th class="th-race" title="Round 6: Italy">🇮🇹<br><small>R6</small></th>
-                        <th class="th-race" title="Round 7: Austria">🇦🇹<br><small>R7</small></th>
-                        <th class="th-race" title="Round 8: Great Britain">🇬🇧<br><small>R8</small></th>
-                        <th class="th-race" title="Round 9: Germany">🇩🇪<br><small>R9</small></th>
-                        <th class="th-race" title="Round 10: Europe">🇪🇺<br><small>R10</small></th>
-                        <th class="th-race" title="Round 11: Hungary">🇭🇺<br><small>R11</small></th>
-                        <th class="th-race" title="Round 12: Belgium">🇧🇪<br><small>R12</small></th>
-                        <th class="th-race" title="Round 13: Singapore">🇸🇬<br><small>R13</small></th>
-                        <th class="th-race" title="Round 14: USA">🇺🇸<br><small>R14</small></th>
-                        <th class="th-race" title="Round 15: Brazil">🇧🇷<br><small>R15</small></th>
+                        <th class="th-race" title="Round 1: Australia">🇦🇺<br><small>AUS</small></th>
+                        <th class="th-race" title="Round 2: Malaysia">🇲🇾<br><small>MAL</small></th>
+                        <th class="th-race" title="Round 3: Bahrain">🇧🇭<br><small>BAH</small></th>
+                        <th class="th-race" title="Round 4: Turkey">🇹🇷<br><small>TUR</small></th>
+                        <th class="th-race" title="Round 5: Spain">🇪🇸<br><small>ESP</small></th>
+                        <th class="th-race" title="Round 6: Italy">🇮🇹<br><small>ITA</small></th>
+                        <th class="th-race" title="Round 7: Austria">🇦🇹<br><small>AUT</small></th>
+                        <th class="th-race" title="Round 8: Great Britain">🇬🇧<br><small>GBR</small></th>
+                        <th class="th-race" title="Round 9: Germany">🇩🇪<br><small>GER</small></th>
+                        <th class="th-race" title="Round 10: Europe">🇪🇺<br><small>EUR</small></th>
+                        <th class="th-race" title="Round 11: Hungary">🇭🇺<br><small>HUN</small></th>
+                        <th class="th-race" title="Round 12: Belgium">🇧🇪<br><small>BEL</small></th>
+                        <th class="th-race" title="Round 13: Singapore">🇸🇬<br><small>SIN</small></th>
+                        <th class="th-race" title="Round 14: USA">🇺🇸<br><small>USA</small></th>
+                        <th class="th-race" title="Round 15: Brazil">🇧🇷<br><small>BRA</small></th>
                         <th class="th-points">Points:</th>
                         <th class="th-dif">Dif.</th>
                     </tr>
@@ -823,7 +815,7 @@
 
         <div class="standings-expand-bar">
             <button type="button" id="toggleStandingsBtn" class="standings-expand-btn" aria-expanded="false">
-                <span id="standingsToggleLabel">VER CLASIFICACIÓN COMPLETA (P11 - P44)</span>
+                <span id="standingsToggleLabel">VER CLASIFICACIÓN COMPLETA (P13 - P44)</span>
                 <span id="standingsToggleIcon" class="expand-icon">▼</span>
             </button>
         </div>
@@ -1303,42 +1295,52 @@
         <!-- Bento Grid of Pillars -->
         <div class="info-pillars-grid">
             <div class="info-pillar-card">
-                <div class="pillar-icon">🏎️</div>
-                <h3>Simulación Realista</h3>
-                <p id="infoP2">
+                <div class="pillar-icon">
+                    <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 12v10"/><path d="M4.93 4.93l4.24 4.24"/><path d="M19.07 4.93l-4.24 4.24"/></svg>
+                </div>
+                <h3 id="infoCardTitle1">Simulación Realista</h3>
+                <p id="infoCardDesc1">
                     Físicas de competición y configuración profesional de monoplazas para recrear la exigencia real de un campeonato del mundo de motorsport.
                 </p>
             </div>
 
             <div class="info-pillar-card">
-                <div class="pillar-icon">📊</div>
-                <h3>Sistema Oficial F1</h3>
-                <p id="infoP3">
+                <div class="pillar-icon">
+                    <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+                </div>
+                <h3 id="infoCardTitle2">Sistema Oficial F1</h3>
+                <p id="infoCardDesc2">
                     Sistema de puntuación oficial de la FIA, donde cada punto cuenta y la constancia en pista premia al verdadero campeón de la temporada.
                 </p>
             </div>
 
             <div class="info-pillar-card">
-                <div class="pillar-icon">🛡️</div>
-                <h3>Fair Play y Respeto</h3>
-                <p>
+                <div class="pillar-icon">
+                    <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                </div>
+                <h3 id="infoCardTitle3">Fair Play y Respeto</h3>
+                <p id="infoCardDesc3">
                     Promovemos el juego limpio, el compañerismo y el respeto absoluto en pista para disfrutar de batallas rueda a rueda memorables y seguras.
                 </p>
             </div>
 
             <div class="info-pillar-card">
-                <div class="pillar-icon">👥</div>
-                <h3>Comunidad Activa</h3>
-                <p>
+                <div class="pillar-icon">
+                    <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+                </div>
+                <h3 id="infoCardTitle4">Comunidad Activa</h3>
+                <p id="infoCardDesc4">
                     Organización profesional con transmisiones en directo, mercado de fichajes Fantasy y gestión centralizada a través de nuestra comunidad en Discord.
                 </p>
             </div>
         </div>
 
         <div class="info-footer-box">
-            <div class="info-disclaimer-card" id="infoDisclaimer">
-                <span class="disclaimer-icon">⚠️</span>
-                <div>
+            <div class="info-disclaimer-card" id="infoDisclaimerBox">
+                <div class="disclaimer-icon">
+                    <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                </div>
+                <div id="infoDisclaimerText">
                     <strong>Aviso Importante:</strong> Es imprescindible formar parte del servidor oficial de Discord para estar al día de los comunicados, normativas y fichajes de equipos.
                 </div>
             </div>
@@ -1861,7 +1863,7 @@
                 <div class="driver-modal-name-row">
                     <span class="driver-modal-flag" id="driverModalFlag">🇦🇱</span>
                     <h3 class="driver-modal-name" id="driverModalName">Dieguiosk</h3>
-                    <span id="driverModalVerifiedBadge" class="verify-badge-verified" style="display: none; margin-left: 6px;">VERIFICADO ✅</span>
+                    <span id="driverModalVerifiedBadge" class="verify-badge-verified" style="display: none; margin-left: 6px;">VERIFICADO</span>
                 </div>
                 <div class="driver-modal-meta-row">
                     <span class="driver-modal-team-pill team-hrt" id="driverModalTeam">HRT</span>
@@ -2114,7 +2116,7 @@
                 <div class="compare-hero-strip" id="compareHeroStripA"></div>
                 <div class="compare-hero-body">
                     <div class="compare-avatar-box" id="compareAvatarBoxA">
-                        <img src="" id="compareAvatarImgA" class="compare-avatar-img" alt="Piloto A">
+                        <span class="compare-avatar-num" id="compareAvatarNumA">23</span>
                     </div>
                     <div class="compare-driver-dorsal" id="compareDorsalA">#23</div>
                     <div class="compare-driver-meta">
@@ -2149,7 +2151,7 @@
                 <div class="compare-hero-strip" id="compareHeroStripB"></div>
                 <div class="compare-hero-body">
                     <div class="compare-avatar-box" id="compareAvatarBoxB">
-                        <img src="" id="compareAvatarImgB" class="compare-avatar-img" alt="Piloto B">
+                        <span class="compare-avatar-num" id="compareAvatarNumB">1</span>
                     </div>
                     <div class="compare-driver-dorsal" id="compareDorsalB">#1</div>
                     <div class="compare-driver-meta">
@@ -2202,12 +2204,12 @@
                 <table class="compare-rounds-table">
                     <thead>
                         <tr>
-                            <th style="width: 70px;">RONDA</th>
-                            <th>GRAN PREMIO</th>
+                            <th style="width: 70px;" id="thRoundCol">RONDA</th>
+                            <th id="thGpCol">GRAN PREMIO</th>
                             <th style="text-align: center; width: 140px;" id="thRoundDriverA">PILOTO A</th>
-                            <th style="text-align: center; width: 120px;">DUELO GP</th>
+                            <th style="text-align: center; width: 120px;" id="thDuelCol">DUELO GP</th>
                             <th style="text-align: center; width: 140px;" id="thRoundDriverB">PILOTO B</th>
-                            <th style="text-align: right; width: 90px;">DIF. PTS</th>
+                            <th style="text-align: right; width: 90px;" id="thDiffCol">DIF. PTS</th>
                         </tr>
                     </thead>
                     <tbody id="compareRoundsTableBody">
@@ -3261,7 +3263,7 @@
                         <div class="preview-name-row">
                             <span id="previewFlag" class="preview-flag">🏁</span>
                             <span id="previewDriverName" class="preview-name">Tu Piloto</span>
-                            <span class="verify-badge-verified" style="display: inline-block; font-size: 9px; padding: 2px 5px;">VERIFICADO ✅</span>
+                            <span class="verify-badge-verified" style="display: inline-block; font-size: 9px; padding: 2px 5px;">VERIFICADO</span>
                         </div>
                         <div class="preview-meta-row">
                             <span id="previewTeamPill" class="driver-modal-team-pill">PILOTO OFICIAL</span>
@@ -3365,7 +3367,7 @@
                     <button type="button" class="bio-tag-btn" data-tag="⚡ Agresivo al límite">⚡ Agresivo</button>
                     <button type="button" class="bio-tag-btn" data-tag="🛡️ Ritmo constante">🛡️ Consistente</button>
                 </div>
-                <textarea id="editCardBio" class="claim-textarea" rows="2" placeholder="Resumen de tu estilo de conducción, periféricos, aspiraciones en FFC..." maxlength="300"></textarea>
+                <textarea id="editCardBio" class="claim-textarea" rows="2" placeholder="Official FFC driver competing in the 2010 Championship season." maxlength="300"></textarea>
             </div>
 
             <!-- SECCIÓN 5: REDES SOCIALES -->
@@ -3395,8 +3397,8 @@
             </div>
 
             <div class="card-edit-actions" style="margin-top: 14px; display: flex; gap: 8px;">
-                <button type="submit" class="btn btn-primary btn-sm" id="saveDriverCardBtn" style="flex: 1.5; padding: 10px 16px; font-size: 13px;">⚡ Guardar Cambios en Firebase</button>
-                <button type="button" class="btn-card-secondary-view" id="modalViewOfficialCardBtn" style="flex: 1; padding: 10px 12px; font-size: 13px;">👁️ Ver Tarjeta</button>
+                <button type="submit" class="btn btn-primary btn-sm" id="saveDriverCardBtn" style="flex: 1.5; padding: 10px 16px; font-size: 13px; border-radius: 0px !important; text-transform: uppercase;">GUARDAR CAMBIOS EN FIREBASE</button>
+                <button type="button" class="btn-card-secondary-view" id="modalViewOfficialCardBtn" style="flex: 1; padding: 10px 12px; font-size: 13px; border-radius: 0px !important; text-transform: uppercase !important;">VER TARJETA</button>
             </div>
             <span id="editCardNotice" class="claim-notice-msg" style="text-align: center; margin-top: 8px; display: block;"></span>
         </form>
