@@ -79,11 +79,10 @@
             <a href="#news" id="navNews" class="nav-item">NOTICIAS</a>
             <a href="#info" id="navInfo" class="nav-item">INFORMACIÓN</a>
             <a href="#compare" class="nav-item nav-compare-link" id="navCompare" title="Comparador de Pilotos (Cara a Cara)" onclick="if(window.openDriverComparison){window.openDriverComparison();return false;}">
-                <span class="compare-nav-badge">⚔️</span>
                 <span id="navCompareText">COMPARADOR</span>
             </a>
             <a href="#fantasy" class="nav-item nav-fantasy-link" id="navFantasy" title="FFC Fantasy League" onclick="if(window.openFantasyPortal){window.openFantasyPortal();return false;}">
-                <span class="fantasy-nav-badge">75M€</span>
+                <span class="fantasy-nav-dot" aria-hidden="true"></span>
                 <span id="navFantasyText">FANTASY</span>
             </a>
         </nav>
@@ -3422,81 +3421,314 @@
 
 
 <!-- =========================================================
-     MODAL: ENVIAR NOTICIA A FORMULA FACTOR
+     MODAL: REDACTOR / EDITOR WORD DE NOTICIAS FFC
 ========================================================= -->
-<div class="user-auth-overlay news-modal-overlay" id="newsSubmitModalOverlay" aria-hidden="true" style="display: none;">
-    <div class="news-modal-card">
-        <button type="button" class="admin-modal-close-btn" id="newsSubmitModalClose" onclick="closeSubmitNewsModal()" aria-label="Cerrar modal">&times;</button>
+<div class="user-auth-overlay news-modal-overlay news-editor-overlay" id="newsSubmitModalOverlay" aria-hidden="true" style="display: none;">
+    <div class="news-modal-card news-word-editor-card" id="newsWordEditorCard">
         
-        <header class="news-modal-header">
-            <div class="admin-card-badge" id="newsSubmitModalBadge">PRENSA &bull; COMUNIDAD FFC</div>
-            <h2 id="newsSubmitModalTitle">✍️ ENVIAR NOTICIA A LA COMUNIDAD</h2>
-            <p class="news-modal-subtitle" id="newsSubmitModalSubtitle">
-                Comparte una crónica de carrera, un análisis técnico, un comunicado de escudería o un artículo. Una vez revisada y aprobada por los administradores, se publicará en la web oficial.
-            </p>
+        <!-- Editor Top Header Bar -->
+        <header class="news-editor-topbar">
+            <div class="news-editor-topbar-left">
+                <div class="admin-card-badge" id="newsSubmitModalBadge">PRENSA &bull; REDACCIÓN FFC</div>
+                <h2 id="newsSubmitModalTitle" class="news-editor-main-title">✍️ REDACTOR DE ARTÍCULO</h2>
+                <span class="news-editor-draft-badge" id="newsDraftStatusIndicator" title="Guardado automático local">💾 Borrador guardado</span>
+            </div>
+            
+            <div class="news-editor-topbar-right">
+                <!-- Fullscreen Toggle Button -->
+                <button type="button" class="news-editor-btn-topbar" id="btnToggleEditorFullscreen" onclick="toggleNewsEditorFullscreen()" title="Alternar pantalla completa (F11)">
+                    <span id="fullscreenIcon">⛶</span>
+                    <span id="fullscreenLabel" class="news-fullscreen-text">Pantalla completa</span>
+                </button>
+                <!-- Close Button -->
+                <button type="button" class="news-editor-btn-icon news-editor-close-btn" id="newsSubmitModalClose" onclick="closeSubmitNewsModal()" aria-label="Cerrar editor" title="Cerrar">&times;</button>
+            </div>
         </header>
 
-        <form id="newsSubmitForm" class="news-submit-form">
-            <div class="news-form-group">
-                <label for="newsSubmitTitle" id="lblNewsSubmitTitle">Título de la Noticia <span class="required-star">*</span></label>
-                <input type="text" id="newsSubmitTitle" class="claim-input" placeholder="Ej: Espectacular remontada de Dieguiosk en Monza bajo la lluvia" required maxlength="120">
+        <!-- Word-Style Formatting Ribbon Toolbar -->
+        <div class="news-editor-ribbon" id="newsEditorRibbon">
+            <!-- Undo / Redo -->
+            <div class="ribbon-group" title="Historial">
+                <button type="button" class="ribbon-btn" onclick="executeEditorCommand('undo')" title="Deshacer (Ctrl+Z)"><span class="ribbon-icon">↶</span></button>
+                <button type="button" class="ribbon-btn" onclick="executeEditorCommand('redo')" title="Rehacer (Ctrl+Y)"><span class="ribbon-icon">↷</span></button>
+            </div>
+            
+            <div class="ribbon-divider"></div>
+
+            <!-- Headings -->
+            <div class="ribbon-group">
+                <select class="ribbon-select" id="ribbonHeadingSelect" title="Estilo de párrafo / encabezado" onchange="applyRibbonHeading(this.value)">
+                    <option value="p">Párrafo Normal</option>
+                    <option value="h2">Subtítulo Principal (H2)</option>
+                    <option value="h3">Encabezado de Sección (H3)</option>
+                </select>
             </div>
 
-            <div class="news-form-row">
-                <div class="news-form-group flex-1">
-                    <label for="newsSubmitCategory" id="lblNewsSubmitCategory">Categoría <span class="required-star">*</span></label>
-                    <select id="newsSubmitCategory" class="claim-input news-select" required>
-                        <option value="Carreras">🏆 Carreras</option>
-                        <option value="Fichajes">🔄 Fichajes</option>
-                        <option value="Pilotos">🏎️ Pilotos</option>
-                        <option value="Crónicas">📝 Crónicas</option>
-                        <option value="Comunidad" selected>👥 Comunidad</option>
-                        <option value="Técnica">⚙️ Análisis Técnico</option>
-                    </select>
-                </div>
-                <div class="news-form-group flex-1">
-                    <label for="newsSubmitAuthor" id="lblNewsSubmitAuthor">Autor (Tu Usuario) <span class="required-star">*</span></label>
-                    <div style="position: relative; display: flex; align-items: center;">
-                        <input type="text" id="newsSubmitAuthor" class="claim-input" readonly style="background: rgba(255, 255, 255, 0.05); color: var(--gold, #d6b45c); font-weight: 700; cursor: not-allowed; padding-right: 32px;" title="Nombre de tu cuenta registrada">
-                        <span style="position: absolute; right: 12px; font-size: 13px; opacity: 0.8;" title="Cuenta verificada">🔒</span>
+            <div class="ribbon-divider"></div>
+
+            <!-- Text Formatting -->
+            <div class="ribbon-group">
+                <button type="button" class="ribbon-btn" id="btnRibbonBold" onclick="executeEditorCommand('bold')" title="Negrita (Ctrl+B)"><strong>B</strong></button>
+                <button type="button" class="ribbon-btn" id="btnRibbonItalic" onclick="executeEditorCommand('italic')" title="Cursiva (Ctrl+I)"><em>I</em></button>
+                <button type="button" class="ribbon-btn" id="btnRibbonUnderline" onclick="executeEditorCommand('underline')" title="Subrayado (Ctrl+U)"><u>U</u></button>
+                <button type="button" class="ribbon-btn" id="btnRibbonStrike" onclick="executeEditorCommand('strikeThrough')" title="Tachado"><s>S</s></button>
+                <button type="button" class="ribbon-btn ribbon-btn-highlight" id="btnRibbonHighlight" onclick="applyRibbonHighlight()" title="Resaltado Oro FFC">✨ Oro</button>
+            </div>
+
+            <div class="ribbon-divider"></div>
+
+            <!-- Alignment -->
+            <div class="ribbon-group">
+                <button type="button" class="ribbon-btn" onclick="executeEditorCommand('justifyLeft')" title="Alinear a la izquierda">≡</button>
+                <button type="button" class="ribbon-btn" onclick="executeEditorCommand('justifyCenter')" title="Centrar">≣</button>
+                <button type="button" class="ribbon-btn" onclick="executeEditorCommand('justifyRight')" title="Alinear a la derecha">⫸</button>
+                <button type="button" class="ribbon-btn" onclick="executeEditorCommand('justifyFull')" title="Justificar">☰</button>
+            </div>
+
+            <div class="ribbon-divider"></div>
+
+            <!-- Lists & Blocks -->
+            <div class="ribbon-group">
+                <button type="button" class="ribbon-btn" onclick="executeEditorCommand('insertUnorderedList')" title="Lista con viñetas">• Viñetas</button>
+                <button type="button" class="ribbon-btn" onclick="executeEditorCommand('insertOrderedList')" title="Lista numerada">1. Numerada</button>
+                <button type="button" class="ribbon-btn" id="btnRibbonQuote" onclick="applyRibbonQuote()" title="Cita o Declaraciones de piloto">❝ Cita</button>
+                <button type="button" class="ribbon-btn" onclick="executeEditorCommand('insertHorizontalRule')" title="Línea divisoria">⎯ Separador</button>
+            </div>
+
+            <div class="ribbon-divider"></div>
+
+            <!-- Media & Extras -->
+            <div class="ribbon-group">
+                <button type="button" class="ribbon-btn" id="btnRibbonInsertImg" onclick="triggerInsertArticleImage()" title="Insertar foto dentro del texto">📷 Foto en texto</button>
+                <input type="file" id="articleBodyImgFileInput" accept="image/*" style="display: none;" onchange="handleArticleBodyImageUpload(event)">
+                <button type="button" class="ribbon-btn" id="btnRibbonInsertLink" onclick="applyRibbonLink()" title="Insertar enlace web">🔗 Link</button>
+                <button type="button" class="ribbon-btn" onclick="executeEditorCommand('removeFormat')" title="Limpiar formato">🧹</button>
+            </div>
+
+            <!-- Stats (Words & Reading Time) -->
+            <div class="ribbon-stats-box">
+                <span id="editorWordCount" class="ribbon-stat-item">0 palabras</span>
+                <span class="ribbon-stat-dot">&bull;</span>
+                <span id="editorReadTime" class="ribbon-stat-item">1 min de lectura</span>
+            </div>
+        </div>
+
+        <form id="newsSubmitForm" class="news-submit-form news-editor-document-form" onsubmit="handleNewsFormSubmit(event)">
+            <!-- Scrollable Document Container ("Hoja de Documento estilo Word") -->
+            <div class="news-document-scroll-wrap">
+                <div class="news-word-page-sheet">
+                    
+                    <!-- Metadata Header Row (Category & Author) -->
+                    <div class="news-page-meta-row">
+                        <div class="news-page-meta-group">
+                            <label for="newsSubmitCategory" class="news-sheet-label" id="lblNewsSubmitCategory">CATEGORÍA <span class="required-star">*</span></label>
+                            <select id="newsSubmitCategory" class="news-sheet-select" required onchange="autoSaveDraft()">
+                                <option value="Carreras">🏆 Carreras</option>
+                                <option value="Fichajes">🔄 Fichajes</option>
+                                <option value="Pilotos">🏎️ Pilotos</option>
+                                <option value="Crónicas">📝 Crónicas</option>
+                                <option value="Comunidad" selected>👥 Comunidad</option>
+                                <option value="Técnica">⚙️ Análisis Técnico</option>
+                            </select>
+                        </div>
+                        
+                        <div class="news-page-meta-group">
+                            <label for="newsSubmitAuthor" class="news-sheet-label" id="lblNewsSubmitAuthor">AUTOR REGISTRADO <span class="required-star">*</span></label>
+                            <div class="news-sheet-author-pill">
+                                <span class="author-icon">👤</span>
+                                <input type="text" id="newsSubmitAuthor" class="news-sheet-author-input" readonly title="Nombre de tu cuenta registrada">
+                                <span class="author-verified-tag" title="Cuenta verificada">🔒 VERIFICADO</span>
+                            </div>
+                        </div>
                     </div>
+
+                    <!-- PHOTO COVER UPLOAD DROPZONE -->
+                    <div class="news-cover-section">
+                        <label class="news-sheet-label" id="lblNewsSubmitImage">FOTO DE PORTADA DEL ARTÍCULO</label>
+                        
+                        <!-- Upload Box / Drag & Drop Zone -->
+                        <div class="news-photo-dropzone" id="newsPhotoDropzone" onclick="triggerCoverFileInput()">
+                            <input type="file" id="newsCoverFileInput" accept="image/*" style="display: none;" onchange="handleCoverFileUpload(event)">
+                            
+                            <!-- Empty / Prompt State -->
+                            <div class="dropzone-prompt" id="dropzonePrompt">
+                                <div class="dropzone-icon-circle">
+                                    <svg viewBox="0 0 24 24" width="30" height="30" fill="currentColor">
+                                        <path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM14 13v4h-4v-4H7l5-5 5 5h-3z"/>
+                                    </svg>
+                                </div>
+                                <div class="dropzone-text-wrap">
+                                    <strong class="dropzone-title" id="dropzoneTitleText">Haz clic para subir una foto o arrástrala aquí</strong>
+                                    <span class="dropzone-hint" id="dropzoneHintText">Sube JPG, PNG o WebP desde tu ordenador o móvil (se ajusta y optimiza automáticamente)</span>
+                                </div>
+                                <button type="button" class="btn-dropzone-browse" id="btnDropzoneBrowse" onclick="event.stopPropagation(); triggerCoverFileInput()">Subir Foto</button>
+                            </div>
+
+                            <!-- Preview State (when an image is uploaded/selected) -->
+                            <div class="dropzone-preview" id="dropzonePreview" style="display: none;">
+                                <img src="" alt="Vista previa de portada" id="coverImagePreview" class="cover-preview-img">
+                                <div class="cover-preview-overlay">
+                                    <span class="cover-preview-badge" id="coverPreviewBadge">✓ Foto cargada</span>
+                                    <div class="cover-preview-actions">
+                                        <button type="button" class="btn-cover-action" onclick="event.stopPropagation(); triggerCoverFileInput()" title="Cambiar foto">🔄 Cambiar foto</button>
+                                        <button type="button" class="btn-cover-action btn-cover-remove" onclick="event.stopPropagation(); removeCoverImage()" title="Eliminar foto">🗑️ Quitar foto</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Secondary options: Link toggle and FFC background preset -->
+                        <div class="news-cover-extra-actions">
+                            <button type="button" class="btn-sub-link-action" onclick="toggleCoverUrlInput()" id="btnToggleUrlInput">
+                                🔗 O pegar enlace web de imagen
+                            </button>
+                            <button type="button" class="btn-sub-link-action" onclick="setPresetNewsImage()" id="btnNewsUseDefaultImg">
+                                🏁 Usar fondo oficial FFC
+                            </button>
+                        </div>
+
+                        <div class="news-cover-url-wrap" id="coverUrlInputWrap" style="display: none;">
+                            <input type="text" id="newsSubmitImage" class="news-sheet-url-input" placeholder="https://ejemplo.com/tu-foto-carrera.jpg" oninput="handleCoverUrlInput(this.value)">
+                        </div>
+                    </div>
+
+                    <!-- BILINGUAL LANGUAGE TABS (MANDATORY DUAL-LANGUAGE) -->
+                    <div class="news-bilingual-bar">
+                        <div class="news-bilingual-header-title">
+                            <span class="news-bilingual-icon">🌐</span>
+                            <div class="news-bilingual-text-wrap">
+                                <strong class="news-bilingual-title-text" id="newsBilingualHeaderTitle">IDIOMAS OBLIGATORIOS (2/2)</strong>
+                                <span class="news-bilingual-subtext" id="newsBilingualSubtext">Debes redactar la noticia en Español e Inglés para la comunidad internacional</span>
+                            </div>
+                        </div>
+                        <div class="news-bilingual-tabs">
+                            <button type="button" class="news-lang-tab-btn active" id="btnNewsLangTab_es" onclick="switchNewsEditorLang('es')">
+                                <span class="lang-flag">🇪🇸</span>
+                                <span class="lang-tab-name">Español</span>
+                                <span class="lang-status-badge pending" id="badgeLangStatus_es">⚠️ Incompleto</span>
+                            </button>
+                            <button type="button" class="news-lang-tab-btn" id="btnNewsLangTab_en" onclick="switchNewsEditorLang('en')">
+                                <span class="lang-flag">🇬🇧</span>
+                                <span class="lang-tab-name">English</span>
+                                <span class="lang-status-badge pending" id="badgeLangStatus_en">⚠️ Incomplete</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- PANE: ESPAÑOL -->
+                    <div class="news-lang-pane active" id="newsLangPane_es">
+                        <!-- ARTICLE TITLE ES -->
+                        <div class="news-sheet-field-wrap">
+                            <div class="news-field-header-row">
+                                <label for="newsSubmitTitle_es" class="news-sheet-label" id="lblNewsSubmitTitle_es">
+                                    <span class="flag-mini">🇪🇸</span> TÍTULO EN ESPAÑOL <span class="required-star">*</span>
+                                </label>
+                                <span class="news-char-counter" id="charCountTitle_es">0 / 120</span>
+                            </div>
+                            <input type="text" id="newsSubmitTitle_es" class="news-sheet-title-input" placeholder="Escribe el titular en español..." required maxlength="120" oninput="handleEditorFieldInput('es')">
+                        </div>
+
+                        <!-- ARTICLE SUMMARY / SUBTITLE ES -->
+                        <div class="news-sheet-field-wrap">
+                            <div class="news-field-header-row">
+                                <label for="newsSubmitSummary_es" class="news-sheet-label" id="lblNewsSubmitSummary_es">
+                                    <span class="flag-mini">🇪🇸</span> SUBTÍTULO / RESUMEN EN ESPAÑOL
+                                </label>
+                                <span class="news-char-counter" id="charCountSummary_es">0 / 240</span>
+                            </div>
+                            <textarea id="newsSubmitSummary_es" class="news-sheet-summary-input" placeholder="Escribe un breve subtítulo o resumen de 1-2 frases en español..." rows="2" maxlength="240" oninput="handleEditorFieldInput('es')"></textarea>
+                        </div>
+
+                        <div class="news-sheet-divider"></div>
+
+                        <!-- WORD-LIKE CONTENTEDITABLE DOCUMENT BODY ES -->
+                        <div class="news-sheet-field-wrap">
+                            <label class="news-sheet-label" id="lblNewsSubmitContent_es">
+                                <span class="flag-mini">🇪🇸</span> CUERPO DEL ARTÍCULO (ESPAÑOL) <span class="required-star">*</span>
+                            </label>
+                            
+                            <div id="newsSubmitContentEditor_es" class="news-document-editor-canvas" contenteditable="true" spellcheck="true" role="textbox" aria-multiline="true" oninput="handleEditorCanvasInput('es')"></div>
+                            
+                            <textarea id="newsSubmitContent_es" name="content_es" style="display: none;"></textarea>
+                        </div>
+
+                        <div class="news-pane-footer-switch">
+                            <button type="button" class="btn-switch-lang-next" onclick="switchNewsEditorLang('en')">
+                                <span>🇬🇧 Redactar versión en Inglés ➔</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- PANE: ENGLISH -->
+                    <div class="news-lang-pane" id="newsLangPane_en" style="display: none;">
+                        <!-- ARTICLE TITLE EN -->
+                        <div class="news-sheet-field-wrap">
+                            <div class="news-field-header-row">
+                                <label for="newsSubmitTitle_en" class="news-sheet-label" id="lblNewsSubmitTitle_en">
+                                    <span class="flag-mini">🇬🇧</span> ARTICLE TITLE (ENGLISH) <span class="required-star">*</span>
+                                </label>
+                                <span class="news-char-counter" id="charCountTitle_en">0 / 120</span>
+                            </div>
+                            <input type="text" id="newsSubmitTitle_en" class="news-sheet-title-input" placeholder="Enter headline in English..." required maxlength="120" oninput="handleEditorFieldInput('en')">
+                        </div>
+
+                        <!-- ARTICLE SUMMARY / SUBTITLE EN -->
+                        <div class="news-sheet-field-wrap">
+                            <div class="news-field-header-row">
+                                <label for="newsSubmitSummary_en" class="news-sheet-label" id="lblNewsSubmitSummary_en">
+                                    <span class="flag-mini">🇬🇧</span> SUBTITLE / SUMMARY (ENGLISH)
+                                </label>
+                                <span class="news-char-counter" id="charCountSummary_en">0 / 240</span>
+                            </div>
+                            <textarea id="newsSubmitSummary_en" class="news-sheet-summary-input" placeholder="Write a brief subtitle or 1-2 sentence summary in English..." rows="2" maxlength="240" oninput="handleEditorFieldInput('en')"></textarea>
+                        </div>
+
+                        <div class="news-sheet-divider"></div>
+
+                        <!-- WORD-LIKE CONTENTEDITABLE DOCUMENT BODY EN -->
+                        <div class="news-sheet-field-wrap">
+                            <label class="news-sheet-label" id="lblNewsSubmitContent_en">
+                                <span class="flag-mini">🇬🇧</span> ARTICLE BODY (ENGLISH) <span class="required-star">*</span>
+                            </label>
+                            
+                            <div id="newsSubmitContentEditor_en" class="news-document-editor-canvas" contenteditable="true" spellcheck="true" role="textbox" aria-multiline="true" oninput="handleEditorCanvasInput('en')"></div>
+                            
+                            <textarea id="newsSubmitContent_en" name="content_en" style="display: none;"></textarea>
+                        </div>
+
+                        <div class="news-pane-footer-switch">
+                            <button type="button" class="btn-switch-lang-next btn-switch-lang-prev" onclick="switchNewsEditorLang('es')">
+                                <span>⬅ 🇪🇸 Volver a versión en Español</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Hidden alias inputs for backward-compatibility fallback -->
+                    <input type="hidden" id="newsSubmitTitle" name="title">
+                    <input type="hidden" id="newsSubmitSummary" name="summary">
+                    <input type="hidden" id="newsSubmitContent" name="content">
+                    <div id="newsSubmitContentEditor" style="display: none;"></div>
+
                 </div>
             </div>
 
-            <div class="news-form-group">
-                <label for="newsSubmitSummary" id="lblNewsSubmitSummary">Resumen Breve (1-2 frases)</label>
-                <input type="text" id="newsSubmitSummary" class="claim-input" placeholder="Una breve descripción que aparecerá en la portada de la noticia" maxlength="200">
-            </div>
-
-            <div class="news-form-group">
-                <label for="newsSubmitImage" id="lblNewsSubmitImage">URL de Imagen de Portada (Opcional)</label>
-                <div class="news-image-input-wrap">
-                    <input type="text" id="newsSubmitImage" class="claim-input" placeholder="https://ejemplo.com/tu-foto-carrera.jpg">
-                    <button type="button" class="btn-preset-img" id="btnNewsUseDefaultImg" onclick="setPresetNewsImage()">Fondo FFC</button>
+            <!-- Footer Bar -->
+            <footer class="news-editor-footer">
+                <div class="news-editor-footer-left">
+                    <span class="notice-icon">🛡️</span>
+                    <span class="notice-text-sm" id="newsSubmitModerationNoticeText">
+                        Todas las noticias se revisan por administradores antes de publicarse en la web.
+                    </span>
                 </div>
-                <span class="admin-field-hint" id="newsSubmitImageHint">Si lo dejas vacío, se asignará automáticamente un fondo oficial de Formula Factor.</span>
-            </div>
 
-            <div class="news-form-group">
-                <label for="newsSubmitContent" id="lblNewsSubmitContent">Contenido Completo del Artículo <span class="required-star">*</span></label>
-                <textarea id="newsSubmitContent" class="claim-input news-textarea" placeholder="Escribe aquí tu crónica, declaraciones, sensaciones de carrera o artículo completo..." rows="8" required></textarea>
-                <span class="admin-field-hint" id="newsSubmitContentHint">Puedes separar tus ideas en distintos párrafos. Se respetarán los saltos de línea al publicarse.</span>
-            </div>
-
-            <div class="news-moderation-notice">
-                <span class="notice-icon">🛡️</span>
-                <div class="notice-text" id="newsSubmitModerationNoticeText">
-                    <strong>Aviso de Moderación:</strong> Todas las noticias pasan por un proceso de revisión por los administradores antes de ser visibles públicamente para asegurar la calidad y el respeto en la liga.
+                <div class="news-editor-footer-right">
+                    <span class="news-submit-status" id="newsSubmitStatusMsg"></span>
+                    <button type="button" class="btn btn-secondary btn-editor-cancel" id="newsSubmitCancelBtn" onclick="closeSubmitNewsModal()">Cancelar</button>
+                    <button type="submit" class="btn btn-primary btn-editor-submit" id="btnSubmitNewsFormAction">
+                        <span id="btnSubmitNewsFormActionText"><span>🚀</span> Enviar para Revisión</span>
+                    </button>
                 </div>
-            </div>
-
-            <div class="news-modal-footer">
-                <span class="news-submit-status" id="newsSubmitStatusMsg"></span>
-                <button type="button" class="btn btn-secondary" id="newsSubmitCancelBtn" onclick="closeSubmitNewsModal()">Cancelar</button>
-                <button type="submit" class="btn btn-primary" id="btnSubmitNewsFormAction">
-                    <span id="btnSubmitNewsFormActionText"><span>🚀</span> Enviar para Revisión</span>
-                </button>
-            </div>
+            </footer>
         </form>
     </div>
 </div>
@@ -3551,6 +3783,9 @@
                     <span>💬</span> <span id="articleCommentsCountText">0 comentarios</span>
                 </div>
                 <div class="news-share-btns">
+                    <button type="button" class="news-share-btn btn-edit-article" id="btnEditCurrentArticle" style="display: none;" title="Editar este artículo">
+                        <span>✏️</span> <span id="btnEditCurrentArticleText">Editar Noticia</span>
+                    </button>
                     <button type="button" class="news-share-btn" id="btnShareArticleLink" title="Copiar enlace de noticia">
                         <span id="btnShareArticleLinkText">🔗 Copiar enlace</span>
                     </button>
