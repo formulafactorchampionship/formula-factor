@@ -19,6 +19,12 @@ service cloud.firestore {
     match /fantasy_teams/{teamId} {
       allow read, write: if true;
     }
+    match /noticias/{newsId} {
+      allow read, write: if true;
+    }
+    match /noticias_comentarios/{commentId} {
+      allow read, write: if true;
+    }
     match /{document=**} {
       allow read, write: if true;
     }

@@ -108,6 +108,42 @@
         "updatedAt": { "type": "string" }
       },
       "required": ["userId", "teamName"]
+    },
+    "NewsArticle": {
+      "title": "NewsArticle",
+      "description": "News article submitted by users or created by admins with approval status",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "title": { "type": "string" },
+        "summary": { "type": "string" },
+        "content": { "type": "string" },
+        "category": { "type": "string" },
+        "imageUrl": { "type": "string" },
+        "authorName": { "type": "string" },
+        "authorEmail": { "type": "string" },
+        "authorUid": { "type": "string" },
+        "status": { "type": "string", "enum": ["pending", "approved", "rejected"] },
+        "createdAt": { "type": "string" },
+        "approvedAt": { "type": "string" },
+        "commentsCount": { "type": "number" }
+      },
+      "required": ["title", "content", "authorName", "status", "createdAt"]
+    },
+    "NewsComment": {
+      "title": "NewsComment",
+      "description": "User comment posted under an approved news article",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "newsId": { "type": "string" },
+        "authorName": { "type": "string" },
+        "authorEmail": { "type": "string" },
+        "authorUid": { "type": "string" },
+        "text": { "type": "string" },
+        "createdAt": { "type": "string" }
+      },
+      "required": ["newsId", "authorName", "text", "createdAt"]
     }
   },
   "firestore": {
@@ -140,6 +176,18 @@
         "$ref": "#/entities/FantasyTeam"
       },
       "description": "Public fantasy league leaderboard containing all user created teams with synchronized points"
+    },
+    "/noticias/{newsId}": {
+      "schema": {
+        "$ref": "#/entities/NewsArticle"
+      },
+      "description": "Championship news articles submitted by community and approved by admins"
+    },
+    "/noticias_comentarios/{commentId}": {
+      "schema": {
+        "$ref": "#/entities/NewsComment"
+      },
+      "description": "Public comments posted by community members under published news articles"
     }
   }
 }

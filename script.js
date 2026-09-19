@@ -317,6 +317,7 @@ const translations = {
             standings: "CLASIFICACIÓN",
             calendar: "CALENDARIO",
             races: "CARRERAS",
+            news: "NOTICIAS",
             info: "INFORMACIÓN",
             compare: "COMPARADOR",
             fantasy: "FANTASY"
@@ -563,6 +564,56 @@ const translations = {
             r6Text: "Si has iniciado sesión con tu cuenta, tu escudería se sincroniza automáticamente con la nube en Firestore, manteniéndose guardada y visible en la clasificación comunitaria.",
             r7Title: "7. Fluctuación Dinámica de Precios & Plusvalías",
             r7Text: "El precio de mercado de cada piloto y constructor sube (<strong>▲ +0.1M€ a +1.0M€</strong>) o baja (<strong>▼ -0.1M€ a -0.6M€</strong>) tras cada Gran Premio oficial según su rendimiento real. Si fichas a un piloto antes de una gran actuación y su valor se dispara, al venderlo recuperarás su <strong>nuevo precio de mercado</strong>, aumentando el presupuesto total de tu escudería."
+        },
+        news: {
+            kicker: "ACTUALIDAD • COMUNIDAD FFC",
+            heading: "NOTICIAS Y <span class=\"gold-gradient\">NOVEDADES</span>",
+            description: "Sigue de cerca las crónicas oficiales de carrera, anuncios de fichajes, comunicados de pilotos y artículos aportados por la comunidad. ¡Envía tu propia noticia para que sea publicada!",
+            catAll: "Todas",
+            catRaces: "🏆 Carreras",
+            catTransfers: "🔄 Fichajes",
+            catDrivers: "🏎️ Pilotos",
+            catReports: "📝 Crónicas",
+            catCommunity: "👥 Comunidad",
+            searchPlaceholder: "Buscar noticias...",
+            btnSubmit: "Enviar Noticia",
+            emptyTitleFiltered: "No se encontraron noticias",
+            emptyDescFiltered: "No hay artículos que coincidan con los filtros o la búsqueda seleccionada.",
+            emptyTitleNoArticles: "Todavía no hay noticias publicadas",
+            emptyDescNoArticles: "¡Sé el primero en proponer un artículo o redactar un comunicado oficial para la comunidad!",
+            btnResetFilters: "Ver todas las noticias",
+            modalBadge: "PRENSA • COMUNIDAD FFC",
+            modalTitle: "✍️ ENVIAR NOTICIA A LA COMUNIDAD",
+            modalSubtitle: "Comparte una crónica de carrera, un análisis técnico, un comunicado de escudería o un artículo. Una vez revisada y aprobada por los administradores, se publicará en la web oficial.",
+            labelTitle: 'Título de la Noticia <span class="required-star">*</span>',
+            placeholderTitle: "Ej: Espectacular remontada de Dieguiosk en Monza bajo la lluvia",
+            labelCategory: 'Categoría <span class="required-star">*</span>',
+            catOptionRaces: "🏆 Carreras",
+            catOptionTransfers: "🔄 Fichajes",
+            catOptionDrivers: "🏎️ Pilotos",
+            catOptionReports: "📝 Crónicas",
+            catOptionCommunity: "👥 Comunidad",
+            catOptionTech: "⚙️ Análisis Técnico",
+            labelAuthor: 'Tu Nombre o Alias <span class="required-star">*</span>',
+            placeholderAuthor: "Tu nombre en Discord / FFC",
+            labelSummary: 'Resumen Breve (1-2 frases) <span class="required-star">*</span>',
+            placeholderSummary: "Una breve descripción que aparecerá en la portada de la noticia",
+            labelImage: "URL de Imagen de Portada (Opcional)",
+            btnPresetImg: "Fondo FFC",
+            hintImage: "Si lo dejas vacío, se asignará automáticamente un fondo oficial de Formula Factor.",
+            labelContent: 'Contenido Completo del Artículo <span class="required-star">*</span>',
+            placeholderContent: "Escribe aquí tu crónica, declaraciones, sensaciones de carrera o artículo completo...",
+            hintContent: "Puedes separar tus ideas en distintos párrafos. Se respetarán los saltos de línea al publicarse.",
+            moderationNotice: "<strong>Aviso de Moderación:</strong> Todas las noticias pasan por un proceso de revisión por los administradores antes de ser visibles públicamente para asegurar la calidad y el respeto en la liga.",
+            btnCancel: "Cancelar",
+            btnSubmitAction: "<span>🚀</span> Enviar para Revisión",
+            shareBtn: "🔗 Copiar enlace",
+            commentsHeading: "💬 COMENTARIOS DE LA COMUNIDAD",
+            commentAuthorPlaceholder: "Tu nombre / apodo",
+            commentTextPlaceholder: "Escribe un comentario sobre esta noticia...",
+            commentSubmitBtn: "<span>💬</span> Publicar Comentario",
+            noComments: "No hay comentarios todavía. ¡Sé el primero en opinar sobre esta noticia!",
+            officialBadge: "OFICIAL FFC"
         }
     },
     en: {
@@ -571,6 +622,7 @@ const translations = {
             standings: "STANDINGS",
             calendar: "CALENDAR",
             races: "RACES",
+            news: "NEWS",
             info: "INFO",
             compare: "COMPARISON",
             fantasy: "FANTASY"
@@ -817,6 +869,56 @@ const translations = {
             r6Text: "If you are logged in, your team automatically syncs with the Firestore cloud, staying saved and visible in the community leaderboard.",
             r7Title: "7. Dynamic Price Fluctuations & Gains",
             r7Text: "The market price of each driver and constructor rises (<strong>▲ +€0.1M to +€1.0M</strong>) or falls (<strong>▼ -€0.1M to -€0.6M</strong>) after each official Grand Prix based on real performance. If you sign a driver before a breakout performance and their value surges, selling them yields their <strong>new market price</strong>, increasing your overall budget."
+        },
+        news: {
+            kicker: "LATEST • FFC COMMUNITY",
+            heading: "NEWS & <span class=\"gold-gradient\">UPDATES</span>",
+            description: "Follow official race reports, transfer announcements, driver statements, and community articles. Submit your own news to be published!",
+            catAll: "All",
+            catRaces: "🏆 Races",
+            catTransfers: "🔄 Transfers",
+            catDrivers: "🏎️ Drivers",
+            catReports: "📝 Reports",
+            catCommunity: "👥 Community",
+            searchPlaceholder: "Search news...",
+            btnSubmit: "Submit News",
+            emptyTitleFiltered: "No news found",
+            emptyDescFiltered: "No articles match your current category or search criteria.",
+            emptyTitleNoArticles: "No published news yet",
+            emptyDescNoArticles: "Be the first to propose an article or write an official league announcement!",
+            btnResetFilters: "View all news",
+            modalBadge: "PRESS • FFC COMMUNITY",
+            modalTitle: "✍️ SUBMIT COMMUNITY NEWS",
+            modalSubtitle: "Share a race report, technical analysis, team press release, or article. Once reviewed and approved by administrators, it will be published on the official site.",
+            labelTitle: 'Article Title <span class="required-star">*</span>',
+            placeholderTitle: "e.g. Spectacular comeback by Dieguiosk at Monza in the rain",
+            labelCategory: 'Category <span class="required-star">*</span>',
+            catOptionRaces: "🏆 Races",
+            catOptionTransfers: "🔄 Transfers",
+            catOptionDrivers: "🏎️ Drivers",
+            catOptionReports: "📝 Reports",
+            catOptionCommunity: "👥 Community",
+            catOptionTech: "⚙️ Technical Analysis",
+            labelAuthor: 'Your Name or Alias <span class="required-star">*</span>',
+            placeholderAuthor: "Your name on Discord / FFC",
+            labelSummary: 'Short Summary (1-2 sentences) <span class="required-star">*</span>',
+            placeholderSummary: "A brief description that will appear on the article card",
+            labelImage: "Cover Image URL (Optional)",
+            btnPresetImg: "FFC Background",
+            hintImage: "If left empty, an official Formula Factor background will be automatically assigned.",
+            labelContent: 'Full Article Content <span class="required-star">*</span>',
+            placeholderContent: "Write your race report, statements, feelings, or full article here...",
+            hintContent: "You can separate your thoughts into paragraphs. Line breaks will be preserved when published.",
+            moderationNotice: "<strong>Moderation Notice:</strong> All news undergoes a review process by administrators before becoming publicly visible to ensure quality and respect in the league.",
+            btnCancel: "Cancel",
+            btnSubmitAction: "<span>🚀</span> Submit for Review",
+            shareBtn: "🔗 Copy link",
+            commentsHeading: "💬 COMMUNITY COMMENTS",
+            commentAuthorPlaceholder: "Your name / alias",
+            commentTextPlaceholder: "Write a comment on this news...",
+            commentSubmitBtn: "<span>💬</span> Post Comment",
+            noComments: "No comments yet. Be the first to comment on this news article!",
+            officialBadge: "OFFICIAL FFC"
         }
     }
 };
@@ -877,6 +979,8 @@ function applyTranslations(lang) {
     if (navC) navC.textContent = dict.nav.calendar;
     const navR = document.getElementById("navRaces");
     if (navR) navR.textContent = dict.nav.races;
+    const navN = document.getElementById("navNews");
+    if (navN && dict.nav && dict.nav.news) navN.textContent = dict.nav.news;
     const navI = document.getElementById("navInfo");
     if (navI) navI.textContent = dict.nav.info;
     const navCmp = document.getElementById("navCompareText");
@@ -1351,6 +1455,146 @@ function applyTranslations(lang) {
 
         if (typeof renderFantasyPortal === "function" && typeof isFantasyModuleInitialized !== "undefined" && isFantasyModuleInitialized) {
             renderFantasyPortal();
+        }
+    }
+
+    // News section translations
+    if (dict.news) {
+        const newsKicker = document.getElementById("newsKicker");
+        if (newsKicker) newsKicker.textContent = dict.news.kicker;
+        const newsHeading = document.getElementById("newsHeading");
+        if (newsHeading) newsHeading.innerHTML = dict.news.heading;
+        const newsDesc = document.getElementById("newsDescription");
+        if (newsDesc) newsDesc.textContent = dict.news.description;
+
+        const catAll = document.getElementById("newsCatBtnAll");
+        if (catAll) catAll.textContent = dict.news.catAll;
+        const catRaces = document.getElementById("newsCatBtnRaces");
+        if (catRaces) catRaces.textContent = dict.news.catRaces;
+        const catTransfers = document.getElementById("newsCatBtnTransfers");
+        if (catTransfers) catTransfers.textContent = dict.news.catTransfers;
+        const catDrivers = document.getElementById("newsCatBtnDrivers");
+        if (catDrivers) catDrivers.textContent = dict.news.catDrivers;
+        const catReports = document.getElementById("newsCatBtnReports");
+        if (catReports) catReports.textContent = dict.news.catReports;
+        const catCommunity = document.getElementById("newsCatBtnCommunity");
+        if (catCommunity) catCommunity.textContent = dict.news.catCommunity;
+
+        const newsSearchInput = document.getElementById("newsSearchInput");
+        if (newsSearchInput) {
+            newsSearchInput.placeholder = dict.news.searchPlaceholder;
+            newsSearchInput.setAttribute("aria-label", dict.news.searchPlaceholder);
+        }
+        const btnSubmitNewsText = document.getElementById("btnSubmitNewsText");
+        if (btnSubmitNewsText) btnSubmitNewsText.textContent = dict.news.btnSubmit;
+
+        const btnResetNewsFilters = document.getElementById("btnResetNewsFilters");
+        if (btnResetNewsFilters) btnResetNewsFilters.textContent = dict.news.btnResetFilters;
+
+        // Submit News Modal
+        const newsSubmitModalBadge = document.getElementById("newsSubmitModalBadge");
+        if (newsSubmitModalBadge) newsSubmitModalBadge.textContent = dict.news.modalBadge;
+        const newsSubmitModalTitle = document.getElementById("newsSubmitModalTitle");
+        if (newsSubmitModalTitle) newsSubmitModalTitle.textContent = dict.news.modalTitle;
+        const newsSubmitModalSubtitle = document.getElementById("newsSubmitModalSubtitle");
+        if (newsSubmitModalSubtitle) newsSubmitModalSubtitle.textContent = dict.news.modalSubtitle;
+
+        const lblNewsSubmitTitle = document.getElementById("lblNewsSubmitTitle");
+        if (lblNewsSubmitTitle) lblNewsSubmitTitle.innerHTML = dict.news.labelTitle;
+        const newsSubmitTitle = document.getElementById("newsSubmitTitle");
+        if (newsSubmitTitle) newsSubmitTitle.placeholder = dict.news.placeholderTitle;
+
+        const lblNewsSubmitCategory = document.getElementById("lblNewsSubmitCategory");
+        if (lblNewsSubmitCategory) lblNewsSubmitCategory.innerHTML = dict.news.labelCategory;
+        const newsSubmitCategory = document.getElementById("newsSubmitCategory");
+        if (newsSubmitCategory && newsSubmitCategory.options) {
+            const optMap = {
+                "Carreras": dict.news.catOptionRaces,
+                "Fichajes": dict.news.catOptionTransfers,
+                "Pilotos": dict.news.catOptionDrivers,
+                "Crónicas": dict.news.catOptionReports,
+                "Comunidad": dict.news.catOptionCommunity,
+                "Técnica": dict.news.catOptionTech
+            };
+            Array.from(newsSubmitCategory.options).forEach(opt => {
+                if (optMap[opt.value]) opt.textContent = optMap[opt.value];
+            });
+        }
+
+        const lblNewsSubmitAuthor = document.getElementById("lblNewsSubmitAuthor");
+        if (lblNewsSubmitAuthor) lblNewsSubmitAuthor.innerHTML = dict.news.labelAuthor;
+        const newsSubmitAuthor = document.getElementById("newsSubmitAuthor");
+        if (newsSubmitAuthor) newsSubmitAuthor.placeholder = dict.news.placeholderAuthor;
+
+        const lblNewsSubmitSummary = document.getElementById("lblNewsSubmitSummary");
+        if (lblNewsSubmitSummary) lblNewsSubmitSummary.innerHTML = dict.news.labelSummary;
+        const newsSubmitSummary = document.getElementById("newsSubmitSummary");
+        if (newsSubmitSummary) newsSubmitSummary.placeholder = dict.news.placeholderSummary;
+
+        const lblNewsSubmitImage = document.getElementById("lblNewsSubmitImage");
+        if (lblNewsSubmitImage) lblNewsSubmitImage.textContent = dict.news.labelImage;
+        const btnNewsUseDefaultImg = document.getElementById("btnNewsUseDefaultImg");
+        if (btnNewsUseDefaultImg) btnNewsUseDefaultImg.textContent = dict.news.btnPresetImg;
+        const newsSubmitImageHint = document.getElementById("newsSubmitImageHint");
+        if (newsSubmitImageHint) newsSubmitImageHint.textContent = dict.news.hintImage;
+
+        const lblNewsSubmitContent = document.getElementById("lblNewsSubmitContent");
+        if (lblNewsSubmitContent) lblNewsSubmitContent.innerHTML = dict.news.labelContent;
+        const newsSubmitContent = document.getElementById("newsSubmitContent");
+        if (newsSubmitContent) newsSubmitContent.placeholder = dict.news.placeholderContent;
+        const newsSubmitContentHint = document.getElementById("newsSubmitContentHint");
+        if (newsSubmitContentHint) newsSubmitContentHint.textContent = dict.news.hintContent;
+
+        const newsSubmitModerationNoticeText = document.getElementById("newsSubmitModerationNoticeText");
+        if (newsSubmitModerationNoticeText) newsSubmitModerationNoticeText.innerHTML = dict.news.moderationNotice;
+
+        const newsSubmitCancelBtn = document.getElementById("newsSubmitCancelBtn");
+        if (newsSubmitCancelBtn) newsSubmitCancelBtn.textContent = dict.news.btnCancel;
+        const btnSubmitNewsFormAction = document.getElementById("btnSubmitNewsFormAction");
+        if (btnSubmitNewsFormAction && !btnSubmitNewsFormAction.disabled) {
+            btnSubmitNewsFormAction.innerHTML = dict.news.btnSubmitAction;
+        }
+
+        // Article Reader Modal
+        const btnShareArticleLink = document.getElementById("btnShareArticleLink");
+        if (btnShareArticleLink) {
+            btnShareArticleLink.innerHTML = dict.news.shareBtn;
+        }
+        const newsCommentsHeading = document.getElementById("newsCommentsHeading");
+        if (newsCommentsHeading) newsCommentsHeading.textContent = dict.news.commentsHeading;
+        const newsCommentAuthorInput = document.getElementById("newsCommentAuthorInput");
+        if (newsCommentAuthorInput) newsCommentAuthorInput.placeholder = dict.news.commentAuthorPlaceholder;
+        const newsCommentTextInput = document.getElementById("newsCommentTextInput");
+        if (newsCommentTextInput) newsCommentTextInput.placeholder = dict.news.commentTextPlaceholder;
+        const btnSubmitComment = document.getElementById("btnSubmitComment");
+        if (btnSubmitComment && !btnSubmitComment.disabled) {
+            btnSubmitComment.innerHTML = dict.news.commentSubmitBtn;
+        }
+
+        // Re-render news grid cards with updated language
+        if (typeof renderPublicNewsSection === "function") {
+            renderPublicNewsSection();
+        }
+
+        // If reader modal is open, re-render article details and comments
+        if (typeof window.ffcActiveReadingArticle !== "undefined" && window.ffcActiveReadingArticle) {
+            const pill = document.getElementById("articleCategoryPill");
+            if (pill && typeof translateNewsCategory === "function") {
+                pill.textContent = translateNewsCategory(window.ffcActiveReadingArticle.category, lang);
+            }
+            const dateEl = document.getElementById("articleDate");
+            if (dateEl && typeof formatNewsDateTime === "function") dateEl.textContent = formatNewsDateTime(window.ffcActiveReadingArticle.createdAt);
+            const timeEl = document.getElementById("articleReadingTime");
+            if (timeEl && typeof estimateReadingTime === "function") timeEl.textContent = estimateReadingTime(window.ffcActiveReadingArticle.content);
+            const count = typeof window.ffcActiveReadingArticle.commentsCount === "number" ? window.ffcActiveReadingArticle.commentsCount : 0;
+            const commentsCountText = document.getElementById("articleCommentsCountText");
+            if (commentsCountText) {
+                commentsCountText.textContent = `${count} ${lang === "en" ? (count === 1 ? "comment" : "comments") : (count === 1 ? "comentario" : "comentarios")}`;
+            }
+            if (typeof loadCachedComments === "function" && typeof renderCommentsList === "function") {
+                const cachedComments = loadCachedComments(window.ffcActiveReadingArticle.id);
+                renderCommentsList(cachedComments, window.ffcActiveReadingArticle.id);
+            }
         }
     }
 
@@ -2875,6 +3119,8 @@ function openAdminPanel() {
 
     if (!adminPanelOverlay) return;
     populateAdminForms();
+    if (typeof updateAdminNewsBadge === "function") updateAdminNewsBadge();
+    if (typeof renderAdminNewsTab === "function") renderAdminNewsTab();
     adminPanelOverlay.classList.add("active");
     document.body.classList.add("modal-open");
 }
@@ -6790,6 +7036,11 @@ adminTabButtons.forEach(btn => {
                 refreshAdminVerificationData();
             } else if (typeof renderAdminVerifyTab === "function") {
                 renderAdminVerifyTab(typeof adminSearchVerifyPilotInput !== "undefined" && adminSearchVerifyPilotInput ? adminSearchVerifyPilotInput.value : "");
+            }
+        }
+        if (targetId === "tab-news") {
+            if (typeof renderAdminNewsTab === "function") {
+                renderAdminNewsTab();
             }
         }
     });
@@ -13190,6 +13441,1189 @@ if (document.readyState === "loading") {
     document.addEventListener("DOMContentLoaded", initPrivacyModal);
 } else {
     initPrivacyModal();
+}
+
+/* =========================================================
+   FFC NEWS & COMMUNITY SYSTEM (NOTICIAS Y COMENTARIOS)
+========================================================= */
+
+// Global News State
+window.ffcNewsArticles = [];
+window.ffcNewsActiveCategory = "all";
+window.ffcNewsSearchQuery = "";
+window.ffcActiveReadingArticle = null;
+window.ffcAdminNewsFilter = "all";
+window.ffcAdminNewsSearchQuery = "";
+let isNewsInitialLoaded = false;
+let newsUnsubscribe = null;
+let commentsUnsubscribe = null;
+
+// Helpers: Local Cache Persistence
+function loadCachedNewsArticles() {
+    try {
+        const cached = localStorage.getItem("ffc_news_articles_v1");
+        if (cached) {
+            const parsed = JSON.parse(cached);
+            if (Array.isArray(parsed)) {
+                // Filter out any leftover legacy example/seed IDs
+                const cleaned = parsed.filter(item => 
+                    item && 
+                    item.id !== "news_official_monza_review" && 
+                    item.id !== "news_official_dieguiosk_lead" && 
+                    item.id !== "news_official_fantasy_market"
+                );
+                return cleaned;
+            }
+        }
+    } catch (e) {
+        console.warn("Error loading cached news:", e);
+    }
+    return [];
+}
+
+function saveCachedNewsArticles(articles) {
+    try {
+        localStorage.setItem("ffc_news_articles_v1", JSON.stringify(articles || []));
+    } catch (e) {
+        console.warn("Error caching news:", e);
+    }
+}
+
+function loadCachedComments(newsId) {
+    try {
+        const key = "ffc_news_comments_" + newsId;
+        const cached = localStorage.getItem(key);
+        if (cached) {
+            const parsed = JSON.parse(cached);
+            if (Array.isArray(parsed)) return parsed;
+        }
+    } catch (e) {
+        console.warn("Error loading cached comments:", e);
+    }
+    return [];
+}
+
+function saveCachedComments(newsId, comments) {
+    try {
+        const key = "ffc_news_comments_" + newsId;
+        localStorage.setItem(key, JSON.stringify(comments || []));
+    } catch (e) {
+        console.warn("Error saving cached comments:", e);
+    }
+}
+
+// Format date helper
+function formatNewsDate(isoString) {
+    if (!isoString) return "";
+    try {
+        const d = new Date(isoString);
+        return d.toLocaleDateString(currentLanguage === "en" ? "en-US" : "es-ES", {
+            day: "numeric",
+            month: "short",
+            year: "numeric"
+        });
+    } catch (e) {
+        return "";
+    }
+}
+
+function formatNewsDateTime(isoString) {
+    if (!isoString) return "";
+    try {
+        const d = new Date(isoString);
+        return d.toLocaleDateString(currentLanguage === "en" ? "en-US" : "es-ES", {
+            day: "numeric",
+            month: "short",
+            year: "numeric",
+            hour: "2-digit",
+            minute: "2-digit"
+        });
+    } catch (e) {
+        return "";
+    }
+}
+
+function estimateReadingTime(content) {
+    if (!content) return "1 min";
+    const words = content.trim().split(/\s+/).length;
+    const mins = Math.max(1, Math.ceil(words / 200));
+    return currentLanguage === "en" ? `${mins} min read` : `Lectura: ${mins} min`;
+}
+
+// Category Translation Helper
+function translateNewsCategory(cat, lang = currentLanguage) {
+    if (!cat) return lang === "en" ? "Community" : "Comunidad";
+    const clean = cat.toLowerCase();
+    if (lang === "en") {
+        if (clean.includes("carrera") || clean.includes("race")) return "Races";
+        if (clean.includes("fichaje") || clean.includes("transfer")) return "Transfers";
+        if (clean.includes("piloto") || clean.includes("driver")) return "Drivers";
+        if (clean.includes("crónica") || clean.includes("cronica") || clean.includes("report")) return "Reports";
+        if (clean.includes("técnica") || clean.includes("tecnica") || clean.includes("tech")) return "Technical Analysis";
+        if (clean.includes("comunidad") || clean.includes("community")) return "Community";
+        return cat;
+    } else {
+        if (clean.includes("race") || clean.includes("carrera")) return "Carreras";
+        if (clean.includes("transfer") || clean.includes("fichaje")) return "Fichajes";
+        if (clean.includes("driver") || clean.includes("piloto")) return "Pilotos";
+        if (clean.includes("report") || clean.includes("crónica") || clean.includes("cronica")) return "Crónicas";
+        if (clean.includes("tech") || clean.includes("técnica") || clean.includes("tecnica")) return "Análisis Técnico";
+        if (clean.includes("community") || clean.includes("comunidad")) return "Comunidad";
+        return cat;
+    }
+}
+
+// Category Badge CSS Class Helper
+function getNewsCategoryClass(cat) {
+    if (!cat) return "news-cat-comunidad";
+    const clean = cat.toLowerCase();
+    if (clean.includes("carrera") || clean.includes("race")) return "news-cat-carreras";
+    if (clean.includes("fichaje") || clean.includes("transfer")) return "news-cat-fichajes";
+    if (clean.includes("piloto") || clean.includes("driver")) return "news-cat-pilotos";
+    if (clean.includes("crónica") || clean.includes("cronica") || clean.includes("report")) return "news-cat-cronicas";
+    if (clean.includes("técnica") || clean.includes("tecnica") || clean.includes("tech")) return "news-cat-tecnica";
+    return "news-cat-comunidad";
+}
+
+// Update Admin Pending Badge
+function updateAdminNewsBadge() {
+    const badge = document.getElementById("adminTabNewsBadge");
+    const allChip = document.getElementById("adminNewsFilterAllCount");
+    const pendingChip = document.getElementById("adminNewsFilterPendingCount");
+    const approvedChip = document.getElementById("adminNewsFilterApprovedCount");
+    const rejectedChip = document.getElementById("adminNewsFilterRejectedCount");
+
+    const all = window.ffcNewsArticles || [];
+    const pendingCount = all.filter(a => a.status === "pending").length;
+    const approvedCount = all.filter(a => a.status === "approved").length;
+    const rejectedCount = all.filter(a => a.status === "rejected").length;
+
+    if (badge) {
+        badge.textContent = pendingCount;
+        badge.style.display = pendingCount > 0 ? "inline-flex" : "inline-flex";
+    }
+    if (allChip) allChip.textContent = all.length;
+    if (pendingChip) pendingChip.textContent = pendingCount;
+    if (approvedChip) approvedChip.textContent = approvedCount;
+    if (rejectedChip) rejectedChip.textContent = rejectedCount;
+}
+
+// =========================================================
+// REAL-TIME FIRESTORE SYNCHRONIZATION FOR NEWS
+// =========================================================
+function initNewsRealtimeSync() {
+    // 1. Initial State from Cache
+    window.ffcNewsArticles = loadCachedNewsArticles();
+    renderPublicNewsSection();
+    updateAdminNewsBadge();
+
+    // 2. Set up Firestore Real-time Listener
+    try {
+        const newsColRef = collection(db, "noticias");
+        newsUnsubscribe = onSnapshot(newsColRef, (snapshot) => {
+            const cloudArticles = [];
+            snapshot.forEach(docSnap => {
+                const data = docSnap.data();
+                // Omit legacy seed examples if they ever exist
+                if (docSnap.id === "news_official_monza_review" || 
+                    docSnap.id === "news_official_dieguiosk_lead" || 
+                    docSnap.id === "news_official_fantasy_market") {
+                    return;
+                }
+                cloudArticles.push({
+                    id: docSnap.id,
+                    ...data
+                });
+            });
+
+            // Sort by createdAt descending
+            cloudArticles.sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0));
+
+            window.ffcNewsArticles = cloudArticles;
+            saveCachedNewsArticles(cloudArticles);
+            isNewsInitialLoaded = true;
+
+            renderPublicNewsSection();
+            updateAdminNewsBadge();
+            if (typeof renderAdminNewsTab === "function") {
+                renderAdminNewsTab();
+            }
+        }, (error) => {
+            console.warn("Firestore news sync error, keeping cached state:", error);
+            renderPublicNewsSection();
+            updateAdminNewsBadge();
+        });
+    } catch (e) {
+        console.warn("Could not attach news onSnapshot listener:", e);
+    }
+}
+
+// =========================================================
+// PUBLIC NEWS SECTION RENDERING
+// =========================================================
+function renderPublicNewsSection() {
+    const grid = document.getElementById("newsGrid");
+    const emptyState = document.getElementById("newsEmptyState");
+    if (!grid) return;
+
+    const allArticles = window.ffcNewsArticles || [];
+    // Only approved articles are public
+    let approved = allArticles.filter(a => a.status === "approved");
+
+    // Category filter
+    if (window.ffcNewsActiveCategory && window.ffcNewsActiveCategory !== "all") {
+        approved = approved.filter(a => a.category === window.ffcNewsActiveCategory);
+    }
+
+    // Search query filter
+    if (window.ffcNewsSearchQuery && window.ffcNewsSearchQuery.trim()) {
+        const q = window.ffcNewsSearchQuery.trim().toLowerCase();
+        approved = approved.filter(a => 
+            (a.title && a.title.toLowerCase().includes(q)) ||
+            (a.summary && a.summary.toLowerCase().includes(q)) ||
+            (a.content && a.content.toLowerCase().includes(q)) ||
+            (a.authorName && a.authorName.toLowerCase().includes(q)) ||
+            (a.category && a.category.toLowerCase().includes(q))
+        );
+    }
+
+    if (approved.length === 0) {
+        grid.style.display = "none";
+        if (emptyState) {
+            emptyState.style.display = "block";
+            const emptyTitle = document.getElementById("newsEmptyTitle");
+            const emptyDesc = document.getElementById("newsEmptyDesc");
+            const resetBtn = document.getElementById("btnResetNewsFilters");
+
+            const isFiltered = (window.ffcNewsActiveCategory && window.ffcNewsActiveCategory !== "all") || (window.ffcNewsSearchQuery && window.ffcNewsSearchQuery.trim());
+
+            if (isFiltered) {
+                if (emptyTitle) emptyTitle.textContent = currentLanguage === "en" ? "No news found" : "No se encontraron noticias";
+                if (emptyDesc) emptyDesc.textContent = currentLanguage === "en" ? "No articles match your current category or search criteria." : "No hay artículos que coincidan con los filtros o la búsqueda seleccionada.";
+                if (resetBtn) resetBtn.style.display = "inline-flex";
+            } else {
+                if (emptyTitle) emptyTitle.textContent = currentLanguage === "en" ? "No published news yet" : "Todavía no hay noticias publicadas";
+                if (emptyDesc) emptyDesc.textContent = currentLanguage === "en" ? "Be the first to propose an article or official league announcement!" : "¡Sé el primero en proponer un artículo o redactar un comunicado oficial para la comunidad!";
+                if (resetBtn) resetBtn.style.display = "none";
+            }
+        }
+        return;
+    }
+
+    grid.style.display = "grid";
+    if (emptyState) emptyState.style.display = "none";
+
+    grid.innerHTML = approved.map(article => {
+        const catClass = getNewsCategoryClass(article.category);
+        const translatedCat = translateNewsCategory(article.category, currentLanguage);
+        const readingTime = estimateReadingTime(article.content);
+        const dateFormatted = formatNewsDate(article.createdAt);
+        const initial = (article.authorName || "F").charAt(0).toUpperCase();
+        const commentsCount = typeof article.commentsCount === "number" ? article.commentsCount : 0;
+        const authorFallback = currentLanguage === "en" ? "Anonymous" : "Anónimo";
+
+        const imageMarkup = article.imageUrl 
+            ? `<img src="${encodeURI(article.imageUrl)}" alt="${encodeURI(article.title)}" class="news-card-img" loading="lazy" onerror="this.onerror=null; this.parentElement.innerHTML='<div class=\\'news-card-img-fallback\\'><span class=\\'news-fallback-icon\\'>🏎️</span><span class=\\'news-fallback-brand\\'>FORMULA FACTOR</span></div>';">`
+            : `<div class="news-card-img-fallback"><span class="news-fallback-icon">🏎️</span><span class="news-fallback-brand">FORMULA FACTOR</span></div>`;
+
+        return `
+            <article class="news-card" data-article-id="${article.id}" tabindex="0" role="button" aria-label="${currentLanguage === 'en' ? 'Read' : 'Leer'} ${article.title}">
+                <div class="news-card-img-wrap">
+                    <span class="news-card-cat-badge ${catClass}">${translatedCat}</span>
+                    ${imageMarkup}
+                </div>
+                <div class="news-card-body">
+                    <div class="news-card-date-row">
+                        <span>📅 ${dateFormatted}</span>
+                        <span>&bull;</span>
+                        <span>⏱️ ${readingTime}</span>
+                    </div>
+                    <h3 class="news-card-title">${article.title}</h3>
+                    <p class="news-card-summary">${article.summary || ""}</p>
+                    <div class="news-card-footer">
+                        <div class="news-card-author-chip">
+                            <div class="news-author-mini-avatar">${initial}</div>
+                            <span class="news-author-mini-name">${article.authorName || authorFallback}</span>
+                        </div>
+                        <div class="news-card-comments-pill">
+                            <span>💬</span>
+                            <span>${commentsCount}</span>
+                        </div>
+                    </div>
+                </div>
+            </article>
+        `;
+    }).join("");
+
+    // Bind click events on cards
+    grid.querySelectorAll(".news-card").forEach(card => {
+        const articleId = card.dataset.articleId;
+        card.addEventListener("click", () => openNewsArticleModal(articleId));
+        card.addEventListener("keydown", (e) => {
+            if (e.key === "Enter" || e.key === " ") {
+                e.preventDefault();
+                openNewsArticleModal(articleId);
+            }
+        });
+    });
+}
+
+// =========================================================
+// SUBMIT NEWS MODAL LOGIC
+// =========================================================
+function openSubmitNewsModal(prefillCategory = null) {
+    const overlay = document.getElementById("newsSubmitModalOverlay");
+    const form = document.getElementById("newsSubmitForm");
+    const authorInput = document.getElementById("newsSubmitAuthor");
+    const statusMsg = document.getElementById("newsSubmitStatusMsg");
+    const catSelect = document.getElementById("newsSubmitCategory");
+
+    if (!overlay) return;
+
+    if (form) form.reset();
+    if (statusMsg) statusMsg.textContent = "";
+
+    // Pre-fill author if logged in
+    const u = typeof activeUserAuth !== "undefined" && activeUserAuth ? activeUserAuth : (typeof LocalAuthStore !== "undefined" ? LocalAuthStore.getCurrentUser() : null);
+    if (u && authorInput) {
+        authorInput.value = u.displayName || (u.email ? u.email.split("@")[0] : "");
+    }
+
+    if (prefillCategory && catSelect) {
+        catSelect.value = prefillCategory;
+    }
+
+    overlay.style.display = "flex";
+    overlay.setAttribute("aria-hidden", "false");
+    document.body.classList.add("modal-open");
+}
+
+function closeSubmitNewsModal() {
+    const overlay = document.getElementById("newsSubmitModalOverlay");
+    if (!overlay) return;
+    overlay.style.display = "none";
+    overlay.setAttribute("aria-hidden", "true");
+    document.body.classList.remove("modal-open");
+}
+
+async function handleNewsFormSubmit(e) {
+    e.preventDefault();
+    const titleInput = document.getElementById("newsSubmitTitle");
+    const categorySelect = document.getElementById("newsSubmitCategory");
+    const authorInput = document.getElementById("newsSubmitAuthor");
+    const summaryInput = document.getElementById("newsSubmitSummary");
+    const imageInput = document.getElementById("newsSubmitImage");
+    const contentInput = document.getElementById("newsSubmitContent");
+    const statusMsg = document.getElementById("newsSubmitStatusMsg");
+    const submitBtn = document.getElementById("btnSubmitNewsFormAction");
+
+    const title = titleInput ? titleInput.value.trim() : "";
+    const category = categorySelect ? categorySelect.value : "Comunidad";
+    const authorName = authorInput ? authorInput.value.trim() : "";
+    const summary = summaryInput ? summaryInput.value.trim() : "";
+    const imageUrl = imageInput ? imageInput.value.trim() : "";
+    const content = contentInput ? contentInput.value.trim() : "";
+
+    if (!title || !authorName || !summary || !content) {
+        if (statusMsg) {
+            statusMsg.style.color = "#f87171";
+            statusMsg.textContent = "Por favor completa todos los campos requeridos.";
+        }
+        return;
+    }
+
+    const u = typeof activeUserAuth !== "undefined" && activeUserAuth ? activeUserAuth : (typeof LocalAuthStore !== "undefined" ? LocalAuthStore.getCurrentUser() : null);
+    const userIsAdmin = isUserAdmin(u);
+
+    // If an admin is submitting, it is published immediately; regular community submissions are pending
+    const status = userIsAdmin ? "approved" : "pending";
+    const newId = "news_" + Date.now() + "_" + Math.random().toString(36).substring(2, 7);
+
+    const articlePayload = {
+        id: newId,
+        title,
+        category,
+        authorName,
+        authorEmail: u && u.email ? u.email : "",
+        authorUid: u && u.uid ? u.uid : "",
+        summary,
+        imageUrl: imageUrl || "",
+        content,
+        status,
+        createdAt: new Date().toISOString(),
+        approvedAt: status === "approved" ? new Date().toISOString() : null,
+        commentsCount: 0
+    };
+
+    if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = "<span>⏳</span> Enviando noticia...";
+    }
+    if (statusMsg) {
+        statusMsg.style.color = "#fbbf24";
+        statusMsg.textContent = "Guardando noticia...";
+    }
+
+    try {
+        // Save to Firestore
+        await setDoc(doc(db, "noticias", newId), articlePayload);
+
+        // Update local state and cache
+        window.ffcNewsArticles.unshift(articlePayload);
+        saveCachedNewsArticles(window.ffcNewsArticles);
+
+        renderPublicNewsSection();
+        updateAdminNewsBadge();
+        if (typeof renderAdminNewsTab === "function") {
+            renderAdminNewsTab();
+        }
+
+        if (statusMsg) {
+            statusMsg.style.color = "#34d399";
+            statusMsg.textContent = userIsAdmin 
+                ? "✅ ¡Noticia oficial publicada con éxito!" 
+                : "✅ ¡Noticia enviada con éxito! Queda pendiente de revisión por los administradores.";
+        }
+
+        setTimeout(() => {
+            closeSubmitNewsModal();
+            if (submitBtn) {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = "<span>🚀</span> Enviar para Revisión";
+            }
+        }, 1600);
+
+    } catch (error) {
+        console.error("Error saving news article to Firestore:", error);
+        // Fallback: save to local state and notify
+        window.ffcNewsArticles.unshift(articlePayload);
+        saveCachedNewsArticles(window.ffcNewsArticles);
+        renderPublicNewsSection();
+        updateAdminNewsBadge();
+
+        if (statusMsg) {
+            statusMsg.style.color = "#34d399";
+            statusMsg.textContent = "✅ Noticia registrada localmente con éxito.";
+        }
+        setTimeout(() => {
+            closeSubmitNewsModal();
+            if (submitBtn) {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = "<span>🚀</span> Enviar para Revisión";
+            }
+        }, 1600);
+    }
+}
+
+// Preset image button handler
+function setPresetNewsImage() {
+    const imageInput = document.getElementById("newsSubmitImage");
+    if (!imageInput) return;
+    const presets = [
+        "https://images.unsplash.com/photo-1568605117036-5fe5e7bab0b7?auto=format&fit=crop&w=1200&q=80",
+        "https://images.unsplash.com/photo-1511919884226-fd3cad34687c?auto=format&fit=crop&w=1200&q=80",
+        "https://images.unsplash.com/photo-1580273916550-e323be2ae537?auto=format&fit=crop&w=1200&q=80",
+        "https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&w=1200&q=80"
+    ];
+    const chosen = presets[Math.floor(Math.random() * presets.length)];
+    imageInput.value = chosen;
+}
+
+// =========================================================
+// ARTICLE VIEWER & COMMENTS SYSTEM
+// =========================================================
+function openNewsArticleModal(articleId) {
+    const overlay = document.getElementById("newsArticleModalOverlay");
+    if (!overlay) return;
+
+    const article = window.ffcNewsArticles.find(a => a.id === articleId);
+    if (!article) return;
+
+    window.ffcActiveReadingArticle = article;
+
+    // Elements
+    const pill = document.getElementById("articleCategoryPill");
+    const dateEl = document.getElementById("articleDate");
+    const timeEl = document.getElementById("articleReadingTime");
+    const titleEl = document.getElementById("articleTitle");
+    const initialEl = document.getElementById("articleAuthorInitial");
+    const authorNameEl = document.getElementById("articleAuthorName");
+    const badgeEl = document.getElementById("articleAuthorBadge");
+    const imgEl = document.getElementById("articleImage");
+    const bodyEl = document.getElementById("articleBodyContent");
+    const commentsCountText = document.getElementById("articleCommentsCountText");
+    const commentsTotalBadge = document.getElementById("newsCommentsTotalBadge");
+    const commentAuthorInput = document.getElementById("newsCommentAuthorInput");
+
+    // Pre-fill
+    if (pill) {
+        pill.className = `news-cat-pill ${getNewsCategoryClass(article.category)}`;
+        pill.textContent = translateNewsCategory(article.category, currentLanguage);
+    }
+    if (dateEl) dateEl.textContent = formatNewsDateTime(article.createdAt);
+    if (timeEl) timeEl.textContent = estimateReadingTime(article.content);
+    if (titleEl) titleEl.textContent = article.title;
+    if (initialEl) initialEl.textContent = (article.authorName || "F").charAt(0).toUpperCase();
+    if (authorNameEl) authorNameEl.textContent = article.authorName || (currentLanguage === "en" ? "Anonymous" : "Anónimo");
+    if (badgeEl) {
+        const isOfficial = article.authorUid === "admin_official" || (article.authorEmail && ADMIN_EMAILS.includes(article.authorEmail.toLowerCase()));
+        badgeEl.style.display = isOfficial ? "inline-block" : "none";
+        badgeEl.textContent = isOfficial ? (currentLanguage === "en" ? "OFFICIAL FFC" : "OFICIAL FFC") : "";
+    }
+
+    if (imgEl) {
+        if (article.imageUrl) {
+            imgEl.src = encodeURI(article.imageUrl);
+            imgEl.style.display = "block";
+        } else {
+            imgEl.style.display = "none";
+        }
+    }
+
+    if (bodyEl) {
+        const paragraphs = (article.content || "")
+            .split(/\n\n+/)
+            .map(p => p.trim())
+            .filter(p => p.length > 0);
+        bodyEl.innerHTML = paragraphs.map(p => `<p>${p.replace(/\n/g, "<br>")}</p>`).join("");
+    }
+
+    const count = typeof article.commentsCount === "number" ? article.commentsCount : 0;
+    if (commentsCountText) {
+        const commentWord = currentLanguage === "en" ? (count === 1 ? "comment" : "comments") : (count === 1 ? "comentario" : "comentarios");
+        commentsCountText.textContent = `${count} ${commentWord}`;
+    }
+    if (commentsTotalBadge) commentsTotalBadge.textContent = count;
+
+    // Prefill comment author input if user is signed in
+    const u = typeof activeUserAuth !== "undefined" && activeUserAuth ? activeUserAuth : (typeof LocalAuthStore !== "undefined" ? LocalAuthStore.getCurrentUser() : null);
+    if (commentAuthorInput && u) {
+        commentAuthorInput.value = u.displayName || (u.email ? u.email.split("@")[0] : "");
+    }
+
+    // Load & listen to comments
+    loadArticleComments(article.id);
+
+    overlay.style.display = "flex";
+    overlay.setAttribute("aria-hidden", "false");
+    document.body.classList.add("modal-open");
+}
+
+function closeNewsArticleModal() {
+    const overlay = document.getElementById("newsArticleModalOverlay");
+    if (!overlay) return;
+    if (commentsUnsubscribe) {
+        try { commentsUnsubscribe(); } catch(e){}
+        commentsUnsubscribe = null;
+    }
+    window.ffcActiveReadingArticle = null;
+    overlay.style.display = "none";
+    overlay.setAttribute("aria-hidden", "true");
+    document.body.classList.remove("modal-open");
+}
+
+// Load and Render Comments for Active Article
+function loadArticleComments(newsId) {
+    const commentsContainer = document.getElementById("newsCommentsList");
+    if (!commentsContainer) return;
+
+    // Initial render from local cache
+    const cachedComments = loadCachedComments(newsId);
+    renderCommentsList(cachedComments, newsId);
+
+    // Detach previous comments listener if active
+    if (commentsUnsubscribe) {
+        try { commentsUnsubscribe(); } catch(e){}
+        commentsUnsubscribe = null;
+    }
+
+    // Firestore listener for comments
+    try {
+        const commentsCol = collection(db, "noticias_comentarios");
+        const q = query(commentsCol, where("newsId", "==", newsId));
+        commentsUnsubscribe = onSnapshot(q, (snapshot) => {
+            const comments = [];
+            snapshot.forEach(docSnap => {
+                comments.push({
+                    id: docSnap.id,
+                    ...docSnap.data()
+                });
+            });
+
+            // Sort ascending by createdAt
+            comments.sort((a, b) => new Date(a.createdAt || 0) - new Date(b.createdAt || 0));
+            saveCachedComments(newsId, comments);
+            renderCommentsList(comments, newsId);
+
+            // Update comment count on active article
+            const commentsCountText = document.getElementById("articleCommentsCountText");
+            const commentsTotalBadge = document.getElementById("newsCommentsTotalBadge");
+            if (commentsCountText) {
+                const commentWord = currentLanguage === "en" ? (comments.length === 1 ? "comment" : "comments") : (comments.length === 1 ? "comentario" : "comentarios");
+                commentsCountText.textContent = `${comments.length} ${commentWord}`;
+            }
+            if (commentsTotalBadge) commentsTotalBadge.textContent = comments.length;
+
+            // Also sync count with main article object
+            const art = window.ffcNewsArticles.find(a => a.id === newsId);
+            if (art && art.commentsCount !== comments.length) {
+                art.commentsCount = comments.length;
+                saveCachedNewsArticles(window.ffcNewsArticles);
+                renderPublicNewsSection();
+            }
+        }, (err) => {
+            console.warn("Error streaming comments:", err);
+        });
+    } catch (e) {
+        console.warn("Could not query comments in Firestore:", e);
+    }
+}
+
+function renderCommentsList(comments, newsId) {
+    const container = document.getElementById("newsCommentsList");
+    if (!container) return;
+
+    const noCommentsMsg = currentLanguage === "en" 
+        ? "No comments yet. Be the first to comment on this news article!"
+        : "No hay comentarios todavía. ¡Sé el primero en opinar sobre esta noticia!";
+
+    if (!comments || comments.length === 0) {
+        container.innerHTML = `<div class="news-no-comments">${noCommentsMsg}</div>`;
+        return;
+    }
+
+    const u = typeof activeUserAuth !== "undefined" && activeUserAuth ? activeUserAuth : (typeof LocalAuthStore !== "undefined" ? LocalAuthStore.getCurrentUser() : null);
+    const userIsAdmin = isUserAdmin(u);
+    const authorFallback = currentLanguage === "en" ? "Anonymous" : "Anónimo";
+    const deleteTitle = currentLanguage === "en" ? "Delete comment" : "Eliminar comentario";
+
+    container.innerHTML = comments.map(c => {
+        const initial = (c.authorName || "U").charAt(0).toUpperCase();
+        const dateFormatted = formatNewsDateTime(c.createdAt);
+        const canDelete = userIsAdmin || (u && u.email && c.authorEmail && u.email.toLowerCase() === c.authorEmail.toLowerCase());
+
+        const deleteBtnMarkup = canDelete 
+            ? `<button type="button" class="btn-delete-comment" data-comment-id="${c.id}" data-news-id="${newsId}" title="${deleteTitle}">🗑️</button>` 
+            : ``;
+
+        return `
+            <div class="news-comment-item" id="comment_${c.id}">
+                <div class="news-comment-avatar">${initial}</div>
+                <div class="news-comment-content">
+                    <div class="news-comment-top">
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <span class="news-comment-author-name">${c.authorName || authorFallback}</span>
+                            <span class="news-comment-date">${dateFormatted}</span>
+                        </div>
+                        ${deleteBtnMarkup}
+                    </div>
+                    <div class="news-comment-text">${c.text || ""}</div>
+                </div>
+            </div>
+        `;
+    }).join("");
+
+    // Bind delete buttons
+    container.querySelectorAll(".btn-delete-comment").forEach(btn => {
+        btn.addEventListener("click", () => {
+            const commentId = btn.dataset.commentId;
+            const nId = btn.dataset.newsId;
+            deleteNewsComment(commentId, nId);
+        });
+    });
+}
+
+async function handleCommentSubmit(e) {
+    e.preventDefault();
+    if (!window.ffcActiveReadingArticle) return;
+
+    const newsId = window.ffcActiveReadingArticle.id;
+    const authorInput = document.getElementById("newsCommentAuthorInput");
+    const textInput = document.getElementById("newsCommentTextInput");
+    const statusMsg = document.getElementById("commentStatusMsg");
+    const submitBtn = document.getElementById("btnSubmitComment");
+
+    const authorName = authorInput ? authorInput.value.trim() : "";
+    const text = textInput ? textInput.value.trim() : "";
+
+    if (!authorName || !text) {
+        if (statusMsg) {
+            statusMsg.style.color = "#f87171";
+            statusMsg.textContent = "Ingresa tu nombre y tu comentario.";
+        }
+        return;
+    }
+
+    const u = typeof activeUserAuth !== "undefined" && activeUserAuth ? activeUserAuth : (typeof LocalAuthStore !== "undefined" ? LocalAuthStore.getCurrentUser() : null);
+    const commentId = "cmt_" + Date.now() + "_" + Math.random().toString(36).substring(2, 6);
+
+    const commentPayload = {
+        id: commentId,
+        newsId: newsId,
+        authorName,
+        authorEmail: u && u.email ? u.email : "",
+        authorUid: u && u.uid ? u.uid : "",
+        text,
+        createdAt: new Date().toISOString()
+    };
+
+    if (submitBtn) {
+        submitBtn.disabled = true;
+    }
+    if (statusMsg) {
+        statusMsg.style.color = "#fbbf24";
+        statusMsg.textContent = "Publicando...";
+    }
+
+    try {
+        await setDoc(doc(db, "noticias_comentarios", commentId), commentPayload);
+
+        // Update article document commentsCount in Firestore
+        const currentComments = loadCachedComments(newsId);
+        const newComments = [...currentComments, commentPayload];
+        saveCachedComments(newsId, newComments);
+
+        const articleRef = doc(db, "noticias", newsId);
+        try {
+            await updateDoc(articleRef, {
+                commentsCount: newComments.length
+            });
+        } catch(e){}
+
+        // Update local article count
+        const art = window.ffcNewsArticles.find(a => a.id === newsId);
+        if (art) {
+            art.commentsCount = newComments.length;
+            saveCachedNewsArticles(window.ffcNewsArticles);
+        }
+
+        renderCommentsList(newComments, newsId);
+        renderPublicNewsSection();
+
+        if (textInput) textInput.value = "";
+        if (statusMsg) {
+            statusMsg.style.color = "#34d399";
+            statusMsg.textContent = "¡Comentario publicado!";
+            setTimeout(() => {
+                if (statusMsg) statusMsg.textContent = "";
+            }, 2500);
+        }
+
+    } catch (err) {
+        console.error("Error publishing comment to Firestore:", err);
+        // Fallback local save
+        const currentComments = loadCachedComments(newsId);
+        const newComments = [...currentComments, commentPayload];
+        saveCachedComments(newsId, newComments);
+        renderCommentsList(newComments, newsId);
+
+        if (textInput) textInput.value = "";
+        if (statusMsg) {
+            statusMsg.style.color = "#34d399";
+            statusMsg.textContent = "Comentario guardado localmente.";
+        }
+    } finally {
+        if (submitBtn) submitBtn.disabled = false;
+    }
+}
+
+async function deleteNewsComment(commentId, newsId) {
+    if (!confirm(currentLanguage === "en" ? "Delete this comment?" : "¿Deseas eliminar este comentario?")) {
+        return;
+    }
+
+    try {
+        await deleteDoc(doc(db, "noticias_comentarios", commentId));
+    } catch (err) {
+        console.warn("Could not delete comment in Firestore:", err);
+    }
+
+    // Remove from local cache
+    const currentComments = loadCachedComments(newsId);
+    const updated = currentComments.filter(c => c.id !== commentId);
+    saveCachedComments(newsId, updated);
+    renderCommentsList(updated, newsId);
+
+    // Update article count
+    const art = window.ffcNewsArticles.find(a => a.id === newsId);
+    if (art) {
+        art.commentsCount = Math.max(0, updated.length);
+        saveCachedNewsArticles(window.ffcNewsArticles);
+        try {
+            await updateDoc(doc(db, "noticias", newsId), {
+                commentsCount: updated.length
+            });
+        } catch(e){}
+    }
+    renderPublicNewsSection();
+}
+
+function handleShareArticleLink() {
+    if (!window.ffcActiveReadingArticle) return;
+    const shareUrl = window.location.origin + window.location.pathname + "#news";
+    navigator.clipboard.writeText(shareUrl).then(() => {
+        const btn = document.getElementById("btnShareArticleLink");
+        if (btn) {
+            const originalText = btn.innerHTML;
+            btn.innerHTML = "✅ ¡Enlace copiado!";
+            setTimeout(() => {
+                btn.innerHTML = originalText;
+            }, 2000);
+        }
+    }).catch(() => {
+        alert("Enlace para compartir: " + shareUrl);
+    });
+}
+
+// =========================================================
+// ADMIN MODERATION TAB LOGIC
+// =========================================================
+function renderAdminNewsTab() {
+    const list = document.getElementById("adminNewsList");
+    if (!list) return;
+
+    updateAdminNewsBadge();
+
+    const allArticles = window.ffcNewsArticles || [];
+    let filtered = [...allArticles];
+
+    // Filter by tab
+    if (window.ffcAdminNewsFilter && window.ffcAdminNewsFilter !== "all") {
+        filtered = filtered.filter(a => a.status === window.ffcAdminNewsFilter);
+    }
+
+    // Search query
+    if (window.ffcAdminNewsSearchQuery && window.ffcAdminNewsSearchQuery.trim()) {
+        const q = window.ffcAdminNewsSearchQuery.trim().toLowerCase();
+        filtered = filtered.filter(a => 
+            (a.title && a.title.toLowerCase().includes(q)) ||
+            (a.authorName && a.authorName.toLowerCase().includes(q)) ||
+            (a.summary && a.summary.toLowerCase().includes(q)) ||
+            (a.category && a.category.toLowerCase().includes(q))
+        );
+    }
+
+    if (filtered.length === 0) {
+        list.innerHTML = `
+            <div style="text-align: center; padding: 40px 20px; background: rgba(255, 255, 255, 0.02); border: 1px dashed rgba(255, 255, 255, 0.1); border-radius: 8px; color: #a0aec0;">
+                <p style="font-size: 15px; margin-bottom: 6px;">No se encontraron noticias en esta categoría.</p>
+                <span style="font-size: 13px; color: #718096;">Cuando los miembros de la comunidad envíen artículos, aparecerán aquí para tu aprobación.</span>
+            </div>
+        `;
+        return;
+    }
+
+    list.innerHTML = filtered.map(article => {
+        const dateFormatted = formatNewsDateTime(article.createdAt);
+        let statusPillMarkup = "";
+        if (article.status === "approved") {
+            statusPillMarkup = `<span class="admin-news-status-pill status-approved">🟢 APROBADA Y PUBLICADA</span>`;
+        } else if (article.status === "rejected") {
+            statusPillMarkup = `<span class="admin-news-status-pill status-rejected">🔴 RECHAZADA</span>`;
+        } else {
+            statusPillMarkup = `<span class="admin-news-status-pill status-pending">🟡 PENDIENTE DE REVISIÓN</span>`;
+        }
+
+        const approveBtnMarkup = article.status !== "approved"
+            ? `<button type="button" class="btn-action-approve" data-news-id="${article.id}" title="Aprobar y publicar en la web">✅ Aprobar</button>`
+            : ``;
+
+        const rejectBtnMarkup = article.status !== "rejected"
+            ? `<button type="button" class="btn-action-reject" data-news-id="${article.id}" title="Rechazar noticia">❌ Rechazar</button>`
+            : ``;
+
+        return `
+            <div class="admin-news-item-card" id="admin_news_${article.id}">
+                <div class="admin-news-item-top">
+                    <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+                        ${statusPillMarkup}
+                        <span class="news-cat-pill ${getNewsCategoryClass(article.category)}">${article.category || "Comunidad"}</span>
+                    </div>
+                    <div class="admin-news-meta-info">
+                        <span>📅 ${dateFormatted}</span>
+                        <span>&bull;</span>
+                        <span>💬 ${article.commentsCount || 0} comentarios</span>
+                    </div>
+                </div>
+
+                <div>
+                    <h4 class="admin-news-item-title">${article.title}</h4>
+                    <p class="admin-news-item-summary">${article.summary || ""}</p>
+                </div>
+
+                <div class="admin-news-item-bottom">
+                    <div class="admin-news-author-detail">
+                        <span>✍️ <strong>${article.authorName || "Anónimo"}</strong></span>
+                        ${article.authorEmail ? ` &bull; <span style="color: #94a3b8;">${article.authorEmail}</span>` : ""}
+                    </div>
+
+                    <div class="admin-news-action-buttons">
+                        <button type="button" class="btn-action-preview" data-news-id="${article.id}" title="Ver contenido completo y comentarios">👁️ Leer / Ver</button>
+                        ${approveBtnMarkup}
+                        ${rejectBtnMarkup}
+                        <button type="button" class="btn-action-delete" data-news-id="${article.id}" title="Eliminar definitivamente">🗑️ Eliminar</button>
+                    </div>
+                </div>
+            </div>
+        `;
+    }).join("");
+
+    // Bind Admin Actions
+    list.querySelectorAll(".btn-action-preview").forEach(btn => {
+        btn.addEventListener("click", () => {
+            const id = btn.dataset.newsId;
+            openNewsArticleModal(id);
+        });
+    });
+
+    list.querySelectorAll(".btn-action-approve").forEach(btn => {
+        btn.addEventListener("click", () => {
+            const id = btn.dataset.newsId;
+            approveNewsArticle(id);
+        });
+    });
+
+    list.querySelectorAll(".btn-action-reject").forEach(btn => {
+        btn.addEventListener("click", () => {
+            const id = btn.dataset.newsId;
+            rejectNewsArticle(id);
+        });
+    });
+
+    list.querySelectorAll(".btn-action-delete").forEach(btn => {
+        btn.addEventListener("click", () => {
+            const id = btn.dataset.newsId;
+            deleteNewsArticle(id);
+        });
+    });
+}
+
+// Admin Action: Approve News Article
+async function approveNewsArticle(newsId) {
+    const article = window.ffcNewsArticles.find(a => a.id === newsId);
+    if (!article) return;
+
+    article.status = "approved";
+    article.approvedAt = new Date().toISOString();
+
+    saveCachedNewsArticles(window.ffcNewsArticles);
+    renderAdminNewsTab();
+    renderPublicNewsSection();
+    updateAdminNewsBadge();
+
+    try {
+        await updateDoc(doc(db, "noticias", newsId), {
+            status: "approved",
+            approvedAt: article.approvedAt
+        });
+    } catch (err) {
+        console.warn("Could not approve article in Firestore:", err);
+    }
+}
+
+// Admin Action: Reject News Article
+async function rejectNewsArticle(newsId) {
+    const article = window.ffcNewsArticles.find(a => a.id === newsId);
+    if (!article) return;
+
+    article.status = "rejected";
+
+    saveCachedNewsArticles(window.ffcNewsArticles);
+    renderAdminNewsTab();
+    renderPublicNewsSection();
+    updateAdminNewsBadge();
+
+    try {
+        await updateDoc(doc(db, "noticias", newsId), {
+            status: "rejected"
+        });
+    } catch (err) {
+        console.warn("Could not reject article in Firestore:", err);
+    }
+}
+
+// Admin Action: Delete News Article
+async function deleteNewsArticle(newsId) {
+    if (!confirm(currentLanguage === "en" ? "Are you sure you want to permanently delete this news article?" : "¿Estás seguro de que deseas eliminar permanentemente esta noticia?")) {
+        return;
+    }
+
+    window.ffcNewsArticles = window.ffcNewsArticles.filter(a => a.id !== newsId);
+    saveCachedNewsArticles(window.ffcNewsArticles);
+    try {
+        localStorage.removeItem("ffc_news_comments_" + newsId);
+    } catch(e){}
+
+    renderAdminNewsTab();
+    renderPublicNewsSection();
+    updateAdminNewsBadge();
+
+    try {
+        await deleteDoc(doc(db, "noticias", newsId));
+
+        // Also delete all associated comments in Firestore
+        try {
+            const commentsRef = collection(db, "noticias_comentarios");
+            const q = query(commentsRef, where("newsId", "==", newsId));
+            const cmtSnapshot = await getDocs(q);
+            const batch = writeBatch(db);
+            cmtSnapshot.forEach(docSnap => {
+                batch.delete(docSnap.ref);
+            });
+            await batch.commit();
+        } catch(cErr) {
+            console.warn("Could not clean up article comments in Firestore:", cErr);
+        }
+    } catch (err) {
+        console.warn("Could not delete article in Firestore:", err);
+    }
+}
+
+// Direct Admin Create Official News
+function handleAdminCreateOfficialNews() {
+    openSubmitNewsModal("Carreras");
+    const titleInput = document.getElementById("newsSubmitTitle");
+    const authorInput = document.getElementById("newsSubmitAuthor");
+    if (titleInput) titleInput.value = "COMUNICADO OFICIAL: ";
+    if (authorInput) authorInput.value = "Comisaría Oficial FFC";
+}
+
+// =========================================================
+// EVENT LISTENERS & INITIALIZATION
+// =========================================================
+function initNewsSystemEvents() {
+    // 1. Open / Close Submit Modal
+    const openSubmitBtn = document.getElementById("btnOpenSubmitNewsModal");
+    const closeSubmitBtn = document.getElementById("newsSubmitModalClose");
+    const cancelSubmitBtn = document.getElementById("newsSubmitCancelBtn");
+    const submitOverlay = document.getElementById("newsSubmitModalOverlay");
+    const submitForm = document.getElementById("newsSubmitForm");
+    const defaultImgBtn = document.getElementById("btnNewsUseDefaultImg");
+
+    if (openSubmitBtn) {
+        openSubmitBtn.addEventListener("click", () => openSubmitNewsModal());
+    }
+    if (closeSubmitBtn) {
+        closeSubmitBtn.addEventListener("click", closeSubmitNewsModal);
+    }
+    if (cancelSubmitBtn) {
+        cancelSubmitBtn.addEventListener("click", closeSubmitNewsModal);
+    }
+    if (submitOverlay) {
+        submitOverlay.addEventListener("click", (e) => {
+            if (e.target === submitOverlay) closeSubmitNewsModal();
+        });
+    }
+    if (submitForm) {
+        submitForm.addEventListener("submit", handleNewsFormSubmit);
+    }
+    if (defaultImgBtn) {
+        defaultImgBtn.addEventListener("click", setPresetNewsImage);
+    }
+
+    // 2. Open / Close Article Viewer Modal
+    const closeArticleBtn = document.getElementById("newsArticleModalClose");
+    const articleOverlay = document.getElementById("newsArticleModalOverlay");
+    const commentForm = document.getElementById("newsAddCommentForm");
+    const shareLinkBtn = document.getElementById("btnShareArticleLink");
+
+    if (closeArticleBtn) {
+        closeArticleBtn.addEventListener("click", closeNewsArticleModal);
+    }
+    if (articleOverlay) {
+        articleOverlay.addEventListener("click", (e) => {
+            if (e.target === articleOverlay) closeNewsArticleModal();
+        });
+    }
+    if (commentForm) {
+        commentForm.addEventListener("submit", handleCommentSubmit);
+    }
+    if (shareLinkBtn) {
+        shareLinkBtn.addEventListener("click", handleShareArticleLink);
+    }
+
+    // 3. Category Filter Buttons
+    const categoryFilterBtns = document.querySelectorAll("#newsCategoryFilters .news-cat-btn");
+    categoryFilterBtns.forEach(btn => {
+        btn.addEventListener("click", () => {
+            categoryFilterBtns.forEach(b => b.classList.remove("active"));
+            btn.classList.add("active");
+            window.ffcNewsActiveCategory = btn.dataset.cat || "all";
+            renderPublicNewsSection();
+        });
+    });
+
+    // 4. Search Input
+    const searchInput = document.getElementById("newsSearchInput");
+    const clearSearchBtn = document.getElementById("newsClearSearchBtn");
+    const resetFiltersBtn = document.getElementById("btnResetNewsFilters");
+
+    if (searchInput) {
+        searchInput.addEventListener("input", (e) => {
+            window.ffcNewsSearchQuery = e.target.value;
+            if (clearSearchBtn) {
+                clearSearchBtn.style.display = e.target.value ? "block" : "none";
+            }
+            renderPublicNewsSection();
+        });
+    }
+
+    if (clearSearchBtn) {
+        clearSearchBtn.addEventListener("click", () => {
+            if (searchInput) searchInput.value = "";
+            window.ffcNewsSearchQuery = "";
+            clearSearchBtn.style.display = "none";
+            renderPublicNewsSection();
+        });
+    }
+
+    if (resetFiltersBtn) {
+        resetFiltersBtn.addEventListener("click", () => {
+            categoryFilterBtns.forEach(b => b.classList.remove("active"));
+            const allBtn = document.querySelector('#newsCategoryFilters [data-cat="all"]');
+            if (allBtn) allBtn.classList.add("active");
+            window.ffcNewsActiveCategory = "all";
+            if (searchInput) searchInput.value = "";
+            window.ffcNewsSearchQuery = "";
+            if (clearSearchBtn) clearSearchBtn.style.display = "none";
+            renderPublicNewsSection();
+        });
+    }
+
+    // 5. Admin News Toolbar Filters
+    const adminNewsFilterBtns = document.querySelectorAll(".admin-news-filter-btn");
+    adminNewsFilterBtns.forEach(btn => {
+        btn.addEventListener("click", () => {
+            adminNewsFilterBtns.forEach(b => b.classList.remove("active"));
+            btn.classList.add("active");
+            window.ffcAdminNewsFilter = btn.dataset.filter || "all";
+            renderAdminNewsTab();
+        });
+    });
+
+    const adminNewsSearchInput = document.getElementById("adminNewsSearchInput");
+    if (adminNewsSearchInput) {
+        adminNewsSearchInput.addEventListener("input", (e) => {
+            window.ffcAdminNewsSearchQuery = e.target.value;
+            renderAdminNewsTab();
+        });
+    }
+
+    const btnAdminCreateOfficialNews = document.getElementById("btnAdminCreateOfficialNews");
+    if (btnAdminCreateOfficialNews) {
+        btnAdminCreateOfficialNews.addEventListener("click", handleAdminCreateOfficialNews);
+    }
+}
+
+// Global initialization
+if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", () => {
+        initNewsRealtimeSync();
+        initNewsSystemEvents();
+    });
+} else {
+    initNewsRealtimeSync();
+    initNewsSystemEvents();
 }
 
 
