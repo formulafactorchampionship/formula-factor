@@ -3005,7 +3005,19 @@ function getSavedStandings() {
     if (currentPilotos && currentPilotos.length > 0) {
         return currentPilotos;
     }
-    return defaultStandings;
+    const base = defaultStandings.map(d => ({ ...d }));
+    if (typeof window !== "undefined" && window.globalVerifiedUsersMap && window.globalVerifiedUsersMap.size > 0) {
+        base.forEach(p => {
+            const norm = normalizeDriverKey(p.driver);
+            if (window.globalVerifiedUsersMap.has(norm)) {
+                const uInfo = window.globalVerifiedUsersMap.get(norm);
+                p.isVerified = true;
+                p.claimedByEmail = uInfo.email || null;
+                p.claimedByUid = uInfo.uid || null;
+            }
+        });
+    }
+    return base;
 }
 
 const officialDriverOrder = {
@@ -6292,7 +6304,11 @@ function populateAdminForms() {
     }
 
     renderAdminDriversTab();
-    if (typeof renderAdminVerifyTab === "function") renderAdminVerifyTab();
+    if (typeof refreshAdminVerificationData === "function") {
+        refreshAdminVerificationData();
+    } else if (typeof renderAdminVerifyTab === "function") {
+        renderAdminVerifyTab();
+    }
 
     if (adminSelectRace) {
         populateRaceResultsEditor(adminSelectRace.value || "australia");
@@ -6343,6 +6359,13 @@ function initFirestoreListeners() {
             if (pId === "rikidorsa" || norm === "rikidorsa") {
                 rikidorsaFound = true;
             }
+
+            // Cross-check with global verified users map
+            const verifiedUserInfo = (typeof window !== "undefined" && window.globalVerifiedUsersMap) ? window.globalVerifiedUsersMap.get(norm) : null;
+            const isVerifiedDriver = Boolean(data.isVerified || data.claimedByEmail || data.claimedByUid || (verifiedUserInfo && verifiedUserInfo.isVerified));
+            const claimedEmail = data.claimedByEmail || (verifiedUserInfo ? verifiedUserInfo.email : null);
+            const claimedUid = data.claimedByUid || (verifiedUserInfo ? verifiedUserInfo.uid : null);
+
             driverMap.set(norm, {
                 id: docSnap.id,
                 driver: data.driver || docSnap.id,
@@ -6350,18 +6373,18 @@ function initFirestoreListeners() {
                 pos: data.pos || getOfficialDriverRank(data.driver || docSnap.id),
                 pts: Number(data.pts) || 0,
                 verificationCode: data.verificationCode || null,
-                claimedByEmail: data.claimedByEmail || null,
-                claimedByUid: data.claimedByUid || null,
-                isVerified: !!data.isVerified,
-                avatarUrl: data.avatarUrl || null,
-                cardColor: data.cardColor || null,
-                flag: data.flag || data.customFlag || null,
-                customFlag: data.customFlag || data.flag || null,
-                bio: data.bio || null,
-                socialTwitch: data.socialTwitch || null,
-                socialYoutube: data.socialYoutube || null,
-                socialTwitter: data.socialTwitter || null,
-                socialDiscord: data.socialDiscord || null
+                claimedByEmail: claimedEmail,
+                claimedByUid: claimedUid,
+                isVerified: isVerifiedDriver,
+                avatarUrl: data.avatarUrl || (verifiedUserInfo ? verifiedUserInfo.avatarUrl : null),
+                cardColor: data.cardColor || (verifiedUserInfo ? verifiedUserInfo.cardColor : null),
+                flag: data.flag || data.customFlag || (verifiedUserInfo ? verifiedUserInfo.customFlag : null),
+                customFlag: data.customFlag || data.flag || (verifiedUserInfo ? verifiedUserInfo.customFlag : null),
+                bio: data.bio || (verifiedUserInfo ? verifiedUserInfo.bio : null),
+                socialTwitch: data.socialTwitch || (verifiedUserInfo ? verifiedUserInfo.socialTwitch : null),
+                socialYoutube: data.socialYoutube || (verifiedUserInfo ? verifiedUserInfo.socialYoutube : null),
+                socialTwitter: data.socialTwitter || (verifiedUserInfo ? verifiedUserInfo.socialTwitter : null),
+                socialDiscord: data.socialDiscord || (verifiedUserInfo ? verifiedUserInfo.socialDiscord : null)
             });
         });
 
@@ -6559,6 +6582,70 @@ function initFirestoreListeners() {
     }, (error) => {
         console.error("Error subscribing to 'carreras' collection:", error);
     });
+
+    // 4. Synchronize 'usuarios' collection in real-time for verified drivers & claimed accounts
+    onSnapshot(collection(db, "usuarios"), (snapshot) => {
+        if (!snapshot || snapshot.empty) return;
+        if (typeof window !== "undefined") {
+            if (!window.globalVerifiedUsersMap) window.globalVerifiedUsersMap = new Map();
+        }
+
+        snapshot.forEach(docSnap => {
+            const uData = docSnap.data();
+            if (uData && (uData.isVerified || uData.claimedDriver)) {
+                const driverName = uData.claimedDriver || (uData.isVerified ? (uData.displayName || docSnap.id) : null);
+                if (driverName) {
+                    const norm = normalizeDriverKey(driverName);
+                    if (typeof window !== "undefined" && window.globalVerifiedUsersMap) {
+                        window.globalVerifiedUsersMap.set(norm, {
+                            driver: driverName,
+                            email: uData.email || null,
+                            uid: uData.uid || docSnap.id,
+                            isVerified: uData.isVerified !== false,
+                            verifiedAt: uData.verifiedAt || null,
+                            avatarUrl: uData.avatarUrl || null,
+                            cardColor: uData.cardColor || null,
+                            customFlag: uData.customFlag || uData.flag || null,
+                            bio: uData.bio || null,
+                            socialTwitch: uData.socialTwitch || null,
+                            socialYoutube: uData.socialYoutube || null,
+                            socialTwitter: uData.socialTwitter || null,
+                            socialDiscord: uData.socialDiscord || null
+                        });
+                    }
+                }
+            }
+        });
+
+        // Update currentPilotos if loaded
+        if (Array.isArray(currentPilotos) && currentPilotos.length > 0) {
+            let changed = false;
+            currentPilotos.forEach(p => {
+                const norm = normalizeDriverKey(p.driver);
+                if (typeof window !== "undefined" && window.globalVerifiedUsersMap && window.globalVerifiedUsersMap.has(norm)) {
+                    const uInfo = window.globalVerifiedUsersMap.get(norm);
+                    if (!p.isVerified || !p.claimedByEmail) {
+                        p.isVerified = true;
+                        if (uInfo.email && !p.claimedByEmail) p.claimedByEmail = uInfo.email;
+                        if (uInfo.uid && !p.claimedByUid) p.claimedByUid = uInfo.uid;
+                        changed = true;
+                    }
+                }
+            });
+            if (changed) {
+                renderStandingsOnPage(currentPilotos);
+            }
+        }
+
+        // Re-render admin verify tab if admin panel is open
+        if (adminPanelOverlay && adminPanelOverlay.classList.contains("active")) {
+            if (typeof renderAdminVerifyTab === "function") {
+                renderAdminVerifyTab(typeof adminSearchVerifyPilotInput !== "undefined" && adminSearchVerifyPilotInput ? adminSearchVerifyPilotInput.value : "");
+            }
+        }
+    }, (error) => {
+        console.warn("Notice: Real-time sync on 'usuarios' collection:", error);
+    });
 }
 
 // Initialize on page load
@@ -6636,8 +6723,12 @@ adminTabButtons.forEach(btn => {
         const pane = document.getElementById(targetId);
         if (pane) pane.classList.add("active");
 
-        if (targetId === "tab-verify" && typeof renderAdminVerifyTab === "function") {
-            renderAdminVerifyTab(typeof adminSearchVerifyPilotInput !== "undefined" && adminSearchVerifyPilotInput ? adminSearchVerifyPilotInput.value : "");
+        if (targetId === "tab-verify") {
+            if (typeof refreshAdminVerificationData === "function") {
+                refreshAdminVerificationData();
+            } else if (typeof renderAdminVerifyTab === "function") {
+                renderAdminVerifyTab(typeof adminSearchVerifyPilotInput !== "undefined" && adminSearchVerifyPilotInput ? adminSearchVerifyPilotInput.value : "");
+            }
         }
     });
 });
@@ -6813,7 +6904,22 @@ if (adminSaveStandingsBtn) {
                 const pts = Number(ptsInput.value) || 0;
                 const pilotId = row.dataset.pilotId || getPilotDocId(name);
                 if (name) {
-                    list.push({ id: pilotId, driver: name, team: officialTeam, pts });
+                    const norm = normalizeDriverKey(name);
+                    const existingP = (currentPilotos || []).find(p => (p.id || getPilotDocId(p.driver)) === pilotId || normalizeDriverKey(p.driver) === norm);
+                    const verifiedUserInfo = (typeof window !== "undefined" && window.globalVerifiedUsersMap) ? window.globalVerifiedUsersMap.get(norm) : null;
+                    const isVer = Boolean((existingP && (existingP.isVerified || existingP.claimedByEmail || existingP.claimedByUid)) || (verifiedUserInfo && verifiedUserInfo.isVerified));
+
+                    list.push({
+                        ...(existingP || {}),
+                        id: pilotId,
+                        driver: name,
+                        team: officialTeam,
+                        pts,
+                        isVerified: isVer,
+                        claimedByEmail: (existingP && existingP.claimedByEmail) || (verifiedUserInfo ? verifiedUserInfo.email : null),
+                        claimedByUid: (existingP && existingP.claimedByUid) || (verifiedUserInfo ? verifiedUserInfo.uid : null),
+                        verificationCode: (existingP && existingP.verificationCode) || null
+                    });
                 }
             }
         });
@@ -6829,17 +6935,26 @@ if (adminSaveStandingsBtn) {
             const batch = writeBatch(db);
             list.forEach(p => {
                 const docRef = doc(db, "pilotos", p.id || getPilotDocId(p.driver));
-                batch.set(docRef, {
+                const pPayload = {
                     driver: p.driver,
                     team: p.team,
                     pts: Number(p.pts) || 0
-                }, { merge: true });
+                };
+                if (p.isVerified !== undefined) pPayload.isVerified = p.isVerified;
+                if (p.claimedByEmail) pPayload.claimedByEmail = p.claimedByEmail;
+                if (p.claimedByUid) pPayload.claimedByUid = p.claimedByUid;
+                if (p.verificationCode) pPayload.verificationCode = p.verificationCode;
+
+                batch.set(docRef, pPayload, { merge: true });
             });
             await batch.commit();
 
             currentPilotos = list;
             renderStandingsOnPage(list);
             renderAdminStandingsEditor(list);
+            if (typeof renderAdminVerifyTab === "function") {
+                renderAdminVerifyTab(typeof adminSearchVerifyPilotInput !== "undefined" && adminSearchVerifyPilotInput ? adminSearchVerifyPilotInput.value : "");
+            }
 
             if (standingsSaveNotice) {
                 standingsSaveNotice.textContent = "✓ Clasificación actualizada en tiempo real en Firestore";
@@ -7349,23 +7464,52 @@ function calculateAllStandingsFromRaces(racesMap = raceResults, baseDriverList =
         }
     });
 
-    if (Array.isArray(baseDriverList)) {
-        baseDriverList.forEach(d => {
-            if (!d.driver) return;
-            const k = normalizeDriverKey(d.driver);
-            if (!driversMap.has(k)) {
-                driversMap.set(k, {
-                    id: d.id || getPilotDocId(d.driver),
-                    driver: d.driver,
-                    team: getDriverTeam(d.driver) || d.team || "Independent",
-                    pts: 0
-                });
-                finishesMap.set(k, {});
+    // 2. Merge existing driver metadata (isVerified, claimedByEmail, verificationCode, card customizations)
+    const sourcesToPreserve = [
+        ...(Array.isArray(currentPilotos) ? currentPilotos : []),
+        ...(Array.isArray(baseDriverList) ? baseDriverList : [])
+    ];
+    sourcesToPreserve.forEach(d => {
+        if (!d || !d.driver) return;
+        const k = normalizeDriverKey(d.driver);
+        if (!driversMap.has(k)) {
+            driversMap.set(k, {
+                id: d.id || getPilotDocId(d.driver),
+                driver: d.driver,
+                team: getDriverTeam(d.driver) || d.team || "Independent",
+                pts: 0
+            });
+            finishesMap.set(k, {});
+        }
+        const entry = driversMap.get(k);
+        if (d.id) entry.id = d.id;
+        if (d.isVerified !== undefined) entry.isVerified = Boolean(d.isVerified);
+        if (d.claimedByEmail) entry.claimedByEmail = d.claimedByEmail;
+        if (d.claimedByUid) entry.claimedByUid = d.claimedByUid;
+        if (d.verificationCode) entry.verificationCode = d.verificationCode;
+        if (d.avatarUrl) entry.avatarUrl = d.avatarUrl;
+        if (d.cardColor) entry.cardColor = d.cardColor;
+        if (d.customFlag || d.flag) entry.customFlag = d.customFlag || d.flag;
+        if (d.bio) entry.bio = d.bio;
+        if (d.socialTwitch) entry.socialTwitch = d.socialTwitch;
+        if (d.socialYoutube) entry.socialYoutube = d.socialYoutube;
+        if (d.socialTwitter) entry.socialTwitter = d.socialTwitter;
+        if (d.socialDiscord) entry.socialDiscord = d.socialDiscord;
+    });
+
+    // Cross-reference with global verified users map
+    if (typeof window !== "undefined" && window.globalVerifiedUsersMap && window.globalVerifiedUsersMap.size > 0) {
+        window.globalVerifiedUsersMap.forEach((uInfo, k) => {
+            if (driversMap.has(k)) {
+                const entry = driversMap.get(k);
+                entry.isVerified = true;
+                if (uInfo.email && !entry.claimedByEmail) entry.claimedByEmail = uInfo.email;
+                if (uInfo.uid && !entry.claimedByUid) entry.claimedByUid = uInfo.uid;
             }
         });
     }
 
-    // 2. Iterate through all completed races and calculate official points
+    // 3. Iterate through all completed races and calculate official points
     Object.values(racesMap).forEach(race => {
         if (!race || !Array.isArray(race.drivers) || race.drivers.length === 0) return;
         const isCompleted = race.status === "COMPLETED" || (race.winner && race.winner !== "TBA");
@@ -7410,7 +7554,7 @@ function calculateAllStandingsFromRaces(racesMap = raceResults, baseDriverList =
         }
     });
 
-    // 3. Sort drivers: points descending, then tiebreakers (most 1st places, 2nd places...), then alphabetically
+    // 4. Sort drivers: points descending, then tiebreakers (most 1st places, 2nd places...), then alphabetically
     const list = Array.from(driversMap.values());
     list.sort((a, b) => {
         const ptsA = Number(a.pts) || 0;
@@ -7441,11 +7585,17 @@ async function recalculateAndSyncStandings(racesMap = raceResults) {
         const batch = writeBatch(db);
         newStandings.forEach(p => {
             const docRef = doc(db, "pilotos", p.id || getPilotDocId(p.driver));
-            batch.set(docRef, {
+            const pPayload = {
                 driver: p.driver,
                 team: p.team || getDriverTeam(p.driver) || "Independent",
                 pts: Number(p.pts) || 0
-            }, { merge: true });
+            };
+            if (p.isVerified !== undefined) pPayload.isVerified = p.isVerified;
+            if (p.claimedByEmail) pPayload.claimedByEmail = p.claimedByEmail;
+            if (p.claimedByUid) pPayload.claimedByUid = p.claimedByUid;
+            if (p.verificationCode) pPayload.verificationCode = p.verificationCode;
+
+            batch.set(docRef, pPayload, { merge: true });
         });
         await batch.commit();
     } catch (err) {
@@ -7464,6 +7614,9 @@ async function recalculateAndSyncStandings(racesMap = raceResults) {
     }
     if (adminDriversTableBody) {
         renderAdminDriversTab(adminSearchPilotInput ? adminSearchPilotInput.value : "");
+    }
+    if (typeof renderAdminVerifyTab === "function") {
+        renderAdminVerifyTab(typeof adminSearchVerifyPilotInput !== "undefined" && adminSearchVerifyPilotInput ? adminSearchVerifyPilotInput.value : "");
     }
 
     // Refresh fantasy prices and leaderboard immediately
@@ -8807,11 +8960,25 @@ if (userClaimForm) {
             // 1. Update driver doc in 'pilotos'
             const pilotRef = doc(db, "pilotos", matchedDriverDoc.id);
             batch.set(pilotRef, {
+                driver: matchedDriverData.driver,
+                team: matchedDriverData.team || "Independent",
                 claimedByEmail: activeUserAuth.email,
                 claimedByUid: activeUserAuth.uid,
                 isVerified: true,
                 verifiedAt: new Date().toISOString()
             }, { merge: true });
+
+            const standardPilotId = getPilotDocId(matchedDriverData.driver);
+            if (standardPilotId && standardPilotId !== matchedDriverDoc.id) {
+                batch.set(doc(db, "pilotos", standardPilotId), {
+                    driver: matchedDriverData.driver,
+                    team: matchedDriverData.team || "Independent",
+                    claimedByEmail: activeUserAuth.email,
+                    claimedByUid: activeUserAuth.uid,
+                    isVerified: true,
+                    verifiedAt: new Date().toISOString()
+                }, { merge: true });
+            }
 
             const claimPayload = {
                 uid: activeUserAuth.uid,
@@ -8842,6 +9009,18 @@ if (userClaimForm) {
                 userClaimNotice.style.color = "#10b981";
             }
 
+            // Register in globalVerifiedUsersMap
+            if (typeof window !== "undefined") {
+                if (!window.globalVerifiedUsersMap) window.globalVerifiedUsersMap = new Map();
+                window.globalVerifiedUsersMap.set(normalizeDriverKey(matchedDriverData.driver), {
+                    driver: matchedDriverData.driver,
+                    email: activeUserAuth.email,
+                    uid: activeUserAuth.uid,
+                    isVerified: true,
+                    verifiedAt: new Date().toISOString()
+                });
+            }
+
             // Update in-memory pilot data in currentPilotos
             if (currentPilotos) {
                 const targetP = currentPilotos.find(p => (p.id || getPilotDocId(p.driver)) === matchedDriverDoc.id || normalizeDriverKey(p.driver) === normalizeDriverKey(matchedDriverData.driver));
@@ -8855,6 +9034,10 @@ if (userClaimForm) {
             activeUserData = { ...activeUserData, ...claimPayload };
             renderUserClaimState(activeUserData);
             syncUserClaimWithPilotos();
+
+            if (typeof renderAdminVerifyTab === "function") {
+                renderAdminVerifyTab(typeof adminSearchVerifyPilotInput !== "undefined" && adminSearchVerifyPilotInput ? adminSearchVerifyPilotInput.value : "");
+            }
 
         } catch (err) {
             console.error("Error al verificar código de piloto:", err);
@@ -8877,11 +9060,21 @@ if (userUnlinkDriverBtn) {
 
             const driverDocId = activeUserData.claimedDriverId || (activeUserData.claimedDriver ? getPilotDocId(activeUserData.claimedDriver) : null);
             if (driverDocId) {
-                batch.update(doc(db, "pilotos", driverDocId), {
+                batch.set(doc(db, "pilotos", driverDocId), {
                     claimedByEmail: null,
                     claimedByUid: null,
                     isVerified: false
-                });
+                }, { merge: true });
+            }
+            if (activeUserData.claimedDriver) {
+                const altId = getPilotDocId(activeUserData.claimedDriver);
+                if (altId && altId !== driverDocId) {
+                    batch.set(doc(db, "pilotos", altId), {
+                        claimedByEmail: null,
+                        claimedByUid: null,
+                        isVerified: false
+                    }, { merge: true });
+                }
             }
 
             const unlinkPayload = {
@@ -8898,8 +9091,8 @@ if (userUnlinkDriverBtn) {
 
             await batch.commit();
 
-            if (currentPilotos && driverDocId) {
-                const targetP = currentPilotos.find(p => (p.id || getPilotDocId(p.driver)) === driverDocId);
+            if (currentPilotos && (driverDocId || activeUserData.claimedDriver)) {
+                const targetP = currentPilotos.find(p => (p.id || getPilotDocId(p.driver)) === driverDocId || (activeUserData.claimedDriver && normalizeDriverKey(p.driver) === normalizeDriverKey(activeUserData.claimedDriver)));
                 if (targetP) {
                     targetP.claimedByEmail = null;
                     targetP.claimedByUid = null;
@@ -8907,13 +9100,95 @@ if (userUnlinkDriverBtn) {
                 }
             }
 
+            if (typeof window !== "undefined" && window.globalVerifiedUsersMap && activeUserData.claimedDriver) {
+                window.globalVerifiedUsersMap.delete(normalizeDriverKey(activeUserData.claimedDriver));
+            }
+
             activeUserData = { ...activeUserData, isVerified: false, claimedDriver: null };
             renderUserClaimState(activeUserData);
+            if (typeof renderAdminVerifyTab === "function") {
+                renderAdminVerifyTab(typeof adminSearchVerifyPilotInput !== "undefined" && adminSearchVerifyPilotInput ? adminSearchVerifyPilotInput.value : "");
+            }
 
         } catch (err) {
             console.error("Error al desvincular piloto:", err);
         }
     });
+}
+
+// Admin Panel - Refresh Verification Data from Firestore
+async function refreshAdminVerificationData() {
+    try {
+        if (typeof db !== "undefined") {
+            // 1. Fetch from 'usuarios' collection to ensure any verified pilot accounts are captured
+            const usersSnap = await getDocs(collection(db, "usuarios"));
+            if (!usersSnap.empty) {
+                if (typeof window !== "undefined") {
+                    if (!window.globalVerifiedUsersMap) window.globalVerifiedUsersMap = new Map();
+                }
+                usersSnap.forEach(uDoc => {
+                    const uData = uDoc.data();
+                    if (uData && (uData.isVerified || uData.claimedDriver)) {
+                        const dName = uData.claimedDriver || (uData.isVerified ? (uData.displayName || uDoc.id) : null);
+                        if (dName) {
+                            if (typeof window !== "undefined" && window.globalVerifiedUsersMap) {
+                                window.globalVerifiedUsersMap.set(normalizeDriverKey(dName), {
+                                    driver: dName,
+                                    email: uData.email || null,
+                                    uid: uData.uid || uDoc.id,
+                                    isVerified: uData.isVerified !== false,
+                                    verifiedAt: uData.verifiedAt || null,
+                                    avatarUrl: uData.avatarUrl || null,
+                                    cardColor: uData.cardColor || null,
+                                    customFlag: uData.customFlag || uData.flag || null,
+                                    bio: uData.bio || null,
+                                    socialTwitch: uData.socialTwitch || null,
+                                    socialYoutube: uData.socialYoutube || null,
+                                    socialTwitter: uData.socialTwitter || null,
+                                    socialDiscord: uData.socialDiscord || null
+                                });
+                            }
+                        }
+                    }
+                });
+            }
+
+            // 2. Fetch from 'pilotos' collection to ensure all verified flags and codes are captured
+            const pilotosSnap = await getDocs(collection(db, "pilotos"));
+            if (!pilotosSnap.empty) {
+                pilotosSnap.forEach(pDoc => {
+                    const pData = pDoc.data();
+                    const dName = pData.driver || pDoc.id;
+                    const norm = normalizeDriverKey(dName);
+                    if (pData.isVerified || pData.claimedByEmail || pData.claimedByUid) {
+                        if (typeof window !== "undefined" && window.globalVerifiedUsersMap) {
+                            const existing = window.globalVerifiedUsersMap.get(norm) || {};
+                            window.globalVerifiedUsersMap.set(norm, {
+                                ...existing,
+                                driver: dName,
+                                email: pData.claimedByEmail || existing.email || null,
+                                uid: pData.claimedByUid || existing.uid || null,
+                                isVerified: true
+                            });
+                        }
+                    }
+                    if (Array.isArray(currentPilotos)) {
+                        const target = currentPilotos.find(p => (p.id || getPilotDocId(p.driver)) === pDoc.id || normalizeDriverKey(p.driver) === norm);
+                        if (target) {
+                            if (pData.isVerified !== undefined) target.isVerified = !!pData.isVerified;
+                            if (pData.claimedByEmail !== undefined) target.claimedByEmail = pData.claimedByEmail;
+                            if (pData.claimedByUid !== undefined) target.claimedByUid = pData.claimedByUid;
+                            if (pData.verificationCode !== undefined) target.verificationCode = pData.verificationCode;
+                        }
+                    }
+                });
+            }
+        }
+    } catch (err) {
+        console.warn("Notice: refreshAdminVerificationData encountered non-blocking error:", err);
+    }
+
+    renderAdminVerifyTab(typeof adminSearchVerifyPilotInput !== "undefined" && adminSearchVerifyPilotInput ? adminSearchVerifyPilotInput.value : "");
 }
 
 // Admin Panel - Render Verification Tab
@@ -8922,13 +9197,26 @@ function renderAdminVerifyTab(filterTerm = "") {
 
     const list = (currentPilotos && currentPilotos.length > 0) ? currentPilotos : getSavedStandings();
 
+    // Ensure verified data from globalVerifiedUsersMap is merged into list items
+    if (typeof window !== "undefined" && window.globalVerifiedUsersMap && window.globalVerifiedUsersMap.size > 0) {
+        list.forEach(p => {
+            const norm = normalizeDriverKey(p.driver);
+            if (window.globalVerifiedUsersMap.has(norm)) {
+                const uInfo = window.globalVerifiedUsersMap.get(norm);
+                p.isVerified = true;
+                if (uInfo.email && !p.claimedByEmail) p.claimedByEmail = uInfo.email;
+                if (uInfo.uid && !p.claimedByUid) p.claimedByUid = uInfo.uid;
+            }
+        });
+    }
+
     // Calculate Verification Statistics & KPI Badges
     let verifiedCount = 0;
     let codeActiveCount = 0;
     let pendingCount = 0;
 
     list.forEach(p => {
-        if (p.isVerified || p.claimedByEmail) {
+        if (p.isVerified || p.claimedByEmail || p.claimedByUid) {
             verifiedCount++;
         } else if (p.verificationCode) {
             codeActiveCount++;
@@ -8949,9 +9237,10 @@ function renderAdminVerifyTab(filterTerm = "") {
     adminVerifyDriverSelect.innerHTML = `<option value="">-- Seleccionar piloto oficial --</option>`;
     list.forEach(p => {
         const pId = p.id || getPilotDocId(p.driver);
+        const isDriverVer = Boolean(p.isVerified || p.claimedByEmail || p.claimedByUid);
         const opt = document.createElement("option");
         opt.value = pId;
-        opt.textContent = `${p.driver} (${p.team})${p.isVerified ? " [VERIFICADO]" : (p.verificationCode ? " [CÓDIGO GENERADO]" : "")}`;
+        opt.textContent = `${p.driver} (${p.team})${isDriverVer ? " [VERIFICADO]" : (p.verificationCode ? " [CÓDIGO GENERADO]" : "")}`;
         if (pId === currentSelVal) opt.selected = true;
         adminVerifyDriverSelect.appendChild(opt);
     });
@@ -8961,7 +9250,7 @@ function renderAdminVerifyTab(filterTerm = "") {
     const searchKey = (filterTerm || (adminSearchVerifyPilotInput ? adminSearchVerifyPilotInput.value : "")).trim().toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
     
     const filtered = list.filter(p => {
-        const isVer = Boolean(p.isVerified || p.claimedByEmail);
+        const isVer = Boolean(p.isVerified || p.claimedByEmail || p.claimedByUid);
         const hasCode = Boolean(p.verificationCode && !isVer);
         const isPend = !isVer && !hasCode;
 
@@ -8992,10 +9281,11 @@ function renderAdminVerifyTab(filterTerm = "") {
 
     filtered.forEach((p, idx) => {
         const pId = p.id || getPilotDocId(p.driver);
+        const isDriverVer = Boolean(p.isVerified || p.claimedByEmail || p.claimedByUid);
         const tr = document.createElement("tr");
 
         let statusBadge = `<span class="verify-badge-pending">PENDIENTE</span>`;
-        if (p.isVerified || p.claimedByEmail) {
+        if (isDriverVer) {
             statusBadge = `<span class="verify-badge-verified">VERIFICADO</span>`;
         } else if (p.verificationCode) {
             statusBadge = `<span class="verify-badge-code">CÓDIGO ACTIVO</span>`;
@@ -9020,7 +9310,7 @@ function renderAdminVerifyTab(filterTerm = "") {
                 <div style="display: flex; gap: 4px; justify-content: center;">
                     <button type="button" class="btn btn-primary btn-sm btn-gen-code" data-pid="${pId}" title="Generar / Renovar Código" style="padding: 3px 8px; font-size: 11px;">⚡</button>
                     ${p.verificationCode ? `<button type="button" class="btn btn-secondary btn-sm btn-copy-code" data-code="${p.verificationCode}" title="Copiar Código" style="padding: 3px 8px; font-size: 11px;">📋</button>` : ""}
-                    ${(p.verificationCode || p.isVerified || p.claimedByEmail) ? `<button type="button" class="btn btn-danger-outline btn-sm btn-revoke-code" data-pid="${pId}" title="Revocar Código / Desvincular" style="padding: 3px 8px; font-size: 11px;">🗑️</button>` : ""}
+                    ${(p.verificationCode || isDriverVer) ? `<button type="button" class="btn btn-danger-outline btn-sm btn-revoke-code" data-pid="${pId}" title="Revocar Código / Desvincular" style="padding: 3px 8px; font-size: 11px;">🗑️</button>` : ""}
                 </div>
             </td>
         `;
@@ -9056,18 +9346,51 @@ function renderAdminVerifyTab(filterTerm = "") {
             if (!confirm(`¿Revocar el código y desvincular a ${pName}?`)) return;
 
             try {
-                await updateDoc(doc(db, "pilotos", pId), {
+                const batch = writeBatch(db);
+                batch.set(doc(db, "pilotos", pId), {
                     verificationCode: null,
                     claimedByEmail: null,
                     claimedByUid: null,
                     isVerified: false
-                });
+                }, { merge: true });
+
+                const altDocId = pilot ? getPilotDocId(pilot.driver) : null;
+                if (altDocId && altDocId !== pId) {
+                    batch.set(doc(db, "pilotos", altDocId), {
+                        verificationCode: null,
+                        claimedByEmail: null,
+                        claimedByUid: null,
+                        isVerified: false
+                    }, { merge: true });
+                }
+
+                if (pilot && pilot.claimedByUid) {
+                    batch.set(doc(db, "usuarios", pilot.claimedByUid), {
+                        isVerified: false,
+                        claimedDriver: null,
+                        claimedDriverId: null,
+                        claimedTeam: null
+                    }, { merge: true });
+                }
+                if (pilot && pilot.claimedByEmail) {
+                    batch.set(doc(db, "usuarios", getUserDocId(pilot.claimedByEmail)), {
+                        isVerified: false,
+                        claimedDriver: null,
+                        claimedDriverId: null,
+                        claimedTeam: null
+                    }, { merge: true });
+                }
+
+                await batch.commit();
 
                 if (pilot) {
                     pilot.verificationCode = null;
                     pilot.claimedByEmail = null;
                     pilot.claimedByUid = null;
                     pilot.isVerified = false;
+                }
+                if (typeof window !== "undefined" && window.globalVerifiedUsersMap && pilot) {
+                    window.globalVerifiedUsersMap.delete(normalizeDriverKey(pilot.driver));
                 }
 
                 renderAdminVerifyTab(adminSearchVerifyPilotInput ? adminSearchVerifyPilotInput.value : "");
@@ -9092,10 +9415,23 @@ async function generateAndSaveCodeForPilotId(pId) {
             adminGenerateNotice.style.color = "#8b949e";
         }
 
-        // Save directly to Firestore
-        await updateDoc(doc(db, "pilotos", pId), {
+        // Save directly to Firestore with merge: true to avoid crashes
+        const batch = writeBatch(db);
+        batch.set(doc(db, "pilotos", pId), {
+            driver: pilot.driver,
+            team: pilot.team || "Independent",
             verificationCode: newCode
-        });
+        }, { merge: true });
+
+        const altId = getPilotDocId(pilot.driver);
+        if (altId && altId !== pId) {
+            batch.set(doc(db, "pilotos", altId), {
+                driver: pilot.driver,
+                team: pilot.team || "Independent",
+                verificationCode: newCode
+            }, { merge: true });
+        }
+        await batch.commit();
 
         pilot.verificationCode = newCode;
 
@@ -9112,7 +9448,7 @@ async function generateAndSaveCodeForPilotId(pId) {
     } catch (err) {
         console.error("Error al guardar código en Firestore:", err);
         if (adminGenerateNotice) {
-            adminGenerateNotice.textContent = "Error al guardar el código en Firestore.";
+            adminGenerateNotice.textContent = "Error al guardar el código en Firestore: " + err.message;
             adminGenerateNotice.style.color = "#f85149";
         }
     }
