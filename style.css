@@ -14450,6 +14450,109 @@ input[type="text"]:focus, input[type="email"]:focus, input[type="password"]:focu
     }
 }
 
+/* =========================================================
+   ADMIN RACE STATUS BAR & DYNAMIC CALENDAR CONTROLS
+========================================================= */
+.admin-race-status-bar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+    background: linear-gradient(135deg, rgba(20, 24, 33, 0.95), rgba(13, 16, 23, 0.98));
+    border: 1px solid rgba(214, 180, 92, 0.2);
+    border-left: 4px solid var(--gold, #d6b45c);
+    border-radius: 8px;
+    padding: 14px 18px;
+    margin: 16px 0 20px 0;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+}
+
+.admin-race-status-left {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 12px;
+}
+
+.admin-race-status-label {
+    font-family: "Barlow Condensed", sans-serif;
+    font-size: 13px;
+    font-weight: 800;
+    letter-spacing: 1px;
+    color: #94a3b8;
+    text-transform: uppercase;
+}
+
+.admin-status-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-family: "Barlow Condensed", sans-serif;
+    font-weight: 800;
+    font-size: 12px;
+    letter-spacing: 1px;
+    padding: 5px 12px;
+    border-radius: 4px;
+    text-transform: uppercase;
+    transition: all 0.2s ease;
+}
+
+.admin-status-pill.status-completed {
+    background: rgba(46, 160, 67, 0.18);
+    color: #3fb950;
+    border: 1px solid rgba(46, 160, 67, 0.35);
+}
+
+.admin-status-pill.status-upcoming {
+    background: rgba(56, 139, 253, 0.15);
+    color: #58a6ff;
+    border: 1px solid rgba(56, 139, 253, 0.3);
+}
+
+.admin-status-pill.status-next {
+    background: rgba(214, 180, 92, 0.18);
+    color: var(--gold-light, #f1d78a);
+    border: 1px solid rgba(214, 180, 92, 0.4);
+    box-shadow: 0 0 10px rgba(214, 180, 92, 0.2);
+}
+
+.admin-race-status-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.admin-auto-sync-banner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    background: rgba(214, 180, 92, 0.08);
+    border: 1px dashed rgba(214, 180, 92, 0.3);
+    border-radius: 6px;
+    padding: 10px 14px;
+    margin-bottom: 16px;
+    font-size: 12px;
+    color: #cbd5e1;
+}
+
+.admin-auto-sync-banner strong {
+    color: var(--gold-light, #f1d78a);
+}
+
+@media (max-width: 680px) {
+    .admin-race-status-bar {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    .admin-race-status-actions {
+        width: 100%;
+        justify-content: flex-end;
+    }
+}
+
+
 
 
 

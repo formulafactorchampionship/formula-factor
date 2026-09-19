@@ -132,6 +132,22 @@ let currentSettings = null;
 let currentOpenRaceKey = null;
 const pendingTeamChanges = new Map();
 
+function isNextRaceTbd(race = currentNextRace) {
+    if (!race) return false;
+    if (race.isTbd === true || race.isTbd === "true") return true;
+    if (race.dateTime === "TBD" || race.dateTime === "TBA" || !race.dateTime) {
+        return true;
+    }
+    if (typeof race.dateText === "string") {
+        const dUpper = race.dateText.trim().toUpperCase();
+        if (dUpper === "TBD" || dUpper === "TBA" || dUpper.startsWith("TBD") || dUpper.startsWith("TBA") || dUpper.includes("POR DETERMINAR") || dUpper.includes("POR CONFIRMAR") || dUpper.includes("TO BE DETERMINED")) {
+            return true;
+        }
+    }
+    return false;
+}
+window.isNextRaceTbd = isNextRaceTbd;
+
 function getPilotDocId(driverName) {
     if (!driverName) return "pilot_" + Date.now();
     return driverName.trim().toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9_-]/g, '_') || ("pilot_" + Date.now());
@@ -204,7 +220,10 @@ function getMadridEpochMs(dateTimeStr) {
 }
 
 function getSavedRaceTimestamp() {
-    if (currentNextRace && currentNextRace.dateTime) {
+    if (isNextRaceTbd(currentNextRace)) {
+        return null;
+    }
+    if (currentNextRace && currentNextRace.dateTime && currentNextRace.dateTime !== "TBD" && currentNextRace.dateTime !== "TBA") {
         const parsed = getMadridEpochMs(currentNextRace.dateTime);
         if (!isNaN(parsed)) return parsed;
     }
@@ -214,10 +233,6 @@ function getSavedRaceTimestamp() {
 let raceDate = getSavedRaceTimestamp();
 
 function updateCountdown() {
-
-    const now = Date.now();
-    const difference = raceDate - now;
-
     const daysEl = document.getElementById("days");
     const hoursEl = document.getElementById("hours");
     const minsEl = document.getElementById("mins");
@@ -225,13 +240,22 @@ function updateCountdown() {
 
     if (!daysEl || !hoursEl || !minsEl || !secsEl) return;
 
-    if (difference <= 0) {
+    if (isNextRaceTbd(currentNextRace) || raceDate === null || isNaN(raceDate)) {
+        daysEl.textContent = "--";
+        hoursEl.textContent = "--";
+        minsEl.textContent = "--";
+        secsEl.textContent = "--";
+        return;
+    }
 
+    const now = Date.now();
+    const difference = raceDate - now;
+
+    if (difference <= 0) {
         daysEl.textContent = "00";
         hoursEl.textContent = "00";
         minsEl.textContent = "00";
         secsEl.textContent = "00";
-
         return;
     }
 
@@ -2038,6 +2062,9 @@ function setLanguage(lang) {
     if (typeof currentOpenModalTeam !== "undefined" && currentOpenModalTeam) {
         openTeamStatsModal(currentOpenModalTeam);
     }
+    if (typeof refreshAllCalendarCards === "function") {
+        refreshAllCalendarCards();
+    }
 }
 
 
@@ -2450,12 +2477,197 @@ const seasonRacesMeta = {
     silverstone: { round: "ROUND 08", title: "SILVERSTONE", location: "SILVERSTONE · UNITED KINGDOM", date: "7 SEP" },
     hockenheim: { round: "ROUND 09", title: "HOCKENHEIM", location: "HOCKENHEIMRING · GERMANY", date: "13 SEP" },
     nurburgring: { round: "ROUND 10", title: "NÜRBURGRING GP", location: "NÜRBURGRING · EUROPE", date: "20 SEP" },
-    hungary: { round: "ROUND 11", title: "HUNGARORING", location: "BUDAPEST · HUNGARY", date: "TBA" },
-    belgium: { round: "ROUND 12", title: "SPA-FRANCORCHAMPS", location: "SPA · BELGIUM", date: "TBA" },
-    singapore: { round: "ROUND 13", title: "SINGAPORE", location: "MARINA BAY · SINGAPORE", date: "TBA" },
-    cota: { round: "ROUND 14", title: "COTA", location: "AUSTIN · USA", date: "TBA" },
-    brazil: { round: "ROUND 15", title: "BRAZIL", location: "INTERLAGOS · BRAZIL", date: "TBA" }
+    hungary: { round: "ROUND 11", title: "HUNGARORING", location: "BUDAPEST · HUNGARY", date: "27 SEP" },
+    belgium: { round: "ROUND 12", title: "SPA-FRANCORCHAMPS", location: "SPA · BELGIUM", date: "04 OCT" },
+    singapore: { round: "ROUND 13", title: "SINGAPORE", location: "MARINA BAY · SINGAPORE", date: "11 OCT" },
+    cota: { round: "ROUND 14", title: "COTA", location: "AUSTIN · USA", date: "18 OCT" },
+    brazil: { round: "ROUND 15", title: "BRAZIL", location: "INTERLAGOS · BRAZIL", date: "25 OCT" }
 };
+
+const SEASON_RACE_ORDER = [
+    "australia",
+    "malaysia",
+    "bahrain",
+    "turkey",
+    "spain",
+    "italy",
+    "austria",
+    "silverstone",
+    "hockenheim",
+    "nurburgring",
+    "hungary",
+    "belgium",
+    "singapore",
+    "cota",
+    "brazil"
+];
+
+function isRaceFinished(raceData) {
+    if (!raceData) return false;
+    if (raceData.status === "COMPLETED") return true;
+    if (raceData.status === "UPCOMING" || raceData.status === "NEXT RACE") return false;
+    return Boolean(
+        raceData.winner && 
+        raceData.winner !== "TBA" && 
+        Array.isArray(raceData.drivers) && 
+        raceData.drivers.length > 0
+    );
+}
+
+function determineNextUpcomingRaceKey(racesMap = raceResults) {
+    if (!racesMap) racesMap = raceResults;
+    for (const key of SEASON_RACE_ORDER) {
+        const rData = racesMap[key];
+        if (!isRaceFinished(rData)) {
+            return key;
+        }
+    }
+    return "brazil";
+}
+
+function refreshAllCalendarCards() {
+    const nextKey = determineNextUpcomingRaceKey(raceResults);
+    const curLang = typeof currentLanguage !== "undefined" ? currentLanguage : "es";
+    const isEn = curLang === "en";
+
+    SEASON_RACE_ORDER.forEach((key, idx) => {
+        const rData = raceResults[key] || seasonRacesMeta[key];
+        let card = document.querySelector(`.calendar-card[data-race="${key}"]`);
+        if (!card) {
+            const meta = seasonRacesMeta[key];
+            if (meta && meta.round) {
+                const roundNum = meta.round.replace(/ROUND\s*/i, "").trim();
+                const cards = document.querySelectorAll(".calendar-card");
+                cards.forEach(c => {
+                    const numEl = c.querySelector(".calendar-number");
+                    if (numEl && numEl.textContent.trim() === roundNum) {
+                        card = c;
+                    }
+                });
+            }
+        }
+        if (!card) return;
+
+        card.setAttribute("data-race", key);
+
+        const isCompleted = isRaceFinished(rData);
+        const isNext = (!isCompleted && key === nextKey);
+        const statusEl = card.querySelector(".calendar-status");
+        const dateEl = card.querySelector(".calendar-date");
+
+        if (rData && rData.date && rData.date !== "TBA" && dateEl) {
+            dateEl.textContent = rData.date;
+        }
+
+        // Reset classes
+        card.classList.remove("completed", "next", "upcoming", "race-link");
+
+        // Clear dynamic elements
+        const oldHint = card.querySelector(".click-hint");
+        if (oldHint) oldHint.remove();
+        const oldNote = card.querySelector(".calendar-action-note");
+        if (oldNote) oldNote.remove();
+
+        if (isCompleted) {
+            card.classList.add("completed", "race-link");
+            if (statusEl) {
+                statusEl.textContent = isEn ? "COMPLETED" : "COMPLETADA";
+            }
+            const hint = document.createElement("span");
+            hint.className = "click-hint";
+            hint.textContent = (translations[curLang]?.calendar?.viewResults) || (isEn ? "RESULTS →" : "RESULTADOS →");
+            const footer = card.querySelector(".calendar-card-footer") || card;
+            footer.appendChild(hint);
+            card.onclick = () => openRace(key);
+        } else if (isNext) {
+            card.classList.add("next", "race-link");
+            if (statusEl) {
+                statusEl.textContent = isEn ? "NEXT RACE" : "PRÓXIMA CARRERA";
+            }
+            const note = document.createElement("span");
+            note.className = "calendar-action-note";
+            note.id = "nextRaceActionNote";
+            note.textContent = isEn ? "THIS WEEKEND" : "ESTE FIN DE SEMANA";
+            const footer = card.querySelector(".calendar-card-footer") || card;
+            footer.appendChild(note);
+            card.onclick = () => openRace(key);
+        } else {
+            card.classList.add("upcoming", "race-link");
+            const isFinal = (key === "brazil" || idx === 14);
+            if (statusEl) {
+                if (isFinal) {
+                    statusEl.textContent = isEn ? "FINAL ROUND" : "RONDA FINAL";
+                } else {
+                    statusEl.textContent = isEn ? "UPCOMING" : "PRÓXIMAMENTE";
+                }
+            }
+            card.onclick = () => openRace(key);
+        }
+
+        // Replay button on card if replayUrl exists
+        let replayBtn = card.querySelector(".card-replay-btn");
+        if (rData && rData.replayUrl && rData.replayUrl.trim() !== "") {
+            if (!replayBtn) {
+                replayBtn = document.createElement("a");
+                replayBtn.className = "card-replay-btn";
+                replayBtn.target = "_blank";
+                replayBtn.rel = "noopener noreferrer";
+                replayBtn.setAttribute("aria-label", "Ver repetición de la carrera");
+                replayBtn.innerHTML = `<svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>`;
+                const header = card.querySelector(".calendar-card-header") || card;
+                header.appendChild(replayBtn);
+            }
+            replayBtn.href = rData.replayUrl.trim();
+            replayBtn.title = isEn ? "Watch race replay" : "Ver repetición de la carrera";
+            replayBtn.onclick = (e) => { e.stopPropagation(); };
+        } else if (replayBtn) {
+            replayBtn.remove();
+        }
+    });
+}
+
+async function syncCalendarAndNextRace(autoSaveFirestore = true) {
+    const nextKey = determineNextUpcomingRaceKey(raceResults);
+    refreshAllCalendarCards();
+
+    if (!nextKey) return;
+
+    const preset = (typeof OFFICIAL_GP_PRESETS !== "undefined" && OFFICIAL_GP_PRESETS[nextKey]) ? OFFICIAL_GP_PRESETS[nextKey] : {};
+    const meta = seasonRacesMeta[nextKey] || {};
+    const rData = raceResults[nextKey] || {};
+
+    const rawDateText = rData.dateText || preset.dateText || (meta.date && meta.date !== "TBA" ? `${meta.date} · 16:30 CEST` : "TBD · Por Determinar");
+    const isTbd = Boolean(rData.isTbd || preset.isTbd || preset.dateTime === "TBD" || (rawDateText && (rawDateText.includes("TBA") || rawDateText.includes("TBD") || rawDateText.toUpperCase().includes("POR DETERMINAR"))));
+
+    const computedNextRace = {
+        round: meta.round || preset.round || `ROUND ${SEASON_RACE_ORDER.indexOf(nextKey) + 1}`,
+        title: preset.title || (meta.title ? `${meta.title} GP` : nextKey.toUpperCase()),
+        location: preset.location || meta.location || "CIRCUIT",
+        dateText: rawDateText,
+        dateTime: isTbd ? "TBD" : (rData.dateTime || preset.dateTime || (meta.dateTime || "2026-09-20T16:30")),
+        weatherTemp: rData.weatherTemp || preset.weatherTemp || "22°C",
+        weatherCondition: rData.weatherCondition || preset.weatherCondition || "sunny",
+        isTbd: isTbd
+    };
+
+    currentNextRace = computedNextRace;
+    renderNextRaceOnPage(currentNextRace);
+
+    if (adminPanelOverlay && adminPanelOverlay.classList.contains("active")) {
+        if (typeof populateAdminForms === "function") {
+            populateAdminForms();
+        }
+    }
+
+    if (autoSaveFirestore && typeof db !== "undefined") {
+        try {
+            await setDoc(doc(db, "configuracion", "proxima_carrera"), computedNextRace);
+        } catch (err) {
+            console.error("Error auto-saving updated next race to Firestore:", err);
+        }
+    }
+}
+
 
 
 /* =========================================================
@@ -3018,9 +3230,14 @@ const adminRaceRound = document.getElementById("adminRaceRound");
 const adminRaceTitle = document.getElementById("adminRaceTitle");
 const adminRaceLocation = document.getElementById("adminRaceLocation");
 const adminRaceDateText = document.getElementById("adminRaceDateText");
+const adminQuickTbdDateTextBtn = document.getElementById("adminQuickTbdDateTextBtn");
 const adminRaceTemp = document.getElementById("adminRaceTemp");
 const adminRaceWeather = document.getElementById("adminRaceWeather");
 const adminRaceDateTime = document.getElementById("adminRaceDateTime");
+const adminRaceIsTbd = document.getElementById("adminRaceIsTbd");
+const adminSetTbdQuickBtn = document.getElementById("adminSetTbdQuickBtn");
+const adminRaceDateTimeHint = document.getElementById("adminRaceDateTimeHint");
+const adminQuickTbdResultsDateBtn = document.getElementById("adminQuickTbdResultsDateBtn");
 const raceSaveNotice = document.getElementById("raceSaveNotice");
 
 // Live Preview Replica Elements
@@ -3092,6 +3309,11 @@ const adminSaveDriversBtn = document.getElementById("adminSaveDriversBtn");
 // Race Results Target & Admin Elements
 const raceResultsForm = document.getElementById("raceResultsForm");
 const adminSelectRace = document.getElementById("adminSelectRace");
+const adminRaceStatusBar = document.getElementById("adminRaceStatusBar");
+const adminRaceStatusBadge = document.getElementById("adminRaceStatusBadge");
+const adminRaceStatusSelect = document.getElementById("adminRaceStatusSelect");
+const adminToggleRaceStatusBtn = document.getElementById("adminToggleRaceStatusBtn");
+const adminToggleRaceStatusBtnLabel = document.getElementById("adminToggleRaceStatusBtnLabel");
 const adminFastestDriver = document.getElementById("adminFastestDriver");
 const adminFastestTime = document.getElementById("adminFastestTime");
 const adminPoleDriver = document.getElementById("adminPoleDriver");
@@ -3242,15 +3464,23 @@ function renderNextRaceOnPage(race) {
         weatherPillEl.className = `next-race-weather-pill ${themeClass}`;
     }
 
-    // Convert date and time to the selected timezone
-    const raceDateTime = race.dateTime || "2026-09-20T16:30";
-    const converted = formatRaceForTimezone(raceDateTime, selectedTimezone, currentLanguage);
+    // Check if the race date is TBD / To Be Determined
+    const isTbd = isNextRaceTbd(race);
 
-    if (converted) {
+    if (isTbd) {
+        raceDate = null;
         if (nextRaceDateTextEl) {
-            nextRaceDateTextEl.innerHTML = converted.dateTextCard;
+            const rawText = race.dateText ? race.dateText.trim() : "";
+            if (rawText && !["20 SEP · 16:30 CEST", "20 SEP · 16:30"].includes(rawText)) {
+                nextRaceDateTextEl.innerHTML = `<span style="color:var(--gold-light, #f1d78a); font-weight:700;">TBD</span> <span>${escapeHtml(rawText.replace(/^TBD\s*[·–-]?\s*/i, "")) || (isEn ? "TO BE DETERMINED" : "POR DETERMINAR")}</span>`;
+            } else {
+                nextRaceDateTextEl.innerHTML = `<span style="color:var(--gold-light, #f1d78a); font-weight:700;">TBD</span> <span>${isEn ? "TO BE CONFIRMED" : "POR DETERMINAR"}</span>`;
+            }
         }
-        raceDate = converted.epochMs;
+        const rstLabel = document.getElementById("raceStartTimeLabel");
+        if (rstLabel) {
+            rstLabel.textContent = isEn ? "SCHEDULE STATUS" : "ESTADO DE FECHA";
+        }
         updateCountdown();
 
         // Update race feature card in Races section
@@ -3261,20 +3491,55 @@ function renderNextRaceOnPage(race) {
         const rfLocation = document.getElementById("raceFeatureLocation");
         const rfRoundNum = document.getElementById("raceFeatureRoundNum");
 
-        if (rfDay) rfDay.textContent = converted.day;
-        if (rfMonth) rfMonth.textContent = converted.month;
-        if (rfTime) rfTime.textContent = `${converted.time} ${converted.tzName}`;
+        if (rfDay) rfDay.textContent = "TBD";
+        if (rfMonth) rfMonth.textContent = "TBA";
+        if (rfTime) rfTime.textContent = isEn ? "TO BE DETERMINED" : "POR DETERMINAR";
         if (rfTitle && race.title) rfTitle.textContent = race.title;
         if (rfLocation && race.location) rfLocation.textContent = race.location;
         if (rfRoundNum && race.round) {
             const cleanRound = race.round.replace(/ROUND\s*/i, "").trim();
             rfRoundNum.textContent = cleanRound || race.round;
         }
-    } else if (nextRaceDateTextEl) {
-        if (race.dateText && race.dateText.includes(" CEST")) {
-            nextRaceDateTextEl.innerHTML = `${race.dateText.replace(" CEST", "")} <span>CEST</span>`;
-        } else {
-            nextRaceDateTextEl.textContent = race.dateText || "";
+    } else {
+        const raceDateTime = race.dateTime || "2026-09-20T16:30";
+        const converted = formatRaceForTimezone(raceDateTime, selectedTimezone, currentLanguage);
+
+        if (converted) {
+            if (nextRaceDateTextEl) {
+                nextRaceDateTextEl.innerHTML = converted.dateTextCard;
+            }
+            raceDate = converted.epochMs;
+            updateCountdown();
+
+            const rstLabel = document.getElementById("raceStartTimeLabel");
+            if (rstLabel) {
+                const curLangDict = translations[currentLanguage] || translations.es;
+                rstLabel.textContent = curLangDict.nextRace?.raceStartTime || (isEn ? "START TIME" : "HORA DE INICIO");
+            }
+
+            // Update race feature card in Races section
+            const rfDay = document.getElementById("raceFeatureDay");
+            const rfMonth = document.getElementById("raceFeatureMonth");
+            const rfTime = document.getElementById("raceFeatureTime");
+            const rfTitle = document.getElementById("raceFeatureTitle");
+            const rfLocation = document.getElementById("raceFeatureLocation");
+            const rfRoundNum = document.getElementById("raceFeatureRoundNum");
+
+            if (rfDay) rfDay.textContent = converted.day;
+            if (rfMonth) rfMonth.textContent = converted.month;
+            if (rfTime) rfTime.textContent = `${converted.time} ${converted.tzName}`;
+            if (rfTitle && race.title) rfTitle.textContent = race.title;
+            if (rfLocation && race.location) rfLocation.textContent = race.location;
+            if (rfRoundNum && race.round) {
+                const cleanRound = race.round.replace(/ROUND\s*/i, "").trim();
+                rfRoundNum.textContent = cleanRound || race.round;
+            }
+        } else if (nextRaceDateTextEl) {
+            if (race.dateText && race.dateText.includes(" CEST")) {
+                nextRaceDateTextEl.innerHTML = `${race.dateText.replace(" CEST", "")} <span>CEST</span>`;
+            } else {
+                nextRaceDateTextEl.textContent = race.dateText || "";
+            }
         }
     }
 
@@ -5987,100 +6252,14 @@ function getCustomRaceResults() {
 
 function initRaceResults() {
     raceResults = { ...defaultRaceResults };
-    Object.keys(raceResults).forEach(raceKey => {
-        updateCalendarCardForRace(raceKey, raceResults[raceKey]);
-    });
+    refreshAllCalendarCards();
 }
 
 function updateCalendarCardForRace(raceKey, raceData) {
-    let card = document.querySelector(`.calendar-card[data-race="${raceKey}"]`);
-    if (!card) {
-        const meta = seasonRacesMeta[raceKey];
-        if (meta) {
-            const roundNumber = meta.round.replace("ROUND ", "").trim();
-            const cards = document.querySelectorAll(".calendar-card");
-            cards.forEach(c => {
-                const numEl = c.querySelector(".calendar-number");
-                if (numEl && numEl.textContent.trim() === roundNumber) {
-                    card = c;
-                }
-            });
-        }
+    if (raceKey && raceData) {
+        raceResults[raceKey] = raceData;
     }
-
-    if (!card) return;
-
-    card.setAttribute("data-race", raceKey);
-    const isCompleted = raceData && (
-        raceData.status === "COMPLETED" || 
-        (raceData.drivers && raceData.drivers.length > 0 && raceData.winner && raceData.winner !== "TBA")
-    );
-
-    const statusEl = card.querySelector(".calendar-status");
-    const dateEl = card.querySelector(".calendar-date");
-    if (raceData && raceData.date && dateEl) {
-        dateEl.textContent = raceData.date;
-    }
-
-    if (isCompleted) {
-        card.classList.remove("upcoming", "next");
-        card.classList.add("completed", "race-link");
-        if (statusEl) statusEl.textContent = "COMPLETED";
-
-        let hint = card.querySelector(".click-hint");
-        if (!hint) {
-            hint = document.createElement("span");
-            hint.className = "click-hint";
-            const curLang = typeof currentLanguage !== "undefined" ? currentLanguage : "es";
-            hint.textContent = (translations[curLang]?.calendar?.viewResults) || "RESULTS →";
-            const footer = card.querySelector(".calendar-card-footer") || card;
-            footer.appendChild(hint);
-        }
-
-        card.onclick = () => openRace(raceKey);
-    } else {
-        card.classList.remove("completed", "race-link");
-        let hint = card.querySelector(".click-hint");
-        if (hint) hint.remove();
-        card.onclick = null;
-
-        const roundNumber = card.querySelector(".calendar-number")?.textContent?.trim();
-        if (roundNumber === "10") {
-            card.classList.add("next");
-            if (statusEl) statusEl.textContent = "NEXT RACE";
-        } else if (roundNumber === "15") {
-            card.classList.add("upcoming");
-            if (statusEl) statusEl.textContent = "FINAL ROUND";
-        } else {
-            card.classList.add("upcoming");
-            if (statusEl) statusEl.textContent = "UPCOMING";
-        }
-    }
-
-    // Corner Replay Button on Card (as requested in user image)
-    let replayBtn = card.querySelector(".card-replay-btn");
-    if (raceData && raceData.replayUrl && raceData.replayUrl.trim() !== "") {
-        if (!replayBtn) {
-            replayBtn = document.createElement("a");
-            replayBtn.className = "card-replay-btn";
-            replayBtn.target = "_blank";
-            replayBtn.rel = "noopener noreferrer";
-            replayBtn.setAttribute("aria-label", "Ver repetición de la carrera");
-            replayBtn.innerHTML = `<svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>`;
-            
-            const header = card.querySelector(".calendar-card-header") || card;
-            header.appendChild(replayBtn);
-        }
-        replayBtn.href = raceData.replayUrl.trim();
-        const curLang = typeof currentLanguage !== "undefined" ? currentLanguage : "es";
-        replayBtn.title = curLang === "en" ? "Watch race replay" : "Ver repetición de la carrera";
-        
-        replayBtn.onclick = (e) => {
-            e.stopPropagation();
-        };
-    } else if (replayBtn) {
-        replayBtn.remove();
-    }
+    refreshAllCalendarCards();
 }
 
 // --- Official Driver Roster Management ---
@@ -6464,12 +6643,29 @@ function populateRaceResultsEditor(raceKey) {
         title: raceKey.toUpperCase(),
         location: "",
         date: "TBA",
+        status: "UPCOMING",
         winner: "TBA",
         pole: "TBA",
         fastest: "TBA",
         driverDay: "TBA",
         drivers: []
     };
+
+    // Update Race Status Controls & Badges
+    const completed = isRaceFinished(race);
+    if (adminRaceStatusSelect) {
+        adminRaceStatusSelect.value = completed ? "COMPLETED" : "UPCOMING";
+    }
+    if (adminRaceStatusBadge) {
+        adminRaceStatusBadge.className = `admin-status-pill ${completed ? "status-completed" : "status-upcoming"}`;
+        adminRaceStatusBadge.textContent = completed ? "🏁 FINALIZADA / ACABADA" : "⏳ PRÓXIMA / PENDIENTE";
+    }
+    if (adminToggleRaceStatusBtnLabel) {
+        adminToggleRaceStatusBtnLabel.textContent = completed ? "Marcar como Pendiente" : "Marcar como Acabada";
+    }
+    if (adminToggleRaceStatusBtn) {
+        adminToggleRaceStatusBtn.className = completed ? "btn btn-secondary btn-sm" : "btn btn-primary btn-sm";
+    }
 
     // Fastest Lap (Vuelta Rápida)
     let fastestDriver = "";
@@ -6516,21 +6712,21 @@ function populateRaceResultsEditor(raceKey) {
 
 // Official GP Presets Map for Quick Loader
 const OFFICIAL_GP_PRESETS = {
-    australia: { round: "ROUND 01", title: "AUSTRALIAN GP", location: "MELBOURNE · ALBERT PARK", dateText: "28 MAR · 17:00 CEST", weatherTemp: "24°C", weatherCondition: "sunny" },
-    malaysia: { round: "ROUND 02", title: "MALAYSIAN GP", location: "SEPANG · KUALA LUMPUR", dateText: "04 APR · 16:00 CEST", weatherTemp: "31°C", weatherCondition: "partly-cloudy" },
-    bahrain: { round: "ROUND 03", title: "BAHRAIN GP", location: "SAKHIR · DESERT CIRCUIT", dateText: "14 MAR · 18:00 CEST", weatherTemp: "28°C", weatherCondition: "sunny" },
-    turkey: { round: "ROUND 04", title: "TURKISH GP", location: "ISTANBUL PARK · TURKEY", dateText: "30 MAY · 15:00 CEST", weatherTemp: "25°C", weatherCondition: "sunny" },
-    spain: { round: "ROUND 05", title: "SPANISH GP", location: "CIRCUIT DE BARCELONA-CATALUNYA", dateText: "09 MAY · 15:00 CEST", weatherTemp: "23°C", weatherCondition: "sunny" },
-    italy: { round: "ROUND 06", title: "ITALIAN GP", location: "AUTODROMO NAZIONALE MONZA", dateText: "12 SEP · 15:00 CEST", weatherTemp: "26°C", weatherCondition: "sunny" },
-    austria: { round: "ROUND 07", title: "AUSTRIAN GP", location: "RED BULL RING · SPIELBERG", dateText: "04 JUL · 15:00 CEST", weatherTemp: "21°C", weatherCondition: "partly-cloudy" },
-    silverstone: { round: "ROUND 08", title: "BRITISH GP", location: "SILVERSTONE CIRCUIT · UK", dateText: "11 JUL · 16:00 CEST", weatherTemp: "19°C", weatherCondition: "cloudy" },
-    hockenheim: { round: "ROUND 09", title: "GERMAN GP", location: "HOCKENHEIMRING · GERMANY", dateText: "25 JUL · 15:00 CEST", weatherTemp: "24°C", weatherCondition: "sunny" },
-    nurburgring: { round: "ROUND 10", title: "NÜRBURGRING GP", location: "NÜRBURGRING · EUROPE", dateText: "20 SEP · 16:30 CEST", weatherTemp: "22°C", weatherCondition: "sunny" },
-    hungary: { round: "ROUND 11", title: "HUNGARIAN GP", location: "HUNGARORING · BUDAPEST", dateText: "01 AUG · 15:00 CEST", weatherTemp: "29°C", weatherCondition: "sunny" },
-    belgium: { round: "ROUND 12", title: "BELGIAN GP", location: "CIRCUIT DE SPA-FRANCORCHAMPS", dateText: "29 AUG · 15:00 CEST", weatherTemp: "18°C", weatherCondition: "rainy" },
-    singapore: { round: "ROUND 13", title: "SINGAPORE GP", location: "MARINA BAY STREET CIRCUIT", dateText: "26 SEP · 20:00 CEST", weatherTemp: "30°C", weatherCondition: "partly-cloudy" },
-    cota: { round: "ROUND 14", title: "UNITED STATES GP", location: "CIRCUIT OF THE AMERICAS · AUSTIN", dateText: "24 OCT · 20:00 CEST", weatherTemp: "27°C", weatherCondition: "sunny" },
-    brazil: { round: "ROUND 15", title: "BRAZILIAN GP", location: "AUTÓDROMO JOSÉ CARLOS PACE · INTERLAGOS", dateText: "07 NOV · 18:00 CEST", weatherTemp: "25°C", weatherCondition: "rainy" }
+    australia: { round: "ROUND 01", title: "AUSTRALIAN GP", location: "MELBOURNE · ALBERT PARK", dateText: "14 JUN · 16:30 CEST", dateTime: "2026-06-14T16:30", weatherTemp: "24°C", weatherCondition: "sunny" },
+    malaysia: { round: "ROUND 02", title: "MALAYSIAN GP", location: "SEPANG · KUALA LUMPUR", dateText: "28 JUN · 16:30 CEST", dateTime: "2026-06-28T16:30", weatherTemp: "31°C", weatherCondition: "partly-cloudy" },
+    bahrain: { round: "ROUND 03", title: "BAHRAIN GP", location: "SAKHIR · DESERT CIRCUIT", dateText: "12 JUL · 16:30 CEST", dateTime: "2026-07-12T16:30", weatherTemp: "28°C", weatherCondition: "sunny" },
+    turkey: { round: "ROUND 04", title: "TURKISH GP", location: "ISTANBUL PARK · TURKEY", dateText: "19 JUL · 16:30 CEST", dateTime: "2026-07-19T16:30", weatherTemp: "25°C", weatherCondition: "sunny" },
+    spain: { round: "ROUND 05", title: "SPANISH GP", location: "CIRCUIT DE BARCELONA-CATALUNYA", dateText: "09 AUG · 16:30 CEST", dateTime: "2026-08-09T16:30", weatherTemp: "23°C", weatherCondition: "sunny" },
+    italy: { round: "ROUND 06", title: "ITALIAN GP", location: "AUTODROMO NAZIONALE MONZA", dateText: "17 AUG · 16:30 CEST", dateTime: "2026-08-17T16:30", weatherTemp: "26°C", weatherCondition: "sunny" },
+    austria: { round: "ROUND 07", title: "AUSTRIAN GP", location: "RED BULL RING · SPIELBERG", dateText: "23 AUG · 16:30 CEST", dateTime: "2026-08-23T16:30", weatherTemp: "21°C", weatherCondition: "partly-cloudy" },
+    silverstone: { round: "ROUND 08", title: "BRITISH GP", location: "SILVERSTONE CIRCUIT · UK", dateText: "07 SEP · 16:30 CEST", dateTime: "2026-09-07T16:30", weatherTemp: "19°C", weatherCondition: "cloudy" },
+    hockenheim: { round: "ROUND 09", title: "GERMAN GP", location: "HOCKENHEIMRING · GERMANY", dateText: "13 SEP · 16:30 CEST", dateTime: "2026-09-13T16:30", weatherTemp: "24°C", weatherCondition: "sunny" },
+    nurburgring: { round: "ROUND 10", title: "NÜRBURGRING GP", location: "NÜRBURGRING · EUROPE", dateText: "20 SEP · 16:30 CEST", dateTime: "2026-09-20T16:30", weatherTemp: "22°C", weatherCondition: "sunny" },
+    hungary: { round: "ROUND 11", title: "HUNGARIAN GP", location: "HUNGARORING · BUDAPEST", dateText: "27 SEP · 16:30 CEST", dateTime: "2026-09-27T16:30", weatherTemp: "29°C", weatherCondition: "sunny" },
+    belgium: { round: "ROUND 12", title: "BELGIAN GP", location: "CIRCUIT DE SPA-FRANCORCHAMPS", dateText: "04 OCT · 16:30 CEST", dateTime: "2026-10-04T16:30", weatherTemp: "18°C", weatherCondition: "rainy" },
+    singapore: { round: "ROUND 13", title: "SINGAPORE GP", location: "MARINA BAY STREET CIRCUIT", dateText: "11 OCT · 20:00 CEST", dateTime: "2026-10-11T20:00", weatherTemp: "30°C", weatherCondition: "partly-cloudy" },
+    cota: { round: "ROUND 14", title: "UNITED STATES GP", location: "CIRCUIT OF THE AMERICAS · AUSTIN", dateText: "18 OCT · 20:00 CEST", dateTime: "2026-10-18T20:00", weatherTemp: "27°C", weatherCondition: "sunny" },
+    brazil: { round: "ROUND 15", title: "BRAZILIAN GP", location: "AUTÓDROMO JOSÉ CARLOS PACE · INTERLAGOS", dateText: "25 OCT · 18:00 CEST", dateTime: "2026-10-25T18:00", weatherTemp: "25°C", weatherCondition: "rainy" }
 };
 
 // Update Admin Live Preview replica in real-time
@@ -6542,11 +6738,34 @@ function updateAdminLivePreview() {
     let tempVal = adminRaceTemp ? adminRaceTemp.value.trim() : "22°C";
     if (tempVal && !tempVal.includes("°")) tempVal += "°C";
     const weatherVal = adminRaceWeather ? adminRaceWeather.value : "sunny";
+    const isTbd = Boolean(adminRaceIsTbd && adminRaceIsTbd.checked) || 
+                  (dateVal && (dateVal.toUpperCase().includes("TBD") || dateVal.toUpperCase().includes("TBA") || dateVal.toUpperCase().includes("POR DETERMINAR") || dateVal.toUpperCase().includes("POR CONFIRMAR")));
 
     if (previewMockRound) previewMockRound.textContent = roundVal || "ROUND 10";
     if (previewMockTitle) previewMockTitle.textContent = titleVal || "GRAN PREMIO";
     if (previewMockLocation) previewMockLocation.textContent = locVal || "CIRCUITO · PAÍS";
-    if (previewMockDateText) previewMockDateText.textContent = dateVal || "PRÓXIMAMENTE";
+    if (previewMockDateText) {
+        if (isTbd) {
+            previewMockDateText.textContent = dateVal || "TBD · POR DETERMINAR";
+            previewMockDateText.style.color = "var(--gold-light, #f1d78a)";
+        } else {
+            previewMockDateText.textContent = dateVal || "PRÓXIMAMENTE";
+            previewMockDateText.style.color = "#e2e8f0";
+        }
+    }
+
+    const countdownTag = document.querySelector(".admin-preview-countdown-tag");
+    if (countdownTag) {
+        if (isTbd) {
+            countdownTag.innerHTML = `<span class="admin-preview-dot" style="background:var(--gold, #d4af37);"></span> Fecha por Confirmar (TBD)`;
+            countdownTag.style.color = "var(--gold-light, #f1d78a)";
+            countdownTag.style.background = "rgba(212, 175, 55, 0.12)";
+        } else {
+            countdownTag.innerHTML = `<span class="admin-preview-dot" style="background:#3fb950;"></span> Cuenta Regresiva Activa`;
+            countdownTag.style.color = "#3fb950";
+            countdownTag.style.background = "rgba(63, 185, 80, 0.1)";
+        }
+    }
 
     let icon = "☀️";
     if (weatherVal === "partly-cloudy") icon = "⛅";
@@ -6560,7 +6779,7 @@ function updateAdminLivePreview() {
     // Synchronize Quick KPI Operations Bar
     if (adminQuickNextRace) {
         if (roundVal && titleVal) {
-            adminQuickNextRace.textContent = `${roundVal}: ${titleVal}`;
+            adminQuickNextRace.textContent = `${roundVal}: ${titleVal}${isTbd ? " (TBD)" : ""}`;
         } else {
             adminQuickNextRace.textContent = roundVal || titleVal || "RACE PREP";
         }
@@ -6570,13 +6789,28 @@ function updateAdminLivePreview() {
 // Populate Admin Forms from current stored states
 function populateAdminForms() {
     const race = getSavedNextRace();
+    const isTbd = isNextRaceTbd(race);
+
     if (adminRaceRound) adminRaceRound.value = race.round || "";
     if (adminRaceTitle) adminRaceTitle.value = race.title || "";
     if (adminRaceLocation) adminRaceLocation.value = race.location || "";
-    if (adminRaceDateText) adminRaceDateText.value = race.dateText || "";
+    if (adminRaceDateText) adminRaceDateText.value = race.dateText || (isTbd ? "TBD · Por Determinar" : "");
     if (adminRaceTemp) adminRaceTemp.value = race.weatherTemp || "22°C";
     if (adminRaceWeather) adminRaceWeather.value = race.weatherCondition || "sunny";
-    if (adminRaceDateTime) adminRaceDateTime.value = race.dateTime || "";
+    
+    if (adminRaceIsTbd) {
+        adminRaceIsTbd.checked = isTbd;
+    }
+    if (adminRaceDateTime) {
+        adminRaceDateTime.value = (!isTbd && race.dateTime && race.dateTime !== "TBD" && race.dateTime !== "TBA") ? race.dateTime : "";
+        adminRaceDateTime.disabled = isTbd;
+        adminRaceDateTime.required = !isTbd;
+    }
+    if (adminRaceDateTimeHint) {
+        adminRaceDateTimeHint.textContent = isTbd 
+            ? "Fecha por determinar (TBD). El contador en vivo mostrará estado por confirmar."
+            : "Ajusta la fecha y hora oficial para que el contador en vivo sincronice automáticamente.";
+    }
 
     // Sync Live Preview immediately
     updateAdminLivePreview();
@@ -6778,13 +7012,25 @@ function initFirestoreListeners() {
             currentNextRace = docSnap.data();
             renderNextRaceOnPage(currentNextRace);
             if (adminPanelOverlay && adminPanelOverlay.classList.contains("active")) {
+                const isTbd = isNextRaceTbd(currentNextRace);
                 if (adminRaceRound) adminRaceRound.value = currentNextRace.round || "";
                 if (adminRaceTitle) adminRaceTitle.value = currentNextRace.title || "";
                 if (adminRaceLocation) adminRaceLocation.value = currentNextRace.location || "";
-                if (adminRaceDateText) adminRaceDateText.value = currentNextRace.dateText || "";
+                if (adminRaceDateText) adminRaceDateText.value = currentNextRace.dateText || (isTbd ? "TBD · Por Determinar" : "");
                 if (adminRaceTemp) adminRaceTemp.value = currentNextRace.weatherTemp || "22°C";
                 if (adminRaceWeather) adminRaceWeather.value = currentNextRace.weatherCondition || "sunny";
-                if (adminRaceDateTime) adminRaceDateTime.value = currentNextRace.dateTime || "";
+                if (adminRaceIsTbd) adminRaceIsTbd.checked = isTbd;
+                if (adminRaceDateTime) {
+                    adminRaceDateTime.value = (!isTbd && currentNextRace.dateTime && currentNextRace.dateTime !== "TBD" && currentNextRace.dateTime !== "TBA") ? currentNextRace.dateTime : "";
+                    adminRaceDateTime.disabled = isTbd;
+                    adminRaceDateTime.required = !isTbd;
+                }
+                if (adminRaceDateTimeHint) {
+                    adminRaceDateTimeHint.textContent = isTbd 
+                        ? "Fecha por determinar (TBD). El contador en vivo mostrará estado por confirmar."
+                        : "Ajusta la fecha y hora oficial para que el contador en vivo sincronice automáticamente.";
+                }
+                updateAdminLivePreview();
             }
         } else {
             try {
@@ -6868,12 +7114,14 @@ function initFirestoreListeners() {
             existingKeys.add(docSnap.id);
             const rData = docSnap.data();
             raceResults[docSnap.id] = rData;
-            updateCalendarCardForRace(docSnap.id, rData);
 
             if (rData.winner === "Dlegulosk" || (rData.drivers && rData.drivers.some(d => d.driver === "Dlegulosk" || d.driver === "RikiORSA" || d.driver === "Ted Theo"))) {
                 hasLegacyRaceData = true;
             }
         });
+
+        // Refresh all calendar cards based on current race progression
+        refreshAllCalendarCards();
 
         // Ensure ALL 15 calendar races exist in Firestore
         const missingKeys = Object.keys(defaultRaceResults).filter(k => !existingKeys.has(k));
@@ -7086,14 +7334,20 @@ adminTabButtons.forEach(btn => {
 if (nextRaceForm) {
     nextRaceForm.addEventListener("submit", async (e) => {
         e.preventDefault();
+        const dateTextVal = adminRaceDateText ? adminRaceDateText.value.trim() : "";
+        const isTbd = Boolean(adminRaceIsTbd && adminRaceIsTbd.checked) || 
+                      (dateTextVal && (dateTextVal.toUpperCase().includes("TBD") || dateTextVal.toUpperCase().includes("TBA") || dateTextVal.toUpperCase().includes("POR DETERMINAR") || dateTextVal.toUpperCase().includes("POR CONFIRMAR"))) ||
+                      (!adminRaceDateTime.value && (!adminRaceDateTime.required || (adminRaceIsTbd && adminRaceIsTbd.checked)));
+
         const updated = {
-            round: adminRaceRound.value.trim(),
-            title: adminRaceTitle.value.trim(),
-            location: adminRaceLocation.value.trim(),
-            dateText: adminRaceDateText.value.trim(),
+            round: adminRaceRound ? adminRaceRound.value.trim() : "ROUND 10",
+            title: adminRaceTitle ? adminRaceTitle.value.trim() : "NÜRBURGRING GP",
+            location: adminRaceLocation ? adminRaceLocation.value.trim() : "NÜRBURGRING · EUROPE",
+            dateText: dateTextVal || (isTbd ? "TBD · Por Determinar" : "20 SEP · 16:30 CEST"),
             weatherTemp: adminRaceTemp ? adminRaceTemp.value.trim() : "22°C",
             weatherCondition: adminRaceWeather ? adminRaceWeather.value : "sunny",
-            dateTime: adminRaceDateTime.value
+            dateTime: isTbd ? "TBD" : (adminRaceDateTime.value || "2026-09-20T16:30"),
+            isTbd: isTbd
         };
 
         try {
@@ -7120,18 +7374,88 @@ if (nextRaceForm) {
     });
 }
 
+// TBD Controls Handlers
+if (adminRaceIsTbd) {
+    adminRaceIsTbd.addEventListener("change", (e) => {
+        const isChecked = e.target.checked;
+        if (adminRaceDateTime) {
+            adminRaceDateTime.disabled = isChecked;
+            adminRaceDateTime.required = !isChecked;
+            if (isChecked) {
+                adminRaceDateTime.value = "";
+            }
+        }
+        if (isChecked && adminRaceDateText) {
+            if (!adminRaceDateText.value || !adminRaceDateText.value.toUpperCase().includes("TBD")) {
+                adminRaceDateText.value = "TBD · Por Determinar";
+            }
+        } else if (!isChecked && adminRaceDateText && adminRaceDateText.value.toUpperCase().includes("TBD")) {
+            adminRaceDateText.value = "20 SEP · 16:30 CEST";
+        }
+        if (adminRaceDateTimeHint) {
+            adminRaceDateTimeHint.textContent = isChecked 
+                ? "Fecha por determinar (TBD). El contador en vivo mostrará estado por confirmar."
+                : "Ajusta la fecha y hora oficial para que el contador en vivo sincronice automáticamente.";
+        }
+        updateAdminLivePreview();
+    });
+}
+
+if (adminSetTbdQuickBtn) {
+    adminSetTbdQuickBtn.addEventListener("click", () => {
+        if (!adminRaceIsTbd) return;
+        adminRaceIsTbd.checked = !adminRaceIsTbd.checked;
+        adminRaceIsTbd.dispatchEvent(new Event("change"));
+    });
+}
+
+if (adminQuickTbdDateTextBtn) {
+    adminQuickTbdDateTextBtn.addEventListener("click", () => {
+        if (adminRaceDateText) adminRaceDateText.value = "TBD · Por Determinar";
+        if (adminRaceIsTbd) {
+            adminRaceIsTbd.checked = true;
+            adminRaceIsTbd.dispatchEvent(new Event("change"));
+        } else {
+            updateAdminLivePreview();
+        }
+    });
+}
+
+if (adminQuickTbdResultsDateBtn) {
+    adminQuickTbdResultsDateBtn.addEventListener("click", () => {
+        if (adminRaceDateInput) adminRaceDateInput.value = "TBD";
+    });
+}
+
 // Preset Quick Loader
 if (adminQuickGpPreset) {
     adminQuickGpPreset.addEventListener("change", (e) => {
         const key = e.target.value;
         if (!key || !OFFICIAL_GP_PRESETS[key]) return;
         const preset = OFFICIAL_GP_PRESETS[key];
+        const isPresetTbd = Boolean(preset.dateTime === "TBD" || preset.isTbd || (preset.dateText && (preset.dateText.includes("TBA") || preset.dateText.includes("TBD"))));
+
         if (adminRaceRound) adminRaceRound.value = preset.round;
         if (adminRaceTitle) adminRaceTitle.value = preset.title;
         if (adminRaceLocation) adminRaceLocation.value = preset.location;
         if (adminRaceDateText) adminRaceDateText.value = preset.dateText;
         if (adminRaceTemp) adminRaceTemp.value = preset.weatherTemp;
         if (adminRaceWeather) adminRaceWeather.value = preset.weatherCondition;
+
+        if (adminRaceIsTbd) {
+            adminRaceIsTbd.checked = isPresetTbd;
+        }
+        if (adminRaceDateTime) {
+            adminRaceDateTime.disabled = isPresetTbd;
+            adminRaceDateTime.required = !isPresetTbd;
+            adminRaceDateTime.value = (!isPresetTbd && preset.dateTime) ? preset.dateTime : "";
+        }
+        if (adminRaceDateTimeHint) {
+            adminRaceDateTimeHint.textContent = isPresetTbd 
+                ? "Fecha por determinar (TBD). El contador en vivo mostrará estado por confirmar."
+                : "Ajusta la fecha y hora oficial para que el contador en vivo sincronice automáticamente.";
+        }
+
         updateAdminLivePreview();
     });
 }
@@ -8057,12 +8381,14 @@ if (raceResultsForm) {
             date: raceDate || "TBA"
         };
 
+        const chosenStatus = adminRaceStatusSelect ? adminRaceStatusSelect.value : "COMPLETED";
+
         const updatedRace = {
             round: meta.round,
             title: meta.title,
             location: meta.location,
             date: raceDate || meta.date,
-            status: "COMPLETED",
+            status: chosenStatus,
             winner: winnerDriver || drivers[0].driver,
             pole: poleDriver && poleTime ? `${poleDriver} · ${poleTime}` : (poleDriver || "TBA"),
             fastest: `${fastestDriver} · ${fastestTime}`,
@@ -8073,21 +8399,24 @@ if (raceResultsForm) {
 
         try {
             if (raceResultsSaveNotice) {
-                raceResultsSaveNotice.textContent = "Guardando resultados y recalculando clasificación...";
+                raceResultsSaveNotice.textContent = "Guardando resultados, actualizando calendario y recalculando clasificación...";
                 raceResultsSaveNotice.style.color = "var(--gold)";
             }
             await setDoc(doc(db, "carreras", raceKey), updatedRace);
 
             raceResults[raceKey] = updatedRace;
-            updateCalendarCardForRace(raceKey, updatedRace);
+            populateRaceResultsEditor(raceKey);
+
+            // Automatically synchronize calendar progression & update hero countdown
+            await syncCalendarAndNextRace(true);
 
             // Automatically recalculate points & standings for drivers and teams
             await recalculateAndSyncStandings(raceResults);
 
             if (raceResultsSaveNotice) {
-                raceResultsSaveNotice.textContent = `✓ Resultados de ${meta.title} guardados. Puntos y standings (pilotos y equipos) actualizados.`;
+                raceResultsSaveNotice.textContent = `✓ Resultados de ${meta.title} guardados. Calendario y próxima carrera actualizados.`;
                 raceResultsSaveNotice.style.color = "#3fb950";
-                setTimeout(() => { raceResultsSaveNotice.textContent = ""; }, 4000);
+                setTimeout(() => { if (raceResultsSaveNotice) raceResultsSaveNotice.textContent = ""; }, 4000);
             }
         } catch (err) {
             console.error("Error saving race to Firestore:", err);
@@ -8095,6 +8424,129 @@ if (raceResultsForm) {
                 raceResultsSaveNotice.textContent = "Error al guardar en Firestore: " + err.message;
                 raceResultsSaveNotice.style.color = "#f85149";
             }
+        }
+    });
+}
+
+// Admin Toggle Race Status Button (Marcar como Acabada / Marcar como Pendiente)
+if (adminToggleRaceStatusBtn) {
+    adminToggleRaceStatusBtn.addEventListener("click", async (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+
+        const raceKey = (adminSelectRace && adminSelectRace.value) ? adminSelectRace.value : "australia";
+        if (!raceKey) return;
+
+        const currentData = raceResults[raceKey] || seasonRacesMeta[raceKey] || {};
+        const isCurrentlyCompleted = isRaceFinished(currentData);
+        const newStatus = isCurrentlyCompleted ? "UPCOMING" : "COMPLETED";
+
+        const meta = seasonRacesMeta[raceKey] || {
+            round: "ROUND",
+            title: raceKey.toUpperCase(),
+            location: raceKey.toUpperCase(),
+            date: "TBA"
+        };
+
+        if (raceResultsSaveNotice) {
+            raceResultsSaveNotice.textContent = isCurrentlyCompleted 
+                ? `Marcando ${meta.title} como pendiente...` 
+                : `Marcando ${meta.title} como finalizada y avanzando calendario...`;
+            raceResultsSaveNotice.style.color = "var(--gold)";
+        }
+
+        let updatedRace = { ...currentData };
+        updatedRace.status = newStatus;
+        updatedRace.round = updatedRace.round || meta.round;
+        updatedRace.title = updatedRace.title || meta.title;
+        updatedRace.location = updatedRace.location || meta.location;
+        updatedRace.date = (adminRaceDateInput && adminRaceDateInput.value.trim()) || updatedRace.date || meta.date || "TBA";
+
+        // If newly marked as completed and has no drivers, fill with currently present rows or fallback
+        if (newStatus === "COMPLETED") {
+            if (!Array.isArray(updatedRace.drivers) || updatedRace.drivers.length === 0) {
+                const positionRows = adminRacePositionsBody ? adminRacePositionsBody.querySelectorAll("tr") : [];
+                const tempDrivers = [];
+                positionRows.forEach((row, idx) => {
+                    const driverSelect = row.querySelector(".race-driver-select");
+                    const teamVal = row.querySelector(".race-team-val");
+                    const statusSelect = row.querySelector(".race-status-select");
+                    const dName = driverSelect ? driverSelect.value.trim() : "";
+                    if (dName) {
+                        tempDrivers.push({
+                            pos: idx + 1,
+                            driver: dName,
+                            team: teamVal ? teamVal.value.trim() : getDriverTeam(dName),
+                            status: statusSelect ? statusSelect.value.trim() : "FINISHED"
+                        });
+                    }
+                });
+
+                if (tempDrivers.length > 0) {
+                    updatedRace.drivers = tempDrivers;
+                    updatedRace.winner = tempDrivers[0].driver;
+                } else if (currentStandings && currentStandings.length > 0) {
+                    // Pre-fill with top standings drivers if empty
+                    updatedRace.drivers = currentStandings.slice(0, 10).map((d, i) => ({
+                        pos: i + 1,
+                        driver: d.driver,
+                        team: d.team || getDriverTeam(d.driver),
+                        status: "FINISHED"
+                    }));
+                    updatedRace.winner = updatedRace.drivers[0].driver;
+                }
+            }
+            if (!updatedRace.winner || updatedRace.winner === "TBA") {
+                if (updatedRace.drivers && updatedRace.drivers[0]) {
+                    updatedRace.winner = updatedRace.drivers[0].driver;
+                }
+            }
+        }
+
+        // Instant local update
+        raceResults[raceKey] = updatedRace;
+        populateRaceResultsEditor(raceKey);
+
+        try {
+            await setDoc(doc(db, "carreras", raceKey), updatedRace);
+
+            // Automatically advance calendar progression and recalculate countdown
+            await syncCalendarAndNextRace(true);
+
+            // Recalculate standings
+            await recalculateAndSyncStandings(raceResults);
+
+            if (raceResultsSaveNotice) {
+                raceResultsSaveNotice.textContent = newStatus === "COMPLETED"
+                    ? `✓ ${meta.title} marcada como ACABADA. Próxima carrera actualizada en el calendario y hero con countdown.`
+                    : `✓ ${meta.title} marcada como PENDIENTE. Calendario sincronizado.`;
+                raceResultsSaveNotice.style.color = "#3fb950";
+                setTimeout(() => { if (raceResultsSaveNotice) raceResultsSaveNotice.textContent = ""; }, 4500);
+            }
+        } catch (err) {
+            console.error("Error updating race status in Firestore:", err);
+            if (raceResultsSaveNotice) {
+                raceResultsSaveNotice.textContent = "Error al actualizar estado: " + err.message;
+                raceResultsSaveNotice.style.color = "#f85149";
+            }
+        }
+    });
+}
+
+// Direct Race Status Select Change Listener
+if (adminRaceStatusSelect) {
+    adminRaceStatusSelect.addEventListener("change", () => {
+        const val = adminRaceStatusSelect.value;
+        const isComp = val === "COMPLETED";
+        if (adminRaceStatusBadge) {
+            adminRaceStatusBadge.className = `admin-status-pill ${isComp ? "status-completed" : "status-upcoming"}`;
+            adminRaceStatusBadge.textContent = isComp ? "🏁 FINALIZADA / ACABADA" : "⏳ PRÓXIMA / PENDIENTE";
+        }
+        if (adminToggleRaceStatusBtnLabel) {
+            adminToggleRaceStatusBtnLabel.textContent = isComp ? "Marcar como Pendiente" : "Marcar como Acabada";
+        }
+        if (adminToggleRaceStatusBtn) {
+            adminToggleRaceStatusBtn.className = isComp ? "btn btn-secondary btn-sm" : "btn btn-primary btn-sm";
         }
     });
 }
@@ -8134,11 +8586,10 @@ async function resetCurrentRace() {
 
     // 1. Instant local update (no lag in UI)
     raceResults[raceKey] = resetRaceData;
-    updateCalendarCardForRace(raceKey, resetRaceData);
     populateRaceResultsEditor(raceKey);
 
     if (raceResultsSaveNotice) {
-        raceResultsSaveNotice.textContent = `Restableciendo resultados de ${meta.title} y actualizando clasificación...`;
+        raceResultsSaveNotice.textContent = `Restableciendo resultados de ${meta.title}, actualizando calendario y clasificación...`;
         raceResultsSaveNotice.style.color = "var(--gold)";
     }
 
@@ -8146,11 +8597,14 @@ async function resetCurrentRace() {
         // 2. Persist reset race in Firestore
         await setDoc(doc(db, "carreras", raceKey), resetRaceData);
 
-        // 3. Recalculate standings and sync to Firestore
+        // 3. Automatically advance calendar progression & update hero countdown
+        await syncCalendarAndNextRace(true);
+
+        // 4. Recalculate standings and sync to Firestore
         await recalculateAndSyncStandings(raceResults);
 
         if (raceResultsSaveNotice) {
-            raceResultsSaveNotice.textContent = `✓ Resultados de ${meta.title} restablecidos con éxito. Standings actualizados.`;
+            raceResultsSaveNotice.textContent = `✓ Resultados de ${meta.title} restablecidos con éxito. Calendario y standings actualizados.`;
             raceResultsSaveNotice.style.color = "#3fb950";
             setTimeout(() => { if (raceResultsSaveNotice) raceResultsSaveNotice.textContent = ""; }, 4000);
         }

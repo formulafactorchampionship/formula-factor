@@ -2529,8 +2529,13 @@
                                     <input type="text" id="adminRaceLocation" placeholder="Ej: NÜRBURGRING · EUROPE" required>
                                 </div>
                                 <div class="admin-field">
-                                    <label for="adminRaceDateText">Texto de Fecha Visible</label>
-                                    <input type="text" id="adminRaceDateText" placeholder="Ej: 20 SEP · 16:30 CEST" required>
+                                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+                                        <label for="adminRaceDateText" style="margin-bottom: 0;">Texto de Fecha Visible</label>
+                                        <button type="button" id="adminQuickTbdDateTextBtn" class="btn btn-secondary btn-xs" style="padding: 2px 8px; font-size: 11px; font-weight: 700; color: var(--gold-light, #f1d78a);">
+                                            ⚡ Fijar "TBD"
+                                        </button>
+                                    </div>
+                                    <input type="text" id="adminRaceDateText" placeholder="Ej: 20 SEP · 16:30 CEST o TBD" required>
                                 </div>
                                 <div class="admin-field">
                                     <label for="adminRaceTemp">Temperatura del Circuito (°C)</label>
@@ -2547,9 +2552,20 @@
                                     </select>
                                 </div>
                                 <div class="admin-field admin-field-full">
-                                    <label for="adminRaceDateTime">Fecha y Hora de la Carrera (Cuenta Regresiva)</label>
-                                    <input type="datetime-local" id="adminRaceDateTime" required>
-                                    <small class="admin-field-hint">Ajusta la fecha y hora oficial para que el contador en vivo sincronice automáticamente.</small>
+                                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; flex-wrap: wrap; gap: 8px;">
+                                        <label for="adminRaceDateTime" style="margin-bottom: 0;">Fecha y Hora de la Carrera (Cuenta Regresiva)</label>
+                                        <label class="admin-tbd-checkbox-label" id="adminRaceIsTbdLabel" style="display: inline-flex; align-items: center; gap: 6px; cursor: pointer; font-size: 12px; font-weight: 700; color: var(--gold-light, #f1d78a);">
+                                            <input type="checkbox" id="adminRaceIsTbd" style="cursor: pointer; accent-color: var(--gold, #d4af37);">
+                                            <span>⏱️ Fecha por Determinar (TBD / TBA)</span>
+                                        </label>
+                                    </div>
+                                    <div style="display: flex; gap: 8px; align-items: center;">
+                                        <input type="datetime-local" id="adminRaceDateTime" style="flex: 1;">
+                                        <button type="button" id="adminSetTbdQuickBtn" class="btn btn-secondary btn-sm" style="white-space: nowrap; padding: 7px 12px; font-size: 12px; font-weight: 700;">
+                                            ⏱️ Modo TBD
+                                        </button>
+                                    </div>
+                                    <small class="admin-field-hint" id="adminRaceDateTimeHint">Ajusta la fecha y hora oficial para que el contador en vivo sincronice automáticamente, o marca TBD si aún no está confirmada.</small>
                                 </div>
                             </div>
                         </div>
@@ -2625,6 +2641,29 @@
                         </div>
                     </div>
 
+                    <!-- ESTADO DE LA CARRERA Y PROGRESIÓN DEL CALENDARIO -->
+                    <div class="admin-race-status-bar" id="adminRaceStatusBar">
+                        <div class="admin-race-status-left">
+                            <span class="admin-race-status-label">Estado de la Carrera:</span>
+                            <span id="adminRaceStatusBadge" class="admin-status-pill status-completed">🏁 FINALIZADA</span>
+                            <select id="adminRaceStatusSelect" class="admin-select" style="width: auto; padding: 4px 10px; font-size: 12px; height: 32px; background: rgba(0,0,0,0.5); border-color: rgba(214,180,92,0.3);">
+                                <option value="COMPLETED">🏁 Finalizada / Acabada (Resultados publicados)</option>
+                                <option value="UPCOMING">⏳ Próxima / Pendiente (Aún no disputada)</option>
+                            </select>
+                        </div>
+                        <div class="admin-race-status-actions">
+                            <button type="button" id="adminToggleRaceStatusBtn" class="btn btn-primary btn-sm" style="display: inline-flex; align-items: center; gap: 6px; padding: 6px 14px; font-size: 12px;">
+                                <span>🏁</span> <span id="adminToggleRaceStatusBtnLabel">Marcar como Acabada</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="admin-auto-sync-banner">
+                        <div>
+                            <span>⚡ <strong>Sincronización Automática:</strong> Al marcar una carrera como <strong>Acabada</strong>, el sistema avanza el calendario automáticamente a la siguiente cita y actualiza la cuenta atrás del Hero con la fecha y hora de la nueva carrera.</span>
+                        </div>
+                    </div>
+
                     <div class="admin-highlights-grid">
                         <!-- VUELTA RÁPIDA -->
                         <div class="admin-highlight-card">
@@ -2675,8 +2714,13 @@
                                 </select>
                             </div>
                             <div class="admin-field">
-                                <label for="adminRaceDateInput">Fecha / Texto del GP</label>
-                                <input type="text" id="adminRaceDateInput" placeholder="Ej: 20 SEP">
+                                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+                                    <label for="adminRaceDateInput" style="margin-bottom: 0;">Fecha / Texto del GP</label>
+                                    <button type="button" id="adminQuickTbdResultsDateBtn" class="btn btn-secondary btn-xs" style="padding: 2px 8px; font-size: 11px; font-weight: 700; color: var(--gold-light, #f1d78a);">
+                                        ⚡ TBD
+                                    </button>
+                                </div>
+                                <input type="text" id="adminRaceDateInput" placeholder="Ej: 20 SEP o TBD">
                             </div>
                         </div>
 
