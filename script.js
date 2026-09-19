@@ -2668,6 +2668,25 @@ const defaultSettings = {
     fantasyVolatilityMultiplier: 1.0
 };
 
+// Global Fantasy State & Constants (Declared early for lifecycle safety)
+const FANTASY_INITIAL_BUDGET = 75.0;
+const FANTASY_LOCAL_STORAGE_KEY = "ffc_fantasy_team_v2";
+
+const ffcFantasyState = {
+    teamName: "Mi Escudería FFC",
+    driver1: null,
+    driver2: null,
+    driver3: null,
+    team: null,
+    turboDriver: null,
+    roundLineups: {},
+    currentFilter: "all",
+    searchQuery: "",
+    sortBy: "price-desc",
+    activeSubTab: "team"
+};
+window.ffcFantasyState = ffcFantasyState;
+
 // Admin UI Selectors
 const headerAdminBtn = document.getElementById("headerAdminBtn");
 const adminBtn = document.getElementById("adminBtn");
@@ -2690,6 +2709,22 @@ const adminQuickFantasyStatus = document.getElementById("adminQuickFantasyStatus
 // Admin Tab Count Badges
 const adminTabDriversBadge = document.getElementById("adminTabDriversBadge");
 const adminTabVerifyBadge = document.getElementById("adminTabVerifyBadge");
+
+// Admin Verification Tab Elements
+const adminVerifyDriverSelect = document.getElementById("adminVerifyDriverSelect");
+const adminGenerateCodeBtn = document.getElementById("adminGenerateCodeBtn");
+const adminGenerateNotice = document.getElementById("adminGenerateNotice");
+const adminCodeOutputBox = document.getElementById("adminCodeOutputBox");
+const adminGeneratedDriverName = document.getElementById("adminGeneratedDriverName");
+const adminGeneratedCodeDisplay = document.getElementById("adminGeneratedCodeDisplay");
+const adminCopyCodeBtn = document.getElementById("adminCopyCodeBtn");
+const adminSearchVerifyPilotInput = document.getElementById("adminSearchVerifyPilotInput");
+const adminFilterVerifyStatus = document.getElementById("adminFilterVerifyStatus");
+const adminVerifyTotalPilots = document.getElementById("adminVerifyTotalPilots");
+const adminVerifyCountVerified = document.getElementById("adminVerifyCountVerified");
+const adminVerifyCountActiveCodes = document.getElementById("adminVerifyCountActiveCodes");
+const adminVerifyCountPending = document.getElementById("adminVerifyCountPending");
+const adminVerifyTableBody = document.getElementById("adminVerifyTableBody");
 
 // Next Race Target Elements
 const nextRaceRoundEl = document.getElementById("nextRaceRound");
@@ -8676,22 +8711,6 @@ const userClaimedDriverName = document.getElementById("userClaimedDriverName");
 const userClaimedTeamName = document.getElementById("userClaimedTeamName");
 const userUnlinkDriverBtn = document.getElementById("userUnlinkDriverBtn");
 
-// Elements for Admin Verification Tab
-const adminVerifyDriverSelect = document.getElementById("adminVerifyDriverSelect");
-const adminGenerateCodeBtn = document.getElementById("adminGenerateCodeBtn");
-const adminGenerateNotice = document.getElementById("adminGenerateNotice");
-const adminCodeOutputBox = document.getElementById("adminCodeOutputBox");
-const adminGeneratedDriverName = document.getElementById("adminGeneratedDriverName");
-const adminGeneratedCodeDisplay = document.getElementById("adminGeneratedCodeDisplay");
-const adminCopyCodeBtn = document.getElementById("adminCopyCodeBtn");
-const adminSearchVerifyPilotInput = document.getElementById("adminSearchVerifyPilotInput");
-const adminFilterVerifyStatus = document.getElementById("adminFilterVerifyStatus");
-const adminVerifyTotalPilots = document.getElementById("adminVerifyTotalPilots");
-const adminVerifyCountVerified = document.getElementById("adminVerifyCountVerified");
-const adminVerifyCountActiveCodes = document.getElementById("adminVerifyCountActiveCodes");
-const adminVerifyCountPending = document.getElementById("adminVerifyCountPending");
-const adminVerifyTableBody = document.getElementById("adminVerifyTableBody");
-
 // Helper: Generate unique verification code
 function generateDriverVerificationCode() {
     return "FF-" + Math.floor(100000 + Math.random() * 900000);
@@ -9640,23 +9659,10 @@ if (userCardEditForm) {
    75.0M€ de presupuesto · 3 Pilotos + 1 Constructor · Turbo Driver x2
 ========================================================= */
 
-const FANTASY_INITIAL_BUDGET = 75.0;
-const FANTASY_LOCAL_STORAGE_KEY = "ffc_fantasy_team_v2";
-
-const ffcFantasyState = {
-    teamName: "Mi Escudería FFC",
-    driver1: null,
-    driver2: null,
-    driver3: null,
-    team: null,
-    turboDriver: null,
-    roundLineups: {},
-    currentFilter: "all",
-    searchQuery: "",
-    sortBy: "price-desc",
-    activeSubTab: "team"
-};
-window.ffcFantasyState = ffcFantasyState;
+// Fantasy state & constants are initialized globally at top of script for lifecycle stability
+if (!window.ffcFantasyState) {
+    window.ffcFantasyState = ffcFantasyState;
+}
 
 // Fantasy Auth & Session Helpers
 function getFantasyCurrentUser() {
