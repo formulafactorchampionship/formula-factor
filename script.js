@@ -575,6 +575,7 @@ const translations = {
             catDrivers: "🏎️ Pilotos",
             catReports: "📝 Crónicas",
             catCommunity: "👥 Comunidad",
+            catTech: "⚙️ Técnica",
             searchPlaceholder: "Buscar noticias...",
             btnSubmit: "Enviar Noticia",
             emptyTitleFiltered: "No se encontraron noticias",
@@ -594,10 +595,10 @@ const translations = {
             catOptionReports: "📝 Crónicas",
             catOptionCommunity: "👥 Comunidad",
             catOptionTech: "⚙️ Análisis Técnico",
-            labelAuthor: 'Tu Nombre o Alias <span class="required-star">*</span>',
-            placeholderAuthor: "Tu nombre en Discord / FFC",
-            labelSummary: 'Resumen Breve (1-2 frases) <span class="required-star">*</span>',
-            placeholderSummary: "Una breve descripción que aparecerá en la portada de la noticia",
+            labelAuthor: 'Autor (Tu Usuario) <span class="required-star">*</span>',
+            placeholderAuthor: "Nombre de tu cuenta registrada",
+            labelSummary: "Resumen Breve (1-2 frases)",
+            placeholderSummary: "Una breve descripción que aparecerá en la portada de la noticia (opcional)",
             labelImage: "URL de Imagen de Portada (Opcional)",
             btnPresetImg: "Fondo FFC",
             hintImage: "Si lo dejas vacío, se asignará automáticamente un fondo oficial de Formula Factor.",
@@ -880,6 +881,7 @@ const translations = {
             catDrivers: "🏎️ Drivers",
             catReports: "📝 Reports",
             catCommunity: "👥 Community",
+            catTech: "⚙️ Technical",
             searchPlaceholder: "Search news...",
             btnSubmit: "Submit News",
             emptyTitleFiltered: "No news found",
@@ -899,10 +901,10 @@ const translations = {
             catOptionReports: "📝 Reports",
             catOptionCommunity: "👥 Community",
             catOptionTech: "⚙️ Technical Analysis",
-            labelAuthor: 'Your Name or Alias <span class="required-star">*</span>',
-            placeholderAuthor: "Your name on Discord / FFC",
-            labelSummary: 'Short Summary (1-2 sentences) <span class="required-star">*</span>',
-            placeholderSummary: "A brief description that will appear on the article card",
+            labelAuthor: 'Author (Your Account) <span class="required-star">*</span>',
+            placeholderAuthor: "Your registered username",
+            labelSummary: "Short Summary (1-2 sentences)",
+            placeholderSummary: "A brief description that will appear on the article card (optional)",
             labelImage: "Cover Image URL (Optional)",
             btnPresetImg: "FFC Background",
             hintImage: "If left empty, an official Formula Factor background will be automatically assigned.",
@@ -1479,6 +1481,8 @@ function applyTranslations(lang) {
         if (catReports) catReports.textContent = dict.news.catReports;
         const catCommunity = document.getElementById("newsCatBtnCommunity");
         if (catCommunity) catCommunity.textContent = dict.news.catCommunity;
+        const catTech = document.getElementById("newsCatBtnTech");
+        if (catTech) catTech.textContent = dict.news.catTech;
 
         const newsSearchInput = document.getElementById("newsSearchInput");
         if (newsSearchInput) {
@@ -2668,13 +2672,17 @@ if (raceOverlay) {
 /* ESC key */
 
 document.addEventListener("keydown", (event) => {
-
     if (event.key === "Escape") {
-        closeRaceModal();
-        closeAdminAuthModal();
-        closeAdminPanel();
+        if (typeof closeRaceModal === "function") closeRaceModal();
+        if (typeof closeUserAuthModal === "function") closeUserAuthModal();
+        if (typeof closeAdminPanel === "function") closeAdminPanel();
+        if (typeof closeDriverStatsModal === "function") closeDriverStatsModal();
+        if (typeof closeTeamStatsModal === "function") closeTeamStatsModal();
+        if (typeof closeCardEditorModal === "function") closeCardEditorModal();
+        if (typeof closeDriverComparison === "function") closeDriverComparison();
+        if (typeof closeSubmitNewsModal === "function") closeSubmitNewsModal();
+        if (typeof closeNewsArticleModal === "function") closeNewsArticleModal();
     }
-
 });
 
 
@@ -13612,6 +13620,9 @@ function updateAdminNewsBadge() {
 // REAL-TIME FIRESTORE SYNCHRONIZATION FOR NEWS
 // =========================================================
 function initNewsRealtimeSync() {
+    if (window._ffcNewsSyncInit) return;
+    window._ffcNewsSyncInit = true;
+
     // 1. Initial State from Cache
     window.ffcNewsArticles = loadCachedNewsArticles();
     renderPublicNewsSection();
@@ -13768,32 +13779,95 @@ function renderPublicNewsSection() {
     });
 }
 
+// Helper to get authenticated account display name
+function getFfcActiveUserName() {
+    try {
+        if (typeof activeUserAuth !== "undefined" && activeUserAuth) {
+            if (activeUserAuth.displayName) return activeUserAuth.displayName;
+            if (activeUserAuth.email) return activeUserAuth.email.split("@")[0];
+        }
+    } catch (e) {}
+    try {
+        if (typeof activeUserData !== "undefined" && activeUserData) {
+            if (activeUserData.displayName) return activeUserData.displayName;
+            if (activeUserData.email) return activeUserData.email.split("@")[0];
+        }
+    } catch (e) {}
+    try {
+        if (typeof LocalAuthStore !== "undefined") {
+            const local = LocalAuthStore.getCurrentUser();
+            if (local) {
+                if (local.displayName) return local.displayName;
+                if (local.email) return local.email.split("@")[0];
+            }
+        }
+    } catch (e) {}
+    return null;
+}
+
 // =========================================================
 // SUBMIT NEWS MODAL LOGIC
 // =========================================================
 function openSubmitNewsModal(prefillCategory = null) {
+    const isEn = typeof currentLanguage !== "undefined" && currentLanguage === "en";
+    const u = typeof activeUserAuth !== "undefined" && activeUserAuth ? activeUserAuth : (typeof LocalAuthStore !== "undefined" ? LocalAuthStore.getCurrentUser() : null);
+
+    // Require authentication so that username is always authentic
+    if (!u || !u.email) {
+        if (typeof openUserAuthModal === "function") {
+            openUserAuthModal("login");
+            if (typeof showAuthAlert === "function") {
+                showAuthAlert(isEn 
+                    ? "Please sign in with your account to submit news to the community." 
+                    : "Por favor inicia sesión con tu cuenta para enviar noticias a la comunidad.");
+            }
+        }
+        return;
+    }
+
     const overlay = document.getElementById("newsSubmitModalOverlay");
     const form = document.getElementById("newsSubmitForm");
     const authorInput = document.getElementById("newsSubmitAuthor");
     const statusMsg = document.getElementById("newsSubmitStatusMsg");
     const catSelect = document.getElementById("newsSubmitCategory");
+    const submitBtn = document.getElementById("btnSubmitNewsFormAction");
 
     if (!overlay) return;
 
     if (form) form.reset();
-    if (statusMsg) statusMsg.textContent = "";
+    if (statusMsg) {
+        statusMsg.textContent = "";
+        statusMsg.className = "news-submit-status";
+    }
 
-    // Pre-fill author if logged in
-    const u = typeof activeUserAuth !== "undefined" && activeUserAuth ? activeUserAuth : (typeof LocalAuthStore !== "undefined" ? LocalAuthStore.getCurrentUser() : null);
-    if (u && authorInput) {
-        authorInput.value = u.displayName || (u.email ? u.email.split("@")[0] : "");
+    // Automatically set author to user's registered account display name and lock field
+    const resolvedName = getFfcActiveUserName() || (u.displayName || (u.email ? u.email.split("@")[0] : "Usuario FFC"));
+    if (authorInput) {
+        authorInput.value = resolvedName;
+        authorInput.readOnly = true;
     }
 
     if (prefillCategory && catSelect) {
         catSelect.value = prefillCategory;
     }
 
+    if (submitBtn) {
+        submitBtn.disabled = false;
+        const dict = typeof translations !== "undefined" && translations[currentLanguage] ? translations[currentLanguage] : null;
+        const userIsAdmin = isUserAdmin(u);
+        if (userIsAdmin) {
+            submitBtn.innerHTML = isEn ? "<span>🚀</span> Publish Official News" : "<span>🚀</span> Publicar Noticia Oficial";
+        } else {
+            submitBtn.innerHTML = (dict && dict.news && dict.news.btnSubmitAction) 
+                ? dict.news.btnSubmitAction 
+                : (isEn ? "<span>🚀</span> Submit for Review" : "<span>🚀</span> Enviar para Revisión");
+        }
+    }
+
+    overlay.classList.add("active");
     overlay.style.display = "flex";
+    overlay.style.opacity = "1";
+    overlay.style.visibility = "visible";
     overlay.setAttribute("aria-hidden", "false");
     document.body.classList.add("modal-open");
 }
@@ -13801,13 +13875,25 @@ function openSubmitNewsModal(prefillCategory = null) {
 function closeSubmitNewsModal() {
     const overlay = document.getElementById("newsSubmitModalOverlay");
     if (!overlay) return;
+    overlay.classList.remove("active");
     overlay.style.display = "none";
+    overlay.style.opacity = "0";
+    overlay.style.visibility = "hidden";
     overlay.setAttribute("aria-hidden", "true");
     document.body.classList.remove("modal-open");
+    window.isNewsSubmitting = false;
 }
 
 async function handleNewsFormSubmit(e) {
-    e.preventDefault();
+    if (e) {
+        e.preventDefault();
+        e.stopPropagation();
+    }
+
+    // Single-flight guard to completely prevent duplicate submissions
+    if (window.isNewsSubmitting) return;
+    window.isNewsSubmitting = true;
+
     const titleInput = document.getElementById("newsSubmitTitle");
     const categorySelect = document.getElementById("newsSubmitCategory");
     const authorInput = document.getElementById("newsSubmitAuthor");
@@ -13817,25 +13903,51 @@ async function handleNewsFormSubmit(e) {
     const statusMsg = document.getElementById("newsSubmitStatusMsg");
     const submitBtn = document.getElementById("btnSubmitNewsFormAction");
 
-    const title = titleInput ? titleInput.value.trim() : "";
-    const category = categorySelect ? categorySelect.value : "Comunidad";
-    const authorName = authorInput ? authorInput.value.trim() : "";
-    const summary = summaryInput ? summaryInput.value.trim() : "";
-    const imageUrl = imageInput ? imageInput.value.trim() : "";
-    const content = contentInput ? contentInput.value.trim() : "";
-
-    if (!title || !authorName || !summary || !content) {
+    const isEn = typeof currentLanguage !== "undefined" && currentLanguage === "en";
+    const u = typeof activeUserAuth !== "undefined" && activeUserAuth ? activeUserAuth : (typeof LocalAuthStore !== "undefined" ? LocalAuthStore.getCurrentUser() : null);
+    
+    if (!u || !u.email) {
+        window.isNewsSubmitting = false;
         if (statusMsg) {
             statusMsg.style.color = "#f87171";
-            statusMsg.textContent = "Por favor completa todos los campos requeridos.";
+            statusMsg.textContent = isEn ? "You must be logged in to submit news." : "Debes haber iniciado sesión para enviar una noticia.";
         }
         return;
     }
 
-    const u = typeof activeUserAuth !== "undefined" && activeUserAuth ? activeUserAuth : (typeof LocalAuthStore !== "undefined" ? LocalAuthStore.getCurrentUser() : null);
     const userIsAdmin = isUserAdmin(u);
+    const title = titleInput ? titleInput.value.trim() : "";
+    const category = categorySelect ? categorySelect.value : "Comunidad";
+    // Author name strictly comes from verified account display name / username
+    const authorName = getFfcActiveUserName() || (u.displayName || (u.email ? u.email.split("@")[0] : "Usuario FFC"));
+    const content = contentInput ? contentInput.value.trim() : "";
+    const summary = (summaryInput && summaryInput.value.trim()) 
+        ? summaryInput.value.trim() 
+        : (content.length > 140 ? content.substring(0, 137) + "..." : content);
+    let imageUrl = imageInput ? imageInput.value.trim() : "";
 
-    // If an admin is submitting, it is published immediately; regular community submissions are pending
+    if (!title || !content) {
+        window.isNewsSubmitting = false;
+        if (statusMsg) {
+            statusMsg.style.color = "#f87171";
+            statusMsg.textContent = isEn 
+                ? "Please enter both a title and article content." 
+                : "Por favor introduce el título y el contenido de la noticia.";
+        }
+        return;
+    }
+
+    // Assign default fallback image if not provided or invalid
+    if (!imageUrl) {
+        const defaultImages = [
+            "https://images.unsplash.com/photo-1568605117036-5fe5e7bab0b7?auto=format&fit=crop&w=1200&q=80",
+            "https://images.unsplash.com/photo-1511919884226-fd3cad34687c?auto=format&fit=crop&w=1200&q=80",
+            "https://images.unsplash.com/photo-1580273916550-e323be2ae537?auto=format&fit=crop&w=1200&q=80"
+        ];
+        imageUrl = defaultImages[Math.floor(Math.random() * defaultImages.length)];
+    }
+
+    // Admin submissions are approved immediately; regular user submissions are pending admin approval
     const status = userIsAdmin ? "approved" : "pending";
     const newId = "news_" + Date.now() + "_" + Math.random().toString(36).substring(2, 7);
 
@@ -13844,24 +13956,24 @@ async function handleNewsFormSubmit(e) {
         title,
         category,
         authorName,
-        authorEmail: u && u.email ? u.email : "",
-        authorUid: u && u.uid ? u.uid : "",
+        authorEmail: u.email || "",
+        authorUid: u.uid || (userIsAdmin ? "admin_official" : ""),
         summary,
-        imageUrl: imageUrl || "",
+        imageUrl,
         content,
         status,
         createdAt: new Date().toISOString(),
-        approvedAt: status === "approved" ? new Date().toISOString() : null,
+        approvedAt: userIsAdmin ? new Date().toISOString() : null,
         commentsCount: 0
     };
 
     if (submitBtn) {
         submitBtn.disabled = true;
-        submitBtn.innerHTML = "<span>⏳</span> Enviando noticia...";
+        submitBtn.innerHTML = isEn ? "<span>⏳</span> Submitting article..." : "<span>⏳</span> Enviando noticia...";
     }
     if (statusMsg) {
         statusMsg.style.color = "#fbbf24";
-        statusMsg.textContent = "Guardando noticia...";
+        statusMsg.textContent = isEn ? "Saving article..." : "Guardando noticia...";
     }
 
     try {
@@ -13869,7 +13981,11 @@ async function handleNewsFormSubmit(e) {
         await setDoc(doc(db, "noticias", newId), articlePayload);
 
         // Update local state and cache
-        window.ffcNewsArticles.unshift(articlePayload);
+        if (!window.ffcNewsArticles) window.ffcNewsArticles = [];
+        // Avoid duplicate ID in array
+        if (!window.ffcNewsArticles.some(a => a.id === newId)) {
+            window.ffcNewsArticles.unshift(articlePayload);
+        }
         saveCachedNewsArticles(window.ffcNewsArticles);
 
         renderPublicNewsSection();
@@ -13880,36 +13996,53 @@ async function handleNewsFormSubmit(e) {
 
         if (statusMsg) {
             statusMsg.style.color = "#34d399";
-            statusMsg.textContent = userIsAdmin 
-                ? "✅ ¡Noticia oficial publicada con éxito!" 
-                : "✅ ¡Noticia enviada con éxito! Queda pendiente de revisión por los administradores.";
+            if (userIsAdmin) {
+                statusMsg.textContent = isEn 
+                    ? "✅ Official news article published successfully!" 
+                    : "✅ ¡Noticia oficial publicada con éxito en el portal!";
+            } else {
+                statusMsg.textContent = isEn 
+                    ? "✅ News submitted for review! It will be published once approved by administrators." 
+                    : "✅ ¡Noticia enviada para revisión! Se publicará en el portal una vez que un administrador la apruebe.";
+            }
         }
 
         setTimeout(() => {
             closeSubmitNewsModal();
             if (submitBtn) {
                 submitBtn.disabled = false;
-                submitBtn.innerHTML = "<span>🚀</span> Enviar para Revisión";
+                const dict = typeof translations !== "undefined" && translations[currentLanguage] ? translations[currentLanguage] : null;
+                submitBtn.innerHTML = (dict && dict.news && dict.news.btnSubmitAction) 
+                    ? dict.news.btnSubmitAction 
+                    : (isEn ? "<span>🚀</span> Submit for Review" : "<span>🚀</span> Enviar para Revisión");
             }
         }, 1600);
 
     } catch (error) {
         console.error("Error saving news article to Firestore:", error);
         // Fallback: save to local state and notify
-        window.ffcNewsArticles.unshift(articlePayload);
+        if (!window.ffcNewsArticles) window.ffcNewsArticles = [];
+        if (!window.ffcNewsArticles.some(a => a.id === newId)) {
+            window.ffcNewsArticles.unshift(articlePayload);
+        }
         saveCachedNewsArticles(window.ffcNewsArticles);
         renderPublicNewsSection();
         updateAdminNewsBadge();
 
         if (statusMsg) {
             statusMsg.style.color = "#34d399";
-            statusMsg.textContent = "✅ Noticia registrada localmente con éxito.";
+            statusMsg.textContent = isEn 
+                ? "✅ Article submitted locally for administrator review!" 
+                : "✅ Noticia guardada localmente para revisión de los administradores.";
         }
         setTimeout(() => {
             closeSubmitNewsModal();
             if (submitBtn) {
                 submitBtn.disabled = false;
-                submitBtn.innerHTML = "<span>🚀</span> Enviar para Revisión";
+                const dict = typeof translations !== "undefined" && translations[currentLanguage] ? translations[currentLanguage] : null;
+                submitBtn.innerHTML = (dict && dict.news && dict.news.btnSubmitAction) 
+                    ? dict.news.btnSubmitAction 
+                    : (isEn ? "<span>🚀</span> Submit for Review" : "<span>🚀</span> Enviar para Revisión");
             }
         }, 1600);
     }
@@ -14001,10 +14134,77 @@ function openNewsArticleModal(articleId) {
         commentAuthorInput.value = u.displayName || (u.email ? u.email.split("@")[0] : "");
     }
 
+    // Admin Quick Actions Bar inside Reader Modal
+    const adminBar = document.getElementById("articleAdminActionsBar");
+    const adminBtnsContainer = document.getElementById("articleAdminActionBtns");
+    const userIsAdmin = isUserAdmin(u);
+
+    if (adminBar && adminBtnsContainer) {
+        if (userIsAdmin) {
+            adminBar.style.display = "flex";
+            const approveBtnHtml = article.status !== "approved"
+                ? `<button type="button" class="btn-action-approve" id="modalBtnApproveNews" title="Aprobar y publicar">✅ Aprobar Noticia</button>`
+                : ``;
+            const rejectBtnHtml = article.status !== "rejected"
+                ? `<button type="button" class="btn-action-reject" id="modalBtnRejectNews" title="Rechazar noticia">❌ Rechazar</button>`
+                : ``;
+
+            adminBtnsContainer.innerHTML = `
+                ${approveBtnHtml}
+                ${rejectBtnHtml}
+                <button type="button" class="btn-action-delete" id="modalBtnDeleteNews" title="Eliminar noticia">🗑️ Eliminar Noticia</button>
+            `;
+
+            const btnApprove = document.getElementById("modalBtnApproveNews");
+            if (btnApprove) {
+                btnApprove.addEventListener("click", () => {
+                    approveNewsArticle(article.id);
+                    openNewsArticleModal(article.id);
+                });
+            }
+
+            const btnReject = document.getElementById("modalBtnRejectNews");
+            if (btnReject) {
+                btnReject.addEventListener("click", () => {
+                    rejectNewsArticle(article.id);
+                    openNewsArticleModal(article.id);
+                });
+            }
+
+            const btnDelete = document.getElementById("modalBtnDeleteNews");
+            if (btnDelete) {
+                btnDelete.addEventListener("click", (e) => {
+                    e.preventDefault();
+                    if (btnDelete.classList.contains("confirming")) {
+                        btnDelete.innerHTML = currentLanguage === "en" ? "<span>⏳</span> Deleting..." : "<span>⏳</span> Eliminando...";
+                        btnDelete.disabled = true;
+                        deleteNewsArticle(article.id);
+                        closeNewsArticleModal();
+                    } else {
+                        btnDelete.classList.add("confirming");
+                        btnDelete.innerHTML = currentLanguage === "en" ? "⚠️ Click again to delete" : "⚠️ Clic de nuevo para eliminar";
+                        setTimeout(() => {
+                            if (btnDelete && btnDelete.classList.contains("confirming")) {
+                                btnDelete.classList.remove("confirming");
+                                btnDelete.innerHTML = "🗑️ Eliminar Noticia";
+                            }
+                        }, 3500);
+                    }
+                });
+            }
+        } else {
+            adminBar.style.display = "none";
+            adminBtnsContainer.innerHTML = "";
+        }
+    }
+
     // Load & listen to comments
     loadArticleComments(article.id);
 
+    overlay.classList.add("active");
     overlay.style.display = "flex";
+    overlay.style.opacity = "1";
+    overlay.style.visibility = "visible";
     overlay.setAttribute("aria-hidden", "false");
     document.body.classList.add("modal-open");
 }
@@ -14017,7 +14217,10 @@ function closeNewsArticleModal() {
         commentsUnsubscribe = null;
     }
     window.ffcActiveReadingArticle = null;
+    overlay.classList.remove("active");
     overlay.style.display = "none";
+    overlay.style.opacity = "0";
+    overlay.style.visibility = "hidden";
     overlay.setAttribute("aria-hidden", "true");
     document.body.classList.remove("modal-open");
 }
@@ -14391,9 +14594,28 @@ function renderAdminNewsTab() {
     });
 
     list.querySelectorAll(".btn-action-delete").forEach(btn => {
-        btn.addEventListener("click", () => {
+        btn.addEventListener("click", (e) => {
+            e.preventDefault();
+            e.stopPropagation();
             const id = btn.dataset.newsId;
-            deleteNewsArticle(id);
+            if (!id) return;
+
+            if (btn.classList.contains("confirming")) {
+                btn.innerHTML = currentLanguage === "en" ? "<span>⏳</span> Deleting..." : "<span>⏳</span> Eliminando...";
+                btn.disabled = true;
+                deleteNewsArticle(id);
+            } else {
+                btn.classList.add("confirming");
+                btn.innerHTML = currentLanguage === "en" ? "⚠️ Confirm delete?" : "⚠️ ¿Confirmar eliminar?";
+                btn.title = currentLanguage === "en" ? "Click again to confirm deletion" : "Haz clic de nuevo para confirmar la eliminación";
+                setTimeout(() => {
+                    if (btn && btn.classList.contains("confirming")) {
+                        btn.classList.remove("confirming");
+                        btn.innerHTML = "🗑️ Eliminar";
+                        btn.title = currentLanguage === "en" ? "Delete permanently" : "Eliminar definitivamente";
+                    }
+                }, 3500);
+            }
         });
     });
 }
@@ -14444,10 +14666,9 @@ async function rejectNewsArticle(newsId) {
 
 // Admin Action: Delete News Article
 async function deleteNewsArticle(newsId) {
-    if (!confirm(currentLanguage === "en" ? "Are you sure you want to permanently delete this news article?" : "¿Estás seguro de que deseas eliminar permanentemente esta noticia?")) {
-        return;
-    }
+    if (!newsId) return;
 
+    // Optimistically update memory and localStorage cache immediately
     window.ffcNewsArticles = window.ffcNewsArticles.filter(a => a.id !== newsId);
     saveCachedNewsArticles(window.ffcNewsArticles);
     try {
@@ -14457,6 +14678,11 @@ async function deleteNewsArticle(newsId) {
     renderAdminNewsTab();
     renderPublicNewsSection();
     updateAdminNewsBadge();
+
+    // Close reading modal if this article was currently open
+    if (window.ffcActiveReadingArticle && window.ffcActiveReadingArticle.id === newsId) {
+        closeNewsArticleModal();
+    }
 
     try {
         await deleteDoc(doc(db, "noticias", newsId));
@@ -14492,6 +14718,9 @@ function handleAdminCreateOfficialNews() {
 // EVENT LISTENERS & INITIALIZATION
 // =========================================================
 function initNewsSystemEvents() {
+    if (window._ffcNewsEventsInit) return;
+    window._ffcNewsEventsInit = true;
+
     // 1. Open / Close Submit Modal
     const openSubmitBtn = document.getElementById("btnOpenSubmitNewsModal");
     const closeSubmitBtn = document.getElementById("newsSubmitModalClose");
@@ -14614,6 +14843,19 @@ function initNewsSystemEvents() {
         btnAdminCreateOfficialNews.addEventListener("click", handleAdminCreateOfficialNews);
     }
 }
+
+// Expose News modal and admin functions to window
+window.openSubmitNewsModal = openSubmitNewsModal;
+window.closeSubmitNewsModal = closeSubmitNewsModal;
+window.openNewsArticleModal = openNewsArticleModal;
+window.closeNewsArticleModal = closeNewsArticleModal;
+window.setPresetNewsImage = setPresetNewsImage;
+window.handleNewsFormSubmit = handleNewsFormSubmit;
+window.renderPublicNewsSection = renderPublicNewsSection;
+window.deleteNewsArticle = deleteNewsArticle;
+window.approveNewsArticle = approveNewsArticle;
+window.rejectNewsArticle = rejectNewsArticle;
+window.renderAdminNewsTab = renderAdminNewsTab;
 
 // Global initialization
 if (document.readyState === "loading") {

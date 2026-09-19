@@ -1238,6 +1238,7 @@
             <button type="button" class="news-cat-btn" data-cat="Pilotos" id="newsCatBtnDrivers">🏎️ Pilotos</button>
             <button type="button" class="news-cat-btn" data-cat="Crónicas" id="newsCatBtnReports">📝 Crónicas</button>
             <button type="button" class="news-cat-btn" data-cat="Comunidad" id="newsCatBtnCommunity">👥 Comunidad</button>
+            <button type="button" class="news-cat-btn" data-cat="Técnica" id="newsCatBtnTech">⚙️ Técnica</button>
         </div>
 
         <div class="news-actions-right">
@@ -1249,7 +1250,7 @@
                 <button type="button" id="newsClearSearchBtn" class="news-clear-search-btn" style="display: none;" title="Limpiar búsqueda">&times;</button>
             </div>
 
-            <button type="button" class="btn-submit-news-cta" id="btnOpenSubmitNewsModal">
+            <button type="button" class="btn-submit-news-cta" id="btnOpenSubmitNewsModal" onclick="openSubmitNewsModal()">
                 <span class="btn-submit-news-icon">✍️</span>
                 <span id="btnSubmitNewsText">Enviar Noticia</span>
             </button>
@@ -3425,7 +3426,7 @@
 ========================================================= -->
 <div class="user-auth-overlay news-modal-overlay" id="newsSubmitModalOverlay" aria-hidden="true" style="display: none;">
     <div class="news-modal-card">
-        <button type="button" class="admin-modal-close-btn" id="newsSubmitModalClose" aria-label="Cerrar modal">&times;</button>
+        <button type="button" class="admin-modal-close-btn" id="newsSubmitModalClose" onclick="closeSubmitNewsModal()" aria-label="Cerrar modal">&times;</button>
         
         <header class="news-modal-header">
             <div class="admin-card-badge" id="newsSubmitModalBadge">PRENSA &bull; COMUNIDAD FFC</div>
@@ -3454,21 +3455,24 @@
                     </select>
                 </div>
                 <div class="news-form-group flex-1">
-                    <label for="newsSubmitAuthor" id="lblNewsSubmitAuthor">Tu Nombre o Alias <span class="required-star">*</span></label>
-                    <input type="text" id="newsSubmitAuthor" class="claim-input" placeholder="Tu nombre en Discord / FFC" required maxlength="50">
+                    <label for="newsSubmitAuthor" id="lblNewsSubmitAuthor">Autor (Tu Usuario) <span class="required-star">*</span></label>
+                    <div style="position: relative; display: flex; align-items: center;">
+                        <input type="text" id="newsSubmitAuthor" class="claim-input" readonly style="background: rgba(255, 255, 255, 0.05); color: var(--gold, #d6b45c); font-weight: 700; cursor: not-allowed; padding-right: 32px;" title="Nombre de tu cuenta registrada">
+                        <span style="position: absolute; right: 12px; font-size: 13px; opacity: 0.8;" title="Cuenta verificada">🔒</span>
+                    </div>
                 </div>
             </div>
 
             <div class="news-form-group">
-                <label for="newsSubmitSummary" id="lblNewsSubmitSummary">Resumen Breve (1-2 frases) <span class="required-star">*</span></label>
-                <input type="text" id="newsSubmitSummary" class="claim-input" placeholder="Una breve descripción que aparecerá en la portada de la noticia" required maxlength="200">
+                <label for="newsSubmitSummary" id="lblNewsSubmitSummary">Resumen Breve (1-2 frases)</label>
+                <input type="text" id="newsSubmitSummary" class="claim-input" placeholder="Una breve descripción que aparecerá en la portada de la noticia" maxlength="200">
             </div>
 
             <div class="news-form-group">
                 <label for="newsSubmitImage" id="lblNewsSubmitImage">URL de Imagen de Portada (Opcional)</label>
                 <div class="news-image-input-wrap">
-                    <input type="url" id="newsSubmitImage" class="claim-input" placeholder="https://ejemplo.com/tu-foto-carrera.jpg">
-                    <button type="button" class="btn-preset-img" id="btnNewsUseDefaultImg">Fondo FFC</button>
+                    <input type="text" id="newsSubmitImage" class="claim-input" placeholder="https://ejemplo.com/tu-foto-carrera.jpg">
+                    <button type="button" class="btn-preset-img" id="btnNewsUseDefaultImg" onclick="setPresetNewsImage()">Fondo FFC</button>
                 </div>
                 <span class="admin-field-hint" id="newsSubmitImageHint">Si lo dejas vacío, se asignará automáticamente un fondo oficial de Formula Factor.</span>
             </div>
@@ -3488,7 +3492,7 @@
 
             <div class="news-modal-footer">
                 <span class="news-submit-status" id="newsSubmitStatusMsg"></span>
-                <button type="button" class="btn btn-secondary" id="newsSubmitCancelBtn">Cancelar</button>
+                <button type="button" class="btn btn-secondary" id="newsSubmitCancelBtn" onclick="closeSubmitNewsModal()">Cancelar</button>
                 <button type="submit" class="btn btn-primary" id="btnSubmitNewsFormAction">
                     <span id="btnSubmitNewsFormActionText"><span>🚀</span> Enviar para Revisión</span>
                 </button>
@@ -3503,7 +3507,7 @@
 ========================================================= -->
 <div class="user-auth-overlay news-modal-overlay" id="newsArticleModalOverlay" aria-hidden="true" style="display: none;">
     <div class="news-article-modal-card">
-        <button type="button" class="admin-modal-close-btn" id="newsArticleModalClose" aria-label="Cerrar artículo">&times;</button>
+        <button type="button" class="admin-modal-close-btn" id="newsArticleModalClose" onclick="closeNewsArticleModal()" aria-label="Cerrar artículo">&times;</button>
         
         <article class="news-full-article" id="newsFullArticle">
             <!-- Header -->
@@ -3550,6 +3554,14 @@
                     <button type="button" class="news-share-btn" id="btnShareArticleLink" title="Copiar enlace de noticia">
                         <span id="btnShareArticleLinkText">🔗 Copiar enlace</span>
                     </button>
+                </div>
+            </div>
+
+            <!-- Admin Quick Actions Bar (Visible only to admins) -->
+            <div class="news-article-admin-bar" id="articleAdminActionsBar" style="display: none;">
+                <span class="admin-bar-label">🛡️ Moderación de Administrador:</span>
+                <div class="admin-bar-btns" id="articleAdminActionBtns">
+                    <!-- Populated dynamically: Approve, Reject, Delete -->
                 </div>
             </div>
 

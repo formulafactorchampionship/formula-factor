@@ -12451,7 +12451,24 @@ input[type="text"]:focus, input[type="email"]:focus, input[type="password"]:focu
    NEWS MODALS (SUBMIT & READER)
 ========================================================= */
 .news-modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(4, 6, 9, 0.88);
+    backdrop-filter: blur(12px);
     z-index: 99999;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    opacity: 0;
+    transition: opacity 0.25s ease;
+}
+
+.news-modal-overlay.active {
+    display: flex !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+    pointer-events: auto !important;
 }
 
 .news-modal-card {
@@ -13160,18 +13177,56 @@ input[type="text"]:focus, input[type="email"]:focus, input[type="password"]:focu
 
 .btn-action-delete {
     background: none;
-    border: 1px solid rgba(239, 68, 68, 0.2);
+    border: 1px solid rgba(239, 68, 68, 0.25);
     color: #f87171;
     border-radius: 6px;
     padding: 5px 10px;
     font-size: 12px;
     cursor: pointer;
     transition: all 0.2s ease;
+    user-select: none;
 }
 
 .btn-action-delete:hover {
     background: rgba(239, 68, 68, 0.25);
     border-color: #ef4444;
+}
+
+.btn-action-delete.confirming {
+    background: #ef4444 !important;
+    border-color: #dc2626 !important;
+    color: #ffffff !important;
+    font-weight: 700 !important;
+    box-shadow: 0 0 10px rgba(239, 68, 68, 0.5);
+    transform: scale(1.02);
+}
+
+.news-article-admin-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    background: rgba(239, 68, 68, 0.08);
+    border: 1px dashed rgba(239, 68, 68, 0.3);
+    border-radius: 8px;
+    padding: 10px 14px;
+    margin: 16px 0;
+    flex-wrap: wrap;
+}
+
+.admin-bar-label {
+    font-size: 12px;
+    font-weight: 700;
+    color: #f87171;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+}
+
+.admin-bar-btns {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
 }
 
 /* RESPONSIVE BREAKPOINTS */
