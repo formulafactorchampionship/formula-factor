@@ -4981,16 +4981,17 @@ function findDriverStats(driverName) {
     const pilotDoc = (currentPilotos || []).find(p => normalizeDriverKey(p.driver) === clean) || {};
     const isUserClaimed = activeUserData && activeUserData.claimedDriver && normalizeDriverKey(activeUserData.claimedDriver) === clean;
     const userCustom = isUserClaimed ? activeUserData : {};
+    const verifiedMapInfo = (typeof window !== "undefined" && window.globalVerifiedUsersMap) ? window.globalVerifiedUsersMap.get(clean) : {};
 
-    const cardColor = userCustom.cardColor || pilotDoc.cardColor || match.cardColor || null;
-    const avatarUrl = userCustom.avatarUrl !== undefined ? userCustom.avatarUrl : (pilotDoc.avatarUrl || match.avatarUrl || null);
-    const officialFlag = match.flag || getOfficialDriverFlag(match.driver) || "🏁";
-    const bio = userCustom.bio !== undefined ? userCustom.bio : (pilotDoc.bio || match.bio || null);
-    const socialTwitch = userCustom.socialTwitch !== undefined ? userCustom.socialTwitch : (pilotDoc.socialTwitch || match.socialTwitch || null);
-    const socialYoutube = userCustom.socialYoutube !== undefined ? userCustom.socialYoutube : (pilotDoc.socialYoutube || match.socialYoutube || null);
-    const socialTwitter = userCustom.socialTwitter !== undefined ? userCustom.socialTwitter : (pilotDoc.socialTwitter || match.socialTwitter || null);
-    const socialDiscord = userCustom.socialDiscord !== undefined ? userCustom.socialDiscord : (pilotDoc.socialDiscord || match.socialDiscord || null);
-    const isVerified = userCustom.isVerified !== undefined ? !!userCustom.isVerified : (pilotDoc.isVerified !== undefined ? !!pilotDoc.isVerified : !!match.isVerified);
+    const cardColor = userCustom.cardColor || pilotDoc.cardColor || verifiedMapInfo.cardColor || match.cardColor || null;
+    const avatarUrl = userCustom.avatarUrl !== undefined ? userCustom.avatarUrl : (pilotDoc.avatarUrl !== undefined ? pilotDoc.avatarUrl : (verifiedMapInfo.avatarUrl !== undefined ? verifiedMapInfo.avatarUrl : (match.avatarUrl || null)));
+    const officialFlag = userCustom.customFlag || userCustom.flag || pilotDoc.customFlag || pilotDoc.flag || verifiedMapInfo.customFlag || match.flag || getOfficialDriverFlag(match.driver) || "🏁";
+    const bio = userCustom.bio !== undefined ? userCustom.bio : (pilotDoc.bio !== undefined ? pilotDoc.bio : (verifiedMapInfo.bio !== undefined ? verifiedMapInfo.bio : match.bio || null));
+    const socialTwitch = userCustom.socialTwitch !== undefined ? userCustom.socialTwitch : (pilotDoc.socialTwitch !== undefined ? pilotDoc.socialTwitch : (verifiedMapInfo.socialTwitch !== undefined ? verifiedMapInfo.socialTwitch : match.socialTwitch || null));
+    const socialYoutube = userCustom.socialYoutube !== undefined ? userCustom.socialYoutube : (pilotDoc.socialYoutube !== undefined ? pilotDoc.socialYoutube : (verifiedMapInfo.socialYoutube !== undefined ? verifiedMapInfo.socialYoutube : match.socialYoutube || null));
+    const socialTwitter = userCustom.socialTwitter !== undefined ? userCustom.socialTwitter : (pilotDoc.socialTwitter !== undefined ? pilotDoc.socialTwitter : (verifiedMapInfo.socialTwitter !== undefined ? verifiedMapInfo.socialTwitter : match.socialTwitter || null));
+    const socialDiscord = userCustom.socialDiscord !== undefined ? userCustom.socialDiscord : (pilotDoc.socialDiscord !== undefined ? pilotDoc.socialDiscord : (verifiedMapInfo.socialDiscord !== undefined ? verifiedMapInfo.socialDiscord : match.socialDiscord || null));
+    const isVerified = userCustom.isVerified !== undefined ? !!userCustom.isVerified : (pilotDoc.isVerified !== undefined ? !!pilotDoc.isVerified : (verifiedMapInfo.isVerified !== undefined ? !!verifiedMapInfo.isVerified : !!match.isVerified));
 
     return {
         driver: match.driver,
@@ -7599,10 +7600,21 @@ function initFirestoreListeners() {
                 const norm = normalizeDriverKey(p.driver);
                 if (typeof window !== "undefined" && window.globalVerifiedUsersMap && window.globalVerifiedUsersMap.has(norm)) {
                     const uInfo = window.globalVerifiedUsersMap.get(norm);
-                    if (!p.isVerified || !p.claimedByEmail) {
+                    if (!p.isVerified || !p.claimedByEmail || !p.cardColor || !p.avatarUrl) {
                         p.isVerified = true;
                         if (uInfo.email && !p.claimedByEmail) p.claimedByEmail = uInfo.email;
                         if (uInfo.uid && !p.claimedByUid) p.claimedByUid = uInfo.uid;
+                        if (uInfo.cardColor && !p.cardColor) p.cardColor = uInfo.cardColor;
+                        if (uInfo.avatarUrl && !p.avatarUrl) p.avatarUrl = uInfo.avatarUrl;
+                        if (uInfo.bio && !p.bio) p.bio = uInfo.bio;
+                        if (uInfo.customFlag && !p.customFlag) {
+                            p.customFlag = uInfo.customFlag;
+                            p.flag = uInfo.customFlag;
+                        }
+                        if (uInfo.socialTwitch && !p.socialTwitch) p.socialTwitch = uInfo.socialTwitch;
+                        if (uInfo.socialYoutube && !p.socialYoutube) p.socialYoutube = uInfo.socialYoutube;
+                        if (uInfo.socialTwitter && !p.socialTwitter) p.socialTwitter = uInfo.socialTwitter;
+                        if (uInfo.socialDiscord && !p.socialDiscord) p.socialDiscord = uInfo.socialDiscord;
                         changed = true;
                     }
                 }
