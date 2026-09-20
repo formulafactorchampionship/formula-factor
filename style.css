@@ -15468,6 +15468,141 @@ input:focus, select:focus, textarea:focus {
     border-color: rgba(239, 68, 68, 0.3) !important;
 }
 
+.countdown.countdown-massive {
+    background: rgba(225, 6, 0, 0.08);
+    border: 1px solid rgba(225, 6, 0, 0.3);
+    padding: 12px;
+    border-radius: 4px;
+    animation: pulseStartingSoon 1.5s infinite ease-in-out;
+}
+
+.countdown.countdown-massive .count-box strong {
+    font-size: 38px !important;
+    color: #fca5a5 !important;
+    text-shadow: 0 0 15px rgba(225, 6, 0, 0.5);
+}
+
+@keyframes pulseStartingSoon {
+    0%, 100% { border-color: rgba(225, 6, 0, 0.3); }
+    50% { border-color: rgba(225, 6, 0, 0.8); }
+}
+
+.next-race-card.starting-soon-hero {
+    background: linear-gradient(135deg, #090d14 0%, #1c0606 50%, #0d121c 100%) !important;
+    border-color: rgba(225, 6, 0, 0.6) !important;
+    box-shadow: 0 0 50px rgba(225, 6, 0, 0.3) !important;
+}
+
+.next-race-card.starting-soon-hero .live-dot {
+    background-color: #e10600 !important;
+    box-shadow: 0 0 15px #e10600 !important;
+    animation: blinkDot 1s infinite ease-in-out;
+}
+
+.next-race-card.starting-soon-hero #nextRaceCardTopText {
+    color: #fca5a5 !important;
+    letter-spacing: 0.25em !important;
+    font-weight: 900 !important;
+}
+
+.next-race-card.starting-soon-hero .lightning {
+    color: #e10600 !important;
+    text-shadow: 0 0 12px rgba(225, 6, 0, 0.8);
+}
+
+.next-race-card.starting-soon-hero #nextRaceNextLabel {
+    color: #f87171 !important;
+    font-weight: 900 !important;
+    letter-spacing: 0.15em !important;
+}
+
+.next-race-card.starting-soon-hero #nextRaceTitle {
+    color: #ffffff !important;
+    text-shadow: 0 0 25px rgba(225, 6, 0, 0.7);
+}
+
+.next-race-card.starting-soon-hero .countdown {
+    background: rgba(225, 6, 0, 0.15) !important;
+    border: 1px solid rgba(225, 6, 0, 0.5) !important;
+    padding: 18px !important;
+    border-radius: 6px !important;
+    margin: 22px 0 !important;
+    box-shadow: inset 0 0 20px rgba(225, 6, 0, 0.2);
+}
+
+.next-race-card.starting-soon-hero .count-box strong {
+    font-size: 44px !important;
+    color: #fca5a5 !important;
+    text-shadow: 0 0 20px rgba(225, 6, 0, 0.9);
+}
+
+.next-race-card.starting-soon-hero .next-race-details-btn {
+    background: #e10600 !important;
+    color: #ffffff !important;
+    border-color: #ff1a1a !important;
+    box-shadow: 0 0 20px rgba(225, 6, 0, 0.5);
+    font-weight: 900 !important;
+}
+
+.next-race-card.starting-soon-hero .next-race-details-btn:hover {
+    background: #ff1a1a !important;
+    box-shadow: 0 0 25px rgba(255, 26, 26, 0.8);
+}
+
+@keyframes blinkDot {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.3; transform: scale(1.3); }
+}
+
+#nextRaceStandardView.is-starting-soon .next-race-info-block,
+#nextRaceStandardView.is-starting-soon .next-race-time-row {
+    display: none !important;
+}
+
+#nextRaceStandardView.is-starting-soon .starting-soon-hero-center {
+    display: flex !important;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 24px 0;
+    flex: 1;
+}
+
+.starting-soon-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(225, 6, 0, 0.15);
+    color: #fca5a5;
+    border: 1px solid rgba(225, 6, 0, 0.4);
+    padding: 6px 14px;
+    font-size: 11px;
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    margin-bottom: 20px;
+    border-radius: 2px;
+}
+
+.starting-soon-main-title {
+    font-family: "Barlow Condensed", sans-serif;
+    font-size: 64px !important;
+    font-weight: 900 !important;
+    color: #ffffff !important;
+    line-height: 1.1 !important;
+    text-transform: uppercase;
+    text-shadow: 0 0 40px rgba(225, 6, 0, 0.8);
+    margin-bottom: 24px !important;
+}
+
+.starting-soon-main-title span {
+    color: #e10600 !important;
+    font-size: 0.85em;
+    display: block;
+    letter-spacing: 0.05em;
+}
+
 
 
 

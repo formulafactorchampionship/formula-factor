@@ -238,6 +238,10 @@ function updateCountdown() {
     const minsEl = document.getElementById("mins");
     const secsEl = document.getElementById("secs");
 
+    const topTextEl = document.getElementById("nextRaceCardTopText");
+    const nextLabelEl = document.getElementById("nextRaceNextLabel");
+    const countdownEl = document.querySelector(".next-race-standard-view .countdown, .countdown");
+
     if (!daysEl || !hoursEl || !minsEl || !secsEl) return;
 
     if (isNextRaceTbd(currentNextRace) || raceDate === null || isNaN(raceDate)) {
@@ -245,11 +249,35 @@ function updateCountdown() {
         hoursEl.textContent = "--";
         minsEl.textContent = "--";
         secsEl.textContent = "--";
+        if (countdownEl) countdownEl.classList.remove("countdown-massive");
         return;
     }
 
     const now = Date.now();
     const difference = raceDate - now;
+
+    const heroCard = document.getElementById("heroAsideCard");
+    const standardViewEl = document.getElementById("nextRaceStandardView");
+    const startingSoonTitleEl = document.getElementById("startingSoonMainTitle");
+    const raceTitleStr = (currentNextRace && currentNextRace.title) ? currentNextRace.title : "NÜRBURGRING GP";
+    const isStartingSoon = (difference > 0 && difference <= 3600000); // 1 hour or less
+
+    if (heroCard && standardViewEl) {
+        if (isStartingSoon) {
+            heroCard.classList.add("starting-soon-hero");
+            standardViewEl.classList.add("is-starting-soon");
+            if (topTextEl) topTextEl.textContent = `${raceTitleStr} STARTING SOON`;
+            if (startingSoonTitleEl) {
+                startingSoonTitleEl.innerHTML = `${raceTitleStr}<br><span>STARTING SOON</span>`;
+            }
+            if (countdownEl) countdownEl.classList.add("countdown-massive");
+        } else {
+            heroCard.classList.remove("starting-soon-hero");
+            standardViewEl.classList.remove("is-starting-soon");
+            if (topTextEl && topTextEl.textContent.includes("STARTING SOON")) topTextEl.textContent = "PRÓXIMA CARRERA";
+            if (countdownEl) countdownEl.classList.remove("countdown-massive");
+        }
+    }
 
     if (difference <= 0) {
         daysEl.textContent = "00";
