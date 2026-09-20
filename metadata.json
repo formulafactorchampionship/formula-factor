@@ -1,6 +1,6 @@
 {
   "name": "Formula Factor Championship",
   "description": "Formula Factor Championship — Competitive Sim Racing Championship",
-  "requestFramePermissions": ["camera"],
+  "requestFramePermissions": [],
   "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
 }
