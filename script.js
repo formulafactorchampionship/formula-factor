@@ -17062,6 +17062,61 @@ function initLiveChatSystem() {
 window.openLiveChatModal = openLiveChatModal;
 window.closeLiveChatModal = closeLiveChatModal;
 
+/* =========================================================
+   USER WEBCAM STREAM FOR LIVE MODE
+========================================================= */
+let userWebcamStream = null;
+
+async function toggleUserWebcam() {
+    const videoEl = document.getElementById("userWebcamVideo");
+    const containerEl = document.getElementById("userWebcamContainer");
+    const btnTextEl = document.getElementById("btnToggleWebcamText");
+    const errorEl = document.getElementById("webcamErrorMsg");
+
+    if (!videoEl || !containerEl) return;
+
+    if (userWebcamStream) {
+        // Turn off webcam
+        userWebcamStream.getTracks().forEach(track => track.stop());
+        userWebcamStream = null;
+        videoEl.srcObject = null;
+        containerEl.style.display = "none";
+        if (btnTextEl) btnTextEl.textContent = "📷 Activar Webcam";
+        if (errorEl) errorEl.style.display = "none";
+    } else {
+        // Turn on webcam
+        try {
+            if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+                alert("Tu navegador no soporta el acceso a la cámara web.");
+                return;
+            }
+            containerEl.style.display = "block";
+            if (errorEl) {
+                errorEl.style.display = "flex";
+                errorEl.textContent = "Solicitando acceso a la cámara...";
+            }
+
+            userWebcamStream = await navigator.mediaDevices.getUserMedia({ video: { width: 1280, height: 720 }, audio: false });
+            videoEl.srcObject = userWebcamStream;
+            await videoEl.play();
+
+            if (errorEl) errorEl.style.display = "none";
+            if (btnTextEl) btnTextEl.textContent = "🛑 Desactivar Webcam";
+        } catch (err) {
+            console.warn("Error accessing webcam:", err);
+            containerEl.style.display = "block";
+            if (errorEl) {
+                errorEl.style.display = "flex";
+                errorEl.textContent = "No se pudo acceder a la cámara. Comprueba los permisos de tu navegador o iframe.";
+            }
+            userWebcamStream = null;
+            if (btnTextEl) btnTextEl.textContent = "📷 Activar Webcam";
+        }
+    }
+}
+
+window.toggleUserWebcam = toggleUserWebcam;
+
 // Global initialization
 if (document.readyState === "loading") {
     document.addEventListener("DOMContentLoaded", () => {
