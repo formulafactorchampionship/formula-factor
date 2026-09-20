@@ -16868,26 +16868,6 @@ window.approveNewsArticle = approveNewsArticle;
 window.rejectNewsArticle = rejectNewsArticle;
 window.renderAdminNewsTab = renderAdminNewsTab;
 
-window.confirmBriefingAttendance = function() {
-    const btn = document.getElementById("confirmBriefingAttendanceBtn");
-    const attVal = document.getElementById("briefingAttendanceVal");
-    if (btn) {
-        btn.innerHTML = "✓ ASISTENCIA CONFIRMADA";
-        btn.style.borderColor = "#10b981";
-        btn.style.color = "#10b981";
-        btn.disabled = true;
-    }
-    if (attVal) {
-        attVal.textContent = "¡Asistencia confirmada para el próximo Briefing!";
-        attVal.style.color = "#10b981";
-    }
-    if (typeof showToast === "function") {
-        showToast("Asistencia al briefing confirmada correctamente.", "success");
-    } else {
-        alert("¡Asistencia confirmada para el briefing en Discord!");
-    }
-};
-
 // Global initialization
 if (document.readyState === "loading") {
     document.addEventListener("DOMContentLoaded", () => {
