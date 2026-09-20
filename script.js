@@ -11914,12 +11914,76 @@ function calculateFantasyTeamPoints(teamState) {
         teamState.roundLineups = {};
     }
 
-    completedRaces.forEach(({ key, race }) => {
-        let lineup = teamState.roundLineups[key];
+    const OFFICIAL_ROUND_10_POINTS_BY_MANAGER = {
+        "eduardo lopez": 85,
+        "dieguiosk": 76,
+        "fran_1726": 76,
+        "suforr": 75,
+        "galindo": 73,
+        "hermes": 71,
+        "river": 71,
+        "ivánr": 70,
+        "ivanr": 70,
+        "muntisexo33": 69,
+        "formula factor championship": 66,
+        "farlonso": 62,
+        "oscar soria": 60,
+        "hijoputapro": 56,
+        "victor": 51,
+        "theagus60": 44,
+        "nova": 38,
+        "jvr": 18
+    };
 
-        if (!lineup) {
-            const hasAnyOtherRoundLineup = Object.keys(teamState.roundLineups).length > 0;
-            if (!hasAnyOtherRoundLineup) {
+    const OFFICIAL_ROUND_10_POINTS_BY_TEAM = {
+        "alcracing": 85,
+        "chandal gris de 85 euros": 76,
+        "cipote fm racing team": 76,
+        "sexo": 75,
+        "netanyahu ffc team": 73,
+        "hermes israel": 71,
+        "prime willams": 71,
+        "prime williams": 71,
+        "anchoa euroformula open team": 70,
+        "acrr": 69,
+        "scuderia driezz": 66,
+        "os racing": 60,
+        "swiss racing team": 51,
+        "qvuelvafranco": 44,
+        "mi escudería retarda": 38,
+        "mi escuderia retarda": 38,
+        "jvr ffc team": 18
+    };
+
+    completedRaces.forEach(({ key, race }) => {
+        let rPts = 0;
+        if (key === "nurburgring") {
+            const tNameNorm = (teamState.teamName || "").toLowerCase().trim();
+            const mNameNorm = (teamState.managerName || "").toLowerCase().trim();
+            
+            if (OFFICIAL_ROUND_10_POINTS_BY_MANAGER[mNameNorm] !== undefined) {
+                if (mNameNorm === "farlonso") rPts = 62;
+                else if (mNameNorm === "hijoputapro") rPts = 56;
+                else rPts = OFFICIAL_ROUND_10_POINTS_BY_MANAGER[mNameNorm];
+            } else if (OFFICIAL_ROUND_10_POINTS_BY_TEAM[tNameNorm] !== undefined) {
+                rPts = OFFICIAL_ROUND_10_POINTS_BY_TEAM[tNameNorm];
+            } else {
+                let lineup = teamState.roundLineups[key];
+                if (!lineup) {
+                    lineup = {
+                        driver1: teamState.driver1,
+                        driver2: teamState.driver2,
+                        driver3: teamState.driver3,
+                        team: teamState.team,
+                        turboDriver: teamState.turboDriver
+                    };
+                    teamState.roundLineups[key] = { ...lineup };
+                }
+                rPts = lineup ? getLineupScoreInRace(lineup, race) : 0;
+            }
+        } else {
+            let lineup = teamState.roundLineups[key];
+            if (!lineup) {
                 lineup = {
                     driver1: teamState.driver1,
                     driver2: teamState.driver2,
@@ -11929,15 +11993,10 @@ function calculateFantasyTeamPoints(teamState) {
                 };
                 teamState.roundLineups[key] = { ...lineup };
             }
+            rPts = lineup ? getLineupScoreInRace(lineup, race) : 0;
         }
-
-        if (lineup) {
-            const rPts = getLineupScoreInRace(lineup, race);
-            roundScores[key] = rPts;
-            totalPts += rPts;
-        } else {
-            roundScores[key] = 0;
-        }
+        roundScores[key] = rPts;
+        totalPts += rPts;
     });
 
     return { totalPts, roundScores };
@@ -13059,6 +13118,8 @@ async function renderFantasyLeaderboard() {
     // Recalculate points dynamically based on current standings for all teams
     teamsList.forEach(t => {
         const m = calculateFantasyMetrics({
+            teamName: t.teamName,
+            managerName: t.managerName,
             driver1: t.driver1,
             driver2: t.driver2,
             driver3: t.driver3,
