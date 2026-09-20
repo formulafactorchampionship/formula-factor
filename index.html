@@ -89,6 +89,10 @@
                 <span class="fantasy-nav-dot" aria-hidden="true"></span>
                 <span id="navFantasyText">FANTASY</span>
             </a>
+            <a href="#chat" class="nav-item nav-chat-link" id="navChat" title="Sala de Chat en Vivo" onclick="if(window.openLiveChatModal){window.openLiveChatModal();return false;}">
+                <span class="fantasy-nav-dot" aria-hidden="true" style="background:#22c55e;"></span>
+                <span id="navChatText">💬 CHAT</span>
+            </a>
         </nav>
 
         <div class="nav-actions">
@@ -3888,6 +3892,37 @@
     </div>
 </div>
 
+<!-- Live Chat Room Modal -->
+<div class="user-auth-overlay news-modal-overlay" id="liveChatModalOverlay" aria-hidden="true" style="display: none;" role="dialog" aria-modal="true">
+    <div class="news-modal-card" id="liveChatModalCard" style="max-width: 680px; height: 85vh; display: flex; flex-direction: column;">
+        <div class="news-modal-header" style="display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 16px; margin-bottom: 16px;">
+            <div style="display: flex; align-items: center; gap: 10px;">
+                <span class="fantasy-nav-dot" style="background: #22c55e; width: 10px; height: 10px; border-radius: 50%;"></span>
+                <h2 style="font-size: 20px; font-weight: 900; text-transform: uppercase; color: #fff; margin: 0;">SALA DE CHAT EN VIVO FFC</h2>
+            </div>
+            <button type="button" class="admin-modal-close-btn" id="liveChatModalClose" onclick="closeLiveChatModal()" aria-label="Cerrar chat" title="Cerrar">&times;</button>
+        </div>
+        <div style="font-size: 13px; color: #94a3b8; margin-bottom: 12px;">
+            💬 Conversa en tiempo real con otros aficionados de la Fórmula Factor Championship. Sincronizado en tiempo real con Firebase Firestore.
+        </div>
+        <!-- Messages Container -->
+        <div id="liveChatMessagesList" style="flex: 1; overflow-y: auto; background: rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.08); border-radius: 8px; padding: 16px; display: flex; flex-direction: column; gap: 12px; margin-bottom: 16px;">
+            <!-- Dynamic chat messages -->
+        </div>
+        <!-- Chat Send Form -->
+        <form id="liveChatSendForm" style="display: flex; flex-direction: column; gap: 10px;">
+            <div style="display: flex; gap: 10px;">
+                <input type="text" id="liveChatAuthorInput" class="claim-input" placeholder="Tu nombre / apodo" required maxlength="40" style="flex: 1; padding: 10px 14px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 6px; color: #fff;">
+            </div>
+            <div style="display: flex; gap: 10px;">
+                <input type="text" id="liveChatTextInput" class="claim-input" placeholder="Escribe un mensaje en directo..." required maxlength="400" style="flex: 1; padding: 10px 14px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 6px; color: #fff;">
+                <button type="submit" class="btn btn-primary" id="btnSendChatMessage" style="padding: 10px 20px; font-weight: 800; white-space: nowrap;">
+                    <span>ENVIAR 🚀</span>
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
 
 <script type="module" src="script.js"></script>
 

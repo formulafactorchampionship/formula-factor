@@ -25,6 +25,9 @@ service cloud.firestore {
     match /noticias_comentarios/{commentId} {
       allow read, write: if true;
     }
+    match /chat_mensajes/{msgId} {
+      allow read, write: if true;
+    }
     match /{document=**} {
       allow read, write: if true;
     }

@@ -74,6 +74,7 @@ import {
     setDoc,
     updateDoc,
     deleteDoc,
+    addDoc,
     onSnapshot,
     writeBatch,
     query,
@@ -9299,7 +9300,14 @@ const LocalAuthStore = {
     setCurrentUser(user) {
         try {
             if (user) {
-                localStorage.setItem("ffc_current_user", JSON.stringify(user));
+                const cleanUser = {
+                    uid: user.uid || user.id || "",
+                    email: user.email || "",
+                    displayName: user.displayName || user.name || (user.email ? user.email.split("@")[0] : ""),
+                    photoURL: user.photoURL || user.avatar || "",
+                    createdAt: user.createdAt || new Date().toISOString()
+                };
+                localStorage.setItem("ffc_current_user", JSON.stringify(cleanUser));
             } else {
                 localStorage.removeItem("ffc_current_user");
             }
@@ -13199,7 +13207,7 @@ function initFantasyLeague() {
     }
 
     // Intercept other nav links to cleanly exit fantasy view if clicked
-    document.querySelectorAll(".nav-links a:not(#navFantasy)").forEach(link => {
+    document.querySelectorAll(".nav-links a:not(#navFantasy):not(#navChat)").forEach(link => {
         link.addEventListener("click", (e) => {
             const fantasyView = document.getElementById("fantasyView");
             if (fantasyView && fantasyView.style.display !== "none") {
@@ -16896,11 +16904,158 @@ window.approveNewsArticle = approveNewsArticle;
 window.rejectNewsArticle = rejectNewsArticle;
 window.renderAdminNewsTab = renderAdminNewsTab;
 
+/* =========================================================
+   LIVE CHAT ROOM SYSTEM (FIREBASE REAL-TIME SYNC)
+========================================================= */
+let chatUnsubscribe = null;
+
+function openLiveChatModal() {
+    const overlay = document.getElementById("liveChatModalOverlay");
+    if (!overlay) return;
+    overlay.classList.add("active");
+    overlay.style.display = "flex";
+    overlay.style.opacity = "1";
+    overlay.style.visibility = "visible";
+    overlay.setAttribute("aria-hidden", "false");
+    document.body.classList.add("modal-open");
+
+    const authorInput = document.getElementById("liveChatAuthorInput");
+    if (authorInput && !authorInput.value) {
+        const currentUser = LocalAuthStore.getCurrentUser();
+        if (currentUser && currentUser.displayName) {
+            authorInput.value = currentUser.displayName;
+        } else {
+            authorInput.value = "Aficionado FFC";
+        }
+    }
+
+    initLiveChatRealtime();
+}
+
+function closeLiveChatModal() {
+    const overlay = document.getElementById("liveChatModalOverlay");
+    if (!overlay) return;
+    overlay.classList.remove("active");
+    overlay.style.display = "none";
+    overlay.style.opacity = "0";
+    overlay.style.visibility = "hidden";
+    overlay.setAttribute("aria-hidden", "true");
+    document.body.classList.remove("modal-open");
+
+    if (chatUnsubscribe) {
+        chatUnsubscribe();
+        chatUnsubscribe = null;
+    }
+}
+
+function initLiveChatRealtime() {
+    if (chatUnsubscribe) return;
+
+    const chatColRef = collection(db, "chat_mensajes");
+    const q = query(chatColRef, orderBy("createdAt", "asc"), limit(150));
+
+    chatUnsubscribe = onSnapshot(q, (snapshot) => {
+        const messages = [];
+        snapshot.forEach(docSnap => {
+            messages.push({ id: docSnap.id, ...docSnap.data() });
+        });
+        renderLiveChatMessages(messages);
+    }, (error) => {
+        console.warn("Live chat snapshot error:", error);
+    });
+}
+
+function renderLiveChatMessages(messages) {
+    const listEl = document.getElementById("liveChatMessagesList");
+    if (!listEl) return;
+
+    if (messages.length === 0) {
+        listEl.innerHTML = `
+            <div style="text-align: center; color: #64748b; padding: 40px 0; font-size: 14px;">
+                💬 No hay mensajes en el chat todavía. ¡Sé el primero en saludar en directo!
+            </div>
+        `;
+        return;
+    }
+
+    listEl.innerHTML = messages.map(msg => {
+        const timeStr = msg.createdAt ? new Date(msg.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '';
+        const author = escapeHtml(msg.authorName || "Anónimo");
+        const text = escapeHtml(msg.text || "");
+        return `
+            <div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06); border-radius: 6px; padding: 10px 14px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+                    <span style="font-weight: 800; font-size: 13px; color: #38bdf8;">${author}</span>
+                    <span style="font-size: 11px; color: #64748b;">${timeStr}</span>
+                </div>
+                <div style="font-size: 14px; color: #e2e8f0; word-break: break-word; line-height: 1.4;">${text}</div>
+            </div>
+        `;
+    }).join("");
+
+    listEl.scrollTop = listEl.scrollHeight;
+}
+
+async function handleLiveChatSubmit(e) {
+    e.preventDefault();
+    const authorInput = document.getElementById("liveChatAuthorInput");
+    const textInput = document.getElementById("liveChatTextInput");
+
+    const authorName = authorInput ? authorInput.value.trim() : "Aficionado FFC";
+    const text = textInput ? textInput.value.trim() : "";
+
+    if (!text) return;
+
+    const currentUser = LocalAuthStore.getCurrentUser();
+    const messagePayload = {
+        authorName: authorName || "Aficionado FFC",
+        authorEmail: currentUser ? currentUser.email : "",
+        authorUid: currentUser ? currentUser.uid : "",
+        text: text,
+        createdAt: new Date().toISOString()
+    };
+
+    if (textInput) textInput.value = "";
+
+    try {
+        await addDoc(collection(db, "chat_mensajes"), messagePayload);
+    } catch (err) {
+        console.warn("Error sending chat message to Firestore:", err);
+        alert("Error al enviar el mensaje al chat en vivo.");
+    }
+}
+
+function initLiveChatSystem() {
+    const navChat = document.getElementById("navChat");
+    if (navChat) {
+        navChat.addEventListener("click", (e) => {
+            e.preventDefault();
+            openLiveChatModal();
+        });
+    }
+
+    const sendForm = document.getElementById("liveChatSendForm");
+    if (sendForm) {
+        sendForm.addEventListener("submit", handleLiveChatSubmit);
+    }
+
+    const chatOverlay = document.getElementById("liveChatModalOverlay");
+    if (chatOverlay) {
+        chatOverlay.addEventListener("click", (e) => {
+            if (e.target === chatOverlay) closeLiveChatModal();
+        });
+    }
+}
+
+window.openLiveChatModal = openLiveChatModal;
+window.closeLiveChatModal = closeLiveChatModal;
+
 // Global initialization
 if (document.readyState === "loading") {
     document.addEventListener("DOMContentLoaded", () => {
         initNewsRealtimeSync();
         initNewsSystemEvents();
+        initLiveChatSystem();
         if (typeof lucide !== 'undefined' && lucide.createIcons) {
             lucide.createIcons();
         }
@@ -16908,6 +17063,7 @@ if (document.readyState === "loading") {
 } else {
     initNewsRealtimeSync();
     initNewsSystemEvents();
+    initLiveChatSystem();
     if (typeof lucide !== 'undefined' && lucide.createIcons) {
         lucide.createIcons();
     }

@@ -144,6 +144,20 @@
         "createdAt": { "type": "string" }
       },
       "required": ["newsId", "authorName", "text", "createdAt"]
+    },
+    "ChatMessage": {
+      "title": "ChatMessage",
+      "description": "Real-time chat room message posted by community members",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "authorName": { "type": "string" },
+        "authorEmail": { "type": "string" },
+        "authorUid": { "type": "string" },
+        "text": { "type": "string" },
+        "createdAt": { "type": "string" }
+      },
+      "required": ["authorName", "text", "createdAt"]
     }
   },
   "firestore": {
@@ -188,6 +202,12 @@
         "$ref": "#/entities/NewsComment"
       },
       "description": "Public comments posted by community members under published news articles"
+    },
+    "/chat_mensajes/{msgId}": {
+      "schema": {
+        "$ref": "#/entities/ChatMessage"
+      },
+      "description": "Real-time chat messages room synced with Firebase"
     }
   }
 }
