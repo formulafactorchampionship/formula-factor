@@ -185,7 +185,7 @@ export function initCobeGlobe(containerId) {
             opacity: 0.95,
             onRender: (state) => {
                 if (!isPaused) {
-                    phi += 0.003; 
+                    phi += 0.0012; 
                     
                     if (Math.abs(velocity.phi) > 0.0001 || Math.abs(velocity.theta) > 0.0001) {
                         phiOffset += velocity.phi;

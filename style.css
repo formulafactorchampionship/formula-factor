@@ -1868,19 +1868,20 @@ button {
 
 .btn-twitch {
     background: #9146ff;
-    border: 1px solid #a970ff;
+    border: 1px solid rgba(169, 112, 255, 0.4);
     color: #ffffff !important;
     gap: 8px;
     font-weight: 800;
     text-decoration: none;
-    box-shadow: 0 4px 14px rgba(145, 70, 255, 0.3);
+    border-radius: 0px !important;
+    box-shadow: none !important;
 }
 
 .btn-twitch:hover {
     background: #772ce8;
     border-color: #9146ff;
     color: #ffffff !important;
-    box-shadow: 0 6px 20px rgba(145, 70, 255, 0.5);
+    box-shadow: none !important;
     transform: translateY(-2px);
 }
 

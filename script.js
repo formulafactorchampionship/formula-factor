@@ -227,7 +227,7 @@ function getSavedRaceTimestamp() {
         const parsed = getMadridEpochMs(currentNextRace.dateTime);
         if (!isNaN(parsed)) return parsed;
     }
-    return getMadridEpochMs("2026-09-20T16:30");
+    return getMadridEpochMs("2026-09-20T17:00");
 }
 
 let raceDate = getSavedRaceTimestamp();
@@ -1990,7 +1990,7 @@ function renderTimezoneOptions() {
     const profileTzBadge = document.getElementById("profileTzBadge");
 
     const race = getSavedNextRace();
-    const raceDateTime = race?.dateTime || "2026-09-20T16:30";
+    const raceDateTime = race?.dateTime || "2026-09-20T17:00";
     const epochMs = getMadridEpochMs(raceDateTime);
     const raceDateObj = !isNaN(epochMs) ? new Date(epochMs) : new Date();
 
@@ -2092,7 +2092,7 @@ function setTimezone(tzId) {
     const profileTzBadge = document.getElementById("profileTzBadge");
     if (profileTzBadge) {
         const race = getSavedNextRace();
-        const raceDateTime = race?.dateTime || "2026-09-20T16:30";
+        const raceDateTime = race?.dateTime || "2026-09-20T17:00";
         const epochMs = getMadridEpochMs(raceDateTime);
         const raceDateObj = !isNaN(epochMs) ? new Date(epochMs) : new Date();
         const activeTzBadge = getTimezoneBadge(selectedTimezone, raceDateObj);
@@ -2974,7 +2974,7 @@ async function syncCalendarAndNextRace(autoSaveFirestore = true) {
     const meta = seasonRacesMeta[nextKey] || {};
     const rData = raceResults[nextKey] || {};
 
-    const rawDateText = rData.dateText || preset.dateText || (meta.date && meta.date !== "TBA" ? `${meta.date} · 16:30 CEST` : "TBD · Por Determinar");
+    const rawDateText = rData.dateText || preset.dateText || (meta.date && meta.date !== "TBA" ? `${meta.date} · 17:00 CEST` : "TBD · Por Determinar");
     const isTbd = Boolean(rData.isTbd || preset.isTbd || preset.dateTime === "TBD" || (rawDateText && (rawDateText.includes("TBA") || rawDateText.includes("TBD") || rawDateText.toUpperCase().includes("POR DETERMINAR"))));
 
     const computedNextRace = {
@@ -2982,7 +2982,7 @@ async function syncCalendarAndNextRace(autoSaveFirestore = true) {
         title: preset.title || (meta.title ? `${meta.title} GP` : nextKey.toUpperCase()),
         location: preset.location || meta.location || "CIRCUIT",
         dateText: rawDateText,
-        dateTime: isTbd ? "TBD" : (rData.dateTime || preset.dateTime || (meta.dateTime || "2026-09-20T16:30")),
+        dateTime: isTbd ? "TBD" : (rData.dateTime || preset.dateTime || (meta.dateTime || "2026-09-20T17:00")),
         weatherTemp: rData.weatherTemp || preset.weatherTemp || "22°C",
         weatherCondition: rData.weatherCondition || preset.weatherCondition || "sunny",
         isTbd: isTbd
@@ -3333,8 +3333,8 @@ const defaultNextRace = {
     round: "ROUND 10",
     title: "NÜRBURGRING GP",
     location: "NÜRBURGRING · EUROPE",
-    dateText: "20 SEP · 16:30 CEST",
-    dateTime: "2026-09-20T16:30",
+    dateText: "20 SEP · 17:00 CEST",
+    dateTime: "2026-09-20T17:00",
     weatherTemp: "22°C",
     weatherCondition: "sunny"
 };
@@ -3810,7 +3810,7 @@ function renderNextRaceOnPage(race) {
         raceDate = null;
         if (nextRaceDateTextEl) {
             const rawText = race.dateText ? race.dateText.trim() : "";
-            if (rawText && !["20 SEP · 16:30 CEST", "20 SEP · 16:30"].includes(rawText)) {
+            if (rawText && !["20 SEP · 17:00 CEST", "20 SEP · 17:00"].includes(rawText)) {
                 nextRaceDateTextEl.innerHTML = `<span style="color:var(--gold-light, #f1d78a); font-weight:700;">TBD</span> <span>${escapeHtml(rawText.replace(/^TBD\s*[·–-]?\s*/i, "")) || (isEn ? "TO BE DETERMINED" : "POR DETERMINAR")}</span>`;
             } else {
                 nextRaceDateTextEl.innerHTML = `<span style="color:var(--gold-light, #f1d78a); font-weight:700;">TBD</span> <span>${isEn ? "TO BE CONFIRMED" : "POR DETERMINAR"}</span>`;
@@ -3840,7 +3840,7 @@ function renderNextRaceOnPage(race) {
             rfRoundNum.textContent = cleanRound || race.round;
         }
     } else {
-        const raceDateTime = race.dateTime || "2026-09-20T16:30";
+        const raceDateTime = race.dateTime || "2026-09-20T17:00";
         const converted = formatRaceForTimezone(raceDateTime, selectedTimezone, currentLanguage);
 
         if (converted) {
@@ -7051,21 +7051,21 @@ function populateRaceResultsEditor(raceKey) {
 
 // Official GP Presets Map for Quick Loader
 const OFFICIAL_GP_PRESETS = {
-    australia: { round: "ROUND 01", title: "AUSTRALIAN GP", location: "MELBOURNE · ALBERT PARK", dateText: "14 JUN · 16:30 CEST", dateTime: "2026-06-14T16:30", weatherTemp: "24°C", weatherCondition: "sunny" },
-    malaysia: { round: "ROUND 02", title: "MALAYSIAN GP", location: "SEPANG · KUALA LUMPUR", dateText: "28 JUN · 16:30 CEST", dateTime: "2026-06-28T16:30", weatherTemp: "31°C", weatherCondition: "partly-cloudy" },
-    bahrain: { round: "ROUND 03", title: "BAHRAIN GP", location: "SAKHIR · DESERT CIRCUIT", dateText: "12 JUL · 16:30 CEST", dateTime: "2026-07-12T16:30", weatherTemp: "28°C", weatherCondition: "sunny" },
-    turkey: { round: "ROUND 04", title: "TURKISH GP", location: "ISTANBUL PARK · TURKEY", dateText: "19 JUL · 16:30 CEST", dateTime: "2026-07-19T16:30", weatherTemp: "25°C", weatherCondition: "sunny" },
-    spain: { round: "ROUND 05", title: "SPANISH GP", location: "CIRCUIT DE BARCELONA-CATALUNYA", dateText: "09 AUG · 16:30 CEST", dateTime: "2026-08-09T16:30", weatherTemp: "23°C", weatherCondition: "sunny" },
-    italy: { round: "ROUND 06", title: "ITALIAN GP", location: "AUTODROMO NAZIONALE MONZA", dateText: "17 AUG · 16:30 CEST", dateTime: "2026-08-17T16:30", weatherTemp: "26°C", weatherCondition: "sunny" },
-    austria: { round: "ROUND 07", title: "AUSTRIAN GP", location: "RED BULL RING · SPIELBERG", dateText: "23 AUG · 16:30 CEST", dateTime: "2026-08-23T16:30", weatherTemp: "21°C", weatherCondition: "partly-cloudy" },
-    silverstone: { round: "ROUND 08", title: "BRITISH GP", location: "SILVERSTONE CIRCUIT · UK", dateText: "07 SEP · 16:30 CEST", dateTime: "2026-09-07T16:30", weatherTemp: "19°C", weatherCondition: "cloudy" },
-    hockenheim: { round: "ROUND 09", title: "GERMAN GP", location: "HOCKENHEIMRING · GERMANY", dateText: "13 SEP · 16:30 CEST", dateTime: "2026-09-13T16:30", weatherTemp: "24°C", weatherCondition: "sunny" },
-    nurburgring: { round: "ROUND 10", title: "NÜRBURGRING GP", location: "NÜRBURGRING · EUROPE", dateText: "20 SEP · 16:30 CEST", dateTime: "2026-09-20T16:30", weatherTemp: "22°C", weatherCondition: "sunny" },
-    hungary: { round: "ROUND 11", title: "HUNGARIAN GP", location: "HUNGARORING · BUDAPEST", dateText: "27 SEP · 16:30 CEST", dateTime: "2026-09-27T16:30", weatherTemp: "29°C", weatherCondition: "sunny" },
-    belgium: { round: "ROUND 12", title: "BELGIAN GP", location: "CIRCUIT DE SPA-FRANCORCHAMPS", dateText: "04 OCT · 16:30 CEST", dateTime: "2026-10-04T16:30", weatherTemp: "18°C", weatherCondition: "rainy" },
-    singapore: { round: "ROUND 13", title: "SINGAPORE GP", location: "MARINA BAY STREET CIRCUIT", dateText: "11 OCT · 20:00 CEST", dateTime: "2026-10-11T20:00", weatherTemp: "30°C", weatherCondition: "partly-cloudy" },
-    cota: { round: "ROUND 14", title: "UNITED STATES GP", location: "CIRCUIT OF THE AMERICAS · AUSTIN", dateText: "18 OCT · 20:00 CEST", dateTime: "2026-10-18T20:00", weatherTemp: "27°C", weatherCondition: "sunny" },
-    brazil: { round: "ROUND 15", title: "BRAZILIAN GP", location: "AUTÓDROMO JOSÉ CARLOS PACE · INTERLAGOS", dateText: "25 OCT · 18:00 CEST", dateTime: "2026-10-25T18:00", weatherTemp: "25°C", weatherCondition: "rainy" }
+    australia: { round: "ROUND 01", title: "AUSTRALIAN GP", location: "MELBOURNE · ALBERT PARK", dateText: "14 JUN · 17:00 CEST", dateTime: "2026-06-14T17:00", weatherTemp: "24°C", weatherCondition: "sunny" },
+    malaysia: { round: "ROUND 02", title: "MALAYSIAN GP", location: "SEPANG · KUALA LUMPUR", dateText: "28 JUN · 17:00 CEST", dateTime: "2026-06-28T17:00", weatherTemp: "31°C", weatherCondition: "partly-cloudy" },
+    bahrain: { round: "ROUND 03", title: "BAHRAIN GP", location: "SAKHIR · DESERT CIRCUIT", dateText: "12 JUL · 17:00 CEST", dateTime: "2026-07-12T17:00", weatherTemp: "28°C", weatherCondition: "sunny" },
+    turkey: { round: "ROUND 04", title: "TURKISH GP", location: "ISTANBUL PARK · TURKEY", dateText: "19 JUL · 17:00 CEST", dateTime: "2026-07-19T17:00", weatherTemp: "25°C", weatherCondition: "sunny" },
+    spain: { round: "ROUND 05", title: "SPANISH GP", location: "CIRCUIT DE BARCELONA-CATALUNYA", dateText: "09 AUG · 17:00 CEST", dateTime: "2026-08-09T17:00", weatherTemp: "23°C", weatherCondition: "sunny" },
+    italy: { round: "ROUND 06", title: "ITALIAN GP", location: "AUTODROMO NAZIONALE MONZA", dateText: "17 AUG · 17:00 CEST", dateTime: "2026-08-17T17:00", weatherTemp: "26°C", weatherCondition: "sunny" },
+    austria: { round: "ROUND 07", title: "AUSTRIAN GP", location: "RED BULL RING · SPIELBERG", dateText: "23 AUG · 17:00 CEST", dateTime: "2026-08-23T17:00", weatherTemp: "21°C", weatherCondition: "partly-cloudy" },
+    silverstone: { round: "ROUND 08", title: "BRITISH GP", location: "SILVERSTONE CIRCUIT · UK", dateText: "07 SEP · 17:00 CEST", dateTime: "2026-09-07T17:00", weatherTemp: "19°C", weatherCondition: "cloudy" },
+    hockenheim: { round: "ROUND 09", title: "GERMAN GP", location: "HOCKENHEIMRING · GERMANY", dateText: "13 SEP · 17:00 CEST", dateTime: "2026-09-13T17:00", weatherTemp: "24°C", weatherCondition: "sunny" },
+    nurburgring: { round: "ROUND 10", title: "NÜRBURGRING GP", location: "NÜRBURGRING · EUROPE", dateText: "20 SEP · 17:00 CEST", dateTime: "2026-09-20T17:00", weatherTemp: "22°C", weatherCondition: "sunny" },
+    hungary: { round: "ROUND 11", title: "HUNGARIAN GP", location: "HUNGARORING · BUDAPEST", dateText: "27 SEP · 17:00 CEST", dateTime: "2026-09-27T17:00", weatherTemp: "29°C", weatherCondition: "sunny" },
+    belgium: { round: "ROUND 12", title: "BELGIAN GP", location: "CIRCUIT DE SPA-FRANCORCHAMPS", dateText: "04 OCT · 17:00 CEST", dateTime: "2026-10-04T17:00", weatherTemp: "18°C", weatherCondition: "rainy" },
+    singapore: { round: "ROUND 13", title: "SINGAPORE GP", location: "MARINA BAY STREET CIRCUIT", dateText: "11 OCT · 17:00 CEST", dateTime: "2026-10-11T17:00", weatherTemp: "30°C", weatherCondition: "partly-cloudy" },
+    cota: { round: "ROUND 14", title: "UNITED STATES GP", location: "CIRCUIT OF THE AMERICAS · AUSTIN", dateText: "18 OCT · 17:00 CEST", dateTime: "2026-10-18T17:00", weatherTemp: "27°C", weatherCondition: "sunny" },
+    brazil: { round: "ROUND 15", title: "BRAZILIAN GP", location: "AUTÓDROMO JOSÉ CARLOS PACE · INTERLAGOS", dateText: "25 OCT · 17:00 CEST", dateTime: "2026-10-25T17:00", weatherTemp: "25°C", weatherCondition: "rainy" }
 };
 
 // Update Admin Live Preview replica in real-time
@@ -7669,23 +7669,43 @@ adminTabButtons.forEach(btn => {
     });
 });
 
+// Helper to format datetime-local value (YYYY-MM-DDTHH:mm) into dateText (DD MMM · HH:mm CEST)
+function formatDateTimeLocalToDateText(dtVal) {
+    if (!dtVal) return "";
+    try {
+        const [datePart, timePart = "17:00"] = dtVal.split('T');
+        const [year, monthNum, dayNum] = datePart.split('-').map(Number);
+        const monthsEs = ["ENE", "FEB", "MAR", "ABR", "MAY", "JUN", "JUL", "AGO", "SEP", "OCT", "NOV", "DIC"];
+        const monthName = monthsEs[monthNum - 1] || "SEP";
+        return `${dayNum} ${monthName} · ${timePart} CEST`;
+    } catch (e) {
+        return dtVal;
+    }
+}
+
 // Save Next Race
 if (nextRaceForm) {
     nextRaceForm.addEventListener("submit", async (e) => {
         e.preventDefault();
         const dateTextVal = adminRaceDateText ? adminRaceDateText.value.trim() : "";
+        const dtVal = adminRaceDateTime ? adminRaceDateTime.value.trim() : "";
         const isTbd = Boolean(adminRaceIsTbd && adminRaceIsTbd.checked) || 
                       (dateTextVal && (dateTextVal.toUpperCase().includes("TBD") || dateTextVal.toUpperCase().includes("TBA") || dateTextVal.toUpperCase().includes("POR DETERMINAR") || dateTextVal.toUpperCase().includes("POR CONFIRMAR"))) ||
-                      (!adminRaceDateTime.value && (!adminRaceDateTime.required || (adminRaceIsTbd && adminRaceIsTbd.checked)));
+                      (!dtVal && (!adminRaceDateTime.required || (adminRaceIsTbd && adminRaceIsTbd.checked)));
+
+        const resolvedDateText = isTbd 
+            ? "TBD · Por Determinar" 
+            : (dtVal ? formatDateTimeLocalToDateText(dtVal) : (dateTextVal || "20 SEP · 17:00 CEST"));
+        const resolvedDateTime = isTbd ? "TBD" : (dtVal || "2026-09-20T17:00");
 
         const updated = {
             round: adminRaceRound ? adminRaceRound.value.trim() : "ROUND 10",
             title: adminRaceTitle ? adminRaceTitle.value.trim() : "NÜRBURGRING GP",
             location: adminRaceLocation ? adminRaceLocation.value.trim() : "NÜRBURGRING · EUROPE",
-            dateText: dateTextVal || (isTbd ? "TBD · Por Determinar" : "20 SEP · 16:30 CEST"),
+            dateText: resolvedDateText,
             weatherTemp: adminRaceTemp ? adminRaceTemp.value.trim() : "22°C",
             weatherCondition: adminRaceWeather ? adminRaceWeather.value : "sunny",
-            dateTime: isTbd ? "TBD" : (adminRaceDateTime.value || "2026-09-20T16:30"),
+            dateTime: resolvedDateTime,
             isTbd: isTbd
         };
 
@@ -7735,7 +7755,7 @@ if (adminRaceIsTbd) {
                 adminRaceDateText.value = "TBD · Por Determinar";
             }
         } else if (!isChecked && adminRaceDateText && adminRaceDateText.value.toUpperCase().includes("TBD")) {
-            adminRaceDateText.value = "20 SEP · 16:30 CEST";
+            adminRaceDateText.value = "20 SEP · 17:00 CEST";
         }
         if (adminRaceDateTimeHint) {
             adminRaceDateTimeHint.textContent = isChecked 
@@ -7811,6 +7831,15 @@ if (adminQuickGpPreset) {
         inputEl.addEventListener("input", updateAdminLivePreview);
     }
 });
+if (adminRaceDateTime) {
+    adminRaceDateTime.addEventListener("input", (e) => {
+        const val = e.target.value;
+        if (val && adminRaceDateText && (!adminRaceIsTbd || !adminRaceIsTbd.checked)) {
+            adminRaceDateText.value = formatDateTimeLocalToDateText(val);
+        }
+        updateAdminLivePreview();
+    });
+}
 if (adminRaceWeather) {
     adminRaceWeather.addEventListener("change", updateAdminLivePreview);
 }
@@ -16817,6 +16846,26 @@ window.deleteNewsArticle = deleteNewsArticle;
 window.approveNewsArticle = approveNewsArticle;
 window.rejectNewsArticle = rejectNewsArticle;
 window.renderAdminNewsTab = renderAdminNewsTab;
+
+window.confirmBriefingAttendance = function() {
+    const btn = document.getElementById("confirmBriefingAttendanceBtn");
+    const attVal = document.getElementById("briefingAttendanceVal");
+    if (btn) {
+        btn.innerHTML = "✓ ASISTENCIA CONFIRMADA";
+        btn.style.borderColor = "#10b981";
+        btn.style.color = "#10b981";
+        btn.disabled = true;
+    }
+    if (attVal) {
+        attVal.textContent = "¡Asistencia confirmada para el próximo Briefing!";
+        attVal.style.color = "#10b981";
+    }
+    if (typeof showToast === "function") {
+        showToast("Asistencia al briefing confirmada correctamente.", "success");
+    } else {
+        alert("¡Asistencia confirmada para el briefing en Discord!");
+    }
+};
 
 // Global initialization
 if (document.readyState === "loading") {
