@@ -2872,7 +2872,7 @@ function findRaceKeyFromNextRace(raceObj) {
 }
 window.findRaceKeyFromNextRace = findRaceKeyFromNextRace;
 
-async function ensurePreviousRacesCompletedForNextRace(targetRaceKey, autoSaveFirestore = true) {
+async function ensurePreviousRacesCompletedForNextRace(targetRaceKey, autoSaveFirestore = true, updateNextRaceConfig = true) {
     if (!targetRaceKey || !SEASON_RACE_ORDER.includes(targetRaceKey)) return [];
 
     const targetIndex = SEASON_RACE_ORDER.indexOf(targetRaceKey);
@@ -2955,7 +2955,9 @@ async function ensurePreviousRacesCompletedForNextRace(targetRaceKey, autoSaveFi
     }
 
     refreshAllCalendarCards();
-    await syncCalendarAndNextRace(autoSaveFirestore);
+    if (updateNextRaceConfig) {
+        await syncCalendarAndNextRace(autoSaveFirestore);
+    }
     if (affectedPriorKeys.length > 0) {
         await recalculateAndSyncStandings(raceResults);
     }
@@ -3733,6 +3735,16 @@ function getSavedNextRace() {
     if (currentNextRace && currentNextRace.round) {
         return currentNextRace;
     }
+    try {
+        const cached = localStorage.getItem("ffc_next_race_cache");
+        if (cached) {
+            const parsed = JSON.parse(cached);
+            if (parsed && parsed.round) {
+                currentNextRace = parsed;
+                return parsed;
+            }
+        }
+    } catch (e) {}
     return defaultNextRace;
 }
 
@@ -7349,6 +7361,9 @@ function initFirestoreListeners() {
     onSnapshot(doc(db, "configuracion", "proxima_carrera"), async (docSnap) => {
         if (docSnap.exists()) {
             currentNextRace = docSnap.data();
+            try {
+                localStorage.setItem("ffc_next_race_cache", JSON.stringify(currentNextRace));
+            } catch (e) {}
             renderNextRaceOnPage(currentNextRace);
             if (adminPanelOverlay && adminPanelOverlay.classList.contains("active")) {
                 const isTbd = isNextRaceTbd(currentNextRace);
@@ -7719,12 +7734,15 @@ if (nextRaceForm) {
             }
             await setDoc(doc(db, "configuracion", "proxima_carrera"), updated);
             currentNextRace = updated;
+            try {
+                localStorage.setItem("ffc_next_race_cache", JSON.stringify(updated));
+            } catch (e) {}
             renderNextRaceOnPage(updated);
 
             // Automatically complete all preceding races in the season order
             const targetKey = findRaceKeyFromNextRace(updated);
             if (targetKey) {
-                await ensurePreviousRacesCompletedForNextRace(targetKey, true);
+                await ensurePreviousRacesCompletedForNextRace(targetKey, true, false);
             }
 
             if (raceSaveNotice) {
