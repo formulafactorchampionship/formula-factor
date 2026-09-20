@@ -7689,14 +7689,17 @@ if (nextRaceForm) {
         e.preventDefault();
         const dateTextVal = adminRaceDateText ? adminRaceDateText.value.trim() : "";
         const dtVal = adminRaceDateTime ? adminRaceDateTime.value.trim() : "";
+        const fallbackDateTime = (typeof currentNextRace !== "undefined" && currentNextRace && currentNextRace.dateTime) ? currentNextRace.dateTime : "2026-09-20T17:00";
+        const fallbackDateText = (typeof currentNextRace !== "undefined" && currentNextRace && currentNextRace.dateText) ? currentNextRace.dateText : "20 SEP · 17:00 CEST";
+
         const isTbd = Boolean(adminRaceIsTbd && adminRaceIsTbd.checked) || 
                       (dateTextVal && (dateTextVal.toUpperCase().includes("TBD") || dateTextVal.toUpperCase().includes("TBA") || dateTextVal.toUpperCase().includes("POR DETERMINAR") || dateTextVal.toUpperCase().includes("POR CONFIRMAR"))) ||
-                      (!dtVal && (!adminRaceDateTime.required || (adminRaceIsTbd && adminRaceIsTbd.checked)));
+                      (!dtVal && !fallbackDateTime && (!adminRaceDateTime.required || (adminRaceIsTbd && adminRaceIsTbd.checked)));
 
+        const resolvedDateTime = isTbd ? "TBD" : (dtVal || fallbackDateTime);
         const resolvedDateText = isTbd 
             ? "TBD · Por Determinar" 
-            : (dtVal ? formatDateTimeLocalToDateText(dtVal) : (dateTextVal || "20 SEP · 17:00 CEST"));
-        const resolvedDateTime = isTbd ? "TBD" : (dtVal || "2026-09-20T17:00");
+            : (dtVal ? formatDateTimeLocalToDateText(dtVal) : (dateTextVal || fallbackDateText));
 
         const updated = {
             round: adminRaceRound ? adminRaceRound.value.trim() : "ROUND 10",
