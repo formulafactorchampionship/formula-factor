@@ -12226,6 +12226,11 @@ async function saveFantasyTeamToStorage() {
         localStorage.setItem(userKey, JSON.stringify(dataToSave));
         localStorage.setItem(FANTASY_LOCAL_STORAGE_KEY, JSON.stringify(dataToSave));
 
+        const hasCompleteLineup = Boolean(ffcFantasyState.driver1 && ffcFantasyState.driver2 && ffcFantasyState.driver3 && ffcFantasyState.team);
+        if (!hasCompleteLineup) {
+            return;
+        }
+
         const metrics = calculateFantasyMetrics();
 
         // Immediately update in-memory cloudFantasyTeams for live UI reactivity
@@ -13109,11 +13114,18 @@ async function renderFantasyLeaderboard() {
         };
 
         if (existingUserIndex >= 0) {
-            teamsList[existingUserIndex] = { ...teamsList[existingUserIndex], ...myTeamEntry };
-        } else if (ffcFantasyState.driver1 || ffcFantasyState.driver2 || ffcFantasyState.driver3 || ffcFantasyState.team) {
+            if (ffcFantasyState.driver1 && ffcFantasyState.driver2 && ffcFantasyState.driver3 && ffcFantasyState.team) {
+                teamsList[existingUserIndex] = { ...teamsList[existingUserIndex], ...myTeamEntry };
+            } else {
+                teamsList.splice(existingUserIndex, 1);
+            }
+        } else if (ffcFantasyState.driver1 && ffcFantasyState.driver2 && ffcFantasyState.driver3 && ffcFantasyState.team) {
             teamsList.push(myTeamEntry);
         }
     }
+
+    // Only keep teams that have 3 drivers and 1 constructor
+    teamsList = teamsList.filter(t => t.driver1 && t.driver2 && t.driver3 && t.team);
 
     // Recalculate points dynamically based on current standings for all teams
     teamsList.forEach(t => {
