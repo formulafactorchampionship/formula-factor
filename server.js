@@ -13,15 +13,16 @@ const PORT = 3000;
 app.use(express.json());
 app.use((req, res, next) => {
   res.setHeader('X-Content-Type-Options', 'nosniff');
-  if (req.path.startsWith('/api/')) {
-    res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate');
+  if (req.path.startsWith('/api/') || req.path.endsWith('.js') || req.path.endsWith('.html') || req.path.endsWith('.css') || req.path === '/') {
+    res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+    res.setHeader('Pragma', 'no-cache');
+    res.setHeader('Expires', '0');
   }
   next();
 });
 app.use(express.static(__dirname, {
-  maxAge: '1d',
-  etag: true,
-  lastModified: true
+  etag: false,
+  lastModified: false
 }));
 
 const USERS_FILE = path.join(__dirname, 'users_db.json');

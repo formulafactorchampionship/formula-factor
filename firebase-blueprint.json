@@ -158,6 +158,20 @@
         "createdAt": { "type": "string" }
       },
       "required": ["authorName", "text", "createdAt"]
+    },
+    "RacePhoto": {
+      "title": "RacePhoto",
+      "description": "Photo taken during or related to a championship race event, shared by the community",
+      "type": "object",
+      "properties": {
+        "raceId": { "type": "string", "description": "Identifier of the Grand Prix race" },
+        "photoUrl": { "type": "string", "description": "Optimized base64 or direct photo URL" },
+        "caption": { "type": "string", "description": "Optional caption or moment description" },
+        "author": { "type": "string", "description": "Name or username of the photographer" },
+        "createdAt": { "type": "string", "description": "Formatted local creation date text" },
+        "timestamp": { "type": "number", "description": "Epoch timestamp in milliseconds" }
+      },
+      "required": ["raceId", "photoUrl", "author", "createdAt"]
     }
   },
   "firestore": {
@@ -208,6 +222,12 @@
         "$ref": "#/entities/ChatMessage"
       },
       "description": "Real-time chat messages room synced with Firebase"
+    },
+    "/carreras_fotos/{photoId}": {
+      "schema": {
+        "$ref": "#/entities/RacePhoto"
+      },
+      "description": "Collection storing photos shared by drivers and community for each Grand Prix race event"
     }
   }
 }

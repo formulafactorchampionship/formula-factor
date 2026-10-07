@@ -17498,5 +17498,474 @@ window.stopLiveTimingPoll = function() {
 };
 
 
+/* =========================================================
+   RACE PHOTO GALLERY SYSTEM (FIRESTORE 'carreras_fotos')
+========================================================= */
+
+let currentPhotos = [];
+let activeUploadMethod = 'file'; // 'file' or 'url'
+let currentCompressedBase64 = null;
+let currentLightboxPhoto = null;
+
+const RACE_TITLES_MAP = {
+    "barcelona_test": "Barcelona Test Days (T)",
+    "australia": "Australia GP (Ronda 01)",
+    "malaysia": "Malaysia GP (Ronda 02)",
+    "bahrain": "Bahrain GP (Ronda 03)",
+    "turkey": "Turkey GP (Ronda 04)",
+    "spain": "Spain GP (Ronda 05)",
+    "italy": "Italy GP - Monza (Ronda 06)",
+    "austria": "Austria GP (Ronda 07)",
+    "silverstone": "Great Britain GP - Silverstone (Ronda 08)",
+    "hockenheim": "Germany GP - Hockenheim (Ronda 09)",
+    "nurburgring": "Europe GP - Nürburgring (Ronda 10)",
+    "hungary": "Hungary GP - Hungaroring (Ronda 11)",
+    "belgium": "Belgium GP - Spa (Ronda 12)",
+    "singapore": "Singapore GP (Ronda 13)",
+    "cota": "USA GP - COTA (Ronda 14)",
+    "brazil": "Brazil GP - Interlagos (Ronda 15)"
+};
+
+window.openGlobalPhotoGallery = function() {
+    const modal = document.getElementById("globalPhotoGalleryModal");
+    if (modal) {
+        modal.classList.add("active");
+        document.body.classList.add("modal-open");
+        renderGlobalPhotoGrid();
+    }
+};
+
+window.closeGlobalPhotoGalleryModal = function() {
+    const modal = document.getElementById("globalPhotoGalleryModal");
+    if (modal) {
+        modal.classList.remove("active");
+        document.body.classList.remove("modal-open");
+    }
+};
+
+window.openUploadPhotoModal = function(preselectedRaceId = null) {
+    const modal = document.getElementById("uploadPhotoModal");
+    if (modal) {
+        modal.classList.add("active");
+        document.body.classList.add("modal-open");
+        const select = document.getElementById("uploadRaceSelect");
+        if (select) {
+            select.value = preselectedRaceId || currentOpenRaceKey || "";
+        }
+        const authorInput = document.getElementById("photoAuthorInput");
+        if (authorInput && !authorInput.value.trim()) {
+            const user = auth.currentUser;
+            if (user && user.email) {
+                authorInput.value = user.email.split("@")[0];
+            } else if (typeof currentSettings !== "undefined" && currentSettings?.driverName) {
+                authorInput.value = currentSettings.driverName;
+            } else {
+                authorInput.value = "Piloto FFC";
+            }
+        }
+        clearPhotoSelection();
+    }
+};
+
+window.openUploadPhotoModalForRace = function(raceId) {
+    window.openUploadPhotoModal(raceId);
+};
+
+window.openUploadPhotoModalForCurrentRace = function() {
+    if (typeof currentOpenRaceKey !== "undefined" && currentOpenRaceKey) {
+        window.openUploadPhotoModal(currentOpenRaceKey);
+    } else {
+        window.openUploadPhotoModal();
+    }
+};
+
+window.closeUploadPhotoModal = function() {
+    const modal = document.getElementById("uploadPhotoModal");
+    if (modal) {
+        modal.classList.remove("active");
+        document.body.classList.remove("modal-open");
+    }
+};
+
+window.switchUploadMethod = function(method) {
+    activeUploadMethod = method;
+    const tabFile = document.getElementById("tabUploadFile");
+    const tabUrl = document.getElementById("tabUploadUrl");
+    const fileGroup = document.getElementById("fileUploadGroup");
+    const urlGroup = document.getElementById("urlUploadGroup");
+
+    if (tabFile && tabUrl && fileGroup && urlGroup) {
+        if (method === 'file') {
+            tabFile.classList.add("active");
+            tabUrl.classList.remove("active");
+            fileGroup.style.display = "block";
+            urlGroup.style.display = "none";
+        } else {
+            tabUrl.classList.add("active");
+            tabFile.classList.remove("active");
+            urlGroup.style.display = "block";
+            fileGroup.style.display = "none";
+        }
+    }
+};
+
+window.clearPhotoSelection = function() {
+    currentCompressedBase64 = null;
+    const fileInput = document.getElementById("photoFileInput");
+    const urlInput = document.getElementById("photoUrlInput");
+    const previewImg = document.getElementById("photoPreviewImg");
+    const placeholder = document.querySelector("#photoPreviewContainer .preview-placeholder");
+    const removeBtn = document.getElementById("btnRemovePreview");
+
+    if (fileInput) fileInput.value = "";
+    if (urlInput) urlInput.value = "";
+    if (previewImg) {
+        previewImg.src = "";
+        previewImg.style.display = "none";
+    }
+    if (placeholder) placeholder.style.display = "block";
+    if (removeBtn) removeBtn.style.display = "none";
+};
+
+// Image Compression via Canvas
+function compressImageFile(file, maxWidth = 1200, maxHeight = 1200, quality = 0.85) {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            const img = new Image();
+            img.onload = () => {
+                let width = img.width;
+                let height = img.height;
+                if (width > maxWidth || height > maxHeight) {
+                    if (width / height > maxWidth / maxHeight) {
+                        height = Math.round((height * maxWidth) / width);
+                        width = maxWidth;
+                    } else {
+                        width = Math.round((width * maxHeight) / height);
+                        height = maxHeight;
+                    }
+                }
+                const canvas = document.createElement("canvas");
+                canvas.width = width;
+                canvas.height = height;
+                const ctx = canvas.getContext("2d");
+                ctx.drawImage(img, 0, 0, width, height);
+                const dataUrl = canvas.toDataURL("image/jpeg", quality);
+                resolve(dataUrl);
+            };
+            img.onerror = reject;
+            img.src = e.target.result;
+        };
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+    });
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+    const fileInput = document.getElementById("photoFileInput");
+    if (fileInput) {
+        fileInput.addEventListener("change", async (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+            const statusMsg = document.getElementById("uploadStatusMsg");
+            if (statusMsg) statusMsg.textContent = "Comprimiendo imagen...";
+            try {
+                const compressed = await compressImageFile(file, 1200, 1200, 0.85);
+                currentCompressedBase64 = compressed;
+                const previewImg = document.getElementById("photoPreviewImg");
+                const placeholder = document.querySelector("#photoPreviewContainer .preview-placeholder");
+                const removeBtn = document.getElementById("btnRemovePreview");
+                if (previewImg) {
+                    previewImg.src = compressed;
+                    previewImg.style.display = "block";
+                }
+                if (placeholder) placeholder.style.display = "none";
+                if (removeBtn) removeBtn.style.display = "block";
+                if (statusMsg) statusMsg.textContent = "¡Imagen optimizada con éxito!";
+                setTimeout(() => { if (statusMsg) statusMsg.textContent = ""; }, 3000);
+            } catch (err) {
+                if (statusMsg) statusMsg.textContent = "Error al procesar la imagen.";
+            }
+        });
+    }
+
+    const urlInput = document.getElementById("photoUrlInput");
+    if (urlInput) {
+        urlInput.addEventListener("input", (e) => {
+            const url = e.target.value.trim();
+            if (url) {
+                const previewImg = document.getElementById("photoPreviewImg");
+                const placeholder = document.querySelector("#photoPreviewContainer .preview-placeholder");
+                const removeBtn = document.getElementById("btnRemovePreview");
+                if (previewImg) {
+                    previewImg.src = url;
+                    previewImg.style.display = "block";
+                }
+                if (placeholder) placeholder.style.display = "none";
+                if (removeBtn) removeBtn.style.display = "block";
+            }
+        });
+    }
+
+    const uploadForm = document.getElementById("photoUploadForm");
+    if (uploadForm) {
+        uploadForm.addEventListener("submit", async (e) => {
+            e.preventDefault();
+            const raceId = document.getElementById("uploadRaceSelect")?.value;
+            const caption = document.getElementById("photoCaptionInput")?.value || "";
+            const author = document.getElementById("photoAuthorInput")?.value || "Piloto FFC";
+            const urlInputVal = document.getElementById("photoUrlInput")?.value || "";
+            const photoUrl = activeUploadMethod === 'file' ? currentCompressedBase64 : urlInputVal;
+            const statusMsg = document.getElementById("uploadStatusMsg");
+
+            if (!raceId) {
+                alert("Por favor selecciona una carrera.");
+                return;
+            }
+            if (!photoUrl) {
+                alert("Por favor selecciona un archivo local o introduce una URL de imagen válida.");
+                return;
+            }
+
+            if (statusMsg) statusMsg.textContent = "Guardando foto en Firestore...";
+
+            try {
+                await addDoc(collection(db, "carreras_fotos"), {
+                    raceId: raceId,
+                    photoUrl: photoUrl.trim(),
+                    caption: caption.trim(),
+                    author: author.trim(),
+                    createdAt: new Date().toLocaleString(),
+                    timestamp: Date.now()
+                });
+
+                if (statusMsg) statusMsg.textContent = "¡Foto publicada correctamente!";
+                setTimeout(() => {
+                    closeUploadPhotoModal();
+                    if (statusMsg) statusMsg.textContent = "";
+                    if (typeof currentOpenRaceKey !== "undefined" && currentOpenRaceKey === raceId) {
+                        renderRaceModalPhotoGallery(raceId);
+                    }
+                }, 1000);
+            } catch (err) {
+                console.error("Error saving photo:", err);
+                if (statusMsg) statusMsg.textContent = "Error al guardar la foto: " + err.message;
+            }
+        });
+    }
+
+    const filterSelect = document.getElementById("galleryRaceFilterSelect");
+    if (filterSelect) {
+        filterSelect.addEventListener("change", () => {
+            renderGlobalPhotoGrid();
+        });
+    }
+});
+
+// Real-time Firestore listener for photos
+onSnapshot(collection(db, "carreras_fotos"), (snapshot) => {
+    currentPhotos = [];
+    snapshot.forEach((docSnap) => {
+        currentPhotos.push({ id: docSnap.id, ...docSnap.data() });
+    });
+    currentPhotos.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
+    updatePhotoGalleriesUI();
+}, (error) => {
+    console.error("Error listening to carreras_fotos:", error);
+});
+
+function updatePhotoGalleriesUI() {
+    renderGlobalPhotoGrid();
+    if (typeof currentOpenRaceKey !== "undefined" && currentOpenRaceKey) {
+        renderRaceModalPhotoGallery(currentOpenRaceKey);
+    }
+    updateCalendarCardPhotoBadges();
+}
+
+function renderGlobalPhotoGrid() {
+    const grid = document.getElementById("globalPhotoGrid");
+    const emptyState = document.getElementById("globalPhotoEmptyState");
+    const filterVal = document.getElementById("galleryRaceFilterSelect")?.value || "all";
+
+    if (!grid) return;
+
+    let filtered = currentPhotos;
+    if (filterVal !== "all") {
+        filtered = currentPhotos.filter(p => p.raceId === filterVal);
+    }
+
+    grid.innerHTML = "";
+    if (filtered.length === 0) {
+        if (emptyState) emptyState.style.display = "block";
+        return;
+    }
+    if (emptyState) emptyState.style.display = "none";
+
+    filtered.forEach(photo => {
+        const raceLabel = RACE_TITLES_MAP[photo.raceId] || photo.raceId;
+        const card = document.createElement("div");
+        card.className = "photo-card";
+        card.innerHTML = `
+            <div class="photo-card-thumb">
+                <img src="${escapeHtml(photo.photoUrl)}" alt="${escapeHtml(photo.caption || 'Foto FFC')}" loading="lazy">
+                <span class="photo-card-badge">${escapeHtml(raceLabel)}</span>
+            </div>
+            <div class="photo-card-content">
+                <div class="photo-card-caption">${escapeHtml(photo.caption || 'Sin descripción')}</div>
+                <div class="photo-card-meta">
+                    <span class="photo-card-author">👤 ${escapeHtml(photo.author)}</span>
+                    <span class="photo-card-date">${escapeHtml(photo.createdAt || '')}</span>
+                </div>
+            </div>
+        `;
+        card.addEventListener("click", () => openPhotoLightbox(photo));
+        grid.appendChild(card);
+    });
+}
+
+function renderRaceModalPhotoGallery(raceKey) {
+    const grid = document.getElementById("raceModalPhotoGrid");
+    const emptyState = document.getElementById("raceModalPhotoEmptyState");
+    const countBadge = document.getElementById("raceModalPhotoCount");
+
+    const racePhotos = currentPhotos.filter(p => p.raceId === raceKey);
+    if (countBadge) countBadge.textContent = racePhotos.length;
+
+    if (!grid) return;
+    grid.innerHTML = "";
+
+    if (racePhotos.length === 0) {
+        if (emptyState) emptyState.style.display = "block";
+        return;
+    }
+    if (emptyState) emptyState.style.display = "none";
+
+    racePhotos.forEach(photo => {
+        const card = document.createElement("div");
+        card.className = "photo-card";
+        card.innerHTML = `
+            <div class="photo-card-thumb">
+                <img src="${escapeHtml(photo.photoUrl)}" alt="${escapeHtml(photo.caption || 'Foto de carrera')}" loading="lazy">
+            </div>
+            <div class="photo-card-content">
+                <div class="photo-card-caption">${escapeHtml(photo.caption || 'Sin descripción')}</div>
+                <div class="photo-card-meta">
+                    <span class="photo-card-author">👤 ${escapeHtml(photo.author)}</span>
+                    <span class="photo-card-date">${escapeHtml(photo.createdAt || '')}</span>
+                </div>
+            </div>
+        `;
+        card.addEventListener("click", () => openPhotoLightbox(photo));
+        grid.appendChild(card);
+    });
+}
+
+window.openPhotoLightbox = function(photo) {
+    currentLightboxPhoto = photo;
+    const modal = document.getElementById("photoLightboxModal");
+    const img = document.getElementById("lightboxImg");
+    const caption = document.getElementById("lightboxCaption");
+    const authorDate = document.getElementById("lightboxAuthorDate");
+    const downloadBtn = document.getElementById("lightboxDownloadBtn");
+    const deleteBtn = document.getElementById("lightboxDeleteBtn");
+
+    if (modal && img) {
+        img.src = photo.photoUrl;
+        if (caption) caption.textContent = photo.caption || RACE_TITLES_MAP[photo.raceId] || "Foto FFC";
+        if (authorDate) authorDate.textContent = `Subido por ${photo.author} • ${photo.createdAt || ''}`;
+        if (downloadBtn) downloadBtn.href = photo.photoUrl;
+
+        if (deleteBtn) {
+            deleteBtn.style.display = "inline-flex";
+        }
+
+        modal.classList.add("active");
+    }
+};
+
+window.closePhotoLightbox = function() {
+    currentLightboxPhoto = null;
+    const modal = document.getElementById("photoLightboxModal");
+    if (modal) modal.classList.remove("active");
+};
+
+window.deleteCurrentLightboxPhoto = async function() {
+    if (!currentLightboxPhoto || !currentLightboxPhoto.id) return;
+    if (confirm("¿Estás seguro de que deseas eliminar esta foto de la galería?")) {
+        try {
+            await deleteDoc(doc(db, "carreras_fotos", currentLightboxPhoto.id));
+            closePhotoLightbox();
+        } catch (err) {
+            alert("Error al eliminar la foto: " + err.message);
+        }
+    }
+};
+
+window.switchRaceModalTab = function(tabName) {
+    const resultsBtn = document.getElementById("raceTabResultsBtn");
+    const galleryBtn = document.getElementById("raceTabGalleryBtn");
+    const resultsContent = document.getElementById("raceResultsTabContent");
+    const galleryContent = document.getElementById("raceGalleryTabContent");
+
+    if (!resultsBtn || !galleryBtn || !resultsContent || !galleryContent) return;
+
+    if (tabName === 'results') {
+        resultsBtn.classList.add("active");
+        galleryBtn.classList.remove("active");
+        resultsContent.style.display = "block";
+        galleryContent.style.display = "none";
+    } else {
+        galleryBtn.classList.add("active");
+        resultsBtn.classList.remove("active");
+        galleryContent.style.display = "block";
+        resultsContent.style.display = "none";
+        if (typeof currentOpenRaceKey !== "undefined" && currentOpenRaceKey) {
+            renderRaceModalPhotoGallery(currentOpenRaceKey);
+        }
+    }
+};
+
+document.addEventListener("DOMContentLoaded", () => {
+    setTimeout(() => {
+        document.querySelectorAll(".calendar-card[data-race]").forEach(card => {
+            const raceKey = card.dataset.race;
+            const footer = card.querySelector(".calendar-card-footer");
+            if (footer && !card.querySelector(".calendar-card-upload-btn")) {
+                const btn = document.createElement("button");
+                btn.type = "button";
+                btn.className = "calendar-card-upload-btn";
+                btn.innerHTML = "📸 + Subir Foto";
+                btn.title = "Subir foto a este Gran Premio";
+                btn.addEventListener("click", (e) => {
+                    e.stopPropagation();
+                    window.openUploadPhotoModal(raceKey);
+                });
+                footer.appendChild(btn);
+            }
+        });
+    }, 500);
+});
+
+function updateCalendarCardPhotoBadges() {
+    document.querySelectorAll(".calendar-card[data-race]").forEach(card => {
+        const raceKey = card.dataset.race;
+        const count = currentPhotos.filter(p => p.raceId === raceKey).length;
+        let badge = card.querySelector(".calendar-photo-count-pill");
+        if (count > 0) {
+            if (!badge) {
+                badge = document.createElement("span");
+                badge.className = "calendar-photo-count-pill";
+                badge.style.cssText = "background: rgba(214, 180, 92, 0.2); color: #f5e29f; font-size: 10px; font-weight: 800; padding: 2px 6px; border-radius: 4px; margin-left: 6px; border: 1px solid rgba(214, 180, 92, 0.4);";
+                const header = card.querySelector(".calendar-status") || card.querySelector(".calendar-card-header");
+                if (header) header.appendChild(badge);
+            }
+            badge.textContent = `📸 ${count}`;
+        } else if (badge) {
+            badge.remove();
+        }
+    });
+}
+
+
 
 

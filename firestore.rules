@@ -28,6 +28,9 @@ service cloud.firestore {
     match /chat_mensajes/{msgId} {
       allow read, write: if true;
     }
+    match /carreras_fotos/{photoId} {
+      allow read, write: if true;
+    }
     match /{document=**} {
       allow read, write: if true;
     }
