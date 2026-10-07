@@ -6256,9 +6256,49 @@ footer {
 
 .admin-pilot-inputs {
     display: grid;
-    grid-template-columns: 1fr 1fr auto;
-    gap: 16px;
+    grid-template-columns: minmax(170px, 1.8fr) minmax(85px, 0.8fr) minmax(150px, 1.4fr) minmax(130px, 1.2fr) auto;
+    gap: 14px;
     align-items: flex-end;
+}
+
+@media (max-width: 900px) {
+    .admin-pilot-inputs {
+        grid-template-columns: 1fr 1fr;
+    }
+    .admin-pilot-submit-field {
+        grid-column: span 2;
+    }
+}
+
+.admin-pilot-name-input,
+.admin-pilot-dorsal-input {
+    background: #0b1017;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    color: #fff;
+    font-size: 13px;
+    padding: 6px 10px;
+    border-radius: 4px;
+    width: 100%;
+    box-sizing: border-box;
+    transition: border-color 0.2s, background 0.2s;
+}
+
+.admin-pilot-name-input:focus,
+.admin-pilot-dorsal-input:focus {
+    outline: none;
+    border-color: var(--gold, #f1d78a);
+    background: #111822;
+}
+
+.admin-pilot-dorsal-input {
+    text-align: center;
+    font-weight: 700;
+    color: var(--gold-light, #f1d78a);
+    letter-spacing: 0.5px;
+}
+
+.admin-pilot-name-input {
+    font-weight: 600;
 }
 
 .admin-pilot-submit-field button {

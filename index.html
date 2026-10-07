@@ -2863,6 +2863,10 @@
                                 <input type="text" id="newPilotName" placeholder="Ej: Fernando Alonso" required autocomplete="off">
                             </div>
                             <div class="admin-field">
+                                <label for="newPilotDorsal">Dorsal (#)</label>
+                                <input type="text" id="newPilotDorsal" placeholder="Ej: 14" autocomplete="off" style="text-align: center;">
+                            </div>
+                            <div class="admin-field">
                                 <label for="newPilotFlag">País / Bandera</label>
                                 <input type="text" id="newPilotFlag" list="allCountriesDatalist" class="admin-select" placeholder="🔍 Buscar país (ej. Colombia)..." required autocomplete="off" value="🇪🇸 España">
                             </div>
@@ -2895,7 +2899,7 @@
                     <div class="admin-drivers-header">
                         <div>
                             <h4>PILOTOS REGISTRADOS (<span id="adminPilotTotalCount">44</span>)</h4>
-                            <p class="admin-field-hint">Selecciona la bandera o el equipo correspondiente en los desplegables para cambiar el país o escudería de cualquier piloto.</p>
+                            <p class="admin-field-hint">Edita directamente el nombre, dorsal, bandera o equipo de cualquier piloto en la tabla y pulsa "Guardar Cambios de Pilotos".</p>
                         </div>
                         <div class="admin-drivers-filters">
                             <select id="adminFilterTeamSelect" class="admin-filter-select" title="Filtrar por escudería">
@@ -2921,15 +2925,16 @@
                         <table class="admin-table admin-drivers-table">
                             <thead>
                                 <tr>
-                                    <th style="width: 45px;">#</th>
-                                    <th>PILOTO</th>
+                                    <th style="width: 45px; text-align: center;">#</th>
+                                    <th style="width: 80px; text-align: center;">DORSAL</th>
+                                    <th style="min-width: 170px;">PILOTO (NOMBRE)</th>
                                     <th style="min-width: 150px;">PAÍS / BANDERA</th>
-                                    <th style="min-width: 170px;">EQUIPO ASIGNADO</th>
+                                    <th style="min-width: 160px;">EQUIPO ASIGNADO</th>
                                     <th style="width: 70px; text-align: center;">ELIMINAR</th>
                                 </tr>
                             </thead>
                             <tbody id="adminDriversTableBody">
-                                <!-- Populated dynamically with country & team dropdowns -->
+                                <!-- Populated dynamically with editable name, dorsal, country & team dropdowns -->
                             </tbody>
                         </table>
                     </div>

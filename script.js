@@ -154,6 +154,40 @@ function getPilotDocId(driverName) {
     return driverName.trim().toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9_-]/g, '_') || ("pilot_" + Date.now());
 }
 
+function getDriverDorsalNumber(driverName) {
+    if (!driverName) return "";
+    const cleanKey = String(driverName).trim().toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+    if (typeof currentPilotos !== "undefined" && Array.isArray(currentPilotos)) {
+        const found = currentPilotos.find(p => {
+            if (!p) return false;
+            const pKey = p.driver ? String(p.driver).trim().toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "") : "";
+            const pId = p.id ? String(p.id).toLowerCase() : "";
+            return pKey === cleanKey || pId === cleanKey;
+        });
+        if (found) {
+            const raw = (found.dorsal !== undefined && found.dorsal !== null && String(found.dorsal).trim() !== "")
+                ? String(found.dorsal).trim().replace(/^#/, "")
+                : ((found.number !== undefined && found.number !== null && String(found.number).trim() !== "")
+                    ? String(found.number).trim().replace(/^#/, "")
+                    : "");
+            if (raw) return raw;
+        }
+    }
+    if (typeof ffc2010SeasonDrivers !== "undefined" && Array.isArray(ffc2010SeasonDrivers)) {
+        const found = ffc2010SeasonDrivers.find(d => {
+            if (!d || !d.driver) return false;
+            const dKey = String(d.driver).trim().toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+            return dKey === cleanKey;
+        });
+        if (found && (found.number !== undefined || found.dorsal !== undefined)) {
+            const num = found.number !== undefined ? found.number : found.dorsal;
+            return String(num).replace(/^#/, "");
+        }
+    }
+    return "";
+}
+window.getDriverDorsalNumber = getDriverDorsalNumber;
+
 function escapeHtml(str) {
     if (str === null || str === undefined) return "";
     return String(str)
@@ -3666,6 +3700,7 @@ const adminResetDefaultBtn = document.getElementById("adminResetDefaultBtn");
 // Drivers Tab Admin Elements
 const adminNewPilotForm = document.getElementById("adminNewPilotForm");
 const newPilotName = document.getElementById("newPilotName");
+const newPilotDorsal = document.getElementById("newPilotDorsal");
 const newPilotTeam = document.getElementById("newPilotTeam");
 const adminAddNewPilotBtn = document.getElementById("adminAddNewPilotBtn");
 const adminPilotTotalCount = document.getElementById("adminPilotTotalCount");
@@ -4728,6 +4763,24 @@ function getDynamicSeasonMatrixData() {
             }
         });
     }
+    if (typeof currentPilotos !== "undefined" && Array.isArray(currentPilotos)) {
+        currentPilotos.forEach(p => {
+            if (p && p.driver) {
+                const k = normalizeDriverKey(p.driver);
+                const prev = metaMap.get(k) || {};
+                const dorsalVal = (p.dorsal !== undefined && p.dorsal !== null && String(p.dorsal).trim() !== "")
+                    ? String(p.dorsal).trim().replace(/^#/, "")
+                    : ((p.number !== undefined && p.number !== null && String(p.number).trim() !== "")
+                        ? String(p.number).trim().replace(/^#/, "")
+                        : prev.number);
+                metaMap.set(k, {
+                    number: dorsalVal,
+                    flag: p.flag || p.customFlag || prev.flag,
+                    team: p.team || prev.team
+                });
+            }
+        });
+    }
 
     const leaderPts = sorted.length > 0 ? (Number(sorted[0].pts) || 0) : 0;
 
@@ -5087,7 +5140,8 @@ function openDriverStatsModal(driverName) {
     // Dorsal Number
     const dorsalEl = document.getElementById("driverModalDorsal");
     if (dorsalEl) {
-        const dorsalVal = data.number ? `#${data.number}` : `#${data.pos}`;
+        const dNum = (data.dorsal || data.number) ? String(data.dorsal || data.number).replace(/^#/, "") : getDriverDorsalNumber(data.driver);
+        const dorsalVal = dNum ? `#${dNum}` : `#${data.pos}`;
         dorsalEl.textContent = dorsalVal;
         if (data.cardColor) {
             dorsalEl.style.borderColor = `${data.cardColor}80`;
@@ -6650,12 +6704,18 @@ function getOfficialDriverRoster() {
             id: p.id,
             driver: p.driver,
             team: p.team,
-            flag: p.flag || p.customFlag || getOfficialDriverFlag(p.driver)
+            flag: p.flag || p.customFlag || getOfficialDriverFlag(p.driver),
+            dorsal: (p.dorsal !== undefined && p.dorsal !== null && String(p.dorsal).trim() !== "")
+                ? String(p.dorsal).trim().replace(/^#/, "")
+                : ((p.number !== undefined && p.number !== null && String(p.number).trim() !== "")
+                    ? String(p.number).trim().replace(/^#/, "")
+                    : (getDriverDorsalNumber(p.driver) || ""))
         }));
     }
     return defaultDriverRoster.map(p => ({
         ...p,
-        flag: p.flag || getOfficialDriverFlag(p.driver)
+        flag: p.flag || getOfficialDriverFlag(p.driver),
+        dorsal: p.dorsal || p.number || getDriverDorsalNumber(p.driver) || ""
     }));
 }
 
@@ -6689,10 +6749,11 @@ function renderAdminDriversTab(filterText = "") {
         if (!lowerFilter) return true;
         const driverMatches = r.driver.toLowerCase().includes(lowerFilter);
         const teamMatches = r.team.toLowerCase().includes(lowerFilter);
+        const dorsalMatches = r.dorsal ? String(r.dorsal).toLowerCase().includes(lowerFilter) : false;
         const flag = r.flag || getOfficialDriverFlag(r.driver);
         const countryName = getCountryNameByFlag(flag);
         const countryMatches = countryName.toLowerCase().includes(lowerFilter);
-        return driverMatches || teamMatches || countryMatches;
+        return driverMatches || teamMatches || dorsalMatches || countryMatches;
     });
 
     if (adminPilotTotalCount) {
@@ -6709,8 +6770,20 @@ function renderAdminDriversTab(filterText = "") {
         const tr = document.createElement("tr");
         tr.dataset.index = actualIndex;
         tr.dataset.pilotId = pilotId;
+        tr.dataset.originalDriver = item.driver;
+        tr.dataset.originalDorsal = item.dorsal || "";
+        tr.dataset.originalTeam = item.team || "";
+        tr.dataset.originalFlag = item.flag || "";
 
         const pendingObj = pendingTeamChanges.get(pilotId) || {};
+
+        const effectiveDriver = pendingObj.driver !== undefined
+            ? pendingObj.driver
+            : item.driver;
+
+        const effectiveDorsal = pendingObj.dorsal !== undefined
+            ? pendingObj.dorsal
+            : (item.dorsal || "");
 
         const effectiveTeam = pendingObj.team !== undefined
             ? pendingObj.team
@@ -6731,39 +6804,74 @@ function renderAdminDriversTab(filterText = "") {
 
         tr.innerHTML = `
             <td style="font-weight: bold; color: var(--gold); text-align: center;">${actualIndex + 1}</td>
-            <td style="font-weight: 600; color: #fff;">${escapeHtml(item.driver)}</td>
+            <td style="text-align: center;">
+                <input type="text" class="admin-pilot-dorsal-input" 
+                       data-pilot-id="${pilotId}" 
+                       data-original-driver="${escapeHtml(item.driver)}"
+                       value="${escapeHtml(effectiveDorsal)}" 
+                       placeholder="—" 
+                       title="Dorsal / Número del piloto"
+                       maxlength="4"
+                       autocomplete="off">
+            </td>
+            <td>
+                <input type="text" class="admin-pilot-name-input" 
+                       data-pilot-id="${pilotId}" 
+                       data-original-driver="${escapeHtml(item.driver)}"
+                       value="${escapeHtml(effectiveDriver)}" 
+                       placeholder="Nombre del piloto" 
+                       title="Nombre oficial del piloto"
+                       autocomplete="off" 
+                       required>
+            </td>
             <td>
                 <input type="text" class="admin-pilot-flag-select admin-select" 
                        list="allCountriesDatalist" 
                        data-pilot-id="${pilotId}" 
-                       data-driver="${escapeHtml(item.driver)}" 
+                       data-original-driver="${escapeHtml(item.driver)}" 
                        value="${escapeHtml(flagDisplayVal)}"
                        style="width: 100%;"
                        placeholder="🔍 Buscar país..."
                        autocomplete="off">
             </td>
             <td>
-                <select class="admin-pilot-team-select" data-pilot-id="${pilotId}" data-driver="${escapeHtml(item.driver)}">
+                <select class="admin-pilot-team-select" data-pilot-id="${pilotId}" data-original-driver="${escapeHtml(item.driver)}">
                     ${teamOptions}
                 </select>
             </td>
             <td style="text-align: center;">
-                <button type="button" class="admin-remove-btn admin-pilot-remove-btn" data-pilot-id="${pilotId}" data-driver="${escapeHtml(item.driver)}" title="Eliminar piloto de Firestore">🗑</button>
+                <button type="button" class="admin-remove-btn admin-pilot-remove-btn" data-pilot-id="${pilotId}" data-driver="${escapeHtml(effectiveDriver)}" title="Eliminar piloto de Firestore">🗑</button>
             </td>
         `;
 
+        const nameInput = tr.querySelector(".admin-pilot-name-input");
+        const dorsalInput = tr.querySelector(".admin-pilot-dorsal-input");
         const teamSelect = tr.querySelector(".admin-pilot-team-select");
         const flagSelect = tr.querySelector(".admin-pilot-flag-select");
 
         const syncPending = () => {
+            const currentName = nameInput ? nameInput.value.trim() : effectiveDriver;
+            const currentDorsal = dorsalInput ? dorsalInput.value.trim().replace(/^#/, "") : effectiveDorsal;
+            const currentTeam = teamSelect ? teamSelect.value : effectiveTeam;
+            const currentFlag = flagSelect ? extractFlagFromCountryString(flagSelect.value) : effectiveFlag;
             pendingTeamChanges.set(pilotId, {
                 pilotId,
-                driver: item.driver,
-                team: teamSelect ? teamSelect.value : effectiveTeam,
-                flag: flagSelect ? extractFlagFromCountryString(flagSelect.value) : effectiveFlag
+                originalDriver: item.driver,
+                driver: currentName || item.driver,
+                dorsal: currentDorsal,
+                team: currentTeam,
+                flag: currentFlag
             });
         };
 
+        if (nameInput) {
+            nameInput.addEventListener("input", syncPending);
+            nameInput.addEventListener("change", syncPending);
+        }
+        if (dorsalInput) {
+            dorsalInput.addEventListener("input", syncPending);
+            dorsalInput.addEventListener("change", syncPending);
+        }
         if (teamSelect) teamSelect.addEventListener("change", syncPending);
         if (flagSelect) {
             flagSelect.addEventListener("change", syncPending);
@@ -7325,12 +7433,20 @@ function initFirestoreListeners() {
                 savePersistentDriverFlag(dName, data.flag || data.customFlag);
             }
 
+            const resolvedDorsal = (data.dorsal !== undefined && data.dorsal !== null && String(data.dorsal).trim() !== "")
+                ? String(data.dorsal).trim().replace(/^#/, "")
+                : ((data.number !== undefined && data.number !== null && String(data.number).trim() !== "")
+                    ? String(data.number).trim().replace(/^#/, "")
+                    : (getDriverDorsalNumber(dName) || ""));
+
             driverMap.set(norm, {
                 id: docSnap.id,
                 driver: data.driver || docSnap.id,
                 team: data.team || "Independent",
                 pos: data.pos || getOfficialDriverRank(data.driver || docSnap.id),
                 pts: Number(data.pts) || 0,
+                dorsal: resolvedDorsal,
+                number: resolvedDorsal,
                 verificationCode: data.verificationCode || null,
                 claimedByEmail: claimedEmail,
                 claimedByUid: claimedUid,
@@ -8276,14 +8392,36 @@ if (adminSaveDriversBtn) {
         rows.forEach(tr => {
             const teamSel = tr.querySelector(".admin-pilot-team-select");
             const flagSel = tr.querySelector(".admin-pilot-flag-select");
-            if (teamSel) {
-                const pilotId = teamSel.dataset.pilotId || getPilotDocId(teamSel.dataset.driver);
-                const driverName = teamSel.dataset.driver;
-                const newTeam = teamSel.value;
-                const newFlag = flagSel ? extractFlagFromCountryString(flagSel.value) : "🏁";
-                if (pilotId && driverName) {
-                    pendingTeamChanges.set(pilotId, { pilotId, driver: driverName, team: newTeam, flag: newFlag });
-                }
+            const nameInput = tr.querySelector(".admin-pilot-name-input");
+            const dorsalInput = tr.querySelector(".admin-pilot-dorsal-input");
+
+            const pilotId = tr.dataset.pilotId || (teamSel ? teamSel.dataset.pilotId : "");
+            const originalDriver = tr.dataset.originalDriver || "";
+            const originalDorsal = tr.dataset.originalDorsal || "";
+            const originalTeam = tr.dataset.originalTeam || "";
+            const originalFlag = tr.dataset.originalFlag || "";
+
+            const newDriver = nameInput ? nameInput.value.trim() : originalDriver;
+            const newDorsal = dorsalInput ? dorsalInput.value.trim().replace(/^#/, "") : originalDorsal;
+            const newTeam = teamSel ? teamSel.value : originalTeam;
+            const newFlag = flagSel ? extractFlagFromCountryString(flagSel.value) : originalFlag;
+
+            if (!newDriver) return;
+
+            const isChanged = (newDriver !== originalDriver) ||
+                              (newDorsal !== originalDorsal) ||
+                              (newTeam !== originalTeam) ||
+                              (newFlag !== originalFlag);
+
+            if (isChanged && pilotId) {
+                pendingTeamChanges.set(pilotId, {
+                    pilotId,
+                    originalDriver,
+                    driver: newDriver,
+                    dorsal: newDorsal,
+                    team: newTeam,
+                    flag: newFlag
+                });
             }
         });
 
@@ -8302,36 +8440,82 @@ if (adminSaveDriversBtn) {
         }
         try {
             const batch = writeBatch(db);
-            pendingTeamChanges.forEach(({ pilotId, driver, team, flag }) => {
+            const renamedDrivers = [];
+
+            pendingTeamChanges.forEach(({ pilotId, originalDriver, driver, dorsal, team, flag }) => {
+                const normOriginal = normalizeDriverKey(originalDriver || driver);
+                const existingPilot = (currentPilotos || []).find(p => (p.id && p.id === pilotId) || (p.driver && normalizeDriverKey(p.driver) === normOriginal));
+
                 const updateData = {
                     driver: driver,
-                    team: team
+                    dorsal: dorsal || "",
+                    number: dorsal ? (parseInt(dorsal, 10) || dorsal) : null,
+                    team: team,
+                    flag: flag,
+                    customFlag: flag
                 };
-                if (flag) {
-                    updateData.flag = flag;
-                    updateData.customFlag = flag;
-                    savePersistentDriverFlag(driver, flag);
+
+                if (existingPilot) {
+                    if (existingPilot.pts !== undefined) updateData.pts = existingPilot.pts;
+                    if (existingPilot.pos !== undefined) updateData.pos = existingPilot.pos;
+                    if (existingPilot.verificationCode) updateData.verificationCode = existingPilot.verificationCode;
+                    if (existingPilot.claimedByEmail) updateData.claimedByEmail = existingPilot.claimedByEmail;
+                    if (existingPilot.claimedByUid) updateData.claimedByUid = existingPilot.claimedByUid;
+                    if (existingPilot.isVerified !== undefined) updateData.isVerified = existingPilot.isVerified;
+                    if (existingPilot.avatarUrl) updateData.avatarUrl = existingPilot.avatarUrl;
+                    if (existingPilot.cardColor) updateData.cardColor = existingPilot.cardColor;
+                    if (existingPilot.bio) updateData.bio = existingPilot.bio;
+                    if (existingPilot.socialTwitch) updateData.socialTwitch = existingPilot.socialTwitch;
+                    if (existingPilot.socialYoutube) updateData.socialYoutube = existingPilot.socialYoutube;
+                    if (existingPilot.socialTwitter) updateData.socialTwitter = existingPilot.socialTwitter;
+                    if (existingPilot.socialDiscord) updateData.socialDiscord = existingPilot.socialDiscord;
                 }
-                batch.set(doc(db, "pilotos", pilotId), updateData, { merge: true });
+
+                savePersistentDriverFlag(driver, flag);
+
+                const newPilotId = getPilotDocId(driver);
+                if (originalDriver && driver !== originalDriver && pilotId !== newPilotId) {
+                    batch.set(doc(db, "pilotos", newPilotId), updateData);
+                    batch.delete(doc(db, "pilotos", pilotId));
+                    renamedDrivers.push({ oldName: originalDriver, newName: driver, oldId: pilotId, newId: newPilotId });
+                } else {
+                    batch.set(doc(db, "pilotos", pilotId), updateData, { merge: true });
+                }
 
                 // Also update local currentPilotos if available
                 if (typeof currentPilotos !== "undefined" && Array.isArray(currentPilotos)) {
-                    const norm = normalizeDriverKey(driver);
-                    const match = currentPilotos.find(p => (p.id && p.id === pilotId) || (p.driver && normalizeDriverKey(p.driver) === norm));
+                    const match = currentPilotos.find(p => (p.id && p.id === pilotId) || (p.driver && normalizeDriverKey(p.driver) === normOriginal));
                     if (match) {
-                        match.team = team;
-                        if (flag) {
-                            match.flag = flag;
-                            match.customFlag = flag;
+                        if (originalDriver && driver !== originalDriver && pilotId !== newPilotId) {
+                            match.id = newPilotId;
                         }
+                        match.driver = driver;
+                        match.dorsal = dorsal || "";
+                        match.number = dorsal || "";
+                        match.team = team;
+                        match.flag = flag;
+                        match.customFlag = flag;
                     }
                 }
             });
+
             await batch.commit();
             pendingTeamChanges.clear();
 
+            if (renamedDrivers.length > 0 && typeof activeUserData !== "undefined" && activeUserData && activeUserData.claimedDriver) {
+                const ren = renamedDrivers.find(r => normalizeDriverKey(r.oldName) === normalizeDriverKey(activeUserData.claimedDriver));
+                if (ren) {
+                    activeUserData.claimedDriver = ren.newName;
+                    try {
+                        if (activeUserAuth && activeUserAuth.uid) {
+                            setDoc(doc(db, "usuarios", activeUserAuth.uid), { claimedDriver: ren.newName }, { merge: true });
+                        }
+                    } catch (e) {}
+                }
+            }
+
             if (driversSaveNotice) {
-                driversSaveNotice.textContent = "✓ Pilotos (equipo y país/bandera) actualizados en Firestore";
+                driversSaveNotice.textContent = "✓ Cambios de pilotos (nombre, dorsal, equipo, país) guardados correctamente";
                 driversSaveNotice.style.color = "#3fb950";
                 setTimeout(() => { driversSaveNotice.textContent = ""; }, 3000);
             }
@@ -8360,9 +8544,11 @@ if (adminNewPilotForm) {
     adminNewPilotForm.addEventListener("submit", async (e) => {
         e.preventDefault();
         const nameInput = document.getElementById("newPilotName");
+        const dorsalInput = document.getElementById("newPilotDorsal");
         const teamSelect = document.getElementById("newPilotTeam");
         const flagSelect = document.getElementById("newPilotFlag");
         const name = nameInput ? nameInput.value.trim() : "";
+        const rawDorsal = dorsalInput ? dorsalInput.value.trim().replace(/^#/, "") : "";
         const team = teamSelect ? teamSelect.value : "HRT";
         const flag = flagSelect ? extractFlagFromCountryString(flagSelect.value) : "🇪🇸";
 
@@ -8383,6 +8569,8 @@ if (adminNewPilotForm) {
             }
             await setDoc(doc(db, "pilotos", pilotId), {
                 driver: name,
+                dorsal: rawDorsal,
+                number: rawDorsal ? (parseInt(rawDorsal, 10) || rawDorsal) : null,
                 team: team,
                 flag: flag,
                 customFlag: flag,
@@ -8390,8 +8578,10 @@ if (adminNewPilotForm) {
             });
 
             if (nameInput) nameInput.value = "";
+            if (dorsalInput) dorsalInput.value = "";
             if (driversSaveNotice) {
-                driversSaveNotice.textContent = `✓ Piloto ${name} (${flag}) guardado en Firestore en tiempo real`;
+                const dorsalTag = rawDorsal ? ` #${rawDorsal}` : "";
+                driversSaveNotice.textContent = `✓ Piloto ${name}${dorsalTag} (${flag}) guardado en Firestore en tiempo real`;
                 driversSaveNotice.style.color = "#3fb950";
                 setTimeout(() => { driversSaveNotice.textContent = ""; }, 3000);
             }
