@@ -17510,7 +17510,24 @@ window.stopLiveTimingPoll = function() {
    RACE PHOTO GALLERY SYSTEM (FIRESTORE 'carreras_fotos')
 ========================================================= */
 
-let currentPhotos = [];
+function loadCachedPhotos() {
+    try {
+        const raw = localStorage.getItem("ffc_local_photos");
+        if (raw) {
+            const parsed = JSON.parse(raw);
+            if (Array.isArray(parsed)) return parsed;
+        }
+    } catch (e) {}
+    return [];
+}
+
+function saveCachedPhotos(photos) {
+    try {
+        localStorage.setItem("ffc_local_photos", JSON.stringify(photos));
+    } catch (e) {}
+}
+
+let currentPhotos = loadCachedPhotos();
 let activeUploadMethod = 'file'; // 'file' or 'url'
 let currentCompressedBase64Array = [];
 let currentLightboxPhoto = null;
@@ -17757,20 +17774,27 @@ document.addEventListener("DOMContentLoaded", () => {
                 return;
             }
 
-            if (statusMsg) statusMsg.textContent = `Guardando ${photosToUpload.length} foto(s) en Firestore (Pendiente de aprobación)...`;
+            if (statusMsg) statusMsg.textContent = `Guardando ${photosToUpload.length} foto(s) (Pendiente de aprobación)...`;
 
             try {
                 for (let i = 0; i < photosToUpload.length; i++) {
-                    await addDoc(collection(db, "carreras_fotos"), {
+                    const newPhotoData = {
                         raceId: raceId,
                         photoUrl: photosToUpload[i],
                         caption: caption.trim(),
                         author: author.trim(),
-                        status: "pending", // admin approval required
+                        status: "pending",
                         createdAt: new Date().toLocaleString(),
                         timestamp: Date.now() + i
-                    });
+                    };
+
+                    const docRef = await addDoc(collection(db, "carreras_fotos"), newPhotoData);
+                    currentPhotos.unshift({ id: docRef.id, ...newPhotoData });
                 }
+
+                currentPhotos.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
+                saveCachedPhotos(currentPhotos);
+                updatePhotoGalleriesUI();
 
                 if (statusMsg) statusMsg.textContent = "¡Fotos enviadas para aprobación!";
                 setTimeout(() => {
@@ -17782,7 +17806,26 @@ document.addEventListener("DOMContentLoaded", () => {
                 }, 1000);
             } catch (err) {
                 console.error("Error saving photos:", err);
-                if (statusMsg) statusMsg.textContent = "Error al guardar las fotos: " + err.message;
+                // Fallback local save if Firestore fails
+                for (let i = 0; i < photosToUpload.length; i++) {
+                    currentPhotos.unshift({
+                        id: "local_" + Date.now() + "_" + i,
+                        raceId: raceId,
+                        photoUrl: photosToUpload[i],
+                        caption: caption.trim(),
+                        author: author.trim(),
+                        status: "pending",
+                        createdAt: new Date().toLocaleString(),
+                        timestamp: Date.now() + i
+                    });
+                }
+                saveCachedPhotos(currentPhotos);
+                updatePhotoGalleriesUI();
+                if (statusMsg) statusMsg.textContent = "¡Fotos guardadas localmente!";
+                setTimeout(() => {
+                    closeUploadPhotoModal();
+                    if (statusMsg) statusMsg.textContent = "";
+                }, 1000);
             }
         });
     }
@@ -17796,16 +17839,24 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 // Real-time Firestore listener for photos
-onSnapshot(collection(db, "carreras_fotos"), (snapshot) => {
-    currentPhotos = [];
-    snapshot.forEach((docSnap) => {
-        currentPhotos.push({ id: docSnap.id, ...docSnap.data() });
+try {
+    onSnapshot(collection(db, "carreras_fotos"), (snapshot) => {
+        const fetched = [];
+        snapshot.forEach((docSnap) => {
+            fetched.push({ id: docSnap.id, ...docSnap.data() });
+        });
+        if (fetched.length > 0 || currentPhotos.length === 0) {
+            currentPhotos = fetched;
+            currentPhotos.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
+            saveCachedPhotos(currentPhotos);
+            updatePhotoGalleriesUI();
+        }
+    }, (error) => {
+        console.warn("Error listening to carreras_fotos:", error);
     });
-    currentPhotos.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
-    updatePhotoGalleriesUI();
-}, (error) => {
-    console.error("Error listening to carreras_fotos:", error);
-});
+} catch (e) {
+    console.warn("Could not attach carreras_fotos listener:", e);
+}
 
 function updatePhotoGalleriesUI() {
     renderGlobalPhotoGrid();
@@ -17813,6 +17864,11 @@ function updatePhotoGalleriesUI() {
         renderRaceModalPhotoGallery(currentOpenRaceKey);
     }
     updateCalendarCardPhotoBadges();
+    updateAdminPhotosBadge();
+    const photosTab = document.getElementById("tab-photos");
+    if (photosTab && photosTab.classList.contains("active")) {
+        renderAdminPhotosTab();
+    }
 }
 
 function renderGlobalPhotoGrid() {
