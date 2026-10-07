@@ -7876,6 +7876,11 @@ adminTabButtons.forEach(btn => {
                 renderAdminNewsTab();
             }
         }
+        if (targetId === "tab-photos") {
+            if (typeof renderAdminPhotosTab === "function") {
+                renderAdminPhotosTab();
+            }
+        }
     });
 });
 
@@ -17504,7 +17509,7 @@ window.stopLiveTimingPoll = function() {
 
 let currentPhotos = [];
 let activeUploadMethod = 'file'; // 'file' or 'url'
-let currentCompressedBase64 = null;
+let currentCompressedBase64Array = [];
 let currentLightboxPhoto = null;
 
 const RACE_TITLES_MAP = {
@@ -17525,6 +17530,28 @@ const RACE_TITLES_MAP = {
     "cota": "USA GP - COTA (Ronda 14)",
     "brazil": "Brazil GP - Interlagos (Ronda 15)"
 };
+
+function populatePastRaceSelect(preselected = "") {
+    const select = document.getElementById("uploadRaceSelect");
+    if (!select) return;
+
+    const options = [
+        { key: "barcelona_test", label: "Barcelona Test Days (T)" }
+    ];
+    if (typeof FFC_SEASON_GPS !== "undefined" && Array.isArray(FFC_SEASON_GPS)) {
+        FFC_SEASON_GPS.forEach(gp => {
+            options.push({ key: gp.raceKey, label: `${gp.flag || ''} ${gp.name} (Ronda ${gp.r})` });
+        });
+    }
+
+    select.innerHTML = `<option value="">-- Selecciona una carrera pasada --</option>` + options.map(opt => `
+        <option value="${opt.key}">${opt.label}</option>
+    `).join("");
+
+    if (preselected) {
+        select.value = preselected;
+    }
+}
 
 window.openGlobalPhotoGallery = function() {
     const modal = document.getElementById("globalPhotoGalleryModal");
@@ -17548,21 +17575,7 @@ window.openUploadPhotoModal = function(preselectedRaceId = null) {
     if (modal) {
         modal.classList.add("active");
         document.body.classList.add("modal-open");
-        const select = document.getElementById("uploadRaceSelect");
-        if (select) {
-            select.value = preselectedRaceId || currentOpenRaceKey || "";
-        }
-        const authorInput = document.getElementById("photoAuthorInput");
-        if (authorInput && !authorInput.value.trim()) {
-            const user = auth.currentUser;
-            if (user && user.email) {
-                authorInput.value = user.email.split("@")[0];
-            } else if (typeof currentSettings !== "undefined" && currentSettings?.driverName) {
-                authorInput.value = currentSettings.driverName;
-            } else {
-                authorInput.value = "Piloto FFC";
-            }
-        }
+        populatePastRaceSelect(preselectedRaceId || currentOpenRaceKey || "");
         clearPhotoSelection();
     }
 };
@@ -17610,21 +17623,14 @@ window.switchUploadMethod = function(method) {
 };
 
 window.clearPhotoSelection = function() {
-    currentCompressedBase64 = null;
+    currentCompressedBase64Array = [];
     const fileInput = document.getElementById("photoFileInput");
     const urlInput = document.getElementById("photoUrlInput");
-    const previewImg = document.getElementById("photoPreviewImg");
-    const placeholder = document.querySelector("#photoPreviewContainer .preview-placeholder");
-    const removeBtn = document.getElementById("btnRemovePreview");
+    const countSpan = document.getElementById("selectedFilesCount");
 
     if (fileInput) fileInput.value = "";
     if (urlInput) urlInput.value = "";
-    if (previewImg) {
-        previewImg.src = "";
-        previewImg.style.display = "none";
-    }
-    if (placeholder) placeholder.style.display = "block";
-    if (removeBtn) removeBtn.style.display = "none";
+    if (countSpan) countSpan.textContent = "";
 };
 
 // Image Compression via Canvas
@@ -17665,26 +17671,26 @@ document.addEventListener("DOMContentLoaded", () => {
     const fileInput = document.getElementById("photoFileInput");
     if (fileInput) {
         fileInput.addEventListener("change", async (e) => {
-            const file = e.target.files[0];
-            if (!file) return;
+            const files = Array.from(e.target.files || []);
             const statusMsg = document.getElementById("uploadStatusMsg");
-            if (statusMsg) statusMsg.textContent = "Comprimiendo imagen...";
+            const countSpan = document.getElementById("selectedFilesCount");
+            if (files.length === 0) return;
+
+            if (statusMsg) statusMsg.textContent = `Comprimiendo ${files.length} imagen(es)...`;
+            currentCompressedBase64Array = [];
+
             try {
-                const compressed = await compressImageFile(file, 1200, 1200, 0.85);
-                currentCompressedBase64 = compressed;
-                const previewImg = document.getElementById("photoPreviewImg");
-                const placeholder = document.querySelector("#photoPreviewContainer .preview-placeholder");
-                const removeBtn = document.getElementById("btnRemovePreview");
-                if (previewImg) {
-                    previewImg.src = compressed;
-                    previewImg.style.display = "block";
+                for (const file of files) {
+                    const compressed = await compressImageFile(file, 1200, 1200, 0.85);
+                    currentCompressedBase64Array.push(compressed);
                 }
-                if (placeholder) placeholder.style.display = "none";
-                if (removeBtn) removeBtn.style.display = "block";
-                if (statusMsg) statusMsg.textContent = "¡Imagen optimizada con éxito!";
+                if (countSpan) {
+                    countSpan.textContent = `✓ ${currentCompressedBase64Array.length} foto(s) seleccionada(s) y listas para subir.`;
+                }
+                if (statusMsg) statusMsg.textContent = "¡Imágenes optimizadas con éxito!";
                 setTimeout(() => { if (statusMsg) statusMsg.textContent = ""; }, 3000);
             } catch (err) {
-                if (statusMsg) statusMsg.textContent = "Error al procesar la imagen.";
+                if (statusMsg) statusMsg.textContent = "Error al procesar las imágenes.";
             }
         });
     }
@@ -17693,16 +17699,9 @@ document.addEventListener("DOMContentLoaded", () => {
     if (urlInput) {
         urlInput.addEventListener("input", (e) => {
             const url = e.target.value.trim();
-            if (url) {
-                const previewImg = document.getElementById("photoPreviewImg");
-                const placeholder = document.querySelector("#photoPreviewContainer .preview-placeholder");
-                const removeBtn = document.getElementById("btnRemovePreview");
-                if (previewImg) {
-                    previewImg.src = url;
-                    previewImg.style.display = "block";
-                }
-                if (placeholder) placeholder.style.display = "none";
-                if (removeBtn) removeBtn.style.display = "block";
+            const countSpan = document.getElementById("selectedFilesCount");
+            if (url && countSpan) {
+                countSpan.textContent = "✓ Enlace URL válido.";
             }
         });
     }
@@ -17713,33 +17712,44 @@ document.addEventListener("DOMContentLoaded", () => {
             e.preventDefault();
             const raceId = document.getElementById("uploadRaceSelect")?.value;
             const caption = document.getElementById("photoCaptionInput")?.value || "";
-            const author = document.getElementById("photoAuthorInput")?.value || "Piloto FFC";
+            const currentUser = typeof activeUserAuth !== "undefined" && activeUserAuth ? activeUserAuth : (typeof LocalAuthStore !== "undefined" ? LocalAuthStore.getCurrentUser() : null);
+            const author = (currentUser && currentUser.displayName) ? currentUser.displayName : (currentUser && currentUser.email ? currentUser.email.split("@")[0] : (typeof currentSettings !== "undefined" && currentSettings?.driverName ? currentSettings.driverName : "Piloto FFC"));
             const urlInputVal = document.getElementById("photoUrlInput")?.value || "";
-            const photoUrl = activeUploadMethod === 'file' ? currentCompressedBase64 : urlInputVal;
             const statusMsg = document.getElementById("uploadStatusMsg");
 
             if (!raceId) {
                 alert("Por favor selecciona una carrera.");
                 return;
             }
-            if (!photoUrl) {
-                alert("Por favor selecciona un archivo local o introduce una URL de imagen válida.");
+
+            let photosToUpload = [];
+            if (activeUploadMethod === 'file') {
+                photosToUpload = currentCompressedBase64Array;
+            } else if (urlInputVal) {
+                photosToUpload = [urlInputVal.trim()];
+            }
+
+            if (photosToUpload.length === 0) {
+                alert("Por favor selecciona al menos un archivo o introduce una URL de imagen.");
                 return;
             }
 
-            if (statusMsg) statusMsg.textContent = "Guardando foto en Firestore...";
+            if (statusMsg) statusMsg.textContent = `Guardando ${photosToUpload.length} foto(s) en Firestore (Pendiente de aprobación)...`;
 
             try {
-                await addDoc(collection(db, "carreras_fotos"), {
-                    raceId: raceId,
-                    photoUrl: photoUrl.trim(),
-                    caption: caption.trim(),
-                    author: author.trim(),
-                    createdAt: new Date().toLocaleString(),
-                    timestamp: Date.now()
-                });
+                for (let i = 0; i < photosToUpload.length; i++) {
+                    await addDoc(collection(db, "carreras_fotos"), {
+                        raceId: raceId,
+                        photoUrl: photosToUpload[i],
+                        caption: caption.trim(),
+                        author: author.trim(),
+                        status: "pending", // admin approval required
+                        createdAt: new Date().toLocaleString(),
+                        timestamp: Date.now() + i
+                    });
+                }
 
-                if (statusMsg) statusMsg.textContent = "¡Foto publicada correctamente!";
+                if (statusMsg) statusMsg.textContent = "¡Fotos enviadas para aprobación!";
                 setTimeout(() => {
                     closeUploadPhotoModal();
                     if (statusMsg) statusMsg.textContent = "";
@@ -17748,8 +17758,8 @@ document.addEventListener("DOMContentLoaded", () => {
                     }
                 }, 1000);
             } catch (err) {
-                console.error("Error saving photo:", err);
-                if (statusMsg) statusMsg.textContent = "Error al guardar la foto: " + err.message;
+                console.error("Error saving photos:", err);
+                if (statusMsg) statusMsg.textContent = "Error al guardar las fotos: " + err.message;
             }
         });
     }
@@ -17789,9 +17799,10 @@ function renderGlobalPhotoGrid() {
 
     if (!grid) return;
 
-    let filtered = currentPhotos;
+    let approved = currentPhotos.filter(p => p.status === "approved" || !p.status);
+    let filtered = approved;
     if (filterVal !== "all") {
-        filtered = currentPhotos.filter(p => p.raceId === filterVal);
+        filtered = approved.filter(p => p.raceId === filterVal);
     }
 
     grid.innerHTML = "";
@@ -17828,7 +17839,7 @@ function renderRaceModalPhotoGallery(raceKey) {
     const emptyState = document.getElementById("raceModalPhotoEmptyState");
     const countBadge = document.getElementById("raceModalPhotoCount");
 
-    const racePhotos = currentPhotos.filter(p => p.raceId === raceKey);
+    const racePhotos = currentPhotos.filter(p => p.raceId === raceKey && (p.status === "approved" || !p.status));
     if (countBadge) countBadge.textContent = racePhotos.length;
 
     if (!grid) return;
@@ -17949,7 +17960,7 @@ document.addEventListener("DOMContentLoaded", () => {
 function updateCalendarCardPhotoBadges() {
     document.querySelectorAll(".calendar-card[data-race]").forEach(card => {
         const raceKey = card.dataset.race;
-        const count = currentPhotos.filter(p => p.raceId === raceKey).length;
+        const count = currentPhotos.filter(p => p.raceId === raceKey && (p.status === "approved" || !p.status)).length;
         let badge = card.querySelector(".calendar-photo-count-pill");
         if (count > 0) {
             if (!badge) {
@@ -17965,6 +17976,177 @@ function updateCalendarCardPhotoBadges() {
         }
     });
 }
+
+// =========================================================
+// ADMIN PHOTO MODERATION SYSTEM
+// =========================================================
+let ffcAdminPhotosFilter = "all";
+let ffcAdminPhotosSearchQuery = "";
+
+function updateAdminPhotosBadge() {
+    const pendingCount = currentPhotos.filter(p => !p.status || p.status === "pending").length;
+    const badge = document.getElementById("adminTabPhotosBadge");
+    if (badge) {
+        badge.textContent = pendingCount;
+        badge.style.display = pendingCount > 0 ? "inline-block" : "none";
+    }
+
+    const allCount = currentPhotos.length;
+    const approvedCount = currentPhotos.filter(p => p.status === "approved").length;
+    const rejectedCount = currentPhotos.filter(p => p.status === "rejected").length;
+
+    const elAll = document.getElementById("adminPhotosFilterAllCount");
+    const elPending = document.getElementById("adminPhotosFilterPendingCount");
+    const elApproved = document.getElementById("adminPhotosFilterApprovedCount");
+    const elRejected = document.getElementById("adminPhotosFilterRejectedCount");
+
+    if (elAll) elAll.textContent = allCount;
+    if (elPending) elPending.textContent = pendingCount;
+    if (elApproved) elApproved.textContent = approvedCount;
+    if (elRejected) elRejected.textContent = rejectedCount;
+}
+
+function renderAdminPhotosTab() {
+    const list = document.getElementById("adminPhotosList");
+    if (!list) return;
+
+    updateAdminPhotosBadge();
+
+    let filtered = [...currentPhotos];
+
+    if (ffcAdminPhotosFilter && ffcAdminPhotosFilter !== "all") {
+        if (ffcAdminPhotosFilter === "pending") {
+            filtered = filtered.filter(p => !p.status || p.status === "pending");
+        } else {
+            filtered = filtered.filter(p => p.status === ffcAdminPhotosFilter);
+        }
+    }
+
+    if (ffcAdminPhotosSearchQuery && ffcAdminPhotosSearchQuery.trim()) {
+        const q = ffcAdminPhotosSearchQuery.trim().toLowerCase();
+        filtered = filtered.filter(p => 
+            (p.author && p.author.toLowerCase().includes(q)) ||
+            (p.caption && p.caption.toLowerCase().includes(q)) ||
+            (p.raceId && p.raceId.toLowerCase().includes(q)) ||
+            (RACE_TITLES_MAP[p.raceId] && RACE_TITLES_MAP[p.raceId].toLowerCase().includes(q))
+        );
+    }
+
+    if (filtered.length === 0) {
+        list.innerHTML = `
+            <div style="grid-column: 1 / -1; text-align: center; padding: 40px 20px; background: rgba(255, 255, 255, 0.02); border: 1px dashed rgba(255, 255, 255, 0.1); border-radius: 8px; color: #a0aec0;">
+                <p style="font-size: 15px; margin-bottom: 6px;">No se encontraron fotos en esta categoría.</p>
+                <span style="font-size: 13px; color: #718096;">Las fotos subidas por los pilotos aparecerán aquí para su moderación.</span>
+            </div>
+        `;
+        return;
+    }
+
+    list.innerHTML = filtered.map(photo => {
+        const raceLabel = RACE_TITLES_MAP[photo.raceId] || photo.raceId;
+        const status = photo.status || "pending";
+        let statusBadge = "";
+        if (status === "approved") {
+            statusBadge = `<span style="background: rgba(74, 222, 128, 0.15); color: #4ade80; border: 1px solid rgba(74, 222, 128, 0.4); padding: 2px 8px; border-radius: 4px; font-size: 10px; font-weight: 800;">🟢 APROBADA</span>`;
+        } else if (status === "rejected") {
+            statusBadge = `<span style="background: rgba(248, 113, 113, 0.15); color: #f87171; border: 1px solid rgba(248, 113, 113, 0.4); padding: 2px 8px; border-radius: 4px; font-size: 10px; font-weight: 800;">🔴 RECHAZADA</span>`;
+        } else {
+            statusBadge = `<span style="background: rgba(251, 191, 36, 0.15); color: #fbbf24; border: 1px solid rgba(251, 191, 36, 0.4); padding: 2px 8px; border-radius: 4px; font-size: 10px; font-weight: 800;">🟡 PENDIENTE</span>`;
+        }
+
+        const approveBtn = status !== "approved" ? `<button type="button" class="btn btn-sm" data-action="approve" data-id="${photo.id}" style="background: #16a34a; color: #fff; font-size: 11px; padding: 4px 10px; border-radius: 4px;">✅ Aprobar</button>` : "";
+        const rejectBtn = status !== "rejected" ? `<button type="button" class="btn btn-sm" data-action="reject" data-id="${photo.id}" style="background: #d97706; color: #fff; font-size: 11px; padding: 4px 10px; border-radius: 4px;">❌ Rechazar</button>` : "";
+
+        return `
+            <div style="background: rgba(15, 23, 42, 0.8); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 8px; overflow: hidden; display: flex; flex-direction: column;">
+                <div style="position: relative; height: 160px; background: #000; overflow: hidden;">
+                    <img src="${escapeHtml(photo.photoUrl)}" alt="${escapeHtml(photo.caption || 'Foto')}" style="width: 100%; height: 100%; object-fit: cover; cursor: pointer;" onclick="openPhotoLightbox(${escapeHtml(JSON.stringify(photo))})">
+                    <div style="position: absolute; top: 8px; left: 8px;">${statusBadge}</div>
+                    <div style="position: absolute; top: 8px; right: 8px; background: rgba(0,0,0,0.7); color: #fff; font-size: 10px; padding: 3px 6px; border-radius: 4px;">${escapeHtml(raceLabel)}</div>
+                </div>
+                <div style="padding: 12px; display: flex; flex-direction: column; flex-grow: 1; justify-content: space-between;">
+                    <div>
+                        <div style="font-size: 13px; font-weight: 600; color: #f8fafc; margin-bottom: 4px;">${escapeHtml(photo.caption || 'Sin descripción')}</div>
+                        <div style="font-size: 11px; color: #94a3b8; display: flex; justify-content: space-between;">
+                            <span>👤 ${escapeHtml(photo.author)}</span>
+                            <span>${escapeHtml(photo.createdAt || '')}</span>
+                        </div>
+                    </div>
+                    <div style="display: flex; gap: 6px; margin-top: 12px; border-top: 1px solid rgba(255,255,255,0.06); padding-top: 8px;">
+                        ${approveBtn}
+                        ${rejectBtn}
+                        <button type="button" class="btn btn-sm" data-action="delete" data-id="${photo.id}" style="background: #dc2626; color: #fff; font-size: 11px; padding: 4px 10px; border-radius: 4px; margin-left: auto;">🗑️</button>
+                    </div>
+                </div>
+            </div>
+        `;
+    }).join("");
+
+    list.querySelectorAll("button[data-action]").forEach(btn => {
+        btn.addEventListener("click", async () => {
+            const action = btn.dataset.action;
+            const photoId = btn.dataset.id;
+            if (!photoId) return;
+
+            if (action === "approve") {
+                await updatePhotoStatus(photoId, "approved");
+            } else if (action === "reject") {
+                await updatePhotoStatus(photoId, "rejected");
+            } else if (action === "delete") {
+                if (confirm("¿Estás seguro de eliminar permanentemente esta foto?")) {
+                    await deleteAdminPhoto(photoId);
+                }
+            }
+        });
+    });
+}
+
+async function updatePhotoStatus(photoId, newStatus) {
+    try {
+        await updateDoc(doc(db, "carreras_fotos", photoId), {
+            status: newStatus
+        });
+        const p = currentPhotos.find(item => item.id === photoId);
+        if (p) p.status = newStatus;
+        updatePhotoGalleriesUI();
+        renderAdminPhotosTab();
+    } catch (err) {
+        console.error("Error updating photo status:", err);
+        alert("Error al actualizar el estado de la foto.");
+    }
+}
+
+async function deleteAdminPhoto(photoId) {
+    try {
+        await deleteDoc(doc(db, "carreras_fotos", photoId));
+        currentPhotos = currentPhotos.filter(item => item.id !== photoId);
+        updatePhotoGalleriesUI();
+        renderAdminPhotosTab();
+    } catch (err) {
+        console.error("Error deleting photo:", err);
+        alert("Error al eliminar la foto.");
+    }
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+    const adminPhotosFilterBtns = document.querySelectorAll(".admin-photos-filter-btn");
+    adminPhotosFilterBtns.forEach(btn => {
+        btn.addEventListener("click", () => {
+            adminPhotosFilterBtns.forEach(b => b.classList.remove("active"));
+            btn.classList.add("active");
+            ffcAdminPhotosFilter = btn.dataset.filter || "all";
+            renderAdminPhotosTab();
+        });
+    });
+
+    const adminPhotosSearchInput = document.getElementById("adminPhotosSearchInput");
+    if (adminPhotosSearchInput) {
+        adminPhotosSearchInput.addEventListener("input", (e) => {
+            ffcAdminPhotosSearchQuery = e.target.value;
+            renderAdminPhotosTab();
+        });
+    }
+});
 
 
 

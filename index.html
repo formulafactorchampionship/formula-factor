@@ -2483,6 +2483,11 @@
                 <span class="admin-tab-title">Gestión de Noticias</span>
                 <span class="admin-tab-pill-badge admin-tab-badge-gold" id="adminTabNewsBadge">0</span>
             </button>
+            <button type="button" class="admin-tab-btn" data-tab="tab-photos">
+                <span class="admin-tab-icon">📸</span>
+                <span class="admin-tab-title">Moderación de Fotos</span>
+                <span class="admin-tab-pill-badge admin-tab-badge-gold" id="adminTabPhotosBadge">0</span>
+            </button>
             <button type="button" class="admin-tab-btn" data-tab="tab-settings">
                 <span class="admin-tab-icon">⚙️</span>
                 <span class="admin-tab-title">Ajustes Generales</span>
@@ -3246,6 +3251,41 @@
                     <!-- Dynamic rendering of news items in admin -->
                 </div>
             </div>
+
+            <!-- TAB: MODERACIÓN DE FOTOS -->
+            <div class="admin-tab-pane" id="tab-photos">
+                <div class="admin-tab-intro">
+                    <div class="admin-card-badge">MODERACIÓN &bull; GALERÍA FFC</div>
+                    <h3>MODERACIÓN DE FOTOS DE LA COMUNIDAD</h3>
+                    <p class="admin-field-hint">
+                        Revisa, previsualiza, aprueba o rechaza las fotografías subidas por los pilotos antes de que aparezcan en la galería pública.
+                    </p>
+                </div>
+
+                <div class="admin-news-toolbar">
+                    <div class="admin-news-filter-group" role="tablist" id="adminPhotosFilters">
+                        <button type="button" class="admin-photos-filter-btn active" data-filter="all">
+                            Todas <span class="admin-news-count-chip" id="adminPhotosFilterAllCount">0</span>
+                        </button>
+                        <button type="button" class="admin-photos-filter-btn" data-filter="pending">
+                            Pendientes <span class="admin-news-count-chip chip-pending" id="adminPhotosFilterPendingCount">0</span>
+                        </button>
+                        <button type="button" class="admin-photos-filter-btn" data-filter="approved">
+                            Aprobadas <span class="admin-news-count-chip chip-approved" id="adminPhotosFilterApprovedCount">0</span>
+                        </button>
+                        <button type="button" class="admin-photos-filter-btn" data-filter="rejected">
+                            Rechazadas <span class="admin-news-count-chip chip-rejected" id="adminPhotosFilterRejectedCount">0</span>
+                        </button>
+                    </div>
+                    <div class="admin-news-right-actions">
+                        <input type="text" id="adminPhotosSearchInput" class="admin-news-search-input" placeholder="Buscar por autor, descripción o Gran Premio...">
+                    </div>
+                </div>
+
+                <div class="admin-photos-grid-list" id="adminPhotosList" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; margin-top: 20px;">
+                    <!-- Dynamic admin photo cards -->
+                </div>
+            </div>
         </div>
     </div>
 </div>
@@ -3899,13 +3939,7 @@
 </div>
 
 
-<!-- =========================
-     FLOATING ACTION BUTTON (FAB) FOR PHOTOS
-========================= -->
-<button type="button" id="floatingPhotoFab" class="floating-photo-fab" onclick="if(window.openUploadPhotoModal) window.openUploadPhotoModal()" title="Subir foto de simracing">
-    <span class="fab-icon">📸</span>
-    <span class="fab-label">SUBIR FOTOS</span>
-</button>
+
 
 
 <!-- =========================
@@ -3974,25 +4008,9 @@
         </div>
         <form id="photoUploadForm" class="photo-upload-form">
             <div class="form-group">
-                <label for="uploadRaceSelect">Gran Premio / Carrera *</label>
+                <label for="uploadRaceSelect">Gran Premio / Carrera pasada *</label>
                 <select id="uploadRaceSelect" class="photo-select" required>
-                    <option value="">Selecciona una carrera...</option>
-                    <option value="barcelona_test">T - Barcelona Test Days</option>
-                    <option value="australia">01 - Australia GP</option>
-                    <option value="malaysia">02 - Malaysia GP</option>
-                    <option value="bahrain">03 - Bahrain GP</option>
-                    <option value="turkey">04 - Turkey GP</option>
-                    <option value="spain">05 - Spain GP</option>
-                    <option value="italy">06 - Italy GP (Monza)</option>
-                    <option value="austria">07 - Austria GP</option>
-                    <option value="silverstone">08 - Great Britain GP (Silverstone)</option>
-                    <option value="hockenheim">09 - Germany GP (Hockenheim)</option>
-                    <option value="nurburgring">10 - Europe GP (Nürburgring)</option>
-                    <option value="hungary">11 - Hungary GP (Hungaroring)</option>
-                    <option value="belgium">12 - Belgium GP (Spa)</option>
-                    <option value="singapore">13 - Singapore GP</option>
-                    <option value="cota">14 - USA GP (COTA)</option>
-                    <option value="brazil">15 - Brazil GP (Interlagos)</option>
+                    <!-- Populated dynamically with past races only -->
                 </select>
             </div>
 
@@ -4005,9 +4023,10 @@
             </div>
 
             <div class="form-group" id="fileUploadGroup">
-                <label for="photoFileInput">Seleccionar Imagen (Compresión automática en navegador)</label>
-                <input type="file" id="photoFileInput" accept="image/*" class="photo-file-input">
-                <small class="form-hint">Se redimensionará y optimizará automáticamente para una carga instantánea.</small>
+                <label for="photoFileInput">Seleccionar Imágenes (Puedes subir varias a la vez)</label>
+                <input type="file" id="photoFileInput" accept="image/*" class="photo-file-input" multiple>
+                <small class="form-hint">Selecciona múltiples fotos a la vez. Se optimizarán automáticamente para una carga instantánea.</small>
+                <span id="selectedFilesCount" style="color: #38bdf8; font-size: 13px; margin-top: 6px; display: block;"></span>
             </div>
 
             <div class="form-group" id="urlUploadGroup" style="display: none;">
@@ -4016,29 +4035,15 @@
             </div>
 
             <div class="form-group">
-                <label>Vista Previa en Directo</label>
-                <div class="photo-preview-container" id="photoPreviewContainer">
-                    <span class="preview-placeholder">Sin imagen seleccionada</span>
-                    <img id="photoPreviewImg" src="" alt="Vista previa" style="display: none;">
-                    <button type="button" class="btn-remove-preview" id="btnRemovePreview" style="display: none;" onclick="clearPhotoSelection()">✕ Eliminar</button>
-                </div>
-            </div>
-
-            <div class="form-group">
                 <label for="photoCaptionInput">Pie de foto / Descripción (Opcional)</label>
                 <input type="text" id="photoCaptionInput" placeholder="Ej: Salida curva 1, Batalla por el podio..." class="photo-input" maxlength="120">
-            </div>
-
-            <div class="form-group">
-                <label for="photoAuthorInput">Autor / Piloto *</label>
-                <input type="text" id="photoAuthorInput" placeholder="Tu nombre o alias en FFC" class="photo-input" required maxlength="50">
             </div>
 
             <div class="upload-form-footer">
                 <span id="uploadStatusMsg" class="upload-status-msg"></span>
                 <div class="upload-actions">
                     <button type="button" class="btn btn-secondary" onclick="closeUploadPhotoModal()">Cancelar</button>
-                    <button type="submit" class="btn btn-primary" id="btnSubmitPhotoUpload">Publicar Foto</button>
+                    <button type="submit" class="btn btn-primary" id="btnSubmitPhotoUpload">Subir foto</button>
                 </div>
             </div>
         </form>
