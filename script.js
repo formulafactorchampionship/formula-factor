@@ -2350,7 +2350,7 @@ const defaultRaceResults = {
         pole: "IvánR · 1:20.843",
         fastest: "IvánR · 1:22.300",
         driverDay: "BigTheo",
-        replayUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+        replayUrl: "",
 
         drivers: [
 
@@ -9052,6 +9052,9 @@ if (raceResultsForm) {
 
         const chosenStatus = adminRaceStatusSelect ? adminRaceStatusSelect.value : "COMPLETED";
 
+        const existingReplayUrl = (raceResults[raceKey] && raceResults[raceKey].replayUrl) ? raceResults[raceKey].replayUrl : ((seasonRacesMeta[raceKey] && seasonRacesMeta[raceKey].replayUrl) ? seasonRacesMeta[raceKey].replayUrl : "");
+        const finalReplayUrl = replayUrl || existingReplayUrl;
+
         const updatedRace = {
             round: meta.round,
             title: meta.title,
@@ -9062,7 +9065,7 @@ if (raceResultsForm) {
             pole: poleDriver && poleTime ? `${poleDriver} · ${poleTime}` : (poleDriver || "TBA"),
             fastest: `${fastestDriver} · ${fastestTime}`,
             driverDay: driverDay || winnerDriver || drivers[0].driver,
-            replayUrl: replayUrl,
+            replayUrl: finalReplayUrl,
             drivers: drivers
         };
 
@@ -17819,10 +17822,19 @@ function renderGlobalPhotoGrid() {
 
     if (!grid) return;
 
-    let approved = currentPhotos.filter(p => p.status === "approved" || !p.status);
-    let filtered = approved;
+    const u = typeof activeUserAuth !== "undefined" && activeUserAuth ? activeUserAuth : (typeof LocalAuthStore !== "undefined" ? LocalAuthStore.getCurrentUser() : null);
+    const userIsAdmin = typeof isUserAdmin === "function" && isUserAdmin(u);
+
+    let visiblePhotos = currentPhotos.filter(photo => {
+        const isApproved = photo.status === "approved" || !photo.status;
+        const isPending = photo.status === "pending";
+        const isOwn = u && photo.author && u.displayName && photo.author.toLowerCase() === u.displayName.toLowerCase();
+        return isApproved || (isPending && (isOwn || userIsAdmin));
+    });
+
+    let filtered = visiblePhotos;
     if (filterVal !== "all") {
-        filtered = approved.filter(p => p.raceId === filterVal);
+        filtered = visiblePhotos.filter(p => p.raceId === filterVal);
     }
 
     grid.innerHTML = "";
@@ -17834,12 +17846,16 @@ function renderGlobalPhotoGrid() {
 
     filtered.forEach(photo => {
         const raceLabel = RACE_TITLES_MAP[photo.raceId] || photo.raceId;
+        const isPending = photo.status === "pending";
+        const pendingBadge = isPending ? `<span style="position: absolute; bottom: 8px; left: 8px; background: rgba(251,191,36,0.9); color: #000; font-size: 10px; font-weight: 800; padding: 2px 6px; border-radius: 4px;">🟡 Pendiente de aprobación</span>` : "";
+
         const card = document.createElement("div");
         card.className = "photo-card";
         card.innerHTML = `
             <div class="photo-card-thumb">
                 <img src="${escapeHtml(photo.photoUrl)}" alt="${escapeHtml(photo.caption || 'Foto FFC')}" loading="lazy">
                 <span class="photo-card-badge">${escapeHtml(raceLabel)}</span>
+                ${pendingBadge}
             </div>
             <div class="photo-card-content">
                 <div class="photo-card-caption">${escapeHtml(photo.caption || 'Sin descripción')}</div>
@@ -17859,7 +17875,17 @@ function renderRaceModalPhotoGallery(raceKey) {
     const emptyState = document.getElementById("raceModalPhotoEmptyState");
     const countBadge = document.getElementById("raceModalPhotoCount");
 
-    const racePhotos = currentPhotos.filter(p => p.raceId === raceKey && (p.status === "approved" || !p.status));
+    const u = typeof activeUserAuth !== "undefined" && activeUserAuth ? activeUserAuth : (typeof LocalAuthStore !== "undefined" ? LocalAuthStore.getCurrentUser() : null);
+    const userIsAdmin = typeof isUserAdmin === "function" && isUserAdmin(u);
+
+    const racePhotos = currentPhotos.filter(photo => {
+        if (photo.raceId !== raceKey) return false;
+        const isApproved = photo.status === "approved" || !photo.status;
+        const isPending = photo.status === "pending";
+        const isOwn = u && photo.author && u.displayName && photo.author.toLowerCase() === u.displayName.toLowerCase();
+        return isApproved || (isPending && (isOwn || userIsAdmin));
+    });
+
     if (countBadge) countBadge.textContent = racePhotos.length;
 
     if (!grid) return;
@@ -17872,11 +17898,15 @@ function renderRaceModalPhotoGallery(raceKey) {
     if (emptyState) emptyState.style.display = "none";
 
     racePhotos.forEach(photo => {
+        const isPending = photo.status === "pending";
+        const pendingBadge = isPending ? `<span style="position: absolute; bottom: 8px; left: 8px; background: rgba(251,191,36,0.9); color: #000; font-size: 10px; font-weight: 800; padding: 2px 6px; border-radius: 4px;">🟡 Pendiente de aprobación</span>` : "";
+
         const card = document.createElement("div");
         card.className = "photo-card";
         card.innerHTML = `
             <div class="photo-card-thumb">
                 <img src="${escapeHtml(photo.photoUrl)}" alt="${escapeHtml(photo.caption || 'Foto de carrera')}" loading="lazy">
+                ${pendingBadge}
             </div>
             <div class="photo-card-content">
                 <div class="photo-card-caption">${escapeHtml(photo.caption || 'Sin descripción')}</div>
