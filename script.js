@@ -17724,7 +17724,27 @@ document.addEventListener("DOMContentLoaded", () => {
 
             let photosToUpload = [];
             if (activeUploadMethod === 'file') {
-                photosToUpload = currentCompressedBase64Array;
+                if (currentCompressedBase64Array.length > 0) {
+                    photosToUpload = currentCompressedBase64Array;
+                } else {
+                    const fileInput = document.getElementById("photoFileInput");
+                    if (fileInput && fileInput.files && fileInput.files.length > 0) {
+                        if (statusMsg) statusMsg.textContent = "Procesando y optimizando imágenes...";
+                        for (const file of fileInput.files) {
+                            try {
+                                const compressed = await compressImageFile(file, 1200, 1200, 0.85);
+                                photosToUpload.push(compressed);
+                            } catch (e) {
+                                const base64 = await new Promise((res) => {
+                                    const r = new FileReader();
+                                    r.onload = (evt) => res(evt.target.result);
+                                    r.readAsDataURL(file);
+                                });
+                                photosToUpload.push(base64);
+                            }
+                        }
+                    }
+                }
             } else if (urlInputVal) {
                 photosToUpload = [urlInputVal.trim()];
             }
