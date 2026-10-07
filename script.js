@@ -17577,6 +17577,9 @@ window.openGlobalPhotoGallery = function() {
     const modal = document.getElementById("globalPhotoGalleryModal");
     if (modal) {
         modal.classList.add("active");
+        modal.style.display = "flex";
+        modal.style.opacity = "1";
+        modal.style.visibility = "visible";
         document.body.classList.add("modal-open");
         renderGlobalPhotoGrid();
     }
@@ -17586,6 +17589,9 @@ window.closeGlobalPhotoGalleryModal = function() {
     const modal = document.getElementById("globalPhotoGalleryModal");
     if (modal) {
         modal.classList.remove("active");
+        modal.style.display = "none";
+        modal.style.opacity = "0";
+        modal.style.visibility = "hidden";
         document.body.classList.remove("modal-open");
     }
 };
@@ -17594,6 +17600,9 @@ window.openUploadPhotoModal = function(preselectedRaceId = null) {
     const modal = document.getElementById("uploadPhotoModal");
     if (modal) {
         modal.classList.add("active");
+        modal.style.display = "flex";
+        modal.style.opacity = "1";
+        modal.style.visibility = "visible";
         document.body.classList.add("modal-open");
         populatePastRaceSelect(preselectedRaceId || currentOpenRaceKey || "");
         clearPhotoSelection();
@@ -17616,6 +17625,9 @@ window.closeUploadPhotoModal = function() {
     const modal = document.getElementById("uploadPhotoModal");
     if (modal) {
         modal.classList.remove("active");
+        modal.style.display = "none";
+        modal.style.opacity = "0";
+        modal.style.visibility = "hidden";
         document.body.classList.remove("modal-open");
     }
 };
@@ -17997,13 +18009,23 @@ window.openPhotoLightbox = function(photo) {
         }
 
         modal.classList.add("active");
+        modal.style.display = "flex";
+        modal.style.opacity = "1";
+        modal.style.visibility = "visible";
+        document.body.classList.add("modal-open");
     }
 };
 
 window.closePhotoLightbox = function() {
     currentLightboxPhoto = null;
     const modal = document.getElementById("photoLightboxModal");
-    if (modal) modal.classList.remove("active");
+    if (modal) {
+        modal.classList.remove("active");
+        modal.style.display = "none";
+        modal.style.opacity = "0";
+        modal.style.visibility = "hidden";
+        document.body.classList.remove("modal-open");
+    }
 };
 
 window.deleteCurrentLightboxPhoto = async function() {
