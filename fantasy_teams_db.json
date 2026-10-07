@@ -1,15 +1,481 @@
 [
   {
-    "userId": "test_user",
-    "teamName": "Test Racing",
-    "managerName": "Tester",
-    "email": "test@example.com",
-    "driver1": "Iñaki",
-    "driver2": "Alonso",
-    "driver3": "Guti",
+    "id": "adriangalindomele_gmail_com",
+    "managerName": "Galindo📸",
+    "totalPoints": 136,
+    "driver3": "Sbinn",
+    "driver1": "Dieguiosk",
+    "team": "McLaren",
+    "roundLineups": {
+      "hungary": {
+        "driver3": "Sbinn",
+        "turboDriver": "Dieguiosk",
+        "driver2": "Suforr",
+        "driver1": "Dieguiosk",
+        "team": "McLaren"
+      }
+    },
+    "teamValue": 73.3,
+    "updatedAt": "2026-09-18T09:14:22.510Z",
+    "turboDriver": "Dieguiosk",
+    "teamName": "Netanyahu FFC Team",
+    "email": "adriangalindomele@gmail.com",
+    "userId": "adriangalindomele_gmail_com",
+    "driver2": "Suforr"
+  },
+  {
+    "id": "alexvanocastaneda_gmail_com",
+    "userId": "alexvanocastaneda_gmail_com",
+    "email": "alexvanocastaneda@gmail.com",
+    "turboDriver": "Muntii",
+    "driver2": "TheAgus60",
+    "teamName": "ACRR",
+    "teamValue": 65.5,
+    "driver3": "Suforr",
+    "team": "McLaren",
+    "roundLineups": {
+      "hungary": {
+        "driver2": "TheAgus60",
+        "driver3": "Suforr",
+        "driver1": "Muntii",
+        "team": "McLaren",
+        "turboDriver": "Muntii"
+      }
+    },
+    "managerName": "MUNTISEXO33",
+    "totalPoints": 94,
+    "driver1": "Muntii",
+    "updatedAt": "2026-09-18T14:53:30.337Z"
+  },
+  {
+    "id": "biljjana_hotmail_com",
+    "totalPoints": 0,
+    "managerName": "Sebinho",
+    "email": "biljjana@hotmail.com",
+    "driver2": "Suforr",
+    "teamValue": 65,
+    "roundLineups": {
+      "nurburgring": {
+        "turboDriver": null,
+        "driver1": null,
+        "team": null,
+        "driver2": null,
+        "driver3": null
+      }
+    },
+    "updatedAt": "2026-09-20T20:04:05.444Z",
+    "team": null,
+    "userId": "biljjana_hotmail_com",
+    "driver1": "Dieguiosk",
+    "teamName": "Mi Escudería FFC",
+    "driver3": "Novitaa",
+    "turboDriver": "Dieguiosk"
+  },
+  {
+    "id": "dericktonly_gmail_com",
+    "email": "dericktonly@gmail.com",
+    "driver3": null,
+    "team": "Virgin",
+    "driver1": null,
+    "teamName": "Mi Escudería FFC",
+    "userId": "dericktonly_gmail_com",
+    "managerName": "IWantMozaR5",
+    "totalPoints": 0,
+    "turboDriver": null,
+    "teamValue": 17.7,
+    "roundLineups": {
+      "nurburgring": {
+        "driver3": null,
+        "driver2": null,
+        "driver1": null,
+        "team": null,
+        "turboDriver": null
+      }
+    },
+    "updatedAt": "2026-09-20T16:52:13.310Z",
+    "driver2": null
+  },
+  {
+    "id": "eduardoxlopez2_gmail_com",
+    "roundLineups": {
+      "hungary": {
+        "turboDriver": "Lil",
+        "driver2": "Suforr",
+        "driver3": "Dieguiosk",
+        "driver1": "Lil",
+        "team": "Lotus"
+      }
+    },
+    "teamValue": 72.3,
+    "userId": "eduardoxlopez2_gmail_com",
+    "totalPoints": 121,
+    "managerName": "Eduardo Lopez",
+    "driver2": "Suforr",
+    "email": "eduardoxlopez2@gmail.com",
+    "team": "Lotus",
+    "updatedAt": "2026-09-20T10:06:52.857Z",
+    "driver3": "Dieguiosk",
+    "teamName": "AlcRacing",
+    "turboDriver": "Lil",
+    "driver1": "Lil"
+  },
+  {
+    "id": "enzo_castillo_lomb_gmail_com",
+    "turboDriver": "Suforr",
+    "teamValue": 71.3,
+    "driver3": "Lil",
+    "updatedAt": "2026-09-27T17:44:49.477Z",
+    "driver1": "Dieguiosk",
+    "roundLineups": {
+      "hungary": {
+        "driver2": "Suforr",
+        "driver3": "Lil",
+        "turboDriver": "Suforr",
+        "team": "Lotus",
+        "driver1": "Dieguiosk"
+      },
+      "nurburgring": {
+        "driver3": "Viktolo",
+        "driver2": "Suforr",
+        "turboDriver": "Suforr",
+        "team": "Red Bull",
+        "driver1": "TheWereGH"
+      }
+    },
+    "email": "enzo.castillo.lomb@gmail.com",
+    "teamName": "hermes israel",
+    "team": "Lotus",
+    "totalPoints": 108,
+    "managerName": "Hermes",
+    "driver2": "Suforr",
+    "userId": "enzo_castillo_lomb_gmail_com"
+  },
+  {
+    "id": "formulafactorchampionship_gmail_com",
+    "driver3": "Dieguiosk",
+    "email": "formulafactorchampionship@gmail.com",
+    "turboDriver": "Dieguiosk",
+    "driver1": "TheWereGH",
+    "team": "Lotus",
+    "teamValue": 74.9,
+    "totalPoints": 126,
+    "managerName": "Formula Factor Championship",
+    "userId": "formulafactorchampionship_gmail_com",
+    "driver2": "Suforr",
+    "teamName": "Scuderia Driezz",
+    "updatedAt": "2026-09-27T17:46:37.583Z",
+    "roundLineups": {
+      "nurburgring": {
+        "team": "Red Bull",
+        "driver1": "TheWereGH",
+        "driver2": "Suforr",
+        "driver3": "Victor",
+        "turboDriver": "Victor"
+      },
+      "hungary": {
+        "team": "Lotus",
+        "turboDriver": "Dieguiosk",
+        "driver1": "RikiDorsa",
+        "driver2": "Novitaa",
+        "driver3": "Dieguiosk"
+      }
+    }
+  },
+  {
+    "id": "formularinuno8_gmail_com",
+    "driver3": "Victor",
+    "managerName": "Dieguiosk",
+    "totalPoints": 136,
+    "teamName": "chandal gris de 85 euros",
+    "team": "Lotus",
+    "userId": "formularinuno8_gmail_com",
+    "email": "formularinuno8@gmail.com",
+    "driver1": "Dieguiosk",
+    "updatedAt": "2026-09-18T14:18:36.613Z",
+    "roundLineups": {
+      "hungary": {
+        "team": "Lotus",
+        "driver2": "Lil",
+        "turboDriver": "Dieguiosk",
+        "driver3": "Victor",
+        "driver1": "Dieguiosk"
+      }
+    },
+    "driver2": "Lil",
+    "teamValue": 67.9,
+    "turboDriver": "Dieguiosk"
+  },
+  {
+    "id": "franciscoalbarran1726_gmail_com",
+    "email": "franciscoalbarran1726@gmail.com",
+    "driver2": "Muntii",
+    "userId": "franciscoalbarran1726_gmail_com",
+    "roundLineups": {},
+    "managerName": "Fran_1726",
+    "totalPoints": 76,
+    "driver1": "Dieguiosk",
+    "updatedAt": "2026-09-20T14:48:17.989Z",
+    "turboDriver": "Dieguiosk",
+    "teamName": "Cipote FM Racing Team",
+    "team": null,
+    "driver3": "Suforr",
+    "teamValue": 70.7
+  },
+  {
+    "id": "gaelperezcovelo2011_gmail_com",
+    "userId": "gaelperezcovelo2011_gmail_com",
+    "driver2": "Farlonso",
+    "teamName": "Femboys",
+    "totalPoints": 101,
+    "managerName": "Farlonso",
+    "teamValue": 70,
+    "team": "Ferrari",
+    "turboDriver": "Farlonso",
+    "driver3": "Suforr",
+    "email": "gaelperezcovelo2011@gmail.com",
+    "driver1": "Novitaa",
+    "updatedAt": "2026-09-27T11:21:13.851Z",
+    "roundLineups": {
+      "hungary": {
+        "driver1": "Novitaa",
+        "turboDriver": "Farlonso",
+        "team": "Ferrari",
+        "driver2": "Farlonso",
+        "driver3": "Suforr"
+      },
+      "nurburgring": {
+        "driver1": "Victor",
+        "team": "Lotus",
+        "turboDriver": "Victor",
+        "driver2": "Farlonso",
+        "driver3": "Dieguiosk"
+      }
+    }
+  },
+  {
+    "id": "hugotapgar27_gmail_com",
+    "updatedAt": "2026-09-18T15:15:59.424Z",
+    "driver1": "Dieguiosk",
+    "teamName": "Mi Escudería FFC",
+    "driver2": null,
+    "totalPoints": 56,
+    "managerName": "Hijoputapro",
+    "turboDriver": "Dieguiosk",
+    "email": "hugotapgar27@gmail.com",
+    "userId": "hugotapgar27_gmail_com",
+    "driver3": null,
     "team": "Red Bull",
-    "totalPoints": 150,
-    "teamValue": 98.5,
-    "updatedAt": "2026-09-18T08:30:09.071Z"
+    "teamValue": 69.7
+  },
+  {
+    "id": "ivanrodriguezpereira2006_gmail_com",
+    "turboDriver": "Suforr",
+    "roundLineups": {
+      "hungary": {
+        "team": "Red Bull",
+        "turboDriver": "Suforr",
+        "driver1": "Suforr",
+        "driver3": "TheWereGH",
+        "driver2": "Lil"
+      },
+      "nurburgring": {
+        "driver2": "BigTheo",
+        "team": "Red Bull",
+        "driver3": "VGXEmi",
+        "driver1": "Suforr",
+        "turboDriver": "Suforr"
+      }
+    },
+    "updatedAt": "2026-09-20T16:39:10.569Z",
+    "email": "ivanrodriguezpereira2006@gmail.com",
+    "teamValue": 73.4,
+    "driver2": "Lil",
+    "teamName": "Anchoa EuroFormula Open Team",
+    "userId": "ivanrodriguezpereira2006_gmail_com",
+    "driver3": "TheWereGH",
+    "team": "Red Bull",
+    "driver1": "Suforr",
+    "totalPoints": 87,
+    "managerName": "IvánR"
+  },
+  {
+    "id": "javicho610_gmail_com",
+    "updatedAt": "2026-09-25T07:22:05.651Z",
+    "roundLineups": {
+      "nurburgring": {
+        "turboDriver": "Novitaa",
+        "driver3": "Sbinn",
+        "driver2": "BigTheo",
+        "driver1": "Novitaa",
+        "team": "Ferrari"
+      },
+      "hungary": {
+        "driver1": "Suforr",
+        "turboDriver": "Suforr",
+        "team": "Ferrari",
+        "driver2": "BigTheo",
+        "driver3": "Sbinn"
+      }
+    },
+    "userId": "javicho610_gmail_com",
+    "teamValue": 68.2,
+    "turboDriver": "Suforr",
+    "driver2": "BigTheo",
+    "teamName": "JvR FFC Team",
+    "email": "javicho610@gmail.com",
+    "totalPoints": 38,
+    "managerName": "JvR",
+    "driver3": "Sbinn",
+    "driver1": "Suforr",
+    "team": "Ferrari"
+  },
+  {
+    "id": "misadiarte18_gmail_com",
+    "userId": "misadiarte18_gmail_com",
+    "teamValue": 70.6,
+    "email": "misadiarte18@gmail.com",
+    "driver2": "Licha",
+    "turboDriver": "Novitaa",
+    "teamName": "Mi Escudería RETARDA",
+    "driver1": "Novitaa",
+    "driver3": null,
+    "updatedAt": "2026-09-18T14:49:23.379Z",
+    "team": "Red Bull",
+    "totalPoints": 38,
+    "managerName": "Nova"
+  },
+  {
+    "id": "naggetepic_gmail_com",
+    "managerName": "Victor",
+    "totalPoints": 75,
+    "driver3": "Farlonso",
+    "teamValue": 52.7,
+    "updatedAt": "2026-09-20T18:33:03.673Z",
+    "teamName": "Swiss Racing Team",
+    "roundLineups": {
+      "nurburgring": {
+        "driver1": "Novitaa",
+        "team": "Mercedes",
+        "turboDriver": "Novitaa",
+        "driver3": "Farlonso",
+        "driver2": "Victor"
+      },
+      "hungary": {
+        "driver1": "Suforr",
+        "team": "McLaren",
+        "turboDriver": "Suforr",
+        "driver3": "Farlonso",
+        "driver2": "Victor"
+      }
+    },
+    "team": "McLaren",
+    "driver1": "Suforr",
+    "userId": "naggetepic_gmail_com",
+    "email": "naggetepic@gmail.com",
+    "driver2": "Victor",
+    "turboDriver": "Suforr"
+  },
+  {
+    "id": "nektasjez33xd_proton_me",
+    "driver1": "Dieguiosk",
+    "updatedAt": "2026-10-03T11:30:57.661Z",
+    "team": "Sauber",
+    "email": "nektasjez33xd@proton.me",
+    "totalPoints": 98,
+    "managerName": "river",
+    "userId": "nektasjez33xd_proton_me",
+    "driver3": "Victor",
+    "teamValue": 74.4,
+    "turboDriver": "Dieguiosk",
+    "teamName": "prime williams",
+    "driver2": "Suforr",
+    "roundLineups": {
+      "hungary": {
+        "turboDriver": "Suforr",
+        "driver1": "Dieguiosk",
+        "driver3": "Victor",
+        "driver2": "Suforr",
+        "team": "Williams"
+      }
+    }
+  },
+  {
+    "id": "osoriaferrero_gmail_com",
+    "email": "osoriaferrero@gmail.com",
+    "teamValue": 75,
+    "teamName": "OS Racing",
+    "driver2": "Novitaa",
+    "totalPoints": 61,
+    "managerName": "Oscar Soria",
+    "userId": "osoriaferrero_gmail_com",
+    "updatedAt": "2026-09-19T09:13:44.728Z",
+    "roundLineups": {
+      "hungary": {
+        "team": "Mercedes",
+        "driver1": "Muntii",
+        "driver2": "Novitaa",
+        "turboDriver": "Muntii",
+        "driver3": "Rafale"
+      }
+    },
+    "driver1": "Muntii",
+    "turboDriver": "Muntii",
+    "team": "Mercedes",
+    "driver3": "Rafale"
+  },
+  {
+    "id": "suforr2005_gmail_com",
+    "userId": "suforr2005_gmail_com",
+    "teamValue": 73.4,
+    "email": "suforr2005@gmail.com",
+    "driver1": "Suforr",
+    "totalPoints": 117,
+    "managerName": "suforr",
+    "driver3": "TheWereGH",
+    "roundLineups": {
+      "nurburgring": {
+        "driver3": null,
+        "driver2": "Novitaa",
+        "driver1": "Suforr",
+        "team": "Red Bull",
+        "turboDriver": "Suforr"
+      },
+      "hungary": {
+        "team": "HRT",
+        "driver1": "Suforr",
+        "turboDriver": "Suforr",
+        "driver2": "Lil",
+        "driver3": "TheWereGH"
+      }
+    },
+    "updatedAt": "2026-09-20T17:11:40.296Z",
+    "team": "HRT",
+    "driver2": "Lil",
+    "turboDriver": "Suforr",
+    "teamName": "sexo"
+  },
+  {
+    "id": "theagus60_gmail_com",
+    "driver1": "TheAgus60",
+    "team": "Ferrari",
+    "teamName": "QVuelvaFranco",
+    "teamValue": 73.6,
+    "updatedAt": "2026-09-18T14:35:33.806Z",
+    "managerName": "Theagus60",
+    "totalPoints": 87,
+    "driver3": "Suforr",
+    "turboDriver": "TheAgus60",
+    "email": "theagus60@gmail.com",
+    "driver2": "Muntii",
+    "roundLineups": {
+      "hungary": {
+        "driver1": "TheAgus60",
+        "team": "Ferrari",
+        "driver3": "Suforr",
+        "driver2": "Muntii",
+        "turboDriver": "TheAgus60"
+      }
+    },
+    "userId": "theagus60_gmail_com"
   }
 ]

@@ -2654,33 +2654,58 @@ const defaultRaceResults = {
         title: "NÜRBURGRING GP",
         location: "NÜRBURGRING · EUROPE",
         date: "20 SEP",
-        status: "NEXT RACE",
-        winner: "TBA",
-        pole: "TBA",
-        fastest: "TBA",
-        driverDay: "TBA",
-        drivers: []
+        status: "COMPLETED",
+        winner: "Suforr",
+        pole: "Novitaa · 1:29.326",
+        fastest: "Novitaa · 1:29.547",
+        driverDay: "Suforr",
+        drivers: [
+            { pos: 1, driver: "Suforr", team: "Mercedes", grid: 3, status: "FINISHED" },
+            { pos: 2, driver: "Dieguiosk", team: "HRT", grid: 5, status: "FINISHED" },
+            { pos: 3, driver: "Muntii", team: "Red Bull", grid: 2, status: "FINISHED" },
+            { pos: 4, driver: "Lil", team: "Lotus", grid: 4, status: "FINISHED" },
+            { pos: 5, driver: "Victor", team: "McLaren", grid: 7, status: "FINISHED" },
+            { pos: 6, driver: "TheAgus60", team: "McLaren", grid: 9, status: "FINISHED" },
+            { pos: 7, driver: "TheWereGH", team: "Sauber", grid: 8, status: "FINISHED" },
+            { pos: 8, driver: "Dericcc", team: "Virgin", grid: 10, status: "FINISHED" },
+            { pos: 9, driver: "Farlonso", team: "Lotus", grid: 12, status: "FINISHED" },
+            { pos: 10, driver: "Novitaa", team: "Red Bull", grid: 1, status: "FINISHED" },
+            { pos: 11, driver: "Galindo", team: "Toro Rosso", grid: 11, status: "FINISHED" },
+            { pos: 12, driver: "Licha", team: "Ferrari", grid: 6, status: "DNF" }
+        ]
     },
 
     hungary: {
         round: "ROUND 11",
         title: "HUNGARORING",
         location: "BUDAPEST · HUNGARY",
-        date: "TBA",
-        status: "UPCOMING",
-        winner: "TBA",
-        pole: "TBA",
-        fastest: "TBA",
-        driverDay: "TBA",
-        drivers: []
+        date: "27 SEP",
+        status: "COMPLETED",
+        winner: "Dieguiosk",
+        pole: "Dieguiosk · 1:18.528",
+        fastest: "Suforr · 1:19.458",
+        driverDay: "TheWereGH",
+        drivers: [
+            { pos: 1, driver: "Dieguiosk", team: "HRT", grid: 1, status: "FINISHED" },
+            { pos: 2, driver: "Licha", team: "Ferrari", grid: 7, status: "FINISHED" },
+            { pos: 3, driver: "TheWereGH", team: "Sauber", grid: 6, status: "FINISHED" },
+            { pos: 4, driver: "TheAgus60", team: "McLaren", grid: 5, status: "FINISHED" },
+            { pos: 5, driver: "Farlonso", team: "Lotus", grid: 4, status: "FINISHED" },
+            { pos: 6, driver: "Suforr", team: "Mercedes", grid: 2, status: "DNF" },
+            { pos: 7, driver: "Novitaa", team: "Red Bull", grid: 3, status: "DNF" },
+            { pos: 8, driver: "Baena", team: "Mercedes", grid: 8, status: "DNF" },
+            { pos: 9, driver: "Sebinho", team: "Renault", grid: 9, status: "DNF" },
+            { pos: 10, driver: "RikiDorsa", team: "Virgin", grid: 10, status: "DNS" },
+            { pos: 11, driver: "Muntii", team: "Red Bull", grid: 11, status: "DNS" }
+        ]
     },
 
     belgium: {
         round: "ROUND 12",
         title: "SPA-FRANCORCHAMPS",
         location: "SPA · BELGIUM",
-        date: "TBA",
-        status: "UPCOMING",
+        date: "08 OCT",
+        status: "NEXT RACE",
         winner: "TBA",
         pole: "TBA",
         fastest: "TBA",
@@ -7613,9 +7638,14 @@ function initFirestoreListeners() {
         snapshot.forEach(docSnap => {
             existingKeys.add(docSnap.id);
             const rData = docSnap.data();
-            raceResults[docSnap.id] = rData;
+            if ((docSnap.id === "nurburgring" || docSnap.id === "hungary") && (!rData || rData.status !== "COMPLETED" || !Array.isArray(rData.drivers) || rData.drivers.length === 0)) {
+                raceResults[docSnap.id] = { ...defaultRaceResults[docSnap.id] };
+                hasLegacyRaceData = true;
+            } else {
+                raceResults[docSnap.id] = rData;
+            }
 
-            if (rData.winner === "Dlegulosk" || (rData.drivers && rData.drivers.some(d => d.driver === "Dlegulosk" || d.driver === "RikiORSA" || d.driver === "Ted Theo"))) {
+            if (rData && (rData.winner === "Dlegulosk" || (rData.drivers && rData.drivers.some(d => d.driver === "Dlegulosk" || d.driver === "RikiORSA" || d.driver === "Ted Theo")))) {
                 hasLegacyRaceData = true;
             }
         });
@@ -12001,7 +12031,7 @@ function getDriverPointsInRace(driverName, race) {
     race.drivers.forEach((d, idx) => {
         if (!d || !d.driver) return;
         if (normalizeDriverKey(d.driver) === norm) {
-            if (d.status !== "DSQ") {
+            if (d.status === "FINISHED" || (d.status !== "DNF" && d.status !== "DNS" && d.status !== "DSQ")) {
                 const pos = Number(d.pos) || (idx + 1);
                 if (pos >= 1 && pos <= 10) {
                     pts += (F1_POINTS_MAP[pos] || 0);
@@ -12031,7 +12061,7 @@ function getConstructorPointsInRace(teamName, race) {
         if (!d || !d.driver) return;
         const dTeam = (d.team || getDriverTeam(d.driver) || "").trim().toLowerCase();
         if (dTeam === cleanTeam) {
-            if (d.status !== "DSQ") {
+            if (d.status === "FINISHED" || (d.status !== "DNF" && d.status !== "DNS" && d.status !== "DSQ")) {
                 const pos = Number(d.pos) || (idx + 1);
                 if (pos >= 1 && pos <= 10) {
                     pts += (F1_POINTS_MAP[pos] || 0);
@@ -12093,6 +12123,58 @@ function getLineupScoreInRace(lineup, race) {
 }
 
 // Calculate frozen round-by-round fantasy points for a team
+const OFFICIAL_ROUND_10_POINTS = {
+    "eduardolopez": 85,
+    "alcracing": 85,
+    "dieguiosk": 76,
+    "chandalgrisde85euros": 76,
+    "fran1726": 76,
+    "cipotefmracingteam": 76,
+    "suforr": 75,
+    "sexo": 75,
+    "galindo": 73,
+    "netanyahu": 73,
+    "netanyahuffcteam": 73,
+    "hermes": 71,
+    "hermesisrael": 71,
+    "river": 71,
+    "primewilliams": 71,
+    "primewillams": 71,
+    "ivanr": 70,
+    "anchoaeuroformulaopenteam": 70,
+    "muntisexo33": 69,
+    "acrr": 69,
+    "formulafactorchampionship": 66,
+    "scuderiadriezz": 66,
+    "farlonso": 62,
+    "femboys": 62,
+    "oscarsoria": 60,
+    "osracing": 60,
+    "hijoputapro": 56,
+    "victor": 51,
+    "swissracingteam": 51,
+    "theagus60": 44,
+    "qvuelvafranco": 44,
+    "nova": 38,
+    "miescuderiaretarda": 38,
+    "jvr": 18,
+    "jvrffcteam": 18
+};
+
+function getOfficialRound10Score(teamState) {
+    if (!teamState) return undefined;
+    const normM = (teamState.managerName || "").toString().normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/[^a-z0-9]/g, "");
+    const normT = (teamState.teamName || "").toString().normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/[^a-z0-9]/g, "");
+    if (normM && OFFICIAL_ROUND_10_POINTS[normM] !== undefined) return OFFICIAL_ROUND_10_POINTS[normM];
+    if (normT && OFFICIAL_ROUND_10_POINTS[normT] !== undefined) return OFFICIAL_ROUND_10_POINTS[normT];
+    for (const [k, v] of Object.entries(OFFICIAL_ROUND_10_POINTS)) {
+        if (normM.includes(k) || k.includes(normM) || normT.includes(k) || k.includes(normT)) {
+            return v;
+        }
+    }
+    return undefined;
+}
+
 function calculateFantasyTeamPoints(teamState) {
     if (!teamState) return { totalPts: 0, roundScores: {} };
 
@@ -12104,86 +12186,33 @@ function calculateFantasyTeamPoints(teamState) {
         teamState.roundLineups = {};
     }
 
-    const OFFICIAL_ROUND_10_POINTS_BY_MANAGER = {
-        "eduardo lopez": 85,
-        "dieguiosk": 76,
-        "fran_1726": 76,
-        "suforr": 75,
-        "galindo": 73,
-        "hermes": 71,
-        "river": 71,
-        "ivánr": 70,
-        "ivanr": 70,
-        "muntisexo33": 69,
-        "formula factor championship": 66,
-        "farlonso": 62,
-        "oscar soria": 60,
-        "hijoputapro": 56,
-        "victor": 51,
-        "theagus60": 44,
-        "nova": 38,
-        "jvr": 18
-    };
-
-    const OFFICIAL_ROUND_10_POINTS_BY_TEAM = {
-        "alcracing": 85,
-        "chandal gris de 85 euros": 76,
-        "cipote fm racing team": 76,
-        "sexo": 75,
-        "netanyahu ffc team": 73,
-        "hermes israel": 71,
-        "prime willams": 71,
-        "prime williams": 71,
-        "anchoa euroformula open team": 70,
-        "acrr": 69,
-        "scuderia driezz": 66,
-        "os racing": 60,
-        "swiss racing team": 51,
-        "qvuelvafranco": 44,
-        "mi escudería retarda": 38,
-        "mi escuderia retarda": 38,
-        "jvr ffc team": 18
-    };
-
     completedRaces.forEach(({ key, race }) => {
         let rPts = 0;
         if (key === "nurburgring") {
-            const tNameNorm = (teamState.teamName || "").toLowerCase().trim();
-            const mNameNorm = (teamState.managerName || "").toLowerCase().trim();
-            
-            if (OFFICIAL_ROUND_10_POINTS_BY_MANAGER[mNameNorm] !== undefined) {
-                if (mNameNorm === "farlonso") rPts = 62;
-                else if (mNameNorm === "hijoputapro") rPts = 56;
-                else rPts = OFFICIAL_ROUND_10_POINTS_BY_MANAGER[mNameNorm];
-            } else if (OFFICIAL_ROUND_10_POINTS_BY_TEAM[tNameNorm] !== undefined) {
-                rPts = OFFICIAL_ROUND_10_POINTS_BY_TEAM[tNameNorm];
+            const officialPts = getOfficialRound10Score(teamState);
+            if (officialPts !== undefined) {
+                rPts = officialPts;
             } else {
-                let lineup = teamState.roundLineups[key];
-                if (!lineup) {
-                    lineup = {
-                        driver1: teamState.driver1,
-                        driver2: teamState.driver2,
-                        driver3: teamState.driver3,
-                        team: teamState.team,
-                        turboDriver: teamState.turboDriver
-                    };
-                    teamState.roundLineups[key] = { ...lineup };
-                }
-                rPts = lineup ? getLineupScoreInRace(lineup, race) : 0;
-            }
-        } else {
-            let lineup = teamState.roundLineups[key];
-            if (!lineup) {
-                lineup = {
+                const lineup = teamState.roundLineups[key] || {
                     driver1: teamState.driver1,
                     driver2: teamState.driver2,
                     driver3: teamState.driver3,
                     team: teamState.team,
                     turboDriver: teamState.turboDriver
                 };
-                teamState.roundLineups[key] = { ...lineup };
+                const isComplete = Boolean(lineup && lineup.driver1 && lineup.driver2 && lineup.driver3 && lineup.team);
+                rPts = isComplete ? getLineupScoreInRace(lineup, race) : 0;
             }
-            rPts = lineup ? getLineupScoreInRace(lineup, race) : 0;
+        } else {
+            const lineup = teamState.roundLineups[key] || {
+                driver1: teamState.driver1,
+                driver2: teamState.driver2,
+                driver3: teamState.driver3,
+                team: teamState.team,
+                turboDriver: teamState.turboDriver
+            };
+            const isComplete = Boolean(lineup && lineup.driver1 && lineup.driver2 && lineup.driver3 && lineup.team);
+            rPts = isComplete ? getLineupScoreInRace(lineup, race) : 0;
         }
         roundScores[key] = rPts;
         totalPts += rPts;
@@ -13314,8 +13343,8 @@ async function renderFantasyLeaderboard() {
         }
     }
 
-    // Only keep teams that have 3 drivers and 1 constructor
-    teamsList = teamsList.filter(t => t.driver1 && t.driver2 && t.driver3 && t.team);
+    // Only keep teams that have 3 drivers and 1 constructor or have accumulated championship points
+    teamsList = teamsList.filter(t => (t.driver1 && t.driver2 && t.driver3 && t.team) || (t.totalPoints && t.totalPoints > 0));
 
     // Recalculate points dynamically based on current standings for all teams
     teamsList.forEach(t => {
