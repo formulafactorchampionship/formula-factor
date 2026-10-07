@@ -17564,12 +17564,16 @@ function populatePastRaceSelect(preselected = "") {
         });
     }
 
-    select.innerHTML = `<option value="">-- Selecciona una carrera pasada --</option>` + options.map(opt => `
+    select.innerHTML = `<option value="">-- Selecciona una carrera --</option>` + options.map(opt => `
         <option value="${opt.key}">${opt.label}</option>
     `).join("");
 
-    if (preselected) {
+    if (preselected && options.some(o => o.key === preselected)) {
         select.value = preselected;
+    } else if (currentOpenRaceKey && options.some(o => o.key === currentOpenRaceKey)) {
+        select.value = currentOpenRaceKey;
+    } else if (options.length > 0) {
+        select.value = options[0].key;
     }
 }
 
@@ -17742,7 +17746,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (uploadForm) {
         uploadForm.addEventListener("submit", async (e) => {
             e.preventDefault();
-            const raceId = document.getElementById("uploadRaceSelect")?.value;
+            let raceId = document.getElementById("uploadRaceSelect")?.value;
             const caption = document.getElementById("photoCaptionInput")?.value || "";
             const currentUser = typeof activeUserAuth !== "undefined" && activeUserAuth ? activeUserAuth : (typeof LocalAuthStore !== "undefined" ? LocalAuthStore.getCurrentUser() : null);
             const author = (currentUser && currentUser.displayName) ? currentUser.displayName : (currentUser && currentUser.email ? currentUser.email.split("@")[0] : (typeof currentSettings !== "undefined" && currentSettings?.driverName ? currentSettings.driverName : "Piloto FFC"));
@@ -17750,8 +17754,7 @@ document.addEventListener("DOMContentLoaded", () => {
             const statusMsg = document.getElementById("uploadStatusMsg");
 
             if (!raceId) {
-                alert("Por favor selecciona una carrera.");
-                return;
+                raceId = currentOpenRaceKey || "barcelona_test";
             }
 
             let photosToUpload = [];
@@ -17782,6 +17785,7 @@ document.addEventListener("DOMContentLoaded", () => {
             }
 
             if (photosToUpload.length === 0) {
+                if (statusMsg) statusMsg.textContent = "Por favor selecciona al menos una foto o introduce una URL.";
                 alert("Por favor selecciona al menos un archivo o introduce una URL de imagen.");
                 return;
             }
