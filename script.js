@@ -6439,7 +6439,7 @@ function renderSettingsOnPage(settings) {
     if (statRoundsEl && settings.rounds) statRoundsEl.textContent = settings.rounds;
     if (statDriversEl && settings.drivers) statDriversEl.textContent = settings.drivers;
 
-    // Live Mode (Transmisión en directo Twitch & Chat)
+    // Live Mode (Transmisión en directo Twitch & Chat & Live Timing)
     const heroSection = document.getElementById("home");
     const heroContentStandard = document.getElementById("heroContentStandard");
     const heroContentLive = document.getElementById("heroContentLive");
@@ -6500,11 +6500,19 @@ function renderSettingsOnPage(settings) {
                     </iframe>`;
                 }
             }
+
+            // Start Live Timing Polling from Assetto Hosting API
+            if (typeof window.startLiveTimingPoll === "function") {
+                window.startLiveTimingPoll();
+            }
         } else {
             heroContentStandard.style.display = "block";
             heroContentLive.style.display = "none";
             if (twitchPlayerContainer) {
                 twitchPlayerContainer.innerHTML = "";
+            }
+            if (typeof window.stopLiveTimingPoll === "function") {
+                window.stopLiveTimingPoll();
             }
         }
     }
@@ -17372,6 +17380,122 @@ if (document.readyState === "loading") {
         lucide.createIcons();
     }
 }
+
+// --- Assetto Hosting Live Timing Integration ---
+let liveTimingPollInterval = null;
+let currentLiveEndpoint = "laptimes";
+
+async function fetchAndRenderLiveTiming() {
+    const tbody = document.getElementById("liveTimingBody");
+    const statusInd = document.getElementById("liveTimingStatusIndicator");
+    if (!tbody) return;
+
+    try {
+        const res = await fetch(`/api/live-timing?endpoint=${currentLiveEndpoint}`);
+        const json = await res.json();
+        
+        if (statusInd) {
+            statusInd.innerHTML = `<span class="live-pulse-dot" style="background: #4ade80;"></span> Conectado (/${currentLiveEndpoint})`;
+        }
+
+        if (json && json.success) {
+            const data = json.data !== undefined ? json.data : json.raw;
+            
+            if (!data || (Array.isArray(data) && data.length === 0) || (typeof data === 'object' && Object.keys(data).length === 0)) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="7" style="text-align: center; color: #8892b0; padding: 32px;">
+                            No hay datos disponibles actualmente en el endpoint <code>/${currentLiveEndpoint}</code>.
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
+            if (Array.isArray(data)) {
+                tbody.innerHTML = data.map((item, idx) => {
+                    const pos = item.pos || item.position || (idx + 1);
+                    const name = item.driver || item.name || item.driverName || item.playerName || item.username || `Entrada ${pos}`;
+                    const car = item.car || item.team || item.model || item.sessionName || item.track || "Assetto Corsa";
+                    const bestLap = item.lapTime || item.bestLap || item.time || item.bestTime || "--:--.---";
+                    const gap = item.gap || item.interval || item.date || item.status || "-";
+                    const laps = item.laps || item.lapCount || item.playersCount || item.duration || "-";
+                    const status = item.status || item.state || (item.completed !== undefined ? (item.completed ? "COMPLETADO" : "EN CURSO") : "ACTIVO");
+
+                    return `
+                        <tr>
+                            <td style="font-weight: 800; color: var(--gold);">${pos}</td>
+                            <td style="font-weight: 700; color: #fff;">${escapeHtml(String(name))}</td>
+                            <td>${escapeHtml(String(car))}</td>
+                            <td style="font-family: monospace; color: #4ade80;">${escapeHtml(String(bestLap))}</td>
+                            <td style="font-family: monospace; color: #94a3b8;">${escapeHtml(String(gap))}</td>
+                            <td>${escapeHtml(String(laps))}</td>
+                            <td><span class="race-pts-tag active" style="font-size: 11px;">${escapeHtml(String(status))}</span></td>
+                        </tr>
+                    `;
+                }).join("");
+            } else if (typeof data === 'object') {
+                const entries = Object.entries(data);
+                tbody.innerHTML = entries.map(([key, val], idx) => `
+                    <tr>
+                        <td style="font-weight: 800; color: var(--gold);">${idx + 1}</td>
+                        <td style="font-weight: 700; color: #fff;">${escapeHtml(String(key))}</td>
+                        <td colspan="5" style="font-family: monospace; color: #e2e8f0;">${escapeHtml(typeof val === 'object' ? JSON.stringify(val) : String(val))}</td>
+                    </tr>
+                `).join("");
+            } else {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="7" style="padding: 16px; color: #cbd5e1; font-family: monospace; font-size: 13px; white-space: pre-wrap;">
+                            ${escapeHtml(String(data))}
+                        </td>
+                    </tr>
+                `;
+            }
+        } else {
+            tbody.innerHTML = `
+                <tr>
+                    <td colspan="7" style="text-align: center; color: #f85149; padding: 24px;">
+                        Error al obtener datos de la API (${json.error || 'Respuesta vacía'}).
+                    </td>
+                </tr>
+            `;
+        }
+    } catch (e) {
+        tbody.innerHTML = `
+            <tr>
+                <td colspan="7" style="text-align: center; color: #f85149; padding: 24px;">
+                    Error de conexión con el servidor: ${escapeHtml(e.message)}
+                </td>
+            </tr>
+        `;
+    }
+}
+
+// Wire up endpoint selector buttons
+document.addEventListener("DOMContentLoaded", () => {
+    document.querySelectorAll(".live-ep-btn").forEach(btn => {
+        btn.addEventListener("click", () => {
+            document.querySelectorAll(".live-ep-btn").forEach(b => b.classList.remove("active"));
+            btn.classList.add("active");
+            currentLiveEndpoint = btn.getAttribute("data-endpoint") || "laptimes";
+            fetchAndRenderLiveTiming();
+        });
+    });
+});
+
+window.startLiveTimingPoll = function() {
+    if (liveTimingPollInterval) clearInterval(liveTimingPollInterval);
+    fetchAndRenderLiveTiming();
+    liveTimingPollInterval = setInterval(fetchAndRenderLiveTiming, 4000);
+};
+
+window.stopLiveTimingPoll = function() {
+    if (liveTimingPollInterval) {
+        clearInterval(liveTimingPollInterval);
+        liveTimingPollInterval = null;
+    }
+};
 
 
 

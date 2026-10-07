@@ -11,7 +11,18 @@ const app = express();
 const PORT = 3000;
 
 app.use(express.json());
-app.use(express.static(__dirname));
+app.use((req, res, next) => {
+  res.setHeader('X-Content-Type-Options', 'nosniff');
+  if (req.path.startsWith('/api/')) {
+    res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate');
+  }
+  next();
+});
+app.use(express.static(__dirname, {
+  maxAge: '1d',
+  etag: true,
+  lastModified: true
+}));
 
 const USERS_FILE = path.join(__dirname, 'users_db.json');
 
@@ -246,6 +257,23 @@ app.post('/api/fantasy/lock', (req, res) => {
   };
   saveFantasyLockState(state);
   return res.json({ success: true, ...state });
+});
+
+app.get('/api/live-timing', async (req, res) => {
+  const endpoint = (req.query.endpoint || 'laptimes').trim();
+  const targetUrl = `https://fr.assettohosting.com:60290/api/v1/${endpoint}`;
+  try {
+    const response = await fetch(targetUrl);
+    const text = await response.text();
+    try {
+      const json = JSON.parse(text);
+      return res.json({ success: true, endpoint, url: targetUrl, data: json });
+    } catch (e) {
+      return res.json({ success: true, endpoint, url: targetUrl, raw: text, status: response.status });
+    }
+  } catch (err) {
+    return res.json({ success: false, endpoint, url: targetUrl, error: err.message });
+  }
 });
 
 app.get('*', (req, res) => {
