@@ -7,13 +7,11 @@ import { initCalendarBorderGlow } from "./BorderGlow.js";
 import { initSideRaysBackground } from "./SideRays.js";
 import { initCobeGlobe } from "./CobeGlobe.js";
 import { initLightPillar } from "./LightPillar.js";
-import { initDriftWall, refreshDriftWallPhotos } from "./DriftWall.js";
 
 // Initialize interactive background layers
 const handleInitBackgrounds = () => {
     initShapeWavesBackground();
     initCalendarBorderGlow();
-    initDriftWall("hero-drift-wall-bg");
     
     // Mount the React Bits SideRays component
     initSideRaysBackground("hero-siderays-bg", {
@@ -17432,15 +17430,9 @@ function saveCachedPhotos(photos) {
     try {
         localStorage.setItem("ffc_local_photos", JSON.stringify(photos));
     } catch (e) {}
-    if (typeof window !== "undefined") {
-        window.currentPhotos = photos;
-    }
 }
 
 let currentPhotos = loadCachedPhotos();
-if (typeof window !== "undefined") {
-    window.currentPhotos = currentPhotos;
-}
 let activeUploadMethod = 'file'; // 'file' or 'url'
 let currentCompressedBase64Array = [];
 let currentLightboxPhoto = null;
@@ -17831,39 +17823,19 @@ if (document.readyState === "loading") {
 
 // Periodic and Source Synchronization for Photos
 async function syncPhotosFromSources() {
-    let loaded = false;
     try {
         const res = await fetch('/api/carreras/fotos');
         if (res.ok) {
             const data = await res.json();
-            if (data && Array.isArray(data.photos) && data.photos.length > 0) {
+            if (data && Array.isArray(data.photos)) {
                 currentPhotos = data.photos;
                 currentPhotos.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
                 saveCachedPhotos(currentPhotos);
                 updatePhotoGalleriesUI();
-                loaded = true;
             }
         }
     } catch (e) {
-        // Fallback below
-    }
-
-    // Static hosting fallback (e.g. GitHub Pages / formulafactorchampionship.eu)
-    if (!loaded) {
-        try {
-            const staticRes = await fetch('./photos_db.json');
-            if (staticRes.ok) {
-                const staticData = await staticRes.json();
-                const list = Array.isArray(staticData) ? staticData : (staticData.photos || []);
-                if (Array.isArray(list) && list.length > 0) {
-                    currentPhotos = list;
-                    currentPhotos.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
-                    saveCachedPhotos(currentPhotos);
-                    updatePhotoGalleriesUI();
-                    loaded = true;
-                }
-            }
-        } catch (err) {}
+        console.warn("Could not sync photos from server:", e);
     }
 }
 window.syncPhotosFromSources = syncPhotosFromSources;
@@ -17898,9 +17870,6 @@ syncPhotosFromSources();
 setInterval(syncPhotosFromSources, 10000);
 
 function updatePhotoGalleriesUI() {
-    if (typeof window !== "undefined") {
-        window.currentPhotos = currentPhotos;
-    }
     renderGlobalPhotoGrid();
     if (typeof currentOpenRaceKey !== "undefined" && currentOpenRaceKey) {
         renderRaceModalPhotoGallery(currentOpenRaceKey);
@@ -17911,14 +17880,6 @@ function updatePhotoGalleriesUI() {
     if (photosTab && photosTab.classList.contains("active")) {
         renderAdminPhotosTab();
     }
-    // Refresh DriftWall background with newest photos seamlessly
-    try {
-        if (typeof refreshDriftWallPhotos === "function") {
-            refreshDriftWallPhotos();
-        } else if (typeof window !== "undefined" && typeof window.refreshDriftWallPhotos === "function") {
-            window.refreshDriftWallPhotos();
-        }
-    } catch (dwErr) {}
 }
 
 function renderGlobalPhotoGrid() {

@@ -64,7 +64,7 @@ export function initCobeGlobe(containerId) {
     canvas.style.opacity = "0";
     canvas.style.transition = "opacity 1.2s ease";
     canvas.style.cursor = "grab";
-    canvas.style.touchAction = "pan-y";
+    canvas.style.touchAction = "none";
     canvas.style.borderRadius = "50%";
     container.appendChild(canvas);
 
@@ -189,15 +189,15 @@ export function initCobeGlobe(containerId) {
             phi: 3.8,
             theta: 0.15,
             dark: 1,
-            diffuse: 1.4,
-            mapSamples: 24000,
-            mapBrightness: 10,
-            baseColor: [0.18, 0.25, 0.40], 
-            markerColor: [0.0, 0.9, 1.0], 
-            glowColor: [0.25, 0.35, 0.55], 
+            diffuse: 1.25,
+            mapSamples: 20000,
+            mapBrightness: 8,
+            baseColor: [0.1, 0.15, 0.25], 
+            markerColor: [0.0, 0.85, 1.0], 
+            glowColor: [0.15, 0.22, 0.35], 
             markerElevation: 0.15,
             markers: formattedMarkers,
-            opacity: 1,
+            opacity: 0.95,
             onRender: (state) => {
                 if (!isVisibleInViewport) return;
                 if (!isPaused) {

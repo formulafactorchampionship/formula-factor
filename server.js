@@ -481,29 +481,6 @@ app.post('/api/noticias/upload-image', (req, res) => {
   }
 });
 
-// DriftWall random uploaded photos provider (ONLY published gallery/race photos, NO news images)
-app.get('/api/gallery/random-wall-photos', (req, res) => {
-  const photoPool = [];
-
-  // ONLY published race & community gallery photos
-  try {
-    const photos = getPhotos();
-    photos.forEach(p => {
-      if (p.status === 'rejected') return;
-      const url = p.photoUrl || p.imageUrl || p.url;
-      if (url && !url.includes('news_uploads') && !url.includes('/news_')) {
-        photoPool.push({
-          image: url,
-          title: p.caption || (p.author ? `Foto por ${p.author}` : 'FFC Simracing'),
-          raceId: p.raceId || ''
-        });
-      }
-    });
-  } catch (e) {}
-
-  return res.json({ success: true, items: photoPool });
-});
-
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, 'index.html'));
 });
