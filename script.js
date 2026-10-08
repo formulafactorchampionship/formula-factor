@@ -857,6 +857,19 @@ const translations = {
                         acceptBtn: "ACEPTAR Y CERRAR"
                     }
                 }
+            },
+            admin: {
+                tabNextRace: "Próxima Carrera",
+                tabRaceResults: "Resultados de Carreras",
+                tabStandings: "Clasificación",
+                tabDrivers: "Pilotos & Equipos",
+                tabVerify: "Verificación de Pilotos",
+                tabNews: "Gestión de Noticias",
+                tabPhotos: "Moderación de Fotos",
+                tabSettings: "Ajustes Generales",
+                photoBadge: "MODERACIÓN • GALERÍA FFC",
+                photoHeading: "MODERACIÓN DE FOTOS DE LA COMUNIDAD",
+                photoDesc: "Revisa, previsualiza, aprueba o rechaza las fotografías subidas por los pilotos antes de que aparezcan en la galería pública."
             }
         }
     },
@@ -1319,6 +1332,19 @@ const translations = {
                         acceptBtn: "ACCEPT & CLOSE"
                     }
                 }
+            },
+            admin: {
+                tabNextRace: "Next Race",
+                tabRaceResults: "Race Results",
+                tabStandings: "Standings",
+                tabDrivers: "Drivers & Teams",
+                tabVerify: "Driver Verification",
+                tabNews: "News Management",
+                tabPhotos: "Photo Moderation",
+                tabSettings: "General Settings",
+                photoBadge: "MODERATION • FFC GALLERY",
+                photoHeading: "COMMUNITY PHOTO MODERATION",
+                photoDesc: "Review, preview, approve, or reject photos uploaded by drivers before they appear in the public gallery."
             }
         }
     }
@@ -1579,6 +1605,43 @@ function applyTranslations(lang) {
         if (cS4B) cS4B.innerHTML = dict.legal.cookies.sec4Text;
         const cAcc = document.getElementById("cookiesModalAcceptBtn");
         if (cAcc) cAcc.textContent = dict.legal.cookies.acceptBtn;
+    }
+
+    if (dict.admin) {
+        const ad1 = document.getElementById("adminTabNextRaceTitle");
+        if (ad1) ad1.textContent = dict.admin.tabNextRace;
+        const ad2 = document.getElementById("adminTabRaceResultsTitle");
+        if (ad2) ad2.textContent = dict.admin.tabRaceResults;
+        const ad3 = document.getElementById("adminTabStandingsTitle");
+        if (ad3) ad3.textContent = dict.admin.tabStandings;
+        const ad4 = document.getElementById("adminTabDriversTitle");
+        if (ad4) ad4.textContent = dict.admin.tabDrivers;
+        const ad5 = document.getElementById("adminTabVerifyTitle");
+        if (ad5) ad5.textContent = dict.admin.tabVerify;
+        const ad6 = document.getElementById("adminTabNewsTitle");
+        if (ad6) ad6.textContent = dict.admin.tabNews;
+        const ad7 = document.getElementById("adminTabPhotosTitle");
+        if (ad7) ad7.textContent = dict.admin.tabPhotos;
+        const ad8 = document.getElementById("adminTabSettingsTitle");
+        if (ad8) ad8.textContent = dict.admin.tabSettings;
+
+        const apB = document.getElementById("adminPhotoBadge");
+        if (apB) apB.textContent = dict.admin.photoBadge;
+        const apH = document.getElementById("adminPhotoHeading");
+        if (apH) apH.textContent = dict.admin.photoHeading;
+        const apD = document.getElementById("adminPhotoDesc");
+        if (apD) apD.textContent = dict.admin.photoDesc;
+    }
+
+    const rResBtn = document.getElementById("raceTabResultsBtn");
+    if (rResBtn) {
+        rResBtn.textContent = lang === "en" ? "🏁 Official Results" : "🏁 Resultados Oficiales";
+    }
+    const rGalBtn = document.getElementById("raceTabGalleryBtn");
+    if (rGalBtn) {
+        const photoCountEl = document.getElementById("raceModalPhotoCount");
+        const countVal = photoCountEl ? photoCountEl.textContent : "0";
+        rGalBtn.innerHTML = lang === "en" ? `📸 Photo Gallery (<span id="raceModalPhotoCount">${countVal}</span>)` : `📸 Galería de Fotos (<span id="raceModalPhotoCount">${countVal}</span>)`;
     }
 
     // Hero
@@ -17957,20 +18020,25 @@ function populatePastRaceSelect(preselected = "") {
     const select = document.getElementById("uploadRaceSelect");
     if (!select) return;
 
+    const isEn = typeof currentLanguage !== "undefined" && currentLanguage === "en";
+    const defaultOpt = isEn ? "-- Select a race --" : "-- Selecciona una carrera --";
+    const roundText = isEn ? "Round" : "Ronda";
+
     const options = [
         { key: "barcelona_test", label: "Barcelona Test Days (T)" }
     ];
     if (typeof FFC_SEASON_GPS !== "undefined" && Array.isArray(FFC_SEASON_GPS)) {
         FFC_SEASON_GPS.forEach(gp => {
-            options.push({ key: gp.raceKey, label: `${gp.flag || ''} ${gp.name} (Ronda ${gp.r})` });
+            options.push({ key: gp.raceKey, label: `${gp.flag || ''} ${gp.name} (${roundText} ${gp.r})` });
         });
     }
 
-    select.innerHTML = `<option value="" disabled selected>-- Selecciona una carrera --</option>` + options.map(opt => `
-        <option value="${opt.key}">${opt.label}</option>
+    select.innerHTML = `<option value="" disabled selected>${defaultOpt}</option>` + options.map(opt => `
+        <option value="${opt.key}" ${preselected === opt.key ? 'selected' : ''}>${opt.label}</option>
     `).join("");
 
-    select.value = "";
+    if (preselected) select.value = preselected;
+    else select.value = "";
 }
 
 window.openGlobalPhotoGallery = function() {
@@ -18417,19 +18485,23 @@ function renderGlobalPhotoGrid() {
     filtered.forEach(photo => {
         const raceLabel = RACE_TITLES_MAP[photo.raceId] || photo.raceId;
         const isPending = photo.status === "pending";
-        const pendingBadge = isPending ? `<span style="position: absolute; bottom: 8px; left: 8px; background: rgba(251,191,36,0.9); color: #000; font-size: 10px; font-weight: 800; padding: 2px 6px; border-radius: 4px;">🟡 Pendiente de aprobación</span>` : "";
+        const isEn = typeof currentLanguage !== "undefined" && currentLanguage === "en";
+        const pendingBadge = isPending ? `<span style="position: absolute; bottom: 8px; left: 8px; background: rgba(251,191,36,0.9); color: #000; font-size: 10px; font-weight: 800; padding: 2px 6px; border-radius: 4px;">${isEn ? "🟡 Pending approval" : "🟡 Pendiente de aprobación"}</span>` : "";
+        const dlTitleText = isEn ? "Download photo" : "Descargar foto";
+        const dlBtnText = isEn ? "Download" : "Descargar";
+        const noDescText = isEn ? "No description" : "Sin descripción";
 
         const card = document.createElement("div");
         card.className = "photo-card";
         card.innerHTML = `
             <div class="photo-card-thumb" style="position: relative;">
-                <img src="${escapeHtml(photo.photoUrl)}" alt="${escapeHtml(photo.caption || 'Foto FFC')}" loading="lazy">
+                <img src="${escapeHtml(photo.photoUrl)}" alt="${escapeHtml(photo.caption || (isEn ? "FFC Photo" : "Foto FFC"))}" loading="lazy">
                 <span class="photo-card-badge">${escapeHtml(raceLabel)}</span>
                 ${pendingBadge}
-                <button type="button" class="photo-card-dl-btn" title="Descargar foto" onclick="event.stopPropagation(); window.downloadPhoto('${escapeHtml(photo.photoUrl)}', 'ffc-${photo.raceId}-${photo.id}.jpg')" style="position: absolute; top: 8px; right: 8px; background: rgba(0,0,0,0.7); color: #fff; border: 1px solid rgba(255,255,255,0.3); border-radius: 4px; padding: 3px 7px; font-size: 11px; font-weight: 700; cursor: pointer; z-index: 2; transition: all 0.2s;">⬇️ Descargar</button>
+                <button type="button" class="photo-card-dl-btn" title="${dlTitleText}" onclick="event.stopPropagation(); window.downloadPhoto('${escapeHtml(photo.photoUrl)}', 'ffc-${photo.raceId}-${photo.id}.jpg')" style="position: absolute; top: 8px; right: 8px; background: rgba(0,0,0,0.7); color: #fff; border: 1px solid rgba(255,255,255,0.3); border-radius: 4px; padding: 3px 7px; font-size: 11px; font-weight: 700; cursor: pointer; z-index: 2; transition: all 0.2s;">⬇️ ${dlBtnText}</button>
             </div>
             <div class="photo-card-content">
-                <div class="photo-card-caption">${escapeHtml(photo.caption || 'Sin descripción')}</div>
+                <div class="photo-card-caption">${escapeHtml(photo.caption || noDescText)}</div>
                 <div class="photo-card-meta">
                     <span class="photo-card-author">👤 ${escapeHtml(photo.author)}</span>
                     <span class="photo-card-date">${escapeHtml(photo.createdAt || '')}</span>
@@ -18468,20 +18540,26 @@ function renderRaceModalPhotoGallery(raceKey) {
     }
     if (emptyState) emptyState.style.display = "none";
 
+    const isEn = typeof currentLanguage !== "undefined" && currentLanguage === "en";
+    const pendingText = isEn ? "🟡 Pending approval" : "🟡 Pendiente de aprobación";
+    const dlTitleText = isEn ? "Download photo" : "Descargar foto";
+    const dlBtnText = isEn ? "Download" : "Descargar";
+    const noDescText = isEn ? "No description" : "Sin descripción";
+
     racePhotos.forEach(photo => {
         const isPending = photo.status === "pending";
-        const pendingBadge = isPending ? `<span style="position: absolute; bottom: 8px; left: 8px; background: rgba(251,191,36,0.9); color: #000; font-size: 10px; font-weight: 800; padding: 2px 6px; border-radius: 4px;">🟡 Pendiente de aprobación</span>` : "";
+        const pendingBadge = isPending ? `<span style="position: absolute; bottom: 8px; left: 8px; background: rgba(251,191,36,0.9); color: #000; font-size: 10px; font-weight: 800; padding: 2px 6px; border-radius: 4px;">${pendingText}</span>` : "";
 
         const card = document.createElement("div");
         card.className = "photo-card";
         card.innerHTML = `
             <div class="photo-card-thumb" style="position: relative;">
-                <img src="${escapeHtml(photo.photoUrl)}" alt="${escapeHtml(photo.caption || 'Foto de carrera')}" loading="lazy">
+                <img src="${escapeHtml(photo.photoUrl)}" alt="${escapeHtml(photo.caption || (isEn ? "Race photo" : "Foto de carrera"))}" loading="lazy">
                 ${pendingBadge}
-                <button type="button" class="photo-card-dl-btn" title="Descargar foto" onclick="event.stopPropagation(); window.downloadPhoto('${escapeHtml(photo.photoUrl)}', 'ffc-${photo.raceId}-${photo.id}.jpg')" style="position: absolute; top: 8px; right: 8px; background: rgba(0,0,0,0.7); color: #fff; border: 1px solid rgba(255,255,255,0.3); border-radius: 4px; padding: 3px 7px; font-size: 11px; font-weight: 700; cursor: pointer; z-index: 2; transition: all 0.2s;">⬇️ Descargar</button>
+                <button type="button" class="photo-card-dl-btn" title="${dlTitleText}" onclick="event.stopPropagation(); window.downloadPhoto('${escapeHtml(photo.photoUrl)}', 'ffc-${photo.raceId}-${photo.id}.jpg')" style="position: absolute; top: 8px; right: 8px; background: rgba(0,0,0,0.7); color: #fff; border: 1px solid rgba(255,255,255,0.3); border-radius: 4px; padding: 3px 7px; font-size: 11px; font-weight: 700; cursor: pointer; z-index: 2; transition: all 0.2s;">⬇️ ${dlBtnText}</button>
             </div>
             <div class="photo-card-content">
-                <div class="photo-card-caption">${escapeHtml(photo.caption || 'Sin descripción')}</div>
+                <div class="photo-card-caption">${escapeHtml(photo.caption || noDescText)}</div>
                 <div class="photo-card-meta">
                     <span class="photo-card-author">👤 ${escapeHtml(photo.author)}</span>
                     <span class="photo-card-date">${escapeHtml(photo.createdAt || '')}</span>
@@ -18530,8 +18608,10 @@ window.openPhotoLightbox = function(photo) {
 
     if (modal && img) {
         img.src = photo.photoUrl;
-        if (caption) caption.textContent = photo.caption || RACE_TITLES_MAP[photo.raceId] || "Foto FFC";
-        if (authorDate) authorDate.textContent = `Subido por ${photo.author} • ${photo.createdAt || ''}`;
+        const isEn = typeof currentLanguage !== "undefined" && currentLanguage === "en";
+        if (caption) caption.textContent = photo.caption || RACE_TITLES_MAP[photo.raceId] || (isEn ? "FFC Photo" : "Foto FFC");
+        const subBy = isEn ? "Uploaded by" : "Subido por";
+        if (authorDate) authorDate.textContent = `${subBy} ${photo.author} • ${photo.createdAt || ''}`;
         if (downloadBtn) {
             downloadBtn.onclick = () => window.downloadCurrentLightboxPhoto();
         }

@@ -90,9 +90,7 @@
                 <span class="fantasy-nav-dot" aria-hidden="true"></span>
                 <span id="navFantasyText">FANTASY</span>
             </a>
-            <a href="#sheets" id="navGoogleSheets" class="nav-item nav-sheets-link" title="Exportar a Google Sheets" onclick="if(window.openGoogleSheetsModal){window.openGoogleSheetsModal();return false;}">
-                📊 SHEETS
-            </a>
+
 
         </nav>
 
@@ -2463,39 +2461,39 @@
         <nav class="admin-tabs">
             <button type="button" class="admin-tab-btn active" data-tab="tab-next-race">
                 <span class="admin-tab-icon">🏁</span>
-                <span class="admin-tab-title">Próxima Carrera</span>
+                <span class="admin-tab-title" id="adminTabNextRaceTitle">Próxima Carrera</span>
             </button>
             <button type="button" class="admin-tab-btn" data-tab="tab-race-results">
                 <span class="admin-tab-icon">🏆</span>
-                <span class="admin-tab-title">Resultados de Carreras</span>
+                <span class="admin-tab-title" id="adminTabRaceResultsTitle">Resultados de Carreras</span>
             </button>
             <button type="button" class="admin-tab-btn" data-tab="tab-standings">
                 <span class="admin-tab-icon">📊</span>
-                <span class="admin-tab-title">Clasificación</span>
+                <span class="admin-tab-title" id="adminTabStandingsTitle">Clasificación</span>
             </button>
             <button type="button" class="admin-tab-btn" data-tab="tab-drivers">
                 <span class="admin-tab-icon">🏎️</span>
-                <span class="admin-tab-title">Pilotos &amp; Equipos</span>
+                <span class="admin-tab-title" id="adminTabDriversTitle">Pilotos &amp; Equipos</span>
                 <span class="admin-tab-pill-badge" id="adminTabDriversBadge">44</span>
             </button>
             <button type="button" class="admin-tab-btn" data-tab="tab-verify">
                 <span class="admin-tab-icon">🔑</span>
-                <span class="admin-tab-title">Verificación de Pilotos</span>
+                <span class="admin-tab-title" id="adminTabVerifyTitle">Verificación de Pilotos</span>
                 <span class="admin-tab-pill-badge admin-tab-badge-gold" id="adminTabVerifyBadge">0</span>
             </button>
             <button type="button" class="admin-tab-btn" data-tab="tab-news">
                 <span class="admin-tab-icon">📰</span>
-                <span class="admin-tab-title">Gestión de Noticias</span>
+                <span class="admin-tab-title" id="adminTabNewsTitle">Gestión de Noticias</span>
                 <span class="admin-tab-pill-badge admin-tab-badge-gold" id="adminTabNewsBadge">0</span>
             </button>
             <button type="button" class="admin-tab-btn" data-tab="tab-photos">
                 <span class="admin-tab-icon">📸</span>
-                <span class="admin-tab-title">Moderación de Fotos</span>
+                <span class="admin-tab-title" id="adminTabPhotosTitle">Moderación de Fotos</span>
                 <span class="admin-tab-pill-badge admin-tab-badge-gold" id="adminTabPhotosBadge">0</span>
             </button>
             <button type="button" class="admin-tab-btn" data-tab="tab-settings">
                 <span class="admin-tab-icon">⚙️</span>
-                <span class="admin-tab-title">Ajustes Generales</span>
+                <span class="admin-tab-title" id="adminTabSettingsTitle">Ajustes Generales</span>
             </button>
         </nav>
 
@@ -3260,9 +3258,9 @@
             <!-- TAB: MODERACIÓN DE FOTOS -->
             <div class="admin-tab-pane" id="tab-photos">
                 <div class="admin-tab-intro">
-                    <div class="admin-card-badge">MODERACIÓN &bull; GALERÍA FFC</div>
-                    <h3>MODERACIÓN DE FOTOS DE LA COMUNIDAD</h3>
-                    <p class="admin-field-hint">
+                    <div class="admin-card-badge" id="adminPhotoBadge">MODERACIÓN &bull; GALERÍA FFC</div>
+                    <h3 id="adminPhotoHeading">MODERACIÓN DE FOTOS DE LA COMUNIDAD</h3>
+                    <p class="admin-field-hint" id="adminPhotoDesc">
                         Revisa, previsualiza, aprueba o rechaza las fotografías subidas por los pilotos antes de que aparezcan en la galería pública.
                     </p>
                 </div>
@@ -3664,63 +3662,7 @@
 </div>
 
 
-<!-- =========================================================
-     GOOGLE SHEETS EXPORT MODAL
-========================================================= -->
-<div class="user-auth-overlay" id="googleSheetsModalOverlay" aria-hidden="true" style="display: none;">
-    <div class="privacy-modal-card sheets-modal-card">
-        <button class="admin-modal-close-btn" id="sheetsModalClose" aria-label="Cerrar modal de Google Sheets">&times;</button>
-        
-        <header class="privacy-modal-header">
-            <div class="privacy-badge">FFC // GOOGLE WORKSPACE INTEGRATION</div>
-            <h2 class="privacy-title">EXPORTAR A GOOGLE SHEETS</h2>
-            <p class="privacy-subtitle">Sincroniza las clasificaciones del campeonato y resultados con una hoja de cálculo</p>
-        </header>
 
-        <div class="privacy-modal-body" style="text-align: center; padding: 20px 0;">
-            <div id="sheetsAuthSection" style="margin-bottom: 20px;">
-                <p style="color: #cbd5e1; font-size: 13.5px; margin-bottom: 16px;">
-                    Conecta tu cuenta de Google para exportar automáticamente los datos oficiales del campeonato a una nueva Google Sheet en tu Drive.
-                </p>
-                <button type="button" class="gsi-material-button" id="googleSheetsSignInBtn" style="margin: 0 auto; display: inline-flex;">
-                    <div class="gsi-material-button-state"></div>
-                    <div class="gsi-material-button-content-wrapper">
-                        <div class="gsi-material-button-icon">
-                            <svg version="1.1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" style="display: block; width: 18px; height: 18px;">
-                                <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"></path>
-                                <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"></path>
-                                <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"></path>
-                                <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"></path>
-                                <path fill="none" d="M0 0h48v48H0z"></path>
-                            </svg>
-                        </div>
-                        <span class="gsi-material-button-contents">Sign in with Google</span>
-                    </div>
-                </button>
-            </div>
-
-            <div id="sheetsActionSection" style="display: none;">
-                <div id="sheetsUserBadge" style="font-size: 13px; color: #86efac; margin-bottom: 14px;"></div>
-                <button type="button" class="btn btn-primary" id="exportToSheetsBtn" style="padding: 10px 24px; font-size: 14px;">
-                    📊 Crear y Exportar a Google Sheets
-                </button>
-            </div>
-
-            <div id="sheetsStatusMsg" style="margin-top: 16px; font-size: 13px; color: #94a3b8;"></div>
-
-            <div id="sheetsResultContainer" style="display: none; margin-top: 16px; background: rgba(74, 222, 128, 0.1); border: 1px solid rgba(74, 222, 128, 0.3); border-radius: 8px; padding: 14px;">
-                <p style="color: #4ade80; font-weight: 600; margin-bottom: 8px;">¡Hoja de cálculo creada con éxito!</p>
-                <a id="sheetsOpenLink" href="#" target="_blank" rel="noopener noreferrer" class="btn btn-secondary btn-sm" style="display: inline-flex; align-items: center; gap: 6px;">
-                    🔗 Abrir Google Sheet en Google Drive
-                </a>
-            </div>
-        </div>
-
-        <footer class="privacy-modal-footer">
-            <button type="button" class="btn btn-secondary" id="sheetsModalCloseBtn">Cerrar</button>
-        </footer>
-    </div>
-</div>
 
 
 <!-- =========================================================
