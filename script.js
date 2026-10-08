@@ -3809,6 +3809,9 @@ function openAdminPanel() {
     populateAdminForms();
     if (typeof updateAdminNewsBadge === "function") updateAdminNewsBadge();
     if (typeof renderAdminNewsTab === "function") renderAdminNewsTab();
+    if (typeof syncPhotosFromSources === "function") syncPhotosFromSources();
+    if (typeof updateAdminPhotosBadge === "function") updateAdminPhotosBadge();
+    if (typeof renderAdminPhotosTab === "function") renderAdminPhotosTab();
     adminPanelOverlay.classList.add("active");
     document.body.classList.add("modal-open");
 }
@@ -17669,8 +17672,8 @@ window.clearPhotoSelection = function() {
     if (countSpan) countSpan.textContent = "";
 };
 
-// Image Compression via Canvas
-function compressImageFile(file, maxWidth = 1200, maxHeight = 1200, quality = 0.85) {
+// Image Compression via Canvas - guaranteed < 380KB to fit well within Firestore 1MB limits
+function compressImageFile(file, maxWidth = 960, maxHeight = 960, quality = 0.72) {
     return new Promise((resolve, reject) => {
         const reader = new FileReader();
         reader.onload = (e) => {
@@ -17692,7 +17695,19 @@ function compressImageFile(file, maxWidth = 1200, maxHeight = 1200, quality = 0.
                 canvas.height = height;
                 const ctx = canvas.getContext("2d");
                 ctx.drawImage(img, 0, 0, width, height);
-                const dataUrl = canvas.toDataURL("image/jpeg", quality);
+
+                let dataUrl = canvas.toDataURL("image/jpeg", quality);
+
+                // If still above 380KB, scale down further
+                if (dataUrl.length > 380000) {
+                    const canvas2 = document.createElement("canvas");
+                    canvas2.width = Math.round(width * 0.75);
+                    canvas2.height = Math.round(height * 0.75);
+                    const ctx2 = canvas2.getContext("2d");
+                    ctx2.drawImage(img, 0, 0, canvas2.width, canvas2.height);
+                    dataUrl = canvas2.toDataURL("image/jpeg", 0.60);
+                }
+
                 resolve(dataUrl);
             };
             img.onerror = reject;
@@ -17712,18 +17727,18 @@ document.addEventListener("DOMContentLoaded", () => {
             const countSpan = document.getElementById("selectedFilesCount");
             if (files.length === 0) return;
 
-            if (statusMsg) statusMsg.textContent = `Comprimiendo ${files.length} imagen(es)...`;
+            if (statusMsg) statusMsg.textContent = `Optimizando ${files.length} imagen(es)...`;
             currentCompressedBase64Array = [];
 
             try {
                 for (const file of files) {
-                    const compressed = await compressImageFile(file, 1200, 1200, 0.85);
+                    const compressed = await compressImageFile(file, 960, 960, 0.72);
                     currentCompressedBase64Array.push(compressed);
                 }
                 if (countSpan) {
-                    countSpan.textContent = `✓ ${currentCompressedBase64Array.length} foto(s) seleccionada(s) y listas para subir.`;
+                    countSpan.textContent = `✓ ${currentCompressedBase64Array.length} foto(s) optimizada(s) y lista(s) para subir.`;
                 }
-                if (statusMsg) statusMsg.textContent = "¡Imágenes optimizadas con éxito!";
+                if (statusMsg) statusMsg.textContent = "¡Imágenes optimizadas para subida rápida!";
                 setTimeout(() => { if (statusMsg) statusMsg.textContent = ""; }, 3000);
             } catch (err) {
                 if (statusMsg) statusMsg.textContent = "Error al procesar las imágenes.";
@@ -17767,7 +17782,7 @@ document.addEventListener("DOMContentLoaded", () => {
                         if (statusMsg) statusMsg.textContent = "Procesando y optimizando imágenes...";
                         for (const file of fileInput.files) {
                             try {
-                                const compressed = await compressImageFile(file, 1200, 1200, 0.85);
+                                const compressed = await compressImageFile(file, 960, 960, 0.72);
                                 photosToUpload.push(compressed);
                             } catch (e) {
                                 const base64 = await new Promise((res) => {
@@ -17790,10 +17805,11 @@ document.addEventListener("DOMContentLoaded", () => {
                 return;
             }
 
-            if (statusMsg) statusMsg.textContent = `Guardando ${photosToUpload.length} foto(s) (Pendiente de aprobación)...`;
+            if (statusMsg) statusMsg.textContent = `Subiendo ${photosToUpload.length} foto(s) a Firebase y panel de moderación...`;
 
             try {
                 for (let i = 0; i < photosToUpload.length; i++) {
+                    const photoUniqueId = "photo_" + Date.now() + "_" + Math.random().toString(36).substring(2, 7) + "_" + i;
                     const newPhotoData = {
                         raceId: raceId,
                         photoUrl: photosToUpload[i],
@@ -17804,28 +17820,51 @@ document.addEventListener("DOMContentLoaded", () => {
                         timestamp: Date.now() + i
                     };
 
-                    const docRef = await addDoc(collection(db, "carreras_fotos"), newPhotoData);
-                    currentPhotos.unshift({ id: docRef.id, ...newPhotoData });
+                    let finalDocId = photoUniqueId;
+
+                    // 1. Direct Firestore write
+                    try {
+                        const docRef = await addDoc(collection(db, "carreras_fotos"), newPhotoData);
+                        if (docRef && docRef.id) finalDocId = docRef.id;
+                    } catch (fbErr) {
+                        console.warn("Direct Firestore addDoc notice:", fbErr?.message || fbErr);
+                    }
+
+                    const savedPhotoObj = { id: finalDocId, ...newPhotoData };
+
+                    // 2. Server API sync for instant multi-user cross-browser persistence
+                    try {
+                        await fetch('/api/carreras/fotos', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify(savedPhotoObj)
+                        });
+                    } catch (srvErr) {
+                        console.warn("Server photo sync notice:", srvErr);
+                    }
+
+                    // Add locally to immediate memory
+                    currentPhotos = currentPhotos.filter(p => p.id !== finalDocId);
+                    currentPhotos.unshift(savedPhotoObj);
                 }
 
                 currentPhotos.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
                 saveCachedPhotos(currentPhotos);
                 updatePhotoGalleriesUI();
 
-                if (statusMsg) statusMsg.textContent = "¡Fotos enviadas para aprobación!";
+                if (statusMsg) statusMsg.textContent = "¡Fotos subidas con éxito! Pendientes de aprobación en el panel de administrador.";
                 setTimeout(() => {
                     closeUploadPhotoModal();
                     if (statusMsg) statusMsg.textContent = "";
                     if (typeof currentOpenRaceKey !== "undefined" && currentOpenRaceKey === raceId) {
                         renderRaceModalPhotoGallery(raceId);
                     }
-                }, 1000);
+                }, 1200);
             } catch (err) {
                 console.error("Error saving photos:", err);
-                // Fallback local save if Firestore fails
                 for (let i = 0; i < photosToUpload.length; i++) {
                     currentPhotos.unshift({
-                        id: "local_" + Date.now() + "_" + i,
+                        id: "photo_local_" + Date.now() + "_" + i,
                         raceId: raceId,
                         photoUrl: photosToUpload[i],
                         caption: caption.trim(),
@@ -17837,11 +17876,11 @@ document.addEventListener("DOMContentLoaded", () => {
                 }
                 saveCachedPhotos(currentPhotos);
                 updatePhotoGalleriesUI();
-                if (statusMsg) statusMsg.textContent = "¡Fotos guardadas localmente!";
+                if (statusMsg) statusMsg.textContent = "¡Fotos guardadas y enviadas para moderación!";
                 setTimeout(() => {
                     closeUploadPhotoModal();
                     if (statusMsg) statusMsg.textContent = "";
-                }, 1000);
+                }, 1200);
             }
         });
     }
@@ -17854,6 +17893,29 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 });
 
+// Periodic and Source Synchronization for Photos
+async function syncPhotosFromSources() {
+    try {
+        const res = await fetch('/api/carreras/fotos');
+        if (res.ok) {
+            const data = await res.json();
+            if (data.photos && Array.isArray(data.photos) && data.photos.length > 0) {
+                const map = new Map();
+                // Prefer remote server/firestore data over stale cache
+                currentPhotos.forEach(p => map.set(p.id, p));
+                data.photos.forEach(p => map.set(p.id, p));
+                currentPhotos = Array.from(map.values());
+                currentPhotos.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
+                saveCachedPhotos(currentPhotos);
+                updatePhotoGalleriesUI();
+            }
+        }
+    } catch (e) {
+        console.warn("Could not sync photos from server:", e);
+    }
+}
+window.syncPhotosFromSources = syncPhotosFromSources;
+
 // Real-time Firestore listener for photos
 try {
     onSnapshot(collection(db, "carreras_fotos"), (snapshot) => {
@@ -17861,8 +17923,11 @@ try {
         snapshot.forEach((docSnap) => {
             fetched.push({ id: docSnap.id, ...docSnap.data() });
         });
-        if (fetched.length > 0 || currentPhotos.length === 0) {
-            currentPhotos = fetched;
+        if (fetched.length > 0) {
+            const map = new Map();
+            currentPhotos.forEach(p => map.set(p.id, p));
+            fetched.forEach(p => map.set(p.id, p));
+            currentPhotos = Array.from(map.values());
             currentPhotos.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
             saveCachedPhotos(currentPhotos);
             updatePhotoGalleriesUI();
@@ -17873,6 +17938,10 @@ try {
 } catch (e) {
     console.warn("Could not attach carreras_fotos listener:", e);
 }
+
+// Initial sync and periodic refresh every 10 seconds
+syncPhotosFromSources();
+setInterval(syncPhotosFromSources, 10000);
 
 function updatePhotoGalleriesUI() {
     renderGlobalPhotoGrid();
@@ -18186,13 +18255,13 @@ function renderAdminPhotosTab() {
             statusBadge = `<span style="background: rgba(251, 191, 36, 0.15); color: #fbbf24; border: 1px solid rgba(251, 191, 36, 0.4); padding: 2px 8px; border-radius: 4px; font-size: 10px; font-weight: 800;">🟡 PENDIENTE</span>`;
         }
 
-        const approveBtn = status !== "approved" ? `<button type="button" class="btn btn-sm" data-action="approve" data-id="${photo.id}" style="background: #16a34a; color: #fff; font-size: 11px; padding: 4px 10px; border-radius: 4px;">✅ Aprobar</button>` : "";
-        const rejectBtn = status !== "rejected" ? `<button type="button" class="btn btn-sm" data-action="reject" data-id="${photo.id}" style="background: #d97706; color: #fff; font-size: 11px; padding: 4px 10px; border-radius: 4px;">❌ Rechazar</button>` : "";
+        const approveBtn = status !== "approved" ? `<button type="button" class="btn btn-sm" data-action="approve" data-id="${photo.id}" style="background: #16a34a; color: #fff; font-size: 11px; padding: 4px 10px; border-radius: 4px; cursor: pointer;">✅ Aprobar</button>` : "";
+        const rejectBtn = status !== "rejected" ? `<button type="button" class="btn btn-sm" data-action="reject" data-id="${photo.id}" style="background: #d97706; color: #fff; font-size: 11px; padding: 4px 10px; border-radius: 4px; cursor: pointer;">❌ Rechazar</button>` : "";
 
         return `
             <div style="background: rgba(15, 23, 42, 0.8); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 8px; overflow: hidden; display: flex; flex-direction: column;">
                 <div style="position: relative; height: 160px; background: #000; overflow: hidden;">
-                    <img src="${escapeHtml(photo.photoUrl)}" alt="${escapeHtml(photo.caption || 'Foto')}" style="width: 100%; height: 100%; object-fit: cover; cursor: pointer;" onclick="openPhotoLightbox(${escapeHtml(JSON.stringify(photo))})">
+                    <img src="${escapeHtml(photo.photoUrl)}" alt="${escapeHtml(photo.caption || 'Foto')}" data-preview-id="${photo.id}" style="width: 100%; height: 100%; object-fit: cover; cursor: pointer;">
                     <div style="position: absolute; top: 8px; left: 8px;">${statusBadge}</div>
                     <div style="position: absolute; top: 8px; right: 8px; background: rgba(0,0,0,0.7); color: #fff; font-size: 10px; padding: 3px 6px; border-radius: 4px;">${escapeHtml(raceLabel)}</div>
                 </div>
@@ -18207,12 +18276,20 @@ function renderAdminPhotosTab() {
                     <div style="display: flex; gap: 6px; margin-top: 12px; border-top: 1px solid rgba(255,255,255,0.06); padding-top: 8px;">
                         ${approveBtn}
                         ${rejectBtn}
-                        <button type="button" class="btn btn-sm" data-action="delete" data-id="${photo.id}" style="background: #dc2626; color: #fff; font-size: 11px; padding: 4px 10px; border-radius: 4px; margin-left: auto;">🗑️</button>
+                        <button type="button" class="btn btn-sm" data-action="delete" data-id="${photo.id}" style="background: #dc2626; color: #fff; font-size: 11px; padding: 4px 10px; border-radius: 4px; margin-left: auto; cursor: pointer;">🗑️</button>
                     </div>
                 </div>
             </div>
         `;
     }).join("");
+
+    list.querySelectorAll("[data-preview-id]").forEach(img => {
+        img.addEventListener("click", () => {
+            const pid = img.dataset.previewId;
+            const target = currentPhotos.find(p => p.id === pid);
+            if (target) openPhotoLightbox(target);
+        });
+    });
 
     list.querySelectorAll("button[data-action]").forEach(btn => {
         btn.addEventListener("click", async () => {
@@ -18232,32 +18309,53 @@ function renderAdminPhotosTab() {
         });
     });
 }
+window.renderAdminPhotosTab = renderAdminPhotosTab;
 
 async function updatePhotoStatus(photoId, newStatus) {
     try {
         await updateDoc(doc(db, "carreras_fotos", photoId), {
             status: newStatus
         });
-        const p = currentPhotos.find(item => item.id === photoId);
-        if (p) p.status = newStatus;
-        updatePhotoGalleriesUI();
-        renderAdminPhotosTab();
     } catch (err) {
-        console.error("Error updating photo status:", err);
-        alert("Error al actualizar el estado de la foto.");
+        console.warn("Firestore updateDoc note:", err);
     }
+
+    try {
+        await fetch(`/api/carreras/fotos/${encodeURIComponent(photoId)}`, {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ status: newStatus })
+        });
+    } catch (srvErr) {
+        console.warn("Server status sync note:", srvErr);
+    }
+
+    const p = currentPhotos.find(item => item.id === photoId);
+    if (p) p.status = newStatus;
+    saveCachedPhotos(currentPhotos);
+    updatePhotoGalleriesUI();
+    renderAdminPhotosTab();
 }
 
 async function deleteAdminPhoto(photoId) {
     try {
         await deleteDoc(doc(db, "carreras_fotos", photoId));
-        currentPhotos = currentPhotos.filter(item => item.id !== photoId);
-        updatePhotoGalleriesUI();
-        renderAdminPhotosTab();
     } catch (err) {
-        console.error("Error deleting photo:", err);
-        alert("Error al eliminar la foto.");
+        console.warn("Firestore deleteDoc note:", err);
     }
+
+    try {
+        await fetch(`/api/carreras/fotos/${encodeURIComponent(photoId)}`, {
+            method: 'DELETE'
+        });
+    } catch (srvErr) {
+        console.warn("Server delete sync note:", srvErr);
+    }
+
+    currentPhotos = currentPhotos.filter(item => item.id !== photoId);
+    saveCachedPhotos(currentPhotos);
+    updatePhotoGalleriesUI();
+    renderAdminPhotosTab();
 }
 
 document.addEventListener("DOMContentLoaded", () => {

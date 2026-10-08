@@ -10,7 +10,8 @@ const __dirname = path.dirname(__filename);
 const app = express();
 const PORT = 3000;
 
-app.use(express.json());
+app.use(express.json({ limit: '50mb' }));
+app.use(express.urlencoded({ extended: true, limit: '50mb' }));
 app.use((req, res, next) => {
   res.setHeader('X-Content-Type-Options', 'nosniff');
   if (req.path.startsWith('/api/') || req.path.endsWith('.js') || req.path.endsWith('.html') || req.path.endsWith('.css') || req.path === '/') {
@@ -275,6 +276,163 @@ app.get('/api/live-timing', async (req, res) => {
   } catch (err) {
     return res.json({ success: false, endpoint, url: targetUrl, error: err.message });
   }
+});
+
+const PHOTOS_FILE = path.join(__dirname, 'photos_db.json');
+
+function getPhotos() {
+  try {
+    if (fs.existsSync(PHOTOS_FILE)) {
+      const data = fs.readFileSync(PHOTOS_FILE, 'utf8');
+      return JSON.parse(data);
+    }
+  } catch (e) {
+    console.error('Error reading photos file:', e);
+  }
+  return [];
+}
+
+function savePhotos(photos) {
+  try {
+    fs.writeFileSync(PHOTOS_FILE, JSON.stringify(photos, null, 2), 'utf8');
+  } catch (e) {
+    console.error('Error saving photos file:', e);
+  }
+}
+
+async function mirrorPhotoToFirestore(photo) {
+  try {
+    if (!photo || !photo.id) return;
+    const firestoreUrl = `https://firestore.googleapis.com/v1/projects/formula-factor/databases/(default)/documents/carreras_fotos/${photo.id}?key=AIzaSyAS4RecsGAS4JWUn1d-9_VyqFRKmkF_CNs`;
+    const docBody = {
+      fields: {
+        raceId: { stringValue: String(photo.raceId || 'barcelona_test') },
+        photoUrl: { stringValue: String(photo.photoUrl || '') },
+        caption: { stringValue: String(photo.caption || '') },
+        author: { stringValue: String(photo.author || 'Piloto FFC') },
+        status: { stringValue: String(photo.status || 'pending') },
+        createdAt: { stringValue: String(photo.createdAt || '') },
+        timestamp: { integerValue: String(photo.timestamp || Date.now()) }
+      }
+    };
+    await fetch(firestoreUrl, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(docBody)
+    });
+  } catch (err) {
+    console.warn('Could not mirror photo to Firestore:', err.message);
+  }
+}
+
+async function deletePhotoFromFirestore(photoId) {
+  try {
+    if (!photoId) return;
+    const firestoreUrl = `https://firestore.googleapis.com/v1/projects/formula-factor/databases/(default)/documents/carreras_fotos/${photoId}?key=AIzaSyAS4RecsGAS4JWUn1d-9_VyqFRKmkF_CNs`;
+    await fetch(firestoreUrl, { method: 'DELETE' });
+  } catch (err) {
+    console.warn('Could not delete photo from Firestore:', err.message);
+  }
+}
+
+app.get('/api/carreras/fotos', async (req, res) => {
+  let photos = getPhotos();
+  try {
+    const firestoreUrl = `https://firestore.googleapis.com/v1/projects/formula-factor/databases/(default)/documents/carreras_fotos?key=AIzaSyAS4RecsGAS4JWUn1d-9_VyqFRKmkF_CNs`;
+    const fRes = await fetch(firestoreUrl);
+    if (fRes.ok) {
+      const fData = await fRes.json();
+      if (fData.documents && Array.isArray(fData.documents)) {
+        let changed = false;
+        fData.documents.forEach(doc => {
+          const docId = doc.name.split('/').pop();
+          const fields = doc.fields || {};
+          const exists = photos.find(p => p.id === docId);
+          const photoObj = {
+            id: docId,
+            raceId: fields.raceId?.stringValue || 'barcelona_test',
+            photoUrl: fields.photoUrl?.stringValue || '',
+            caption: fields.caption?.stringValue || '',
+            author: fields.author?.stringValue || 'Piloto FFC',
+            status: fields.status?.stringValue || 'pending',
+            createdAt: fields.createdAt?.stringValue || '',
+            timestamp: parseInt(fields.timestamp?.integerValue || Date.now(), 10)
+          };
+          if (!exists) {
+            photos.push(photoObj);
+            changed = true;
+          } else if (exists.status !== photoObj.status) {
+            exists.status = photoObj.status;
+            changed = true;
+          }
+        });
+        if (changed) {
+          savePhotos(photos);
+        }
+      }
+    }
+  } catch (e) {}
+  photos.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
+  return res.json({ success: true, photos });
+});
+
+app.post('/api/carreras/fotos', async (req, res) => {
+  const photo = req.body;
+  if (!photo || (!photo.photoUrl && !photo.url)) {
+    return res.status(400).json({ error: 'Missing photo data' });
+  }
+
+  const photos = getPhotos();
+  const photoId = photo.id || ('photo_' + Date.now() + '_' + Math.random().toString(36).substring(2, 7));
+  const newEntry = {
+    id: photoId,
+    raceId: photo.raceId || 'barcelona_test',
+    photoUrl: photo.photoUrl || photo.url,
+    caption: (photo.caption || '').trim(),
+    author: (photo.author || 'Piloto FFC').trim(),
+    status: photo.status || 'pending',
+    createdAt: photo.createdAt || new Date().toLocaleString(),
+    timestamp: photo.timestamp || Date.now()
+  };
+
+  const idx = photos.findIndex(p => p.id === photoId);
+  if (idx >= 0) {
+    photos[idx] = { ...photos[idx], ...newEntry };
+  } else {
+    photos.unshift(newEntry);
+  }
+
+  savePhotos(photos);
+  mirrorPhotoToFirestore(newEntry);
+
+  return res.json({ success: true, photo: newEntry, total: photos.length });
+});
+
+app.patch('/api/carreras/fotos/:id', async (req, res) => {
+  const photoId = req.params.id;
+  const { status, caption } = req.body || {};
+  const photos = getPhotos();
+  const idx = photos.findIndex(p => p.id === photoId);
+  if (idx >= 0) {
+    if (status !== undefined) photos[idx].status = status;
+    if (caption !== undefined) photos[idx].caption = caption;
+    savePhotos(photos);
+    mirrorPhotoToFirestore(photos[idx]);
+    return res.json({ success: true, photo: photos[idx] });
+  }
+  return res.status(404).json({ error: 'Photo not found' });
+});
+
+app.delete('/api/carreras/fotos/:id', async (req, res) => {
+  const photoId = req.params.id;
+  let photos = getPhotos();
+  const initialLen = photos.length;
+  photos = photos.filter(p => p.id !== photoId);
+  if (photos.length !== initialLen) {
+    savePhotos(photos);
+  }
+  deletePhotoFromFirestore(photoId);
+  return res.json({ success: true });
 });
 
 app.get('*', (req, res) => {

@@ -14204,7 +14204,7 @@ input[type="text"]:focus, input[type="email"]:focus, input[type="password"]:focu
     flex-wrap: wrap;
 }
 
-.admin-news-filter-btn {
+.admin-news-filter-btn, .admin-photos-filter-btn {
     background: rgba(255, 255, 255, 0.05);
     border: 1px solid rgba(255, 255, 255, 0.1);
     color: #a0aec0;
@@ -14219,12 +14219,12 @@ input[type="text"]:focus, input[type="email"]:focus, input[type="password"]:focu
     transition: all 0.2s ease;
 }
 
-.admin-news-filter-btn:hover {
+.admin-news-filter-btn:hover, .admin-photos-filter-btn:hover {
     background: rgba(255, 255, 255, 0.1);
     color: #fff;
 }
 
-.admin-news-filter-btn.active {
+.admin-news-filter-btn.active, .admin-photos-filter-btn.active {
     background: rgba(214, 180, 92, 0.15);
     border-color: var(--gold, #d6b45c);
     color: var(--gold-light, #f5e4a8);
