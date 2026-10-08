@@ -260,7 +260,14 @@ const LightPillar = ({
     const targetFPS = effectiveQuality === 'low' ? 30 : 60;
     const frameTime = 1000 / targetFPS;
 
+    let isPillarVisible = true;
+    let pillarObserver = null;
+
     const animate = currentTime => {
+      if (!isPillarVisible || document.hidden) {
+        rafRef.current = null;
+        return;
+      }
       if (!materialRef.current || !rendererRef.current || !sceneRef.current || !cameraRef.current) return;
 
       const deltaTime = currentTime - lastTime;
@@ -277,6 +284,42 @@ const LightPillar = ({
 
       rafRef.current = requestAnimationFrame(animate);
     };
+
+    if (typeof IntersectionObserver !== 'undefined') {
+      pillarObserver = new IntersectionObserver(entries => {
+        const wasVisible = isPillarVisible;
+        isPillarVisible = entries[0]?.isIntersecting && !document.hidden;
+        if (isPillarVisible && !wasVisible && !rafRef.current) {
+          lastTime = performance.now();
+          rafRef.current = requestAnimationFrame(animate);
+        } else if (!isPillarVisible && rafRef.current) {
+          cancelAnimationFrame(rafRef.current);
+          rafRef.current = null;
+        }
+      }, { threshold: 0.05 });
+      pillarObserver.observe(container);
+    }
+
+    const onPillarVisibilityChange = () => {
+      if (document.hidden) {
+        isPillarVisible = false;
+        if (rafRef.current) {
+          cancelAnimationFrame(rafRef.current);
+          rafRef.current = null;
+        }
+      } else {
+        const rect = container.getBoundingClientRect();
+        if (rect.bottom > 0 && rect.top < window.innerHeight) {
+          isPillarVisible = true;
+          if (!rafRef.current) {
+            lastTime = performance.now();
+            rafRef.current = requestAnimationFrame(animate);
+          }
+        }
+      }
+    };
+    document.addEventListener('visibilitychange', onPillarVisibilityChange);
+
     rafRef.current = requestAnimationFrame(animate);
 
     let resizeTimeout = null;
@@ -297,6 +340,8 @@ const LightPillar = ({
     window.addEventListener('resize', handleResize, { passive: true });
 
     return () => {
+      if (pillarObserver) pillarObserver.disconnect();
+      document.removeEventListener('visibilitychange', onPillarVisibilityChange);
       window.removeEventListener('resize', handleResize);
       if (interactive) {
         container.removeEventListener('mousemove', handleMouseMove);

@@ -269,12 +269,51 @@ export default function ShapeWaves({
       animId = requestAnimationFrame(render);
     }
 
+    let isVisible = true;
+    let observer = null;
+    if (typeof IntersectionObserver !== 'undefined') {
+      observer = new IntersectionObserver(entries => {
+        const wasVisible = isVisible;
+        isVisible = entries[0]?.isIntersecting && !document.hidden;
+        if (isVisible && !wasVisible && !animId) {
+          lastTime = performance.now();
+          animId = requestAnimationFrame(render);
+        } else if (!isVisible && animId) {
+          cancelAnimationFrame(animId);
+          animId = null;
+        }
+      }, { threshold: 0.05 });
+      observer.observe(canvas);
+    }
+
+    const onVisibilityChange = () => {
+      if (document.hidden) {
+        isVisible = false;
+        if (animId) {
+          cancelAnimationFrame(animId);
+          animId = null;
+        }
+      } else {
+        const rect = canvas.getBoundingClientRect();
+        if (rect.bottom > 0 && rect.top < window.innerHeight) {
+          isVisible = true;
+          if (!animId) {
+            lastTime = performance.now();
+            animId = requestAnimationFrame(render);
+          }
+        }
+      }
+    };
+    document.addEventListener('visibilitychange', onVisibilityChange);
+
     resize();
     window.addEventListener('resize', resize);
     window.addEventListener('pointermove', handlePointerMove, { passive: true });
     animId = requestAnimationFrame(render);
 
     return () => {
+      if (observer) observer.disconnect();
+      document.removeEventListener('visibilitychange', onVisibilityChange);
       cancelAnimationFrame(animId);
       window.removeEventListener('resize', resize);
       window.removeEventListener('pointermove', handlePointerMove);

@@ -291,12 +291,11 @@ const PHOTOS_FILE = path.join(__dirname, 'photos_db.json');
 let memoryPhotos = null;
 
 function getPhotos() {
-  if (memoryPhotos !== null) return memoryPhotos;
   try {
     if (fs.existsSync(PHOTOS_FILE)) {
       const data = fs.readFileSync(PHOTOS_FILE, 'utf8');
       memoryPhotos = JSON.parse(data);
-      return memoryPhotos;
+      return Array.isArray(memoryPhotos) ? memoryPhotos : [];
     }
   } catch (e) {
     console.error('Error reading photos file:', e);
@@ -306,8 +305,8 @@ function getPhotos() {
 }
 
 function savePhotos(photos) {
-  memoryPhotos = photos;
-  fs.writeFile(PHOTOS_FILE, JSON.stringify(photos, null, 2), 'utf8', (err) => {
+  memoryPhotos = Array.isArray(photos) ? photos : [];
+  fs.writeFile(PHOTOS_FILE, JSON.stringify(memoryPhotos, null, 2), 'utf8', (err) => {
     if (err) console.error('Error saving photos file:', err);
   });
 }
@@ -449,6 +448,37 @@ app.delete('/api/carreras/fotos/:id', async (req, res) => {
   }
   deletePhotoFromFirestore(photoId);
   return res.json({ success: true });
+});
+
+// News image upload endpoint - saves images to /news_uploads/ to keep Firestore documents lightweight
+app.post('/api/noticias/upload-image', (req, res) => {
+  const { dataUrl } = req.body || {};
+  if (!dataUrl || typeof dataUrl !== 'string') {
+    return res.status(400).json({ error: 'Missing image data' });
+  }
+
+  try {
+    const matches = dataUrl.match(/^data:image\/([a-zA-Z0-9+]+);base64,(.+)$/);
+    if (!matches) {
+      return res.status(400).json({ error: 'Invalid data URL format' });
+    }
+
+    const rawExt = matches[1].toLowerCase();
+    const ext = rawExt === 'jpeg' ? 'jpg' : (rawExt === 'png' ? 'png' : (rawExt === 'webp' ? 'webp' : 'jpg'));
+    const buffer = Buffer.from(matches[2], 'base64');
+    const filename = `news_${Date.now()}_${crypto.randomBytes(4).toString('hex')}.${ext}`;
+    const uploadDir = path.join(__dirname, 'news_uploads');
+    if (!fs.existsSync(uploadDir)) {
+      fs.mkdirSync(uploadDir, { recursive: true });
+    }
+    const filePath = path.join(uploadDir, filename);
+    fs.writeFileSync(filePath, buffer);
+
+    return res.json({ success: true, url: `/news_uploads/${filename}` });
+  } catch (err) {
+    console.error('Error saving news image:', err);
+    return res.status(500).json({ error: 'Failed to save news image' });
+  }
 });
 
 app.get('*', (req, res) => {

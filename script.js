@@ -15369,6 +15369,23 @@ window.handleArticleBodyImageUpload = function(event) {
     compressAndInsertBodyImage(file);
 };
 
+async function uploadNewsImageToServer(dataUrl) {
+    try {
+        const res = await fetch('/api/noticias/upload-image', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ dataUrl })
+        });
+        if (res.ok) {
+            const data = await res.json();
+            if (data.url) return data.url;
+        }
+    } catch (e) {
+        console.warn("Could not save news image to server, falling back to data URL:", e);
+    }
+    return dataUrl;
+}
+
 function compressAndInsertBodyImage(file) {
     if (!file || !file.type.startsWith("image/")) {
         const isEn = typeof currentLanguage !== "undefined" && currentLanguage === "en";
@@ -15379,7 +15396,7 @@ function compressAndInsertBodyImage(file) {
     const reader = new FileReader();
     reader.onload = function(e) {
         const img = new Image();
-        img.onload = function() {
+        img.onload = async function() {
             const maxDim = 960;
             let width = img.width;
             let height = img.height;
@@ -15396,13 +15413,22 @@ function compressAndInsertBodyImage(file) {
             canvas.width = width;
             canvas.height = height;
             const ctx = canvas.getContext("2d");
+            ctx.imageSmoothingEnabled = true;
+            ctx.imageSmoothingQuality = "high";
             ctx.drawImage(img, 0, 0, width, height);
-            const compressedDataUrl = canvas.toDataURL("image/jpeg", 0.84);
+
+            let compressedDataUrl = canvas.toDataURL("image/webp", 0.82);
+            if (!compressedDataUrl.startsWith("data:image/webp")) {
+                compressedDataUrl = canvas.toDataURL("image/jpeg", 0.82);
+            }
+
+            // Upload to server to keep Firestore documents lightweight
+            const finalImageUrl = await uploadNewsImageToServer(compressedDataUrl);
 
             const editor = getActiveNewsEditorCanvas();
             if (editor) {
                 editor.focus();
-                document.execCommand("insertImage", false, compressedDataUrl);
+                document.execCommand("insertImage", false, finalImageUrl);
                 const imgs = editor.querySelectorAll("img:not(.article-inline-img)");
                 imgs.forEach(i => i.classList.add("article-inline-img"));
                 syncEditorContent();
@@ -15574,8 +15600,8 @@ function compressAndSetCoverImage(file) {
     const reader = new FileReader();
     reader.onload = function(e) {
         const img = new Image();
-        img.onload = function() {
-            const maxDim = 1300;
+        img.onload = async function() {
+            const maxDim = 1280;
             let width = img.width;
             let height = img.height;
             if (width > maxDim || height > maxDim) {
@@ -15591,10 +15617,24 @@ function compressAndSetCoverImage(file) {
             canvas.width = width;
             canvas.height = height;
             const ctx = canvas.getContext("2d");
+            ctx.imageSmoothingEnabled = true;
+            ctx.imageSmoothingQuality = "high";
             ctx.drawImage(img, 0, 0, width, height);
-            const compressedDataUrl = canvas.toDataURL("image/jpeg", 0.85);
 
+            let compressedDataUrl = canvas.toDataURL("image/webp", 0.84);
+            if (!compressedDataUrl.startsWith("data:image/webp")) {
+                compressedDataUrl = canvas.toDataURL("image/jpeg", 0.84);
+            }
+
+            // Immediately show preview to user with local data
             setCoverImageSource(compressedDataUrl);
+
+            // Upload in background to server and store clean URL
+            const serverUrl = await uploadNewsImageToServer(compressedDataUrl);
+            const imageInput = document.getElementById("newsSubmitImage");
+            if (imageInput && serverUrl) {
+                imageInput.value = serverUrl;
+            }
             autoSaveDraft();
         };
         img.src = e.target.result;
@@ -17377,7 +17417,10 @@ function loadCachedPhotos() {
         const raw = localStorage.getItem("ffc_local_photos");
         if (raw) {
             const parsed = JSON.parse(raw);
-            if (Array.isArray(parsed)) return parsed;
+            if (Array.isArray(parsed)) {
+                // Purge any deleted legacy test photos
+                return parsed.filter(p => p && p.id && !p.id.startsWith("photo_1791441242956") && !p.id.startsWith("photo_1791442779749") && !p.id.startsWith("photo_1791444027699"));
+            }
         }
     } catch (e) {}
     return [];
@@ -17784,12 +17827,8 @@ async function syncPhotosFromSources() {
         const res = await fetch('/api/carreras/fotos');
         if (res.ok) {
             const data = await res.json();
-            if (data.photos && Array.isArray(data.photos) && data.photos.length > 0) {
-                const map = new Map();
-                // Prefer remote server/firestore data over stale cache
-                currentPhotos.forEach(p => map.set(p.id, p));
-                data.photos.forEach(p => map.set(p.id, p));
-                currentPhotos = Array.from(map.values());
+            if (data && Array.isArray(data.photos)) {
+                currentPhotos = data.photos;
                 currentPhotos.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
                 saveCachedPhotos(currentPhotos);
                 updatePhotoGalleriesUI();
@@ -17808,14 +17847,16 @@ try {
         snapshot.forEach((docSnap) => {
             fetched.push({ id: docSnap.id, ...docSnap.data() });
         });
-        if (fetched.length > 0) {
-            const map = new Map();
-            currentPhotos.forEach(p => map.set(p.id, p));
-            fetched.forEach(p => map.set(p.id, p));
-            currentPhotos = Array.from(map.values());
+        if (snapshot.size === 0 && (!currentPhotos || currentPhotos.length === 0)) {
+            // Already empty
+        } else if (snapshot.size > 0) {
+            currentPhotos = fetched;
             currentPhotos.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
             saveCachedPhotos(currentPhotos);
             updatePhotoGalleriesUI();
+        } else {
+            // Firestore has 0 documents, sync with server state
+            syncPhotosFromSources();
         }
     }, (error) => {
         console.warn("Error listening to carreras_fotos:", error);

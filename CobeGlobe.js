@@ -75,7 +75,22 @@ export function initCobeGlobe(containerId) {
     let phiOffset = 3.8;
     let thetaOffset = 0.15;
     let isPaused = false;
+    let isVisibleInViewport = true;
     let focusedCircuit = null;
+
+    const io = new IntersectionObserver((entries) => {
+        isVisibleInViewport = entries[0]?.isIntersecting && !document.hidden;
+    }, { threshold: 0.05 });
+    io.observe(container);
+
+    document.addEventListener("visibilitychange", () => {
+        if (document.hidden) {
+            isVisibleInViewport = false;
+        } else {
+            const rect = container.getBoundingClientRect();
+            isVisibleInViewport = rect.bottom > 0 && rect.top < window.innerHeight;
+        }
+    });
 
     const handlePointerDown = (e) => {
         pointerInteracting = { x: e.clientX, y: e.clientY };
@@ -184,6 +199,7 @@ export function initCobeGlobe(containerId) {
             markers: formattedMarkers,
             opacity: 0.95,
             onRender: (state) => {
+                if (!isVisibleInViewport) return;
                 if (!isPaused) {
                     phi += 0.0012; 
                     
