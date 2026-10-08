@@ -2350,7 +2350,7 @@ const defaultRaceResults = {
         pole: "IvánR · 1:20.843",
         fastest: "IvánR · 1:22.300",
         driverDay: "BigTheo",
-        replayUrl: "",
+        replayUrl: "https://www.youtube.com/watch?v=AYdKou7kdS8",
 
         drivers: [
 
@@ -2385,6 +2385,7 @@ const defaultRaceResults = {
         pole: "IvánR · 1:33.062",
         fastest: "IvánR · 1:33.662",
         driverDay: "IvánR",
+        replayUrl: "https://www.youtube.com/watch?v=cYTpQzHtOrs",
 
         drivers: [
 
@@ -2419,6 +2420,7 @@ const defaultRaceResults = {
         pole: "Dieguiosk · 1:29.938",
         fastest: "Dieguiosk · 1:30.946",
         driverDay: "Sbinn",
+        replayUrl: "https://www.youtube.com/watch?v=W5j-VQaJjhg",
 
         drivers: [
 
@@ -2457,6 +2459,7 @@ const defaultRaceResults = {
         pole: "Suforr · 1:25.843",
         fastest: "Novitaa · 1:27.846",
         driverDay: "Suforr",
+        replayUrl: "https://www.youtube.com/watch?v=Agsxp2u1KSc",
 
         drivers: [
 
@@ -2489,6 +2492,7 @@ const defaultRaceResults = {
         pole: "Dieguiosk · 1:14.578",
         fastest: "BigTheo · 1:17.346",
         driverDay: "Dieguiosk",
+        replayUrl: "https://www.youtube.com/watch?v=QtlnDNmD7S8",
 
         drivers: [
 
@@ -2522,6 +2526,7 @@ const defaultRaceResults = {
         pole: "Novitaa · 1:22.222",
         fastest: "Novitaa · 1:22.759",
         driverDay: "Novitaa",
+        replayUrl: "https://www.youtube.com/watch?v=vEV3irvtAiM",
 
         drivers: [
 
@@ -2556,6 +2561,7 @@ const defaultRaceResults = {
         pole: "Dieguiosk · 1:09.297",
         fastest: "Suforr · 1:09.619",
         driverDay: "Gold",
+        replayUrl: "https://www.youtube.com/watch?v=XdL21LJPJTo",
 
         drivers: [
 
@@ -2594,6 +2600,7 @@ const defaultRaceResults = {
         pole: "Novitaa · 1:28.943",
         fastest: "Dieguiosk · 1:30.468",
         driverDay: "Victor",
+        replayUrl: "https://www.youtube.com/watch?v=5l8w3KBOLgQ",
 
         drivers: [
 
@@ -2628,6 +2635,7 @@ const defaultRaceResults = {
         pole: "Novitaa · 1:14.751",
         fastest: "Suforr · 1:14.395",
         driverDay: "Dieguiosk",
+        replayUrl: "https://www.youtube.com/watch?v=eU1ciNDcuKg",
 
         drivers: [
 
@@ -2659,6 +2667,7 @@ const defaultRaceResults = {
         pole: "Novitaa · 1:29.326",
         fastest: "Novitaa · 1:29.547",
         driverDay: "Suforr",
+        replayUrl: "https://www.youtube.com/watch?v=WOl7kH5ac8A",
         drivers: [
             { pos: 1, driver: "Suforr", team: "Mercedes", grid: 3, status: "FINISHED" },
             { pos: 2, driver: "Dieguiosk", team: "HRT", grid: 5, status: "FINISHED" },
@@ -2685,6 +2694,7 @@ const defaultRaceResults = {
         pole: "Dieguiosk · 1:18.528",
         fastest: "Suforr · 1:19.458",
         driverDay: "TheWereGH",
+        replayUrl: "https://www.youtube.com/watch?v=kgdyds8paqQ",
         drivers: [
             { pos: 1, driver: "Dieguiosk", team: "HRT", grid: 1, status: "FINISHED" },
             { pos: 2, driver: "Licha", team: "Ferrari", grid: 7, status: "FINISHED" },
@@ -2757,17 +2767,17 @@ const defaultRaceResults = {
 let raceResults = { ...defaultRaceResults };
 
 const seasonRacesMeta = {
-    australia: { round: "ROUND 01", title: "AUSTRALIA", location: "MELBOURNE · AUSTRALIA", date: "14 JUN" },
-    malaysia: { round: "ROUND 02", title: "MALAYSIA", location: "SEPANG · MALAYSIA", date: "28 JUN" },
-    bahrain: { round: "ROUND 03", title: "BAHRAIN", location: "SAKHIR · BAHRAIN", date: "12 JUL" },
-    turkey: { round: "ROUND 04", title: "TURKEY", location: "ISTANBUL PARK · TURKEY", date: "19 JUL" },
-    spain: { round: "ROUND 05", title: "BARCELONA", location: "BARCELONA · SPAIN", date: "9 AUG" },
-    italy: { round: "ROUND 06", title: "MONZA", location: "MONZA · ITALY", date: "17 AUG" },
-    austria: { round: "ROUND 07", title: "AUSTRIA", location: "RED BULL RING · AUSTRIA", date: "23 AUG" },
-    silverstone: { round: "ROUND 08", title: "SILVERSTONE", location: "SILVERSTONE · UNITED KINGDOM", date: "7 SEP" },
-    hockenheim: { round: "ROUND 09", title: "HOCKENHEIM", location: "HOCKENHEIMRING · GERMANY", date: "13 SEP" },
-    nurburgring: { round: "ROUND 10", title: "NÜRBURGRING GP", location: "NÜRBURGRING · EUROPE", date: "20 SEP" },
-    hungary: { round: "ROUND 11", title: "HUNGARORING", location: "BUDAPEST · HUNGARY", date: "27 SEP" },
+    australia: { round: "ROUND 01", title: "AUSTRALIA", location: "MELBOURNE · AUSTRALIA", date: "14 JUN", replayUrl: "https://www.youtube.com/watch?v=AYdKou7kdS8" },
+    malaysia: { round: "ROUND 02", title: "MALAYSIA", location: "SEPANG · MALAYSIA", date: "28 JUN", replayUrl: "https://www.youtube.com/watch?v=cYTpQzHtOrs" },
+    bahrain: { round: "ROUND 03", title: "BAHRAIN", location: "SAKHIR · BAHRAIN", date: "12 JUL", replayUrl: "https://www.youtube.com/watch?v=W5j-VQaJjhg" },
+    turkey: { round: "ROUND 04", title: "TURKEY", location: "ISTANBUL PARK · TURKEY", date: "19 JUL", replayUrl: "https://www.youtube.com/watch?v=Agsxp2u1KSc" },
+    spain: { round: "ROUND 05", title: "BARCELONA", location: "BARCELONA · SPAIN", date: "9 AUG", replayUrl: "https://www.youtube.com/watch?v=QtlnDNmD7S8" },
+    italy: { round: "ROUND 06", title: "MONZA", location: "MONZA · ITALY", date: "17 AUG", replayUrl: "https://www.youtube.com/watch?v=vEV3irvtAiM" },
+    austria: { round: "ROUND 07", title: "AUSTRIA", location: "RED BULL RING · AUSTRIA", date: "23 AUG", replayUrl: "https://www.youtube.com/watch?v=XdL21LJPJTo" },
+    silverstone: { round: "ROUND 08", title: "GREAT BRITAIN", location: "SILVERSTONE · UNITED KINGDOM", date: "7 SEP", replayUrl: "https://www.youtube.com/watch?v=5l8w3KBOLgQ" },
+    hockenheim: { round: "ROUND 09", title: "HOCKENHEIM", location: "HOCKENHEIMRING · GERMANY", date: "13 SEP", replayUrl: "https://www.youtube.com/watch?v=eU1ciNDcuKg" },
+    nurburgring: { round: "ROUND 10", title: "NÜRBURGRING GP", location: "NÜRBURGRING · EUROPE", date: "20 SEP", replayUrl: "https://www.youtube.com/watch?v=WOl7kH5ac8A" },
+    hungary: { round: "ROUND 11", title: "HUNGARORING", location: "BUDAPEST · HUNGARY", date: "27 SEP", replayUrl: "https://www.youtube.com/watch?v=kgdyds8paqQ" },
     belgium: { round: "ROUND 12", title: "SPA-FRANCORCHAMPS", location: "SPA · BELGIUM", date: "04 OCT" },
     singapore: { round: "ROUND 13", title: "SINGAPORE", location: "MARINA BAY · SINGAPORE", date: "11 OCT" },
     cota: { round: "ROUND 14", title: "COTA", location: "AUSTIN · USA", date: "18 OCT" },
@@ -2896,18 +2906,22 @@ function refreshAllCalendarCards() {
 
         // Replay button on card if replayUrl exists
         let replayBtn = card.querySelector(".card-replay-btn");
-        if (rData && rData.replayUrl && rData.replayUrl.trim() !== "") {
+        const rUrl = (rData && rData.replayUrl && rData.replayUrl.trim() !== "") 
+            ? rData.replayUrl.trim() 
+            : (seasonRacesMeta[key]?.replayUrl || defaultRaceResults[key]?.replayUrl || "");
+
+        if (rUrl !== "") {
             if (!replayBtn) {
                 replayBtn = document.createElement("a");
                 replayBtn.className = "card-replay-btn";
                 replayBtn.target = "_blank";
                 replayBtn.rel = "noopener noreferrer";
                 replayBtn.setAttribute("aria-label", "Ver repetición de la carrera");
-                replayBtn.innerHTML = `<svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>`;
+                replayBtn.innerHTML = `<svg viewBox="0 0 24 24" width="12" height="12" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>`;
                 const header = card.querySelector(".calendar-card-header") || card;
                 header.appendChild(replayBtn);
             }
-            replayBtn.href = rData.replayUrl.trim();
+            replayBtn.href = rUrl;
             replayBtn.title = isEn ? "Watch race replay" : "Ver repetición de la carrera";
             replayBtn.onclick = (e) => { e.stopPropagation(); };
         } else if (replayBtn) {

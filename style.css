@@ -3532,14 +3532,14 @@ button {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 38px;
-    height: 30px;
+    width: 26px;
+    height: 22px;
     background: #e10600;
     color: #ffffff !important;
-    border-radius: 6px;
+    border-radius: 4px;
     text-decoration: none;
     transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-    box-shadow: 0 2px 8px rgba(225, 6, 0, 0.45);
+    box-shadow: 0 2px 6px rgba(225, 6, 0, 0.4);
     cursor: pointer;
     z-index: 5;
     flex-shrink: 0;
@@ -3548,14 +3548,14 @@ button {
 .card-replay-btn:hover {
     background: #ff120a;
     transform: scale(1.08);
-    box-shadow: 0 4px 14px rgba(225, 6, 0, 0.7);
+    box-shadow: 0 3px 10px rgba(225, 6, 0, 0.6);
 }
 
 .card-replay-btn svg {
-    width: 16px;
-    height: 16px;
+    width: 10px;
+    height: 10px;
     fill: #ffffff;
-    margin-left: 2px;
+    margin-left: 0;
 }
 
 .calendar-number {
