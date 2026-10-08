@@ -414,72 +414,105 @@ export function getRecommendedColumns() {
 export async function fetchUploadedPhotosForWall() {
   const publishedPhotos = [];
 
-  // 1. Fetch race photos from server endpoint (photos_db.json & synced Firestore)
+  const addPhotoIfValid = (p) => {
+    if (!p) return;
+    if (p.status === 'rejected') return;
+    const url = p.photoUrl || p.imageUrl || p.url || p.image;
+    // STRICT RULE: Only race/gallery photos, absolutely NO news images
+    if (url && typeof url === 'string' && !url.includes('/news_uploads/') && !url.includes('news_')) {
+      if (!publishedPhotos.some(existing => existing.image === url)) {
+        publishedPhotos.push({
+          image: url,
+          title: p.caption || p.title || (p.author ? `Foto por ${p.author}` : 'FFC Simracing'),
+          href: undefined
+        });
+      }
+    }
+  };
+
+  // 1. Instant cache from localStorage (works immediately without any network latency)
+  try {
+    if (typeof localStorage !== 'undefined') {
+      const cachedRaw = localStorage.getItem('ffc_local_photos');
+      if (cachedRaw) {
+        const cachedList = JSON.parse(cachedRaw);
+        if (Array.isArray(cachedList)) {
+          cachedList.forEach(addPhotoIfValid);
+        }
+      }
+    }
+  } catch (err) {}
+
+  // 2. Also check if window.currentPhotos has any in-memory photos
+  try {
+    if (typeof window !== 'undefined' && Array.isArray(window.currentPhotos)) {
+      window.currentPhotos.forEach(addPhotoIfValid);
+    }
+  } catch (err) {}
+
+  // 3. Fetch race photos from server endpoint (Studio dev server or Node backend)
+  let backendFetchSuccess = false;
   try {
     const res = await fetch('/api/carreras/fotos');
     if (res.ok) {
       const data = await res.json();
       if (data && Array.isArray(data.photos) && data.photos.length > 0) {
-        data.photos.forEach(p => {
-          if (p.status === 'rejected') return;
-          const url = p.photoUrl || p.imageUrl || p.url;
-          // STRICT RULE: Only race/gallery photos, absolutely NO news images
-          if (url && !url.includes('/news_uploads/') && !url.includes('news_')) {
-            if (!publishedPhotos.some(existing => existing.image === url)) {
-              publishedPhotos.push({
-                image: url,
-                title: p.caption || (p.author ? `Foto por ${p.author}` : 'FFC Simracing'),
-                href: undefined
-              });
-            }
-          }
-        });
+        data.photos.forEach(addPhotoIfValid);
+        backendFetchSuccess = true;
       }
     }
   } catch (err) {
-    console.warn('Could not fetch race photos for DriftWall:', err);
+    // Expected on static hosting like GitHub Pages
   }
 
-  // 2. Fetch from /api/gallery/random-wall-photos
+  // 4. If backend endpoint is not available or returned empty (e.g. GitHub Pages / static hosting),
+  // fallback to static photos_db.json file stored directly in the repository
+  if (!backendFetchSuccess) {
+    try {
+      const staticRes = await fetch('./photos_db.json');
+      if (staticRes.ok) {
+        const staticData = await staticRes.json();
+        const list = Array.isArray(staticData) ? staticData : (staticData.photos || []);
+        if (Array.isArray(list) && list.length > 0) {
+          list.forEach(addPhotoIfValid);
+        }
+      }
+    } catch (err) {}
+  }
+
+  // 5. Direct Firebase Firestore REST fallback (works 100% reliably anywhere without server)
   try {
-    const res = await fetch('/api/gallery/random-wall-photos');
-    if (res.ok) {
-      const data = await res.json();
-      if (data && Array.isArray(data.items) && data.items.length > 0) {
-        data.items.forEach(p => {
-          const url = p.image || p.url;
-          // STRICT RULE: Only race/gallery photos, absolutely NO news images
-          if (url && !url.includes('/news_uploads/') && !url.includes('news_')) {
-            if (!publishedPhotos.some(existing => existing.image === url)) {
-              publishedPhotos.push({
-                image: url,
-                title: p.title || 'Foto FFC Simracing',
-                href: undefined
-              });
-            }
+    const firestoreUrl = 'https://firestore.googleapis.com/v1/projects/formula-factor/databases/(default)/documents/carreras_fotos?pageSize=100&key=AIzaSyAS4RecsGAS4JWUn1d-9_VyqFRKmkF_CNs';
+    const fRes = await fetch(firestoreUrl);
+    if (fRes.ok) {
+      const fData = await fRes.json();
+      if (fData && Array.isArray(fData.documents)) {
+        fData.documents.forEach(doc => {
+          const fields = doc.fields || {};
+          const status = fields.status?.stringValue || 'pending';
+          if (status === 'rejected') return;
+          const photoUrl = fields.photoUrl?.stringValue || '';
+          if (photoUrl) {
+            addPhotoIfValid({
+              photoUrl,
+              caption: fields.caption?.stringValue || '',
+              author: fields.author?.stringValue || 'FFC Simracing',
+              status
+            });
           }
         });
       }
     }
   } catch (err) {}
 
-  // 3. Also check if window.currentPhotos has any client-side cached/uploaded photos
+  // 6. Fetch from /api/gallery/random-wall-photos if available
   try {
-    if (typeof window !== 'undefined' && Array.isArray(window.currentPhotos)) {
-      window.currentPhotos.forEach(p => {
-        if (p.status === 'rejected') return;
-        const url = p.photoUrl || p.imageUrl || p.url;
-        // STRICT RULE: Only race/gallery photos, absolutely NO news images
-        if (url && !url.includes('/news_uploads/') && !url.includes('news_')) {
-          if (!publishedPhotos.some(existing => existing.image === url)) {
-            publishedPhotos.push({
-              image: url,
-              title: p.caption || (p.author ? `Foto por ${p.author}` : 'FFC Simracing'),
-              href: undefined
-            });
-          }
-        }
-      });
+    const res = await fetch('/api/gallery/random-wall-photos');
+    if (res.ok) {
+      const data = await res.json();
+      if (data && Array.isArray(data.items) && data.items.length > 0) {
+        data.items.forEach(addPhotoIfValid);
+      }
     }
   } catch (err) {}
 

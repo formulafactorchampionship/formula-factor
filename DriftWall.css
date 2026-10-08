@@ -123,6 +123,15 @@
     0 0 0 2px rgba(255, 255, 255, 0.9);
 }
 
+@media (max-width: 640px) {
+  .drift-wall {
+    --dw-tile-w: 135px;
+    --dw-tile-h: 90px;
+    --dw-gap: 10px;
+    --dw-radius: 8px;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .drift-wall__plane,
   .drift-wall__track {

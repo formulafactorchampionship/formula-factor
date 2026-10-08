@@ -64,7 +64,7 @@ export function initCobeGlobe(containerId) {
     canvas.style.opacity = "0";
     canvas.style.transition = "opacity 1.2s ease";
     canvas.style.cursor = "grab";
-    canvas.style.touchAction = "none";
+    canvas.style.touchAction = "pan-y";
     canvas.style.borderRadius = "50%";
     container.appendChild(canvas);
 
