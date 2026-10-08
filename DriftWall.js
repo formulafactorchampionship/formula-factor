@@ -463,28 +463,24 @@ export async function fetchUploadedPhotosForWall() {
     }
   } catch (err) {}
 
-  // 3. Also check if localStorage or window.currentPhotos has published race photos
+  // 3. Also check if window.currentPhotos has any client-side cached/uploaded photos
   try {
-    const localRaw = typeof localStorage !== 'undefined' ? localStorage.getItem("ffc_local_photos") : null;
-    const localParsed = localRaw ? JSON.parse(localRaw) : [];
-    const pool = [
-      ...(Array.isArray(window?.currentPhotos) ? window.currentPhotos : []),
-      ...(Array.isArray(localParsed) ? localParsed : [])
-    ];
-    pool.forEach(p => {
-      if (!p || p.status === 'rejected') return;
-      const url = p.photoUrl || p.imageUrl || p.url;
-      // STRICT RULE: Only race/gallery photos, absolutely NO news images
-      if (url && !url.includes('/news_uploads/') && !url.includes('news_')) {
-        if (!publishedPhotos.some(existing => existing.image === url)) {
-          publishedPhotos.push({
-            image: url,
-            title: p.caption || (p.author ? `Foto por ${p.author}` : 'FFC Simracing'),
-            href: undefined
-          });
+    if (typeof window !== 'undefined' && Array.isArray(window.currentPhotos)) {
+      window.currentPhotos.forEach(p => {
+        if (p.status === 'rejected') return;
+        const url = p.photoUrl || p.imageUrl || p.url;
+        // STRICT RULE: Only race/gallery photos, absolutely NO news images
+        if (url && !url.includes('/news_uploads/') && !url.includes('news_')) {
+          if (!publishedPhotos.some(existing => existing.image === url)) {
+            publishedPhotos.push({
+              image: url,
+              title: p.caption || (p.author ? `Foto por ${p.author}` : 'FFC Simracing'),
+              href: undefined
+            });
+          }
         }
-      }
-    });
+      });
+    }
   } catch (err) {}
 
   // User explicit condition: "y que solo sean las fotos publicadas, no las de las noticias"
