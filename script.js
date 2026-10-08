@@ -17231,157 +17231,14 @@ window.rejectNewsArticle = rejectNewsArticle;
 window.renderAdminNewsTab = renderAdminNewsTab;
 
 /* =========================================================
-   LIVE CHAT ROOM SYSTEM (FIREBASE REAL-TIME SYNC)
+   LIVE CHAT SYSTEM (DESACTIVADO - ESPACIO Y RECURSOS OPTIMIZADOS)
 ========================================================= */
-let chatUnsubscribe = null;
-
-function openLiveChatModal() {
-    const overlay = document.getElementById("liveChatModalOverlay");
-    if (!overlay) return;
-    overlay.classList.add("active");
-    overlay.style.display = "flex";
-    overlay.style.opacity = "1";
-    overlay.style.visibility = "visible";
-    overlay.setAttribute("aria-hidden", "false");
-    document.body.classList.add("modal-open");
-
-    const authorInput = document.getElementById("liveChatAuthorInput");
-    if (authorInput && !authorInput.value) {
-        const currentUser = LocalAuthStore.getCurrentUser();
-        if (currentUser && currentUser.displayName) {
-            authorInput.value = currentUser.displayName;
-        } else {
-            authorInput.value = "Aficionado FFC";
-        }
-    }
-
-    initLiveChatRealtime();
-}
-
-function closeLiveChatModal() {
-    const overlay = document.getElementById("liveChatModalOverlay");
-    if (!overlay) return;
-    overlay.classList.remove("active");
-    overlay.style.display = "none";
-    overlay.style.opacity = "0";
-    overlay.style.visibility = "hidden";
-    overlay.setAttribute("aria-hidden", "true");
-    document.body.classList.remove("modal-open");
-
-    if (chatUnsubscribe) {
-        chatUnsubscribe();
-        chatUnsubscribe = null;
-    }
-}
-
-function initLiveChatRealtime() {
-    if (chatUnsubscribe) return;
-
-    const chatColRef = collection(db, "chat_mensajes");
-    const q = query(chatColRef, orderBy("createdAt", "asc"), limit(150));
-
-    chatUnsubscribe = onSnapshot(q, (snapshot) => {
-        const messages = [];
-        snapshot.forEach(docSnap => {
-            messages.push({ id: docSnap.id, ...docSnap.data() });
-        });
-        renderLiveChatMessages(messages);
-    }, (error) => {
-        console.warn("Live chat snapshot error:", error);
-    });
-}
-
-function renderLiveChatMessages(messages) {
-    const listEl = document.getElementById("liveChatMessagesList");
-    if (!listEl) return;
-
-    if (messages.length === 0) {
-        listEl.innerHTML = `
-            <div style="text-align: center; color: #64748b; padding: 40px 0; font-size: 14px;">
-                💬 No hay mensajes en el chat todavía. ¡Sé el primero en saludar en directo!
-            </div>
-        `;
-        return;
-    }
-
-    listEl.innerHTML = messages.map(msg => {
-        const timeStr = msg.createdAt ? new Date(msg.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '';
-        const author = escapeHtml(msg.authorName || "Anónimo");
-        const text = escapeHtml(msg.text || "");
-        return `
-            <div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06); border-radius: 6px; padding: 10px 14px;">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
-                    <span style="font-weight: 800; font-size: 13px; color: #38bdf8;">${author}</span>
-                    <span style="font-size: 11px; color: #64748b;">${timeStr}</span>
-                </div>
-                <div style="font-size: 14px; color: #e2e8f0; word-break: break-word; line-height: 1.4;">${text}</div>
-            </div>
-        `;
-    }).join("");
-
-    listEl.scrollTop = listEl.scrollHeight;
-}
-
-async function handleLiveChatSubmit(e) {
-    e.preventDefault();
-    const authorInput = document.getElementById("liveChatAuthorInput");
-    const textInput = document.getElementById("liveChatTextInput");
-
-    const authorName = authorInput ? authorInput.value.trim() : "Aficionado FFC";
-    const text = textInput ? textInput.value.trim() : "";
-
-    if (!text) return;
-
-    const currentUser = LocalAuthStore.getCurrentUser();
-    const messagePayload = {
-        authorName: authorName || "Aficionado FFC",
-        authorEmail: currentUser ? currentUser.email : "",
-        authorUid: currentUser ? currentUser.uid : "",
-        text: text,
-        createdAt: new Date().toISOString()
-    };
-
-    if (textInput) textInput.value = "";
-
-    try {
-        await addDoc(collection(db, "chat_mensajes"), messagePayload);
-    } catch (err) {
-        console.warn("Error sending chat message to Firestore:", err);
-        alert("Error al enviar el mensaje al chat en vivo.");
-    }
-}
-
-function initLiveChatSystem() {
-    const navChat = document.getElementById("navChat");
-    if (navChat) {
-        navChat.addEventListener("click", (e) => {
-            e.preventDefault();
-            openLiveChatModal();
-        });
-    }
-
-    const sendForm = document.getElementById("liveChatSendForm");
-    if (sendForm) {
-        sendForm.addEventListener("submit", handleLiveChatSubmit);
-    }
-
-    const chatOverlay = document.getElementById("liveChatModalOverlay");
-    if (chatOverlay) {
-        chatOverlay.addEventListener("click", (e) => {
-            if (e.target === chatOverlay) closeLiveChatModal();
-        });
-    }
-}
-
-window.openLiveChatModal = openLiveChatModal;
-window.closeLiveChatModal = closeLiveChatModal;
 
 // Global initialization
 if (document.readyState === "loading") {
     document.addEventListener("DOMContentLoaded", () => {
         initNewsRealtimeSync();
         initNewsSystemEvents();
-        initLiveChatSystem();
         if (typeof lucide !== 'undefined' && lucide.createIcons) {
             lucide.createIcons();
         }
@@ -17389,7 +17246,6 @@ if (document.readyState === "loading") {
 } else {
     initNewsRealtimeSync();
     initNewsSystemEvents();
-    initLiveChatSystem();
     if (typeof lucide !== 'undefined' && lucide.createIcons) {
         lucide.createIcons();
     }
@@ -17616,6 +17472,13 @@ window.openUploadPhotoModal = function(preselectedRaceId = null) {
         document.body.classList.add("modal-open");
         populatePastRaceSelect(preselectedRaceId || currentOpenRaceKey || "");
         clearPhotoSelection();
+
+        const adminNotice = document.getElementById("uploadAdminNotice");
+        if (adminNotice) {
+            const u = typeof activeUserAuth !== "undefined" && activeUserAuth ? activeUserAuth : (typeof LocalAuthStore !== "undefined" ? LocalAuthStore.getCurrentUser() : null);
+            const isAdmin = typeof isUserAdmin === "function" && isUserAdmin(u);
+            adminNotice.style.display = isAdmin ? "block" : "none";
+        }
     }
 };
 
@@ -17675,46 +17538,66 @@ window.clearPhotoSelection = function() {
     if (countSpan) countSpan.textContent = "";
 };
 
-// Image Compression via Canvas - guaranteed < 380KB to fit well within Firestore 1MB limits
-function compressImageFile(file, maxWidth = 960, maxHeight = 960, quality = 0.72) {
+// High-fidelity image processor - PRESERVES PRISTINE QUALITY
+// If <= 850KB: Preserved 100% untouched without any canvas re-compression
+// If > 850KB: High-resolution (up to 2560px, 0.94 quality) to maintain extreme crispness while complying with Firestore 1MB doc limits
+function processImagePreservingQuality(file) {
     return new Promise((resolve, reject) => {
+        if (!file || !file.type.startsWith("image/")) {
+            return reject(new Error("Archivo no es una imagen válida"));
+        }
+
         const reader = new FileReader();
         reader.onload = (e) => {
+            const rawDataUrl = e.target.result;
+            // Files under 850KB are stored in full original quality with zero modifications
+            if (file.size <= 850 * 1024) {
+                return resolve(rawDataUrl);
+            }
+
+            // For larger camera/screenshot files, preserve crisp high-resolution 2560px
             const img = new Image();
             img.onload = () => {
                 let width = img.width;
                 let height = img.height;
-                if (width > maxWidth || height > maxHeight) {
-                    if (width / height > maxWidth / maxHeight) {
-                        height = Math.round((height * maxWidth) / width);
-                        width = maxWidth;
+                const maxDim = 2560;
+                if (width > maxDim || height > maxDim) {
+                    if (width > height) {
+                        height = Math.round((height * maxDim) / width);
+                        width = maxDim;
                     } else {
-                        width = Math.round((width * maxHeight) / height);
-                        height = maxHeight;
+                        width = Math.round((width * maxDim) / height);
+                        height = maxDim;
                     }
                 }
+
                 const canvas = document.createElement("canvas");
                 canvas.width = width;
                 canvas.height = height;
                 const ctx = canvas.getContext("2d");
+                ctx.imageSmoothingEnabled = true;
+                ctx.imageSmoothingQuality = "high";
                 ctx.drawImage(img, 0, 0, width, height);
 
-                let dataUrl = canvas.toDataURL("image/jpeg", quality);
-
-                // If still above 380KB, scale down further
-                if (dataUrl.length > 380000) {
+                let dataUrl = canvas.toDataURL("image/jpeg", 0.94);
+                if (dataUrl.length > 900000) {
+                    dataUrl = canvas.toDataURL("image/jpeg", 0.88);
+                }
+                if (dataUrl.length > 900000) {
                     const canvas2 = document.createElement("canvas");
-                    canvas2.width = Math.round(width * 0.75);
-                    canvas2.height = Math.round(height * 0.75);
+                    canvas2.width = Math.round(width * 0.82);
+                    canvas2.height = Math.round(height * 0.82);
                     const ctx2 = canvas2.getContext("2d");
+                    ctx2.imageSmoothingEnabled = true;
+                    ctx2.imageSmoothingQuality = "high";
                     ctx2.drawImage(img, 0, 0, canvas2.width, canvas2.height);
-                    dataUrl = canvas2.toDataURL("image/jpeg", 0.60);
+                    dataUrl = canvas2.toDataURL("image/jpeg", 0.85);
                 }
 
                 resolve(dataUrl);
             };
-            img.onerror = reject;
-            img.src = e.target.result;
+            img.onerror = () => resolve(rawDataUrl);
+            img.src = rawDataUrl;
         };
         reader.onerror = reject;
         reader.readAsDataURL(file);
@@ -17730,18 +17613,18 @@ function initPhotoUploadFormHandlers() {
             const countSpan = document.getElementById("selectedFilesCount");
             if (files.length === 0) return;
 
-            if (statusMsg) statusMsg.textContent = `Optimizando ${files.length} imagen(es)...`;
+            if (statusMsg) statusMsg.textContent = `Procesando ${files.length} foto(s) en alta calidad...`;
             currentCompressedBase64Array = [];
 
             try {
                 for (const file of files) {
-                    const compressed = await compressImageFile(file, 1000, 1000, 0.72);
-                    currentCompressedBase64Array.push(compressed);
+                    const highResPhoto = await processImagePreservingQuality(file);
+                    currentCompressedBase64Array.push(highResPhoto);
                 }
                 if (countSpan) {
-                    countSpan.textContent = `✓ ${currentCompressedBase64Array.length} foto(s) optimizada(s) y lista(s) para subir.`;
+                    countSpan.textContent = `✓ ${currentCompressedBase64Array.length} foto(s) lista(s) en calidad original.`;
                 }
-                if (statusMsg) statusMsg.textContent = "¡Imágenes optimizadas para subida rápida!";
+                if (statusMsg) statusMsg.textContent = "¡Fotos preparadas con calidad óptima!";
                 setTimeout(() => { if (statusMsg) statusMsg.textContent = ""; }, 2500);
             } catch (err) {
                 if (statusMsg) statusMsg.textContent = "Error al procesar las imágenes.";
@@ -17768,22 +17651,26 @@ function initPhotoUploadFormHandlers() {
             let raceId = document.getElementById("uploadRaceSelect")?.value || currentOpenRaceKey || "barcelona_test";
             const caption = (document.getElementById("photoCaptionInput")?.value || "").trim();
             const currentUser = typeof activeUserAuth !== "undefined" && activeUserAuth ? activeUserAuth : (typeof LocalAuthStore !== "undefined" ? LocalAuthStore.getCurrentUser() : null);
+            const userIsAdmin = typeof isUserAdmin === "function" && isUserAdmin(currentUser);
             const author = (currentUser && currentUser.displayName) ? currentUser.displayName : (currentUser && currentUser.email ? currentUser.email.split("@")[0] : (typeof currentSettings !== "undefined" && currentSettings?.driverName ? currentSettings.driverName : "Piloto FFC"));
             const urlInputVal = (document.getElementById("photoUrlInput")?.value || "").trim();
             const statusMsg = document.getElementById("uploadStatusMsg");
 
+            // Admins can upload photos directly without moderation
+            const initialStatus = userIsAdmin ? "approved" : "pending";
+
             let photosToUpload = [];
 
-            // 1. Gather files (already compressed or compress on the fly)
+            // 1. Gather files (already loaded in high quality or load now)
             if (currentCompressedBase64Array.length > 0) {
                 photosToUpload = [...currentCompressedBase64Array];
             } else {
                 const fInput = document.getElementById("photoFileInput");
                 if (fInput && fInput.files && fInput.files.length > 0) {
-                    if (statusMsg) statusMsg.textContent = "Optimizando imágenes para subida...";
+                    if (statusMsg) statusMsg.textContent = "Preparando fotos en alta calidad...";
                     for (const file of fInput.files) {
                         try {
-                            const comp = await compressImageFile(file, 1000, 1000, 0.72);
+                            const comp = await processImagePreservingQuality(file);
                             photosToUpload.push(comp);
                         } catch (err) {
                             const b64 = await new Promise(res => {
@@ -17822,7 +17709,7 @@ function initPhotoUploadFormHandlers() {
                     photoUrl: photosToUpload[i],
                     caption: caption,
                     author: author,
-                    status: "pending",
+                    status: initialStatus,
                     createdAt: new Date().toLocaleString(),
                     timestamp: Date.now() + i
                 };
@@ -17855,7 +17742,14 @@ function initPhotoUploadFormHandlers() {
                 renderAdminPhotosTab();
             }
 
-            if (statusMsg) statusMsg.textContent = "✓ ¡Fotos enviadas con éxito! Disponibles en el panel de moderación.";
+            if (statusMsg) {
+                if (userIsAdmin) {
+                    statusMsg.textContent = "✓ ¡Fotos subidas y aprobadas automáticamente como Administrador!";
+                } else {
+                    statusMsg.textContent = "✓ ¡Fotos enviadas con éxito! Quedan pendientes de aprobación.";
+                }
+            }
+
             setTimeout(() => {
                 closeUploadPhotoModal();
                 if (btnSubmit) {
@@ -17984,10 +17878,11 @@ function renderGlobalPhotoGrid() {
         const card = document.createElement("div");
         card.className = "photo-card";
         card.innerHTML = `
-            <div class="photo-card-thumb">
+            <div class="photo-card-thumb" style="position: relative;">
                 <img src="${escapeHtml(photo.photoUrl)}" alt="${escapeHtml(photo.caption || 'Foto FFC')}" loading="lazy">
                 <span class="photo-card-badge">${escapeHtml(raceLabel)}</span>
                 ${pendingBadge}
+                <button type="button" class="photo-card-dl-btn" title="Descargar foto" onclick="event.stopPropagation(); window.downloadPhoto('${escapeHtml(photo.photoUrl)}', 'ffc-${photo.raceId}-${photo.id}.jpg')" style="position: absolute; top: 8px; right: 8px; background: rgba(0,0,0,0.7); color: #fff; border: 1px solid rgba(255,255,255,0.3); border-radius: 4px; padding: 3px 7px; font-size: 11px; font-weight: 700; cursor: pointer; z-index: 2; transition: all 0.2s;">⬇️ Descargar</button>
             </div>
             <div class="photo-card-content">
                 <div class="photo-card-caption">${escapeHtml(photo.caption || 'Sin descripción')}</div>
@@ -18036,9 +17931,10 @@ function renderRaceModalPhotoGallery(raceKey) {
         const card = document.createElement("div");
         card.className = "photo-card";
         card.innerHTML = `
-            <div class="photo-card-thumb">
+            <div class="photo-card-thumb" style="position: relative;">
                 <img src="${escapeHtml(photo.photoUrl)}" alt="${escapeHtml(photo.caption || 'Foto de carrera')}" loading="lazy">
                 ${pendingBadge}
+                <button type="button" class="photo-card-dl-btn" title="Descargar foto" onclick="event.stopPropagation(); window.downloadPhoto('${escapeHtml(photo.photoUrl)}', 'ffc-${photo.raceId}-${photo.id}.jpg')" style="position: absolute; top: 8px; right: 8px; background: rgba(0,0,0,0.7); color: #fff; border: 1px solid rgba(255,255,255,0.3); border-radius: 4px; padding: 3px 7px; font-size: 11px; font-weight: 700; cursor: pointer; z-index: 2; transition: all 0.2s;">⬇️ Descargar</button>
             </div>
             <div class="photo-card-content">
                 <div class="photo-card-caption">${escapeHtml(photo.caption || 'Sin descripción')}</div>
@@ -18053,6 +17949,32 @@ function renderRaceModalPhotoGallery(raceKey) {
     });
 }
 
+// Global photo download helper
+window.downloadPhoto = function(url, filename) {
+    if (!url) return;
+    try {
+        const fn = filename || ("ffc-foto-" + Date.now() + ".jpg");
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = fn;
+        if (!url.startsWith("data:")) {
+            a.target = "_blank";
+        }
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+    } catch (e) {
+        window.open(url, "_blank");
+    }
+};
+
+window.downloadCurrentLightboxPhoto = function() {
+    if (!currentLightboxPhoto || !currentLightboxPhoto.photoUrl) return;
+    const race = currentLightboxPhoto.raceId || "carrera";
+    const fn = `ffc-${race}-${currentLightboxPhoto.id || Date.now()}.jpg`;
+    window.downloadPhoto(currentLightboxPhoto.photoUrl, fn);
+};
+
 window.openPhotoLightbox = function(photo) {
     currentLightboxPhoto = photo;
     const modal = document.getElementById("photoLightboxModal");
@@ -18066,10 +17988,14 @@ window.openPhotoLightbox = function(photo) {
         img.src = photo.photoUrl;
         if (caption) caption.textContent = photo.caption || RACE_TITLES_MAP[photo.raceId] || "Foto FFC";
         if (authorDate) authorDate.textContent = `Subido por ${photo.author} • ${photo.createdAt || ''}`;
-        if (downloadBtn) downloadBtn.href = photo.photoUrl;
+        if (downloadBtn) {
+            downloadBtn.onclick = () => window.downloadCurrentLightboxPhoto();
+        }
 
+        const u = typeof activeUserAuth !== "undefined" && activeUserAuth ? activeUserAuth : (typeof LocalAuthStore !== "undefined" ? LocalAuthStore.getCurrentUser() : null);
+        const userIsAdmin = typeof isUserAdmin === "function" && isUserAdmin(u);
         if (deleteBtn) {
-            deleteBtn.style.display = "inline-flex";
+            deleteBtn.style.display = userIsAdmin ? "inline-flex" : "none";
         }
 
         modal.classList.add("active");
@@ -18095,12 +18021,9 @@ window.closePhotoLightbox = function() {
 window.deleteCurrentLightboxPhoto = async function() {
     if (!currentLightboxPhoto || !currentLightboxPhoto.id) return;
     if (confirm("¿Estás seguro de que deseas eliminar esta foto de la galería?")) {
-        try {
-            await deleteDoc(doc(db, "carreras_fotos", currentLightboxPhoto.id));
-            closePhotoLightbox();
-        } catch (err) {
-            alert("Error al eliminar la foto: " + err.message);
-        }
+        const photoId = currentLightboxPhoto.id;
+        closePhotoLightbox();
+        await deleteAdminPhoto(photoId);
     }
 };
 
@@ -18128,29 +18051,15 @@ window.switchRaceModalTab = function(tabName) {
     }
 };
 
-function initCalendarPhotoButtons() {
-    document.querySelectorAll(".calendar-card[data-race]").forEach(card => {
-        const raceKey = card.dataset.race;
-        const footer = card.querySelector(".calendar-card-footer");
-        if (footer && !card.querySelector(".calendar-card-upload-btn")) {
-            const btn = document.createElement("button");
-            btn.type = "button";
-            btn.className = "calendar-card-upload-btn";
-            btn.innerHTML = "📸 + Subir Foto";
-            btn.title = "Subir foto a este Gran Premio";
-            btn.addEventListener("click", (e) => {
-                e.stopPropagation();
-                openUploadPhotoModal(raceKey);
-            });
-            footer.appendChild(btn);
-        }
-    });
+// Remove any upload button from calendar cards (uploads are only allowed inside race details modal or admin panel)
+function cleanCalendarCardsUploadButtons() {
+    document.querySelectorAll(".calendar-card-upload-btn").forEach(btn => btn.remove());
 }
 
 if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", () => setTimeout(initCalendarPhotoButtons, 400));
+    document.addEventListener("DOMContentLoaded", () => setTimeout(cleanCalendarCardsUploadButtons, 300));
 } else {
-    setTimeout(initCalendarPhotoButtons, 400);
+    setTimeout(cleanCalendarCardsUploadButtons, 300);
 }
 
 function updateCalendarCardPhotoBadges() {
@@ -18232,7 +18141,7 @@ function renderAdminPhotosTab() {
         list.innerHTML = `
             <div style="grid-column: 1 / -1; text-align: center; padding: 40px 20px; background: rgba(255, 255, 255, 0.02); border: 1px dashed rgba(255, 255, 255, 0.1); border-radius: 8px; color: #a0aec0;">
                 <p style="font-size: 15px; margin-bottom: 6px;">No se encontraron fotos en esta categoría.</p>
-                <span style="font-size: 13px; color: #718096;">Las fotos subidas por los pilotos aparecerán aquí para su moderación.</span>
+                <span style="font-size: 13px; color: #718096;">Las fotos subidas por los pilotos o administradores aparecerán aquí para su gestión.</span>
             </div>
         `;
         return;
@@ -18253,25 +18162,41 @@ function renderAdminPhotosTab() {
         const approveBtn = status !== "approved" ? `<button type="button" class="btn btn-sm" data-action="approve" data-id="${photo.id}" style="background: #16a34a; color: #fff; font-size: 11px; padding: 4px 10px; border-radius: 4px; cursor: pointer;">✅ Aprobar</button>` : "";
         const rejectBtn = status !== "rejected" ? `<button type="button" class="btn btn-sm" data-action="reject" data-id="${photo.id}" style="background: #d97706; color: #fff; font-size: 11px; padding: 4px 10px; border-radius: 4px; cursor: pointer;">❌ Rechazar</button>` : "";
 
+        // Options for the race modifier dropdown
+        const raceOptionsHtml = Object.entries(RACE_TITLES_MAP).map(([rKey, rTitle]) => `
+            <option value="${rKey}" ${photo.raceId === rKey ? 'selected' : ''}>${rTitle}</option>
+        `).join("");
+
         return `
-            <div style="background: rgba(15, 23, 42, 0.8); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 8px; overflow: hidden; display: flex; flex-direction: column;">
+            <div style="background: rgba(15, 23, 42, 0.85); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 8px; overflow: hidden; display: flex; flex-direction: column;">
                 <div style="position: relative; height: 160px; background: #000; overflow: hidden;">
                     <img src="${escapeHtml(photo.photoUrl)}" alt="${escapeHtml(photo.caption || 'Foto')}" data-preview-id="${photo.id}" style="width: 100%; height: 100%; object-fit: cover; cursor: pointer;">
                     <div style="position: absolute; top: 8px; left: 8px;">${statusBadge}</div>
-                    <div style="position: absolute; top: 8px; right: 8px; background: rgba(0,0,0,0.7); color: #fff; font-size: 10px; padding: 3px 6px; border-radius: 4px;">${escapeHtml(raceLabel)}</div>
+                    <div style="position: absolute; top: 8px; right: 8px; background: rgba(0,0,0,0.75); color: #f5e29f; font-size: 10px; font-weight: 700; padding: 3px 6px; border-radius: 4px; border: 1px solid rgba(214,180,92,0.3);">${escapeHtml(raceLabel)}</div>
                 </div>
                 <div style="padding: 12px; display: flex; flex-direction: column; flex-grow: 1; justify-content: space-between;">
                     <div>
                         <div style="font-size: 13px; font-weight: 600; color: #f8fafc; margin-bottom: 4px;">${escapeHtml(photo.caption || 'Sin descripción')}</div>
-                        <div style="font-size: 11px; color: #94a3b8; display: flex; justify-content: space-between;">
+                        <div style="font-size: 11px; color: #94a3b8; display: flex; justify-content: space-between; margin-bottom: 8px;">
                             <span>👤 ${escapeHtml(photo.author)}</span>
                             <span>${escapeHtml(photo.createdAt || '')}</span>
                         </div>
+
+                        <!-- MODIFICADOR DE CARRERA PARA ADMINISTRADORES -->
+                        <div style="margin: 8px 0; background: rgba(0, 0, 0, 0.35); padding: 8px; border-radius: 6px; border: 1px solid rgba(255, 255, 255, 0.08);">
+                            <label style="font-size: 11px; font-weight: 700; color: #f5e29f; display: flex; align-items: center; gap: 4px; margin-bottom: 4px;">
+                                🏁 Modificar Carrera asignada:
+                            </label>
+                            <select class="admin-photo-race-select" data-photo-id="${photo.id}" style="width: 100%; background: #0b1120; color: #f8fafc; border: 1px solid rgba(214, 180, 92, 0.4); padding: 5px 8px; border-radius: 4px; font-size: 12px; font-weight: 500; cursor: pointer;">
+                                ${raceOptionsHtml}
+                            </select>
+                        </div>
                     </div>
-                    <div style="display: flex; gap: 6px; margin-top: 12px; border-top: 1px solid rgba(255,255,255,0.06); padding-top: 8px;">
+                    <div style="display: flex; gap: 6px; margin-top: 10px; border-top: 1px solid rgba(255,255,255,0.06); padding-top: 8px; flex-wrap: wrap; align-items: center;">
                         ${approveBtn}
                         ${rejectBtn}
-                        <button type="button" class="btn btn-sm" data-action="delete" data-id="${photo.id}" style="background: #dc2626; color: #fff; font-size: 11px; padding: 4px 10px; border-radius: 4px; margin-left: auto; cursor: pointer;">🗑️</button>
+                        <button type="button" class="btn btn-sm" data-action="download" data-id="${photo.id}" style="background: rgba(255,255,255,0.1); color: #fff; font-size: 11px; padding: 4px 10px; border-radius: 4px; border: 1px solid rgba(255,255,255,0.2); cursor: pointer;" title="Descargar foto en alta calidad">⬇️ Descargar</button>
+                        <button type="button" class="btn btn-sm" data-action="delete" data-id="${photo.id}" style="background: #dc2626; color: #fff; font-size: 11px; padding: 4px 10px; border-radius: 4px; margin-left: auto; cursor: pointer;" title="Eliminar permanentemente">🗑️</button>
                     </div>
                 </div>
             </div>
@@ -18286,6 +18211,17 @@ function renderAdminPhotosTab() {
         });
     });
 
+    // Listeners for Admin changing the assigned race of a photo
+    list.querySelectorAll(".admin-photo-race-select").forEach(sel => {
+        sel.addEventListener("change", async () => {
+            const pid = sel.dataset.photoId;
+            const newRace = sel.value;
+            if (pid && newRace) {
+                await updatePhotoRace(pid, newRace);
+            }
+        });
+    });
+
     list.querySelectorAll("button[data-action]").forEach(btn => {
         btn.addEventListener("click", async () => {
             const action = btn.dataset.action;
@@ -18296,6 +18232,11 @@ function renderAdminPhotosTab() {
                 await updatePhotoStatus(photoId, "approved");
             } else if (action === "reject") {
                 await updatePhotoStatus(photoId, "rejected");
+            } else if (action === "download") {
+                const target = currentPhotos.find(p => p.id === photoId);
+                if (target) {
+                    window.downloadPhoto(target.photoUrl, `ffc-${target.raceId}-${target.id}.jpg`);
+                }
             } else if (action === "delete") {
                 if (confirm("¿Estás seguro de eliminar permanentemente esta foto?")) {
                     await deleteAdminPhoto(photoId);
@@ -18305,6 +18246,34 @@ function renderAdminPhotosTab() {
     });
 }
 window.renderAdminPhotosTab = renderAdminPhotosTab;
+
+async function updatePhotoRace(photoId, newRaceId) {
+    // 1. Instant optimistic UI update
+    const p = currentPhotos.find(item => item.id === photoId);
+    if (p) {
+        p.raceId = newRaceId;
+        saveCachedPhotos(currentPhotos);
+        updatePhotoGalleriesUI();
+        renderAdminPhotosTab();
+    }
+
+    // 2. Parallel background sync to server
+    fetch(`/api/carreras/fotos/${encodeURIComponent(photoId)}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ raceId: newRaceId })
+    }).catch(srvErr => console.warn("Server race sync note:", srvErr));
+
+    // 3. Parallel direct update to Firestore
+    try {
+        await updateDoc(doc(db, "carreras_fotos", photoId), {
+            raceId: newRaceId
+        });
+    } catch (err) {
+        console.warn("Firestore updateDoc race note:", err);
+    }
+}
+window.updatePhotoRace = updatePhotoRace;
 
 async function updatePhotoStatus(photoId, newStatus) {
     // 1. Instant optimistic UI update
@@ -18392,6 +18361,7 @@ window.switchRaceModalTab = switchRaceModalTab;
 window.syncPhotosFromSources = syncPhotosFromSources;
 window.renderAdminPhotosTab = renderAdminPhotosTab;
 window.updatePhotoStatus = updatePhotoStatus;
+window.updatePhotoRace = updatePhotoRace;
 window.deleteAdminPhoto = deleteAdminPhoto;
 
 

@@ -217,12 +217,6 @@
       },
       "description": "Public comments posted by community members under published news articles"
     },
-    "/chat_mensajes/{msgId}": {
-      "schema": {
-        "$ref": "#/entities/ChatMessage"
-      },
-      "description": "Real-time chat messages room synced with Firebase"
-    },
     "/carreras_fotos/{photoId}": {
       "schema": {
         "$ref": "#/entities/RacePhoto"

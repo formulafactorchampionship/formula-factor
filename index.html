@@ -891,20 +891,6 @@
 
     </div>
 
-
-    <div class="calendar-photo-banner">
-        <div class="calendar-banner-left">
-            <span class="calendar-banner-badge">📸 COMUNIDAD FFC</span>
-            <h3>GALERÍA FOTOGRÁFICA DE LAS CARRERAS</h3>
-            <p>Comparte tus mejores momentos en pista, adelantamientos épicos, podios y capturas de simracing.</p>
-        </div>
-        <div class="calendar-banner-right">
-            <button type="button" class="btn btn-secondary btn-sm" onclick="if(window.openGlobalPhotoGallery) window.openGlobalPhotoGallery()">Ver Galería Completa</button>
-            <button type="button" class="btn btn-primary btn-sm" onclick="if(window.openUploadPhotoModal) window.openUploadPhotoModal()">+ Subir Foto</button>
-        </div>
-    </div>
-
-
     <div class="calendar-grid">
 
         <article class="calendar-card test-card">
@@ -1188,6 +1174,18 @@
             </div>
         </article>
 
+    </div>
+
+    <!-- BANNER DE FOTOS COLOCADO DEBAJO DEL CALENDARIO -->
+    <div class="calendar-photo-banner" style="margin-top: 32px;">
+        <div class="calendar-banner-left">
+            <span class="calendar-banner-badge">📸 COMUNIDAD FFC</span>
+            <h3>GALERÍA FOTOGRÁFICA DE LAS CARRERAS</h3>
+            <p>Explora las capturas, adelantamientos épicos, podios y momentos en pista subidos por la comunidad.</p>
+        </div>
+        <div class="calendar-banner-right">
+            <button type="button" class="btn btn-secondary btn-sm" onclick="if(window.openGlobalPhotoGallery) window.openGlobalPhotoGallery()">📸 Ver Galería Completa de Fotos</button>
+        </div>
     </div>
 
 </section>
@@ -3279,6 +3277,9 @@
                     </div>
                     <div class="admin-news-right-actions">
                         <input type="text" id="adminPhotosSearchInput" class="admin-news-search-input" placeholder="Buscar por autor, descripción o Gran Premio...">
+                        <button type="button" class="btn btn-primary btn-sm" id="btnAdminUploadPhoto" onclick="openUploadPhotoModal()" style="display: inline-flex; align-items: center; gap: 6px; white-space: nowrap;">
+                            <span>📸</span> Subir Foto Directa (Admin)
+                        </button>
                     </div>
                 </div>
 
@@ -4006,6 +4007,9 @@
                 <h2>SUBIR FOTO DE SIMRACING</h2>
             </div>
         </div>
+        <div id="uploadAdminNotice" style="display: none; background: rgba(74, 222, 128, 0.12); border: 1px solid rgba(74, 222, 128, 0.4); border-radius: 6px; padding: 8px 12px; margin: 0 0 14px 0; font-size: 12px; color: #86efac;">
+            🛡️ <strong>Modo Administrador Activo:</strong> Las fotos que subas se publicarán aprobadas automáticamente sin necesidad de moderación previa.
+        </div>
         <form id="photoUploadForm" class="photo-upload-form">
             <div class="form-group">
                 <label for="uploadRaceSelect">Gran Premio / Carrera pasada *</label>
@@ -4025,7 +4029,7 @@
             <div class="form-group" id="fileUploadGroup">
                 <label for="photoFileInput">Seleccionar Imágenes (Puedes subir varias a la vez)</label>
                 <input type="file" id="photoFileInput" accept="image/*" class="photo-file-input" multiple>
-                <small class="form-hint">Selecciona múltiples fotos a la vez. Se optimizarán automáticamente para una carga instantánea.</small>
+                <small class="form-hint">Selecciona una o más fotos. Se preserva la máxima calidad y resolución original.</small>
                 <span id="selectedFilesCount" style="color: #38bdf8; font-size: 13px; margin-top: 6px; display: block;"></span>
             </div>
 
@@ -4066,7 +4070,7 @@
                 <span id="lightboxAuthorDate">Subido por Autor • Fecha</span>
             </div>
             <div class="lightbox-actions">
-                <a id="lightboxDownloadBtn" href="#" target="_blank" download class="btn btn-secondary btn-sm">Abrir Original ↗</a>
+                <button type="button" id="lightboxDownloadBtn" class="btn btn-secondary btn-sm" onclick="downloadCurrentLightboxPhoto()">⬇️ Descargar Foto</button>
                 <button type="button" id="lightboxDeleteBtn" class="btn btn-danger btn-sm" style="display: none;" onclick="deleteCurrentLightboxPhoto()">🗑️ Eliminar</button>
             </div>
         </div>

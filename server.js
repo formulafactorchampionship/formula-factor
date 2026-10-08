@@ -27,25 +27,28 @@ app.use(express.static(__dirname, {
 }));
 
 const USERS_FILE = path.join(__dirname, 'users_db.json');
+let memoryUsers = null;
 
 function getUsers() {
+  if (memoryUsers !== null) return memoryUsers;
   try {
     if (fs.existsSync(USERS_FILE)) {
       const data = fs.readFileSync(USERS_FILE, 'utf8');
-      return JSON.parse(data);
+      memoryUsers = JSON.parse(data);
+      return memoryUsers;
     }
   } catch (e) {
     console.error('Error reading users file:', e);
   }
-  return [];
+  memoryUsers = [];
+  return memoryUsers;
 }
 
 function saveUsers(users) {
-  try {
-    fs.writeFileSync(USERS_FILE, JSON.stringify(users, null, 2), 'utf8');
-  } catch (e) {
-    console.error('Error saving users file:', e);
-  }
+  memoryUsers = users;
+  fs.writeFile(USERS_FILE, JSON.stringify(users, null, 2), 'utf8', (err) => {
+    if (err) console.error('Error asynchronously saving users file:', err);
+  });
 }
 
 function hashPassword(password) {
@@ -161,25 +164,28 @@ app.post('/api/auth/sync', (req, res) => {
 });
 
 const FANTASY_TEAMS_FILE = path.join(__dirname, 'fantasy_teams_db.json');
+let memoryFantasyTeams = null;
 
 function getFantasyTeams() {
+  if (memoryFantasyTeams !== null) return memoryFantasyTeams;
   try {
     if (fs.existsSync(FANTASY_TEAMS_FILE)) {
       const data = fs.readFileSync(FANTASY_TEAMS_FILE, 'utf8');
-      return JSON.parse(data);
+      memoryFantasyTeams = JSON.parse(data);
+      return memoryFantasyTeams;
     }
   } catch (e) {
     console.error('Error reading fantasy teams file:', e);
   }
-  return [];
+  memoryFantasyTeams = [];
+  return memoryFantasyTeams;
 }
 
 function saveFantasyTeams(teams) {
-  try {
-    fs.writeFileSync(FANTASY_TEAMS_FILE, JSON.stringify(teams, null, 2), 'utf8');
-  } catch (e) {
-    console.error('Error saving fantasy teams file:', e);
-  }
+  memoryFantasyTeams = teams;
+  fs.writeFile(FANTASY_TEAMS_FILE, JSON.stringify(teams, null, 2), 'utf8', (err) => {
+    if (err) console.error('Error saving fantasy teams file:', err);
+  });
 }
 
 app.get('/api/fantasy/teams', (req, res) => {
@@ -216,30 +222,33 @@ app.post('/api/fantasy/teams', (req, res) => {
 });
 
 const FANTASY_LOCK_FILE = path.join(__dirname, 'fantasy_lock_db.json');
+let memoryFantasyLock = null;
 
 function getFantasyLockState() {
+  if (memoryFantasyLock !== null) return memoryFantasyLock;
   try {
     if (fs.existsSync(FANTASY_LOCK_FILE)) {
       const data = fs.readFileSync(FANTASY_LOCK_FILE, 'utf8');
-      return JSON.parse(data);
+      memoryFantasyLock = JSON.parse(data);
+      return memoryFantasyLock;
     }
   } catch (e) {
     console.error('Error reading fantasy lock file:', e);
   }
-  return {
+  memoryFantasyLock = {
     locked: false,
     message: "Mercado cerrado temporalmente por Gran Premio en curso.",
     fluctuationEnabled: true,
     volatilityMultiplier: 1.0
   };
+  return memoryFantasyLock;
 }
 
 function saveFantasyLockState(state) {
-  try {
-    fs.writeFileSync(FANTASY_LOCK_FILE, JSON.stringify(state, null, 2), 'utf8');
-  } catch (e) {
-    console.error('Error saving fantasy lock file:', e);
-  }
+  memoryFantasyLock = state;
+  fs.writeFile(FANTASY_LOCK_FILE, JSON.stringify(state, null, 2), 'utf8', (err) => {
+    if (err) console.error('Error saving fantasy lock file:', err);
+  });
 }
 
 app.get('/api/fantasy/lock', (req, res) => {
@@ -279,25 +288,28 @@ app.get('/api/live-timing', async (req, res) => {
 });
 
 const PHOTOS_FILE = path.join(__dirname, 'photos_db.json');
+let memoryPhotos = null;
 
 function getPhotos() {
+  if (memoryPhotos !== null) return memoryPhotos;
   try {
     if (fs.existsSync(PHOTOS_FILE)) {
       const data = fs.readFileSync(PHOTOS_FILE, 'utf8');
-      return JSON.parse(data);
+      memoryPhotos = JSON.parse(data);
+      return memoryPhotos;
     }
   } catch (e) {
     console.error('Error reading photos file:', e);
   }
-  return [];
+  memoryPhotos = [];
+  return memoryPhotos;
 }
 
 function savePhotos(photos) {
-  try {
-    fs.writeFileSync(PHOTOS_FILE, JSON.stringify(photos, null, 2), 'utf8');
-  } catch (e) {
-    console.error('Error saving photos file:', e);
-  }
+  memoryPhotos = photos;
+  fs.writeFile(PHOTOS_FILE, JSON.stringify(photos, null, 2), 'utf8', (err) => {
+    if (err) console.error('Error saving photos file:', err);
+  });
 }
 
 async function mirrorPhotoToFirestore(photo) {
@@ -362,8 +374,10 @@ app.get('/api/carreras/fotos', async (req, res) => {
           if (!exists) {
             photos.push(photoObj);
             changed = true;
-          } else if (exists.status !== photoObj.status) {
+          } else if (exists.status !== photoObj.status || exists.raceId !== photoObj.raceId || exists.caption !== photoObj.caption) {
             exists.status = photoObj.status;
+            exists.raceId = photoObj.raceId;
+            exists.caption = photoObj.caption;
             changed = true;
           }
         });
@@ -411,20 +425,18 @@ app.post('/api/carreras/fotos', async (req, res) => {
 
 app.patch('/api/carreras/fotos/:id', async (req, res) => {
   const photoId = req.params.id;
-  const { status, caption } = req.body || {};
+  const { status, caption, raceId } = req.body || {};
   const photos = getPhotos();
   const idx = photos.findIndex(p => p.id === photoId);
   if (idx >= 0) {
     if (status !== undefined) photos[idx].status = status;
     if (caption !== undefined) photos[idx].caption = caption;
+    if (raceId !== undefined) photos[idx].raceId = raceId;
     savePhotos(photos);
     mirrorPhotoToFirestore(photos[idx]);
     return res.json({ success: true, photo: photos[idx] });
   }
-  if (status !== undefined) {
-    mirrorPhotoToFirestore({ id: photoId, status });
-  }
-  return res.json({ success: true, photo: { id: photoId, status } });
+  return res.status(404).json({ error: 'Photo not found' });
 });
 
 app.delete('/api/carreras/fotos/:id', async (req, res) => {
