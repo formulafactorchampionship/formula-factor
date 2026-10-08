@@ -1367,7 +1367,11 @@
             <p class="footer-copy">© 2026 Formula Factor Championship. Todos los derechos reservados. Campeonato de Sim Racing Oficial.</p>
         </div>
         <div class="footer-links-col">
-            <button type="button" class="footer-link-btn" id="footerPrivacyBtn">Política de Privacidad</button>
+            <button type="button" class="footer-link-btn" id="footerPrivacyBtn" onclick="if(window.openPrivacyModal){window.openPrivacyModal();return false;}">Política de Privacidad</button>
+            <span class="footer-dot">•</span>
+            <button type="button" class="footer-link-btn" id="footerTermsBtn" onclick="if(window.openTermsModal){window.openTermsModal();return false;}">Términos y Condiciones</button>
+            <span class="footer-dot">•</span>
+            <button type="button" class="footer-link-btn" id="footerCookiesBtn" onclick="if(window.openCookiesModal){window.openCookiesModal();return false;}">Política de Cookies</button>
             <span class="footer-dot">•</span>
             <a href="https://discord.gg/NXFPWd6eg" target="_blank" rel="noopener noreferrer" class="footer-link-a">Discord Oficial</a>
             <span class="footer-dot">•</span>
@@ -3523,6 +3527,131 @@
         <footer class="privacy-modal-footer">
             <button type="button" class="btn btn-primary" id="privacyModalAcceptBtn">ENTENDIDO</button>
         </footer>
+    </div>
+</div>
+
+
+<!-- =========================================================
+     TERMS & CONDITIONS MODAL
+========================================================= -->
+<div class="user-auth-overlay" id="termsModalOverlay" aria-hidden="true" style="display: none;">
+    <div class="privacy-modal-card">
+        <button class="admin-modal-close-btn" id="termsModalClose" aria-label="Cerrar términos y condiciones">&times;</button>
+        
+        <header class="privacy-modal-header">
+            <div class="privacy-badge">FFC // LEGAL & CONDICIONES</div>
+            <h2 class="privacy-title">TÉRMINOS Y CONDICIONES DE USO</h2>
+            <p class="privacy-subtitle">Última actualización: Septiembre 2026</p>
+        </header>
+
+        <div class="privacy-modal-body">
+            <section class="privacy-section">
+                <h3>1. Objeto y Aceptación</h3>
+                <p>Los presentes Términos y Condiciones regulan el acceso y uso de la plataforma web de <strong>Formula Factor Championship (FFC)</strong>, campeonato oficial de Sim Racing. La utilización de la plataforma implica la aceptación íntegra y sin reservas de todas las disposiciones aquí incluidas.</p>
+            </section>
+
+            <section class="privacy-section">
+                <h3>2. Normas de Participación y Fair Play</h3>
+                <p>Todos los pilotos y miembros registrados en FFC se comprometen a:</p>
+                <ul>
+                    <li>Mantener una conducta deportiva ejemplar ("Fair Play") tanto en pista durante las sesiones y Grandes Premios como en los canales de comunicación de la comunidad.</li>
+                    <li>Respetar las decisiones de los comisarios deportivos y el reglamento oficial del campeonato disponible en la sección de información.</li>
+                    <li>No utilizar software de trampas, modificaciones no autorizadas ni alterar deliberadamente la telemetría o los resultados oficiales.</li>
+                </ul>
+            </section>
+
+            <section class="privacy-section">
+                <h3>3. Liga FFC Fantasy</h3>
+                <p>El modo de juego interactivo FFC Fantasy es una competición recreativa basada en el rendimiento deportivo real de los pilotos en el campeonato. La organización se reserva el derecho de auditar puntuaciones y corregir errores técnicos en las clasificaciones del Fantasy.</p>
+            </section>
+
+            <section class="privacy-section">
+                <h3>4. Propiedad Intelectual</h3>
+                <p>Todos los contenidos, logotipos, marcas, diseños, estadísticas, gráficos y software de la plataforma FFC están protegidos por derechos de propiedad intelectual e industrial. Queda prohibida su reproducción total o parcial sin autorización expresa de la organización.</p>
+            </section>
+
+            <section class="privacy-section">
+                <h3>5. Limitación de Responsabilidad</h3>
+                <p>FFC opera como una liga independiente de Sim Racing sin ánimo de lucro. La organización no se hace responsable de interrupciones técnicas imprevistas del servidor, pérdida de datos ajena a nuestro control o incidencias de conexión de los participantes.</p>
+            </section>
+
+            <section class="privacy-section">
+                <h3>6. Modificaciones</h3>
+                <p>La organización podrá actualizar o modificar estos términos en cualquier momento para adaptarlos a la normativa vigente o mejoras de la competición. Las modificaciones entrarán en vigor desde su publicación en la plataforma.</p>
+            </section>
+        </div>
+
+        <footer class="privacy-modal-footer">
+            <button type="button" class="btn btn-primary" id="termsModalAcceptBtn">ENTENDIDO</button>
+        </footer>
+    </div>
+</div>
+
+
+<!-- =========================================================
+     COOKIES POLICY MODAL
+========================================================= -->
+<div class="user-auth-overlay" id="cookiesModalOverlay" aria-hidden="true" style="display: none;">
+    <div class="privacy-modal-card">
+        <button class="admin-modal-close-btn" id="cookiesModalClose" aria-label="Cerrar política de cookies">&times;</button>
+        
+        <header class="privacy-modal-header">
+            <div class="privacy-badge">FFC // LEGAL & COOKIES</div>
+            <h2 class="privacy-title">POLÍTICA DE COOKIES</h2>
+            <p class="privacy-subtitle">Última actualización: Septiembre 2026</p>
+        </header>
+
+        <div class="privacy-modal-body">
+            <section class="privacy-section">
+                <h3>1. ¿Qué son las Cookies?</h3>
+                <p>Una cookie es un pequeño archivo de texto que los sitios web almacenan en su ordenador o dispositivo móvil cuando visita la página. Permiten recordar sus acciones y preferencias durante un tiempo para que no tenga que volver a introducirlas cada vez que navegue.</p>
+            </section>
+
+            <section class="privacy-section">
+                <h3>2. Tipos de Cookies que Utiliza FFC</h3>
+                <p>En Formula Factor Championship utilizamos exclusivamente:</p>
+                <ul>
+                    <li><strong>Cookies Técnicas y de Sesión:</strong> Esenciales para permitir la autenticación de usuarios, recordar el idioma seleccionado y garantizar el correcto funcionamiento del panel de usuario y la Liga Fantasy.</li>
+                    <li><strong>Almacenamiento Local (localStorage):</strong> Empleado para guardar de forma segura sus preferencias de visualización y caché local de resultados para una carga rápida.</li>
+                    <li><strong>Google Analytics (Medición anónima):</strong> Estadísticas de tráfico anónimas para mejorar el rendimiento de la plataforma.</li>
+                </ul>
+            </section>
+
+            <section class="privacy-section">
+                <h3>3. Gestión y Desactivación de Cookies</h3>
+                <p>Usted puede permitir, bloquear o eliminar las cookies instaladas en su equipo mediante la configuración de las opciones del navegador instalado en su dispositivo:</p>
+                <ul>
+                    <li><strong>Google Chrome:</strong> Configuración -> Privacidad y seguridad -> Cookies.</li>
+                    <li><strong>Mozilla Firefox:</strong> Opciones -> Privacidad y seguridad -> Cookies y datos del sitio.</li>
+                    <li><strong>Safari:</strong> Preferencias -> Privacidad.</li>
+                </ul>
+            </section>
+
+            <section class="privacy-section">
+                <h3>4. Actualizaciones</h3>
+                <p>Esta política de cookies puede actualizarse en función de exigencias legislativas o técnicas, por lo que se recomienda a los usuarios revisarla periódicamente.</p>
+            </section>
+        </div>
+
+        <footer class="privacy-modal-footer">
+            <button type="button" class="btn btn-primary" id="cookiesModalAcceptBtn">ACEPTAR Y CERRAR</button>
+        </footer>
+    </div>
+</div>
+
+
+<!-- =========================================================
+     COOKIE CONSENT BANNER (GDPR COMPLIANT)
+========================================================= -->
+<div id="cookieConsentBanner" class="cookie-banner" style="display: none;">
+    <div class="cookie-banner-inner">
+        <div class="cookie-banner-text">
+            <strong>🍪 Uso de Cookies y Almacenamiento Local:</strong> FFC utiliza cookies técnicas y almacenamiento local esenciales para la autenticación, la Liga Fantasy y el correcto funcionamiento de la plataforma. Puedes consultar nuestra <button type="button" class="cookie-policy-link-btn" id="bannerCookiesLink">Política de Cookies</button>.
+        </div>
+        <div class="cookie-banner-actions">
+            <button type="button" class="btn btn-secondary btn-sm" id="cookieRejectBtn">Solo esenciales</button>
+            <button type="button" class="btn btn-primary btn-sm" id="cookieAcceptBtn">Aceptar todas</button>
+        </div>
     </div>
 </div>
 
