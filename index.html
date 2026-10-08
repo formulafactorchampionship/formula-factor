@@ -1374,9 +1374,9 @@
             <span class="footer-dot">•</span>
             <button type="button" class="footer-link-btn" id="footerCookiesBtn" onclick="if(window.openCookiesModal){window.openCookiesModal();return false;}">Política de Cookies</button>
             <span class="footer-dot">•</span>
-            <a href="https://discord.gg/NXFPWd6eg" target="_blank" rel="noopener noreferrer" class="footer-link-a">Discord Oficial</a>
+            <a href="https://discord.gg/NXFPWd6eg" target="_blank" rel="noopener noreferrer" class="footer-link-a" id="footerDiscordLink">Discord Oficial</a>
             <span class="footer-dot">•</span>
-            <a href="#info" class="footer-link-a">Reglamento FFC</a>
+            <a href="#info" class="footer-link-a" id="footerRulesLink">Reglamento FFC</a>
         </div>
     </div>
 </footer>
@@ -3485,43 +3485,47 @@
         <div class="privacy-modal-body">
             <section class="privacy-section">
                 <h3 id="privacySec1Title">1. Información que Recopilamos</h3>
-                <p id="privacySec1Body">En <strong>Formula Factor Championship (FFC)</strong> recopilamos exclusivamente la información necesaria para el funcionamiento de la liga, la gestión de clasificaciones y la interacción en la comunidad:</p>
-                <ul>
-                    <li><strong>Perfil y Cuenta:</strong> Nombre de piloto / apodo y correo electrónico para la autenticación en la plataforma.</li>
-                    <li><strong>Tarjeta de Piloto (FFC Driver Card):</strong> Redes sociales opcionales (Twitch, YouTube, X/Twitter, Discord), avatar o foto de perfil, nacionalidad oficial e información de estilo de conducción.</li>
-                    <li><strong>Estadísticas e Historial:</strong> Datos deportivos de carreras, puntos en el campeonato y equipos seleccionados en FFC Fantasy.</li>
-                </ul>
+                <div id="privacySec1Body" class="privacy-sec-body">
+                    <p>En <strong>Formula Factor Championship (FFC)</strong> recopilamos exclusivamente la información necesaria para el funcionamiento de la liga, la gestión de clasificaciones y la interacción en la comunidad:</p>
+                    <ul>
+                        <li><strong>Perfil y Cuenta:</strong> Nombre de piloto / apodo y correo electrónico para la autenticación en la plataforma.</li>
+                        <li><strong>Tarjeta de Piloto (FFC Driver Card):</strong> Redes sociales opcionales (Twitch, YouTube, X/Twitter, Discord), avatar o foto de perfil, nacionalidad oficial e información de estilo de conducción.</li>
+                        <li><strong>Estadísticas e Historial:</strong> Datos deportivos de carreras, puntos en el campeonato y equipos seleccionados en FFC Fantasy.</li>
+                    </ul>
+                </div>
             </section>
 
             <section class="privacy-section">
                 <h3 id="privacySec2Title">2. Uso de la Información</h3>
-                <p id="privacySec2Body">Tus datos se emplean únicamente para los siguientes fines legítimos de la organización:</p>
-                <ul>
-                    <li>Gestionar las tablas de posiciones oficiales y el control de sanciones administrativas.</li>
-                    <li>Permitir la participación interactiva en la Liga Fantasy de FFC.</li>
-                    <li>Mostrar tu tarjeta pública de piloto durante las transmisiones en directo y listas oficiales.</li>
-                    <li>Mantener la seguridad de la cuenta y la autenticación de usuarios.</li>
-                </ul>
+                <div id="privacySec2Body" class="privacy-sec-body">
+                    <p>Tus datos se emplean únicamente para los siguientes fines legítimos de la organización:</p>
+                    <ul>
+                        <li>Gestionar las tablas de posiciones oficiales y el control de sanciones administrativas.</li>
+                        <li>Permitir la participación interactiva en la Liga Fantasy de FFC.</li>
+                        <li>Mostrar tu tarjeta pública de piloto durante las transmisiones en directo y listas oficiales.</li>
+                        <li>Mantener la seguridad de la cuenta y la autenticación de usuarios.</li>
+                    </ul>
+                </div>
             </section>
 
             <section class="privacy-section">
                 <h3 id="privacySec3Title">3. Seguridad y Almacenamiento</h3>
-                <p id="privacySec3Body">Utilizamos la infraestructura en la nube de <strong>Google Firebase (Firestore y Auth)</strong>, garantizando el cifrado en tránsito y en reposo de las credenciales de los usuarios. FFC no vende ni comercializa ningún dato personal con terceros.</p>
+                <div id="privacySec3Body" class="privacy-sec-body"><p>Utilizamos la infraestructura en la nube de <strong>Google Firebase (Firestore y Auth)</strong>, garantizando el cifrado en tránsito y en reposo de las credenciales de los usuarios. FFC no vende ni comercializa ningún dato personal con terceros.</p></div>
             </section>
 
             <section class="privacy-section">
                 <h3 id="privacySec4Title">4. Cookies y Almacenamiento Local</h3>
-                <p id="privacySec4Body">Esta plataforma hace uso exclusivo de la memoria local del navegador (<code>localStorage</code>) para guardar la sesión iniciada y preferencias de navegación de forma rápida y segura, sin utilizar cookies de rastreo publicitario.</p>
+                <div id="privacySec4Body" class="privacy-sec-body"><p>Esta plataforma hace uso exclusivo de la memoria local del navegador (<code>localStorage</code>) para guardar la sesión iniciada y preferencias de navegación de forma rápida y segura, sin utilizar cookies de rastreo publicitario.</p></div>
             </section>
 
             <section class="privacy-section">
                 <h3 id="privacySec5Title">5. Tus Derechos y Gestión de Datos</h3>
-                <p id="privacySec5Body">Puedes editar tus datos de perfil en cualquier momento desde el panel de edición de tu tarjeta. Si deseas darte de baja o eliminar permanentemente tu cuenta y datos asociados, puedes solicitarlo directamente a la administración a través de nuestro Discord oficial.</p>
+                <div id="privacySec5Body" class="privacy-sec-body"><p>Puedes editar tus datos de perfil en cualquier momento desde el panel de edición de tu tarjeta. Si deseas darte de baja o eliminar permanentemente tu cuenta y datos asociados, puedes solicitarlo directamente a la administración a través de nuestro Discord oficial.</p></div>
             </section>
 
             <section class="privacy-section">
                 <h3 id="privacySec6Title">6. Contacto</h3>
-                <p id="privacySec6Body">Para cualquier consulta respecto a la privacidad, puedes contactar con la administración de Formula Factor Championship a través del canal de soporte oficial en Discord.</p>
+                <div id="privacySec6Body" class="privacy-sec-body"><p>Para cualquier consulta respecto a la privacidad, puedes contactar con la administración de Formula Factor Championship a través del canal de soporte oficial en Discord.</p></div>
             </section>
 
             <section class="privacy-section" style="background: rgba(214, 180, 92, 0.08); border-left: 3px solid #d6b45c; padding: 10px 14px; border-radius: 4px; margin-top: 8px;">
@@ -3553,37 +3557,39 @@
         <div class="privacy-modal-body">
             <section class="privacy-section">
                 <h3 id="termsSec1Title">1. Objeto y Aceptación</h3>
-                <p id="termsSec1Body">Los presentes Términos y Condiciones regulan el acceso y uso de la plataforma web de <strong>Formula Factor Championship (FFC)</strong>, campeonato oficial de Sim Racing. La utilización de la plataforma implica la aceptación íntegra y sin reservas de todas las disposiciones aquí incluidas.</p>
+                <div id="termsSec1Body" class="privacy-sec-body"><p>Los presentes Términos y Condiciones regulan el acceso y uso de la plataforma web de <strong>Formula Factor Championship (FFC)</strong>, campeonato oficial de Sim Racing. La utilización de la plataforma implica la aceptación íntegra y sin reservas de todas las disposiciones aquí incluidas.</p></div>
             </section>
 
             <section class="privacy-section">
                 <h3 id="termsSec2Title">2. Normas de Participación y Fair Play</h3>
-                <p id="termsSec2Body">Todos los pilotos y miembros registrados en FFC se comprometen a:</p>
-                <ul>
-                    <li>Mantener una conducta deportiva ejemplar ("Fair Play") tanto en pista durante las sesiones y Grandes Premios como en los canales de comunicación de la comunidad.</li>
-                    <li>Respetar las decisiones de los comisarios deportivos y el reglamento oficial del campeonato disponible en la sección de información.</li>
-                    <li>No utilizar software de trampas, modificaciones no autorizadas ni alterar deliberadamente la telemetría o los resultados oficiales.</li>
-                </ul>
+                <div id="termsSec2Body" class="privacy-sec-body">
+                    <p>Todos los pilotos y miembros registrados en FFC se comprometen a:</p>
+                    <ul>
+                        <li>Mantener una conducta deportiva ejemplar ("Fair Play") tanto en pista durante las sesiones y Grandes Premios como en los canales de comunicación de la comunidad.</li>
+                        <li>Respetar las decisiones de los comisarios deportivos y el reglamento oficial del campeonato disponible en la sección de información.</li>
+                        <li>No utilizar software de trampas, modificaciones no autorizadas ni alterar deliberadamente la telemetría o los resultados oficiales.</li>
+                    </ul>
+                </div>
             </section>
 
             <section class="privacy-section">
                 <h3 id="termsSec3Title">3. Liga FFC Fantasy</h3>
-                <p id="termsSec3Body">El modo de juego interactivo FFC Fantasy es una competición recreativa basada en el rendimiento deportivo real de los pilotos en el campeonato. La organización se reserva el derecho de auditar puntuaciones y corregir errores técnicos en las clasificaciones del Fantasy.</p>
+                <div id="termsSec3Body" class="privacy-sec-body"><p>El modo de juego interactivo FFC Fantasy es una competición recreativa basada en el rendimiento deportivo real de los pilotos en el campeonato. La organización se reserva el derecho de auditar puntuaciones y corregir errores técnicos en las clasificaciones del Fantasy.</p></div>
             </section>
 
             <section class="privacy-section">
                 <h3 id="termsSec4Title">4. Propiedad Intelectual</h3>
-                <p id="termsSec4Body">Todos los contenidos, logotipos, marcas, diseños, estadísticas, gráficos y software de la plataforma FFC están protegidos por derechos de propiedad intelectual e industrial. Queda prohibida su reproducción total o parcial sin autorización expresa de la organización.</p>
+                <div id="termsSec4Body" class="privacy-sec-body"><p>Todos los contenidos, logotipos, marcas, diseños, estadísticas, gráficos y software de la plataforma FFC están protegidos por derechos de propiedad intelectual e industrial. Queda prohibida su reproducción total o parcial sin autorización expresa de la organización.</p></div>
             </section>
 
             <section class="privacy-section">
                 <h3 id="termsSec5Title">5. Limitación de Responsabilidad</h3>
-                <p id="termsSec5Body">FFC opera como una liga independiente de Sim Racing sin ánimo de lucro. La organización no se hace responsable de interrupciones técnicas imprevistas del servidor, pérdida de datos ajena a nuestro control o incidencias de conexión de los participantes.</p>
+                <div id="termsSec5Body" class="privacy-sec-body"><p>FFC opera como una liga independiente de Sim Racing sin ánimo de lucro. La organización no se hace responsable de interrupciones técnicas imprevistas del servidor, pérdida de datos ajena a nuestro control o incidencias de conexión de los participantes.</p></div>
             </section>
 
             <section class="privacy-section">
                 <h3 id="termsSec6Title">6. Modificaciones</h3>
-                <p id="termsSec6Body">La organización podrá actualizar o modificar estos términos en cualquier momento para adaptarlos a la normativa vigente o mejoras de la competición. Las modificaciones entrarán en vigor desde su publicación en la plataforma.</p>
+                <div id="termsSec6Body" class="privacy-sec-body"><p>La organización podrá actualizar o modificar estos términos en cualquier momento para adaptarlos a la normativa vigente o mejoras de la competición. Las modificaciones entrarán en vigor desde su publicación en la plataforma.</p></div>
             </section>
         </div>
 
@@ -3610,32 +3616,36 @@
         <div class="privacy-modal-body">
             <section class="privacy-section">
                 <h3 id="cookiesSec1Title">1. ¿Qué son las Cookies?</h3>
-                <p id="cookiesSec1Body">Una cookie es un pequeño archivo de texto que los sitios web almacenan en su ordenador o dispositivo móvil cuando visita la página. Permiten recordar sus acciones y preferencias durante un tiempo para que no tenga que volver a introducirlas cada vez que navegue.</p>
+                <div id="cookiesSec1Body" class="privacy-sec-body"><p>Una cookie es un pequeño archivo de texto que los sitios web almacenan en su ordenador o dispositivo móvil cuando visita la página. Permiten recordar sus acciones y preferencias durante un tiempo para que no tenga que volver a introducirlas cada vez que navegue.</p></div>
             </section>
 
             <section class="privacy-section">
                 <h3 id="cookiesSec2Title">2. Tipos de Cookies que Utiliza FFC</h3>
-                <p id="cookiesSec2Body">En Formula Factor Championship utilizamos exclusivamente:</p>
-                <ul>
-                    <li><strong>Cookies Técnicas y de Sesión:</strong> Esenciales para permitir la autenticación de usuarios, recordar el idioma seleccionado y garantizar el correcto funcionamiento del panel de usuario y la Liga Fantasy.</li>
-                    <li><strong>Almacenamiento Local (localStorage):</strong> Empleado para guardar de forma segura sus preferencias de visualización y caché local de resultados para una carga rápida.</li>
-                    <li><strong>Google Analytics (Medición anónima):</strong> Estadísticas de tráfico anónimas para mejorar el rendimiento de la plataforma.</li>
-                </ul>
+                <div id="cookiesSec2Body" class="privacy-sec-body">
+                    <p>En Formula Factor Championship utilizamos exclusivamente:</p>
+                    <ul>
+                        <li><strong>Cookies Técnicas y de Sesión:</strong> Esenciales para permitir la autenticación de usuarios, recordar el idioma seleccionado y garantizar el correcto funcionamiento del panel de usuario y la Liga Fantasy.</li>
+                        <li><strong>Almacenamiento Local (localStorage):</strong> Empleado para guardar de forma segura sus preferencias de visualización y caché local de resultados para una carga rápida.</li>
+                        <li><strong>Google Analytics (Medición anónima):</strong> Estadísticas de tráfico anónimas para mejorar el rendimiento de la plataforma.</li>
+                    </ul>
+                </div>
             </section>
 
             <section class="privacy-section">
                 <h3 id="cookiesSec3Title">3. Gestión y Desactivación de Cookies</h3>
-                <p id="cookiesSec3Body">Usted puede permitir, bloquear o eliminar las cookies instaladas en su equipo mediante la configuración de las opciones del navegador instalado en su dispositivo:</p>
-                <ul>
-                    <li><strong>Google Chrome:</strong> Configuración -> Privacidad y seguridad -> Cookies.</li>
-                    <li><strong>Mozilla Firefox:</strong> Opciones -> Privacidad y seguridad -> Cookies y datos del sitio.</li>
-                    <li><strong>Safari:</strong> Preferencias -> Privacidad.</li>
-                </ul>
+                <div id="cookiesSec3Body" class="privacy-sec-body">
+                    <p>Usted puede permitir, bloquear o eliminar las cookies instaladas en su equipo mediante la configuración de las opciones del navegador instalado en su dispositivo:</p>
+                    <ul>
+                        <li><strong>Google Chrome:</strong> Configuración -> Privacidad y seguridad -> Cookies.</li>
+                        <li><strong>Mozilla Firefox:</strong> Opciones -> Privacidad y seguridad -> Cookies y datos del sitio.</li>
+                        <li><strong>Safari:</strong> Preferencias -> Privacidad.</li>
+                    </ul>
+                </div>
             </section>
 
             <section class="privacy-section">
                 <h3 id="cookiesSec4Title">4. Actualizaciones</h3>
-                <p id="cookiesSec4Body">Esta política de cookies puede actualizarse en función de exigencias legislativas o técnicas, por lo que se recomienda a los usuarios revisarla periódicamente.</p>
+                <div id="cookiesSec4Body" class="privacy-sec-body"><p>Esta política de cookies puede actualizarse en función de exigencias legislativas o técnicas, por lo que se recomienda a los usuarios revisarla periódicamente.</p></div>
             </section>
         </div>
 
@@ -3651,8 +3661,8 @@
 ========================================================= -->
 <div id="cookieConsentBanner" class="cookie-banner" style="display: none;">
     <div class="cookie-banner-inner">
-        <div class="cookie-banner-text">
-            <strong>🍪 Uso de Cookies y Almacenamiento Local:</strong> FFC utiliza cookies técnicas y almacenamiento local esenciales para la autenticación, la Liga Fantasy y el correcto funcionamiento de la plataforma. Puedes consultar nuestra <button type="button" class="cookie-policy-link-btn" id="bannerCookiesLink">Política de Cookies</button>.
+        <div class="cookie-banner-text" id="cookieBannerText">
+            <strong>🍪 Uso de Cookies y Almacenamiento Local:</strong> FFC utiliza cookies técnicas y almacenamiento local esenciales para la autenticación, la Liga Fantasy y el correcto funcionamiento de la plataforma. Puedes consultar nuestra <button type="button" class="cookie-policy-link-btn" id="bannerCookiesLink" onclick="if(window.openCookiesModal){window.openCookiesModal();return false;}">Política de Cookies</button>.
         </div>
         <div class="cookie-banner-actions">
             <button type="button" class="btn btn-secondary btn-sm" id="cookieRejectBtn">Solo esenciales</button>

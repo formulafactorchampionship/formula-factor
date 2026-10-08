@@ -404,6 +404,7 @@ const translations = {
             standings: "CLASIFICACIÓN",
             calendar: "CALENDARIO",
             races: "CARRERAS",
+            photos: "📸 FOTOS",
             news: "NOTICIAS",
             info: "INFORMACIÓN",
             compare: "COMPARADOR",
@@ -788,38 +789,55 @@ const translations = {
                     captionPlaceholder: "Ej: Salida curva 1, Batalla por el podio...",
                     btnCancel: "Cancelar",
                     btnSubmit: "Subir foto",
+                    homeBannerBadge: "📸 COMUNIDAD FFC",
                     homeBannerTitle: "GALERÍA FOTOGRÁFICA DE LAS CARRERAS",
                     homeBannerDesc: "Explora las capturas, adelantamientos épicos, podios y momentos en pista subidos por la comunidad.",
                     homeBannerBtn: "📸 Ver Galería Completa de Fotos",
+                    closeGalleryAria: "Cerrar galería",
+                    closeUploadAria: "Cerrar subida",
                     raceTabGallery: "📸 Galería de Fotos",
                     raceGalleryTitle: "Galería Fotográfica de la Carrera",
                     raceGalleryDesc: "Capturas, podios y momentos en pista subidos por la comunidad.",
                     raceUploadBtn1: "+ Subir Foto a este GP",
                     raceEmptyTitle: "No hay fotos para este Gran Premio todavía",
                     raceEmptyDesc: "¡Sé el primero en subir una foto de esta carrera!",
-                    raceUploadBtn2: "Subir foto ahora"
+                    raceUploadBtn2: "Subir foto ahora",
+                    lightboxCloseAria: "Cerrar visor",
+                    lightboxDownload: "⬇️ Descargar Foto",
+                    lightboxDelete: "🗑️ Eliminar",
+                    lightboxUploadedBy: "Subido por",
+                    deleteConfirm: "¿Estás seguro de que deseas eliminar esta foto de la galería?"
                 },
                 legal: {
                     footerCopyright: "© 2026 Formula Factor Championship. Todos los derechos reservados. Campeonato de Sim Racing Oficial.",
                     privacyBtn: "Política de Privacidad",
                     termsBtn: "Términos y Condiciones",
                     cookiesBtn: "Política de Cookies",
+                    footerDiscord: "Discord Oficial",
+                    footerRules: "Reglamento FFC",
+                    cookieBanner: {
+                        text: "<strong>🍪 Uso de Cookies y Almacenamiento Local:</strong> FFC utiliza cookies técnicas y almacenamiento local esenciales para la autenticación, la Liga Fantasy y el correcto funcionamiento de la plataforma. Puedes consultar nuestra ",
+                        policyBtn: "Política de Cookies",
+                        rejectBtn: "Solo esenciales",
+                        acceptBtn: "Aceptar todas"
+                    },
                     privacy: {
                         badge: "FFC // LEGAL & PRIVACIDAD",
                         title: "POLÍTICA DE PRIVACIDAD",
                         subtitle: "Última actualización: Septiembre 2026",
+                        closeAria: "Cerrar política de privacidad",
                         sec1Title: "1. Información que Recopilamos",
-                        sec1Text: "En <strong>Formula Factor Championship (FFC)</strong> recopilamos exclusivamente la información necesaria para el funcionamiento de la liga, la gestión de clasificaciones y la interacción en la comunidad:\\n<ul>\\n    <li><strong>Perfil y Cuenta:</strong> Nombre de piloto / apodo y correo electrónico para la autenticación en la plataforma.</li>\\n    <li><strong>Tarjeta de Piloto (FFC Driver Card):</strong> Redes sociales opcionales (Twitch, YouTube, X/Twitter, Discord), avatar o foto de perfil, nacionalidad oficial e información de estilo de conducción.</li>\\n    <li><strong>Estadísticas e Historial:</strong> Datos deportivos de carreras, puntos en el campeonato y equipos seleccionados en FFC Fantasy.</li>\\n</ul>",
+                        sec1Text: "<p>En <strong>Formula Factor Championship (FFC)</strong> recopilamos exclusivamente la información necesaria para el funcionamiento de la liga, la gestión de clasificaciones y la interacción en la comunidad:</p><ul><li><strong>Perfil y Cuenta:</strong> Nombre de piloto / apodo y correo electrónico para la autenticación en la plataforma.</li><li><strong>Tarjeta de Piloto (FFC Driver Card):</strong> Redes sociales opcionales (Twitch, YouTube, X/Twitter, Discord), avatar o foto de perfil, nacionalidad oficial e información de estilo de conducción.</li><li><strong>Estadísticas e Historial:</strong> Datos deportivos de carreras, puntos en el campeonato y equipos seleccionados en FFC Fantasy.</li></ul>",
                         sec2Title: "2. Uso de la Información",
-                        sec2Text: "Tus datos se emplean únicamente para los siguientes fines legítimos de la organización:\\n<ul>\\n    <li>Gestionar las tablas de posiciones oficiales y el control de sanciones administrativas.</li>\\n    <li>Permitir la participación interactiva en la Liga Fantasy de FFC.</li>\\n    <li>Mostrar tu tarjeta pública de piloto durante las transmisiones en directo y listas oficiales.</li>\\n    <li>Mantener la seguridad de la cuenta y la autenticación de usuarios.</li>\\n</ul>",
+                        sec2Text: "<p>Tus datos se emplean únicamente para los siguientes fines legítimos de la organización:</p><ul><li>Gestionar las tablas de posiciones oficiales y el control de sanciones administrativas.</li><li>Permitir la participación interactiva en la Liga Fantasy de FFC.</li><li>Mostrar tu tarjeta pública de piloto durante las transmisiones en directo y listas oficiales.</li><li>Mantener la seguridad de la cuenta y la autenticación de usuarios.</li></ul>",
                         sec3Title: "3. Seguridad y Almacenamiento",
-                        sec3Text: "Utilizamos la infraestructura en la nube de <strong>Google Firebase (Firestore y Auth)</strong>, garantizando el cifrado en tránsito y en reposo de las credenciales de los usuarios. FFC no vende ni comercializa ningún dato personal con terceros.",
+                        sec3Text: "<p>Utilizamos la infraestructura en la nube de <strong>Google Firebase (Firestore y Auth)</strong>, garantizando el cifrado en tránsito y en reposo de las credenciales de los usuarios. FFC no vende ni comercializa ningún dato personal con terceros.</p>",
                         sec4Title: "4. Cookies y Almacenamiento Local",
-                        sec4Text: "Esta plataforma hace uso exclusivo de la memoria local del navegador (<code>localStorage</code>) para guardar la sesión iniciada y preferencias de navegación de forma rápida y segura, sin utilizar cookies de rastreo publicitario.",
+                        sec4Text: "<p>Esta plataforma hace uso exclusivo de la memoria local del navegador (<code>localStorage</code>) para guardar la sesión iniciada y preferencias de navegación de forma rápida y segura, sin utilizar cookies de rastreo publicitario.</p>",
                         sec5Title: "5. Tus Derechos y Gestión de Datos",
-                        sec5Text: "Puedes editar tus datos de perfil en cualquier momento desde el panel de edición de tu tarjeta. Si deseas darte de baja o eliminar permanentemente tu cuenta y datos asociados, puedes solicitarlo directamente a la administración a través de nuestro Discord oficial.",
+                        sec5Text: "<p>Puedes editar tus datos de perfil en cualquier momento desde el panel de edición de tu tarjeta. Si deseas darte de baja o eliminar permanentemente tu cuenta y datos asociados, puedes solicitarlo directamente a la administración a través de nuestro Discord oficial.</p>",
                         sec6Title: "6. Contacto",
-                        sec6Text: "Para cualquier consulta respecto a la privacidad, puedes contactar con la administración de Formula Factor Championship a través del canal de soporte oficial en Discord.",
+                        sec6Text: "<p>Para cualquier consulta respecto a la privacidad, puedes contactar con la administración de Formula Factor Championship a través del canal de soporte oficial en Discord.</p>",
                         hermesTitle: "Nota de Hermes",
                         hermesText: "\"Basicamente que no hacemos nada con vuestros correos, no nos sirven de nada panolis\"",
                         acceptBtn: "ENTENDIDO"
@@ -828,32 +846,34 @@ const translations = {
                         badge: "FFC // LEGAL & CONDICIONES",
                         title: "TÉRMINOS Y CONDICIONES DE USO",
                         subtitle: "Última actualización: Septiembre 2026",
+                        closeAria: "Cerrar términos y condiciones",
                         sec1Title: "1. Objeto y Aceptación",
-                        sec1Text: "Los presentes Términos y Condiciones regulan el acceso y uso de la plataforma web de <strong>Formula Factor Championship (FFC)</strong>, campeonato oficial de Sim Racing. La utilización de la plataforma implica la aceptación íntegra y sin reservas de todas las disposiciones aquí incluidas.",
+                        sec1Text: "<p>Los presentes Términos y Condiciones regulan el acceso y uso de la plataforma web de <strong>Formula Factor Championship (FFC)</strong>, campeonato oficial de Sim Racing. La utilización de la plataforma implica la aceptación íntegra y sin reservas de todas las disposiciones aquí incluidas.</p>",
                         sec2Title: "2. Normas de Participación y Fair Play",
-                        sec2Text: "Todos los pilotos y miembros registrados en FFC se comprometen a:\\n<ul>\\n    <li>Mantener una conducta deportiva ejemplar (\"Fair Play\") tanto en pista durante las sesiones y Grandes Premios como en los canales de comunicación de la comunidad.</li>\\n    <li>Respetar las decisiones de los comisarios deportivos y el reglamento oficial del campeonato disponible en la sección de información.</li>\\n    <li>No utilizar software de trampas, modificaciones no autorizadas ni alterar deliberadamente la telemetría o los resultados oficiales.</li>\\n</ul>",
+                        sec2Text: "<p>Todos los pilotos y miembros registrados en FFC se comprometen a:</p><ul><li>Mantener una conducta deportiva ejemplar (\"Fair Play\") tanto en pista durante las sesiones y Grandes Premios como en los canales de comunicación de la comunidad.</li><li>Respetar las decisiones de los comisarios deportivos y el reglamento oficial del campeonato disponible en la sección de información.</li><li>No utilizar software de trampas, modificaciones no autorizadas ni alterar deliberadamente la telemetría o los resultados oficiales.</li></ul>",
                         sec3Title: "3. Liga FFC Fantasy",
-                        sec3Text: "El modo de juego interactivo FFC Fantasy es una competición recreativa basada en el rendimiento deportivo real de los pilotos en el campeonato. La organización se reserva el derecho de auditar puntuaciones y corregir errores técnicos en las clasificaciones del Fantasy.",
+                        sec3Text: "<p>El modo de juego interactivo FFC Fantasy es una competición recreativa basada en el rendimiento deportivo real de los pilotos en el campeonato. La organización se reserva el derecho de auditar puntuaciones y corregir errores técnicos en las clasificaciones del Fantasy.</p>",
                         sec4Title: "4. Propiedad Intelectual",
-                        sec4Text: "Todos los contenidos, logotipos, marcas, diseños, estadísticas, gráficos y software de la plataforma FFC están protegidos por derechos de propiedad intelectual e industrial. Queda prohibida su reproducción total o parcial sin autorización expresa de la organización.",
+                        sec4Text: "<p>Todos los contenidos, logotipos, marcas, diseños, estadísticas, gráficos y software de la plataforma FFC están protegidos por derechos de propiedad intelectual e industrial. Queda prohibida su reproducción total o parcial sin autorización expresa de la organización.</p>",
                         sec5Title: "5. Limitación de Responsabilidad",
-                        sec5Text: "FFC opera como una liga independiente de Sim Racing sin ánimo de lucro. La organización no se hace responsable de interrupciones técnicas imprevistas del servidor, pérdida de datos ajena a nuestro control o incidencias de conexión de los participantes.",
+                        sec5Text: "<p>FFC opera como una liga independiente de Sim Racing sin ánimo de lucro. La organización no se hace responsable de interrupciones técnicas imprevistas del servidor, pérdida de datos ajena a nuestro control o incidencias de conexión de los participantes.</p>",
                         sec6Title: "6. Modificaciones",
-                        sec6Text: "La organización podrá actualizar o modificar estos términos en cualquier momento para adaptarlos a la normativa vigente o mejoras de la competición. Las modificaciones entrarán en vigor desde su publicación en la plataforma.",
+                        sec6Text: "<p>La organización podrá actualizar o modificar estos términos en cualquier momento para adaptarlos a la normativa vigente o mejoras de la competición. Las modificaciones entrarán en vigor desde su publicación en la plataforma.</p>",
                         acceptBtn: "ENTENDIDO"
                     },
                     cookies: {
                         badge: "FFC // LEGAL & COOKIES",
                         title: "POLÍTICA DE COOKIES",
                         subtitle: "Última actualización: Septiembre 2026",
+                        closeAria: "Cerrar política de cookies",
                         sec1Title: "1. ¿Qué son las Cookies?",
-                        sec1Text: "Una cookie es un pequeño archivo de texto que los sitios web almacenan en su ordenador o dispositivo móvil cuando visita la página. Permiten recordar sus acciones y preferencias durante un tiempo para que no tenga que volver a introducirlas cada vez que navegue.",
+                        sec1Text: "<p>Una cookie es un pequeño archivo de texto que los sitios web almacenan en su ordenador o dispositivo móvil cuando visita la página. Permiten recordar sus acciones y preferencias durante un tiempo para que no tenga que volver a introducirlas cada vez que navegue.</p>",
                         sec2Title: "2. Tipos de Cookies que Utiliza FFC",
-                        sec2Text: "En Formula Factor Championship utilizamos exclusivamente:\\n<ul>\\n    <li><strong>Cookies Técnicas y de Sesión:</strong> Esenciales para permitir la autenticación de usuarios, recordar el idioma seleccionado y garantizar el correcto funcionamiento del panel de usuario y la Liga Fantasy.</li>\\n    <li><strong>Almacenamiento Local (localStorage):</strong> Empleado para guardar de forma segura sus preferencias de visualización y caché local de resultados para una carga rápida.</li>\\n    <li><strong>Google Analytics (Medición anónima):</strong> Estadísticas de tráfico anónimas para mejorar el rendimiento de la plataforma.</li>\\n</ul>",
+                        sec2Text: "<p>En Formula Factor Championship utilizamos exclusivamente:</p><ul><li><strong>Cookies Técnicas y de Sesión:</strong> Esenciales para permitir la autenticación de usuarios, recordar el idioma seleccionado y garantizar el correcto funcionamiento del panel de usuario y la Liga Fantasy.</li><li><strong>Almacenamiento Local (localStorage):</strong> Empleado para guardar de forma segura sus preferencias de visualización y caché local de resultados para una carga rápida.</li><li><strong>Google Analytics (Medición anónima):</strong> Estadísticas de tráfico anónimas para mejorar el rendimiento de la plataforma.</li></ul>",
                         sec3Title: "3. Gestión y Desactivación de Cookies",
-                        sec3Text: "Usted puede permitir, bloquear o eliminar las cookies instaladas en su equipo mediante la configuración de las opciones del navegador instalado en su dispositivo:\\n<ul>\\n    <li><strong>Google Chrome:</strong> Configuración -> Privacidad y seguridad -> Cookies.</li>\\n    <li><strong>Mozilla Firefox:</strong> Opciones -> Privacidad y seguridad -> Cookies y datos del sitio.</li>\\n    <li><strong>Safari:</strong> Preferencias -> Privacidad.</li>\\n</ul>",
+                        sec3Text: "<p>Usted puede permitir, bloquear o eliminar las cookies instaladas en su equipo mediante la configuración de las opciones del navegador instalado en su dispositivo:</p><ul><li><strong>Google Chrome:</strong> Configuración -> Privacidad y seguridad -> Cookies.</li><li><strong>Mozilla Firefox:</strong> Opciones -> Privacidad y seguridad -> Cookies y datos del sitio.</li><li><strong>Safari:</strong> Preferencias -> Privacidad.</li></ul>",
                         sec4Title: "4. Actualizaciones",
-                        sec4Text: "Esta política de cookies puede actualizarse en función de exigencias legislativas o técnicas, por lo que se recomienda a los usuarios revisarla periódicamente.",
+                        sec4Text: "<p>Esta política de cookies puede actualizarse en función de exigencias legislativas o técnicas, por lo que se recomienda a los usuarios revisarla periódicamente.</p>",
                         acceptBtn: "ACEPTAR Y CERRAR"
                     }
                 }
@@ -869,7 +889,22 @@ const translations = {
                 tabSettings: "Ajustes Generales",
                 photoBadge: "MODERACIÓN • GALERÍA FFC",
                 photoHeading: "MODERACIÓN DE FOTOS DE LA COMUNIDAD",
-                photoDesc: "Revisa, previsualiza, aprueba o rechaza las fotografías subidas por los pilotos antes de que aparezcan en la galería pública."
+                photoDesc: "Revisa, previsualiza, aprueba o rechaza las fotografías subidas por los pilotos antes de que aparezcan en la galería pública.",
+                photosFilterAll: "Todas",
+                photosFilterPending: "Pendientes",
+                photosFilterApproved: "Aprobadas",
+                photosFilterRejected: "Rechazadas",
+                photosSearchPlaceholder: "Buscar por autor, descripción o Gran Premio...",
+                btnAdminUpload: "<span>📸</span> Subir Foto Directa (Admin)",
+                adminPhotosEmpty: "No se encontraron fotos en esta categoría.",
+                adminPhotosEmptySub: "Las fotos subidas por los pilotos o administradores aparecerán aquí para su gestión.",
+                adminStatusApproved: "🟢 APROBADA",
+                adminStatusRejected: "🔴 RECHAZADA",
+                adminStatusPending: "🟡 PENDIENTE",
+                adminBtnApprove: "✅ Aprobar",
+                adminBtnReject: "❌ Rechazar",
+                adminBtnDownload: "⬇️ Descargar",
+                adminModifyRaceLabel: "🏁 Modificar Carrera asignada:"
             }
         }
     },
@@ -879,6 +914,7 @@ const translations = {
             standings: "STANDINGS",
             calendar: "CALENDAR",
             races: "RACES",
+            photos: "📸 PHOTOS",
             news: "NEWS",
             info: "INFO",
             compare: "COMPARISON",
@@ -1263,72 +1299,91 @@ const translations = {
                     captionPlaceholder: "e.g. Turn 1 start, Podium battle...",
                     btnCancel: "Cancel",
                     btnSubmit: "Upload photo",
+                    homeBannerBadge: "📸 FFC COMMUNITY",
                     homeBannerTitle: "RACE PHOTO GALLERY",
                     homeBannerDesc: "Explore captures, epic overtakes, podiums, and track moments uploaded by the community.",
                     homeBannerBtn: "📸 View Full Photo Gallery",
+                    closeGalleryAria: "Close gallery",
+                    closeUploadAria: "Close upload",
                     raceTabGallery: "📸 Photo Gallery",
-                    raceGalleryTitle: "Race Photographic Gallery",
+                    raceGalleryTitle: "Race Photo Gallery",
                     raceGalleryDesc: "Captures, podiums, and on-track moments uploaded by the community.",
                     raceUploadBtn1: "+ Upload Photo to this GP",
                     raceEmptyTitle: "No photos for this Grand Prix yet",
                     raceEmptyDesc: "Be the first to upload a photo of this race!",
-                    raceUploadBtn2: "Upload photo now"
+                    raceUploadBtn2: "Upload photo now",
+                    lightboxCloseAria: "Close viewer",
+                    lightboxDownload: "⬇️ Download Photo",
+                    lightboxDelete: "🗑️ Delete",
+                    lightboxUploadedBy: "Uploaded by",
+                    deleteConfirm: "Are you sure you want to delete this photo from the gallery?"
                 },
                 legal: {
                     footerCopyright: "© 2026 Formula Factor Championship. All rights reserved. Official Sim Racing Championship.",
                     privacyBtn: "Privacy Policy",
                     termsBtn: "Terms & Conditions",
                     cookiesBtn: "Cookies Policy",
+                    footerDiscord: "Official Discord",
+                    footerRules: "FFC Regulations",
+                    cookieBanner: {
+                        text: "<strong>🍪 Cookies & Local Storage Notice:</strong> FFC uses essential technical cookies and local storage for authentication, the Fantasy League, and core platform features. You can review our ",
+                        policyBtn: "Cookies Policy",
+                        rejectBtn: "Essential only",
+                        acceptBtn: "Accept all"
+                    },
                     privacy: {
                         badge: "FFC // LEGAL & PRIVACY",
                         title: "PRIVACY POLICY",
                         subtitle: "Last update: September 2026",
+                        closeAria: "Close privacy policy",
                         sec1Title: "1. Information We Collect",
-                        sec1Text: "At <strong>Formula Factor Championship (FFC)</strong> we exclusively collect the information necessary for league operations, standings management, and community interaction:\\n<ul>\\n    <li><strong>Profile & Account:</strong> Driver name / alias and email address for platform authentication.</li>\\n    <li><strong>Driver Card (FFC Driver Card):</strong> Optional social media (Twitch, YouTube, X/Twitter, Discord), avatar or profile photo, official nationality, and driving style information.</li>\\n    <li><strong>Stats & History:</strong> Race sporting data, championship points, and teams selected in FFC Fantasy.</li>\\n</ul>",
+                        sec1Text: "<p>At <strong>Formula Factor Championship (FFC)</strong> we exclusively collect the information necessary for league operations, standings management, and community interaction:</p><ul><li><strong>Profile & Account:</strong> Driver name / alias and email address for platform authentication.</li><li><strong>Driver Card (FFC Driver Card):</strong> Optional social media (Twitch, YouTube, X/Twitter, Discord), avatar or profile photo, official nationality, and driving style information.</li><li><strong>Stats & History:</strong> Race sporting data, championship points, and teams selected in FFC Fantasy.</li></ul>",
                         sec2Title: "2. Use of Information",
-                        sec2Text: "Your data is used solely for the following legitimate purposes of the organization:\\n<ul>\\n    <li>Manage official standings tables and administrative penalty control.</li>\\n    <li>Allow interactive participation in the FFC Fantasy League.</li>\\n    <li>Display your public driver card during live streams and official lists.</li>\\n    <li>Maintain account security and user authentication.</li>\\n</ul>",
+                        sec2Text: "<p>Your data is used solely for the following legitimate purposes of the organization:</p><ul><li>Manage official standings tables and administrative penalty control.</li><li>Allow interactive participation in the FFC Fantasy League.</li><li>Display your public driver card during live streams and official lists.</li><li>Maintain account security and user authentication.</li></ul>",
                         sec3Title: "3. Security & Storage",
-                        sec3Text: "We use <strong>Google Firebase (Firestore and Auth)</strong> cloud infrastructure, ensuring encryption in transit and at rest for user credentials. FFC does not sell or commercialize any personal data with third parties.",
+                        sec3Text: "<p>We use <strong>Google Firebase (Firestore and Auth)</strong> cloud infrastructure, ensuring encryption in transit and at rest for user credentials. FFC does not sell or commercialize any personal data with third parties.</p>",
                         sec4Title: "4. Cookies & Local Storage",
-                        sec4Text: "This platform exclusively uses browser local memory (<code>localStorage</code>) to save logged-in sessions and navigation preferences quickly and securely, without using advertising tracking cookies.",
+                        sec4Text: "<p>This platform exclusively uses browser local memory (<code>localStorage</code>) to save logged-in sessions and navigation preferences quickly and securely, without using advertising tracking cookies.</p>",
                         sec5Title: "5. Your Rights & Data Management",
-                        sec5Text: "You can edit your profile data at any time from your card editing panel. If you wish to unsubscribe or permanently delete your account and associated data, you can request it directly from administration through our official Discord.",
+                        sec5Text: "<p>You can edit your profile data at any time from your card editing panel. If you wish to unsubscribe or permanently delete your account and associated data, you can request it directly from administration through our official Discord.</p>",
                         sec6Title: "6. Contact",
-                        sec6Text: "For any privacy-related inquiries, you can contact the Formula Factor Championship administration through the official support channel on Discord.",
+                        sec6Text: "<p>For any privacy-related inquiries, you can contact the Formula Factor Championship administration through the official support channel on Discord.</p>",
                         hermesTitle: "Hermes Note",
-                        hermesText: "\"Basically we don't do anything with your emails, they are useless to you chumps\"",
+                        hermesText: "\"Basically we don't do anything with your emails, they are useless to us chumps\"",
                         acceptBtn: "UNDERSTOOD"
                     },
                     terms: {
                         badge: "FFC // LEGAL & CONDITIONS",
                         title: "TERMS & CONDITIONS OF USE",
                         subtitle: "Last update: September 2026",
+                        closeAria: "Close terms and conditions",
                         sec1Title: "1. Object & Acceptance",
-                        sec1Text: "These Terms & Conditions regulate the access and use of the web platform of <strong>Formula Factor Championship (FFC)</strong>, official Sim Racing championship. Using the platform implies full and unreserved acceptance of all provisions included herein.",
+                        sec1Text: "<p>These Terms & Conditions regulate the access and use of the web platform of <strong>Formula Factor Championship (FFC)</strong>, official Sim Racing championship. Using the platform implies full and unreserved acceptance of all provisions included herein.</p>",
                         sec2Title: "2. Participation Rules & Fair Play",
-                        sec2Text: "All drivers and members registered in FFC commit to:\\n<ul>\\n    <li>Maintain exemplary sporting conduct (\"Fair Play\") both on track during sessions and Grands Prix and in community communication channels.</li>\\n    <li>Respect the decisions of sporting stewards and the official championship regulations available in the info section.</li>\\n    <li>Do not use cheating software, unauthorized modifications, or deliberately alter telemetry or official results.</li>\\n</ul>",
+                        sec2Text: "<p>All drivers and members registered in FFC commit to:</p><ul><li>Maintain exemplary sporting conduct (\"Fair Play\") both on track during sessions and Grands Prix and in community communication channels.</li><li>Respect the decisions of sporting stewards and the official championship regulations available in the info section.</li><li>Do not use cheating software, unauthorized modifications, or deliberately alter telemetry or official results.</li></ul>",
                         sec3Title: "3. FFC Fantasy League",
-                        sec3Text: "The FFC Fantasy interactive game mode is a recreational competition based on the actual sporting performance of drivers in the championship. The organization reserves the right to audit scores and correct technical errors in Fantasy standings.",
+                        sec3Text: "<p>The FFC Fantasy interactive game mode is a recreational competition based on the actual sporting performance of drivers in the championship. The organization reserves the right to audit scores and correct technical errors in Fantasy standings.</p>",
                         sec4Title: "4. Intellectual Property",
-                        sec4Text: "All content, logos, trademarks, designs, statistics, graphics, and software of the FFC platform are protected by intellectual and industrial property rights. Total or partial reproduction without express authorization from the organization is prohibited.",
+                        sec4Text: "<p>All content, logos, trademarks, designs, statistics, graphics, and software of the FFC platform are protected by intellectual and industrial property rights. Total or partial reproduction without express authorization from the organization is prohibited.</p>",
                         sec5Title: "5. Limitation of Liability",
-                        sec5Text: "FFC operates as an independent non-profit Sim Racing league. The organization is not responsible for unforeseen technical server interruptions, loss of data outside our control, or participant connection issues.",
+                        sec5Text: "<p>FFC operates as an independent non-profit Sim Racing league. The organization is not responsible for unforeseen technical server interruptions, loss of data outside our control, or participant connection issues.</p>",
                         sec6Title: "6. Modifications",
-                        sec6Text: "The organization may update or modify these terms at any time to adapt them to current regulations or competition improvements. Modifications will take effect upon publication on the platform.",
+                        sec6Text: "<p>The organization may update or modify these terms at any time to adapt them to current regulations or competition improvements. Modifications will take effect upon publication on the platform.</p>",
                         acceptBtn: "UNDERSTOOD"
                     },
                     cookies: {
                         badge: "FFC // LEGAL & COOKIES",
                         title: "COOKIES POLICY",
                         subtitle: "Last update: September 2026",
+                        closeAria: "Close cookies policy",
                         sec1Title: "1. What are Cookies?",
-                        sec1Text: "A cookie is a small text file that websites store on your computer or mobile device when you visit the page. They allow your actions and preferences to be remembered for a time so you don't have to re-enter them every time you browse.",
+                        sec1Text: "<p>A cookie is a small text file that websites store on your computer or mobile device when you visit the page. They allow your actions and preferences to be remembered for a time so you don't have to re-enter them every time you browse.</p>",
                         sec2Title: "2. Types of Cookies Used by FFC",
-                        sec2Text: "In Formula Factor Championship we exclusively use:\\n<ul>\\n    <li><strong>Technical & Session Cookies:</strong> Essential to allow user authentication, remember selected language, and ensure proper functioning of the user panel and Fantasy League.</li>\\n    <li><strong>Local Storage (localStorage):</strong> Used to securely save your display preferences and local results cache for fast loading.</li>\\n    <li><strong>Google Analytics (Anonymous Measurement):</strong> Anonymous traffic statistics to improve platform performance.</li>\\n</ul>",
+                        sec2Text: "<p>In Formula Factor Championship we exclusively use:</p><ul><li><strong>Technical & Session Cookies:</strong> Essential to allow user authentication, remember selected language, and ensure proper functioning of the user panel and Fantasy League.</li><li><strong>Local Storage (localStorage):</strong> Used to securely save your display preferences and local results cache for fast loading.</li><li><strong>Google Analytics (Anonymous Measurement):</strong> Anonymous traffic statistics to improve platform performance.</li></ul>",
                         sec3Title: "3. Management & Disabling of Cookies",
-                        sec3Text: "You can allow, block, or delete cookies installed on your device by configuring the browser settings installed on your device:\\n<ul>\\n    <li><strong>Google Chrome:</strong> Settings -> Privacy and security -> Cookies.</li>\\n    <li><strong>Mozilla Firefox:</strong> Options -> Privacy and security -> Cookies and site data.</li>\\n    <li><strong>Safari:</strong> Preferences -> Privacy.</li>\\n</ul>",
+                        sec3Text: "<p>You can allow, block, or delete cookies installed on your device by configuring the browser settings installed on your device:</p><ul><li><strong>Google Chrome:</strong> Settings -> Privacy and security -> Cookies.</li><li><strong>Mozilla Firefox:</strong> Options -> Privacy and security -> Cookies and site data.</li><li><strong>Safari:</strong> Preferences -> Privacy.</li></ul>",
                         sec4Title: "4. Updates",
-                        sec4Text: "This cookies policy may be updated based on legislative or technical requirements, so users are recommended to review it periodically.",
+                        sec4Text: "<p>This cookies policy may be updated based on legislative or technical requirements, so users are recommended to review it periodically.</p>",
                         acceptBtn: "ACCEPT & CLOSE"
                     }
                 }
@@ -1344,11 +1399,38 @@ const translations = {
                 tabSettings: "General Settings",
                 photoBadge: "MODERATION • FFC GALLERY",
                 photoHeading: "COMMUNITY PHOTO MODERATION",
-                photoDesc: "Review, preview, approve, or reject photos uploaded by drivers before they appear in the public gallery."
+                photoDesc: "Review, preview, approve, or reject photos uploaded by drivers before they appear in the public gallery.",
+                photosFilterAll: "All",
+                photosFilterPending: "Pending",
+                photosFilterApproved: "Approved",
+                photosFilterRejected: "Rejected",
+                photosSearchPlaceholder: "Search by author, description, or Grand Prix...",
+                btnAdminUpload: "<span>📸</span> Direct Photo Upload (Admin)",
+                adminPhotosEmpty: "No photos found in this category.",
+                adminPhotosEmptySub: "Photos uploaded by drivers or admins will appear here for moderation.",
+                adminStatusApproved: "🟢 APPROVED",
+                adminStatusRejected: "🔴 REJECTED",
+                adminStatusPending: "🟡 PENDING",
+                adminBtnApprove: "✅ Approve",
+                adminBtnReject: "❌ Reject",
+                adminBtnDownload: "⬇️ Download",
+                adminModifyRaceLabel: "🏁 Modify Assigned Race:"
             }
         }
     }
 };
+
+// Ensure top-level mappings for admin, compare, photos, and legal in both languages
+[translations.es, translations.en].forEach(t => {
+    if (!t) return;
+    if (t.news && t.news.admin && !t.admin) t.admin = t.news.admin;
+    if (t.news && t.news.compare && !t.compare) t.compare = t.news.compare;
+    const cmp = t.compare || (t.news && t.news.compare) || (t.fantasy && t.fantasy.compare);
+    if (cmp) {
+        if (cmp.photos && !t.photos) t.photos = cmp.photos;
+        if (cmp.legal && !t.legal) t.legal = cmp.legal;
+    }
+});
 
 let currentLanguage = "es";
 let compareMode = "mutual"; // "mutual" (Fair H2H - only shared races) or "all" (Full season)
@@ -1407,6 +1489,8 @@ function applyTranslations(lang) {
     if (navC) navC.textContent = dict.nav.calendar;
     const navR = document.getElementById("navRaces");
     if (navR) navR.textContent = dict.nav.races;
+    const navPhotosEl = document.getElementById("navPhotos");
+    if (navPhotosEl) navPhotosEl.textContent = (dict.nav && dict.nav.photos) || (lang === "en" ? "📸 PHOTOS" : "📸 FOTOS");
     const navN = document.getElementById("navNews");
     if (navN && dict.nav && dict.nav.news) navN.textContent = dict.nav.news;
     const navI = document.getElementById("navInfo");
@@ -1416,221 +1500,301 @@ function applyTranslations(lang) {
     const navF = document.getElementById("navFantasyText");
     if (navF && dict.nav && dict.nav.fantasy) navF.textContent = dict.nav.fantasy;
 
-    if (dict.photos) {
+    const photosDict = dict.photos || (dict.compare && dict.compare.photos) || (dict.news && dict.news.compare && dict.news.compare.photos);
+    if (photosDict) {
         const gk = document.getElementById("galleryModalKicker");
-        if (gk) gk.textContent = dict.photos.galleryKicker;
+        if (gk) gk.textContent = photosDict.galleryKicker;
         const gt = document.getElementById("galleryModalTitle");
-        if (gt) gt.textContent = dict.photos.galleryTitle;
+        if (gt) gt.textContent = photosDict.galleryTitle;
         const btnUp1 = document.getElementById("btnOpenUploadPhoto1");
-        if (btnUp1) btnUp1.textContent = dict.photos.uploadNewBtn;
+        if (btnUp1) btnUp1.textContent = photosDict.uploadNewBtn;
         const btnUp2 = document.getElementById("btnOpenUploadPhoto2");
-        if (btnUp2) btnUp2.textContent = dict.photos.uploadNewBtn;
+        if (btnUp2) btnUp2.textContent = photosDict.uploadNewBtn;
         const lblFil = document.getElementById("lblGalleryFilter");
-        if (lblFil) lblFil.textContent = dict.photos.filterLabel;
+        if (lblFil) lblFil.textContent = photosDict.filterLabel || (lang === "en" ? "Filter by Grand Prix:" : "Filtrar por Gran Premio:");
         const optAll = document.getElementById("optFilterAll");
-        if (optAll) optAll.textContent = dict.photos.allGps;
+        if (optAll) optAll.textContent = photosDict.allGps || (lang === "en" ? "🏁 All Races & GPs" : "🏁 Todas las Carreras y GPs");
         const gEmptyT = document.getElementById("galleryEmptyTitle");
-        if (gEmptyT) gEmptyT.textContent = dict.photos.emptyTitle;
+        if (gEmptyT) gEmptyT.textContent = photosDict.emptyTitle;
         const gEmptyD = document.getElementById("galleryEmptyDesc");
-        if (gEmptyD) gEmptyD.textContent = dict.photos.emptyDesc;
+        if (gEmptyD) gEmptyD.textContent = photosDict.emptyDesc;
         const btnUpFirst = document.getElementById("btnOpenUploadPhotoFirst");
-        if (btnUpFirst) btnUpFirst.textContent = dict.photos.uploadFirstBtn;
+        if (btnUpFirst) btnUpFirst.textContent = photosDict.uploadFirstBtn;
+
+        // Modal close button aria labels
+        const closeGalBtn = document.querySelector("#globalPhotoGalleryModal .close-photo-modal");
+        if (closeGalBtn && photosDict.closeGalleryAria) closeGalBtn.setAttribute("aria-label", photosDict.closeGalleryAria);
+        const closeUpBtn = document.querySelector("#uploadPhotoModal .close-photo-modal");
+        if (closeUpBtn && photosDict.closeUploadAria) closeUpBtn.setAttribute("aria-label", photosDict.closeUploadAria);
+        const closeLbBtn = document.querySelector("#photoLightboxModal .close-lightbox");
+        if (closeLbBtn && photosDict.lightboxCloseAria) closeLbBtn.setAttribute("aria-label", photosDict.lightboxCloseAria);
 
         const upKicker = document.getElementById("uploadModalKicker");
-        if (upKicker) upKicker.textContent = dict.photos.modalKicker;
+        if (upKicker) upKicker.textContent = photosDict.modalKicker;
         const upTitle = document.getElementById("uploadModalTitle");
-        if (upTitle) upTitle.textContent = dict.photos.modalTitle;
+        if (upTitle) upTitle.textContent = photosDict.modalTitle;
         const upAdmin = document.getElementById("uploadAdminNotice");
-        if (upAdmin) upAdmin.innerHTML = dict.photos.adminNotice;
+        if (upAdmin) upAdmin.innerHTML = photosDict.adminNotice;
         const upLogT = document.getElementById("uploadLoginPromptTitle");
-        if (upLogT) upLogT.textContent = dict.photos.loginPromptTitle;
+        if (upLogT) upLogT.textContent = photosDict.loginPromptTitle;
         const upLogD = document.getElementById("uploadLoginPromptDesc");
-        if (upLogD) upLogD.textContent = dict.photos.loginPromptDesc;
+        if (upLogD) upLogD.textContent = photosDict.loginPromptDesc;
         const upLogBtn = document.getElementById("uploadLoginPromptBtn");
-        if (upLogBtn) upLogBtn.textContent = dict.photos.loginPromptBtn;
+        if (upLogBtn) upLogBtn.textContent = photosDict.loginPromptBtn;
 
         const lblR = document.getElementById("lblUploadRace");
-        if (lblR) lblR.textContent = dict.photos.labelRace;
+        if (lblR) lblR.textContent = photosDict.labelRace;
         const lblM = document.getElementById("lblUploadMethod");
-        if (lblM) lblM.textContent = dict.photos.labelMethod;
+        if (lblM) lblM.textContent = photosDict.labelMethod;
         const tabF = document.getElementById("tabUploadFile");
-        if (tabF) tabF.textContent = dict.photos.methodFile;
+        if (tabF) tabF.textContent = photosDict.methodFile;
         const tabU = document.getElementById("tabUploadUrl");
-        if (tabU) tabU.textContent = dict.photos.methodUrl;
+        if (tabU) tabU.textContent = photosDict.methodUrl;
         const lblFile = document.getElementById("lblPhotoFileInput");
-        if (lblFile) lblFile.textContent = dict.photos.fileLabel;
+        if (lblFile) lblFile.textContent = photosDict.fileLabel;
         const lblHint = document.getElementById("lblPhotoFileHint");
-        if (lblHint) lblHint.textContent = dict.photos.fileHint;
+        if (lblHint) lblHint.textContent = photosDict.fileHint;
         const lblUrl = document.getElementById("lblPhotoUrlInput");
-        if (lblUrl) lblUrl.textContent = dict.photos.urlLabel;
+        if (lblUrl) lblUrl.textContent = photosDict.urlLabel;
         const inUrl = document.getElementById("photoUrlInput");
-        if (inUrl) inUrl.placeholder = dict.photos.urlPlaceholder;
+        if (inUrl) inUrl.placeholder = photosDict.urlPlaceholder;
         const lblCap = document.getElementById("lblPhotoCaptionInput");
-        if (lblCap) lblCap.textContent = dict.photos.captionLabel;
+        if (lblCap) lblCap.textContent = photosDict.captionLabel;
         const inCap = document.getElementById("photoCaptionInput");
-        if (inCap) inCap.placeholder = dict.photos.captionPlaceholder;
+        if (inCap) inCap.placeholder = photosDict.captionPlaceholder;
         const btnC = document.getElementById("uploadModalCancelBtn");
-        if (btnC) btnC.textContent = dict.photos.btnCancel;
+        if (btnC) btnC.textContent = photosDict.btnCancel;
         const btnS = document.getElementById("btnSubmitPhotoUpload");
-        if (btnS) btnS.textContent = dict.photos.btnSubmit;
+        if (btnS) btnS.textContent = photosDict.btnSubmit;
 
+        const hBanBadge = document.getElementById("homePhotoBannerBadge");
+        if (hBanBadge) hBanBadge.textContent = photosDict.homeBannerBadge || (lang === "en" ? "📸 FFC COMMUNITY" : "📸 COMUNIDAD FFC");
         const hBanTitle = document.getElementById("homePhotoBannerTitle");
-        if (hBanTitle) hBanTitle.textContent = dict.photos.homeBannerTitle;
+        if (hBanTitle) hBanTitle.textContent = photosDict.homeBannerTitle;
         const hBanDesc = document.getElementById("homePhotoBannerDesc");
-        if (hBanDesc) hBanDesc.textContent = dict.photos.homeBannerDesc;
+        if (hBanDesc) hBanDesc.textContent = photosDict.homeBannerDesc;
         const hBanBtn = document.getElementById("homePhotoBannerBtn");
-        if (hBanBtn) hBanBtn.textContent = dict.photos.homeBannerBtn;
+        if (hBanBtn) hBanBtn.textContent = photosDict.homeBannerBtn;
 
         const rTabGal = document.getElementById("raceTabGalleryBtn");
         if (rTabGal) {
             const countSpan = document.getElementById("raceModalPhotoCount");
             const countVal = countSpan ? countSpan.textContent : "0";
-            rTabGal.innerHTML = `${dict.photos.raceTabGallery} (<span id="raceModalPhotoCount">${countVal}</span>)`;
+            rTabGal.innerHTML = `${photosDict.raceTabGallery} (<span id="raceModalPhotoCount">${countVal}</span>)`;
         }
         const rGalTitle = document.getElementById("raceGalleryTabTitle");
-        if (rGalTitle) rGalTitle.textContent = dict.photos.raceGalleryTitle;
+        if (rGalTitle) rGalTitle.textContent = photosDict.raceGalleryTitle;
         const rGalDesc = document.getElementById("raceGalleryTabDesc");
-        if (rGalDesc) rGalDesc.textContent = dict.photos.raceGalleryDesc;
+        if (rGalDesc) rGalDesc.textContent = photosDict.raceGalleryDesc;
         const rGalUp1 = document.getElementById("raceGalleryUploadBtn1");
-        if (rGalUp1) rGalUp1.textContent = dict.photos.raceUploadBtn1;
+        if (rGalUp1) rGalUp1.textContent = photosDict.raceUploadBtn1;
         const rGalEmptyT = document.getElementById("raceGalleryEmptyTitle");
-        if (rGalEmptyT) rGalEmptyT.textContent = dict.photos.raceEmptyTitle;
+        if (rGalEmptyT) rGalEmptyT.textContent = photosDict.raceEmptyTitle;
         const rGalEmptyD = document.getElementById("raceGalleryEmptyDesc");
-        if (rGalEmptyD) rGalEmptyD.textContent = dict.photos.raceEmptyDesc;
+        if (rGalEmptyD) rGalEmptyD.textContent = photosDict.raceEmptyDesc;
         const rGalUp2 = document.getElementById("raceGalleryUploadBtn2");
-        if (rGalUp2) rGalUp2.textContent = dict.photos.raceUploadBtn2;
+        if (rGalUp2) rGalUp2.textContent = photosDict.raceUploadBtn2;
+
+        const dlBtn = document.getElementById("lightboxDownloadBtn");
+        if (dlBtn && photosDict.lightboxDownload) dlBtn.textContent = photosDict.lightboxDownload;
+        const delBtn = document.getElementById("lightboxDeleteBtn");
+        if (delBtn && photosDict.lightboxDelete) delBtn.textContent = photosDict.lightboxDelete;
+
+        // Re-populate past races in upload select if present
+        const uploadRaceSel = document.getElementById("uploadRaceSelect");
+        if (uploadRaceSel && typeof populatePastRaceSelect === "function") {
+            populatePastRaceSelect(uploadRaceSel.value);
+        }
     }
 
-    if (dict.legal) {
+    const legalDict = dict.legal || (dict.compare && dict.compare.legal) || (dict.news && dict.news.compare && dict.news.compare.legal);
+    if (legalDict) {
         const fCopy = document.getElementById("footerCopyright");
-        if (fCopy) fCopy.textContent = dict.legal.footerCopyright;
+        if (fCopy) fCopy.textContent = legalDict.footerCopyright;
         const fPriv = document.getElementById("footerPrivacyBtn");
-        if (fPriv) fPriv.textContent = dict.legal.privacyBtn;
+        if (fPriv) fPriv.textContent = legalDict.privacyBtn;
         const fTerm = document.getElementById("footerTermsBtn");
-        if (fTerm) fTerm.textContent = dict.legal.termsBtn;
+        if (fTerm) fTerm.textContent = legalDict.termsBtn;
         const fCook = document.getElementById("footerCookiesBtn");
-        if (fCook) fCook.textContent = dict.legal.cookiesBtn;
+        if (fCook) fCook.textContent = legalDict.cookiesBtn;
+        const fDisc = document.getElementById("footerDiscordLink");
+        if (fDisc) fDisc.textContent = legalDict.footerDiscord || (lang === "en" ? "Official Discord" : "Discord Oficial");
+        const fRules = document.getElementById("footerRulesLink");
+        if (fRules) fRules.textContent = legalDict.footerRules || (lang === "en" ? "FFC Regulations" : "Reglamento FFC");
+
+        // Cookie Consent Banner
+        const bannerTextEl = document.getElementById("cookieBannerText");
+        if (bannerTextEl && legalDict.cookieBanner) {
+            bannerTextEl.innerHTML = `${legalDict.cookieBanner.text}<button type="button" class="cookie-policy-link-btn" id="bannerCookiesLink" onclick="if(window.openCookiesModal){window.openCookiesModal();return false;}">${legalDict.cookieBanner.policyBtn}</button>.`;
+        }
+        const cookieRej = document.getElementById("cookieRejectBtn");
+        if (cookieRej && legalDict.cookieBanner) cookieRej.textContent = legalDict.cookieBanner.rejectBtn;
+        const cookieAcc = document.getElementById("cookieAcceptBtn");
+        if (cookieAcc && legalDict.cookieBanner) cookieAcc.textContent = legalDict.cookieBanner.acceptBtn;
+
+        // Close button aria labels
+        const pClose = document.getElementById("privacyModalClose");
+        if (pClose && legalDict.privacy && legalDict.privacy.closeAria) pClose.setAttribute("aria-label", legalDict.privacy.closeAria);
+        const tClose = document.getElementById("termsModalClose");
+        if (tClose && legalDict.terms && legalDict.terms.closeAria) tClose.setAttribute("aria-label", legalDict.terms.closeAria);
+        const cClose = document.getElementById("cookiesModalClose");
+        if (cClose && legalDict.cookies && legalDict.cookies.closeAria) cClose.setAttribute("aria-label", legalDict.cookies.closeAria);
 
         const pBadge = document.getElementById("privacyBadge");
-        if (pBadge) pBadge.textContent = dict.legal.privacy.badge;
+        if (pBadge) pBadge.textContent = legalDict.privacy.badge;
         const pTitle = document.getElementById("privacyTitle");
-        if (pTitle) pTitle.textContent = dict.legal.privacy.title;
+        if (pTitle) pTitle.textContent = legalDict.privacy.title;
         const pSub = document.getElementById("privacySubtitle");
-        if (pSub) pSub.textContent = dict.legal.privacy.subtitle;
+        if (pSub) pSub.textContent = legalDict.privacy.subtitle;
         const pS1T = document.getElementById("privacySec1Title");
-        if (pS1T) pS1T.textContent = dict.legal.privacy.sec1Title;
+        if (pS1T) pS1T.textContent = legalDict.privacy.sec1Title;
         const pS1B = document.getElementById("privacySec1Body");
-        if (pS1B) pS1B.innerHTML = dict.legal.privacy.sec1Text;
+        if (pS1B) pS1B.innerHTML = legalDict.privacy.sec1Text;
         const pS2T = document.getElementById("privacySec2Title");
-        if (pS2T) pS2T.textContent = dict.legal.privacy.sec2Title;
+        if (pS2T) pS2T.textContent = legalDict.privacy.sec2Title;
         const pS2B = document.getElementById("privacySec2Body");
-        if (pS2B) pS2B.innerHTML = dict.legal.privacy.sec2Text;
+        if (pS2B) pS2B.innerHTML = legalDict.privacy.sec2Text;
         const pS3T = document.getElementById("privacySec3Title");
-        if (pS3T) pS3T.textContent = dict.legal.privacy.sec3Title;
+        if (pS3T) pS3T.textContent = legalDict.privacy.sec3Title;
         const pS3B = document.getElementById("privacySec3Body");
-        if (pS3B) pS3B.innerHTML = dict.legal.privacy.sec3Text;
+        if (pS3B) pS3B.innerHTML = legalDict.privacy.sec3Text;
         const pS4T = document.getElementById("privacySec4Title");
-        if (pS4T) pS4T.textContent = dict.legal.privacy.sec4Title;
+        if (pS4T) pS4T.textContent = legalDict.privacy.sec4Title;
         const pS4B = document.getElementById("privacySec4Body");
-        if (pS4B) pS4B.innerHTML = dict.legal.privacy.sec4Text;
+        if (pS4B) pS4B.innerHTML = legalDict.privacy.sec4Text;
         const pS5T = document.getElementById("privacySec5Title");
-        if (pS5T) pS5T.textContent = dict.legal.privacy.sec5Title;
+        if (pS5T) pS5T.textContent = legalDict.privacy.sec5Title;
         const pS5B = document.getElementById("privacySec5Body");
-        if (pS5B) pS5B.innerHTML = dict.legal.privacy.sec5Text;
+        if (pS5B) pS5B.innerHTML = legalDict.privacy.sec5Text;
         const pS6T = document.getElementById("privacySec6Title");
-        if (pS6T) pS6T.textContent = dict.legal.privacy.sec6Title;
+        if (pS6T) pS6T.textContent = legalDict.privacy.sec6Title;
         const pS6B = document.getElementById("privacySec6Body");
-        if (pS6B) pS6B.innerHTML = dict.legal.privacy.sec6Text;
+        if (pS6B) pS6B.innerHTML = legalDict.privacy.sec6Text;
         const pHermT = document.getElementById("privacyHermesTitle");
-        if (pHermT) pHermT.textContent = dict.legal.privacy.hermesTitle;
+        if (pHermT) pHermT.textContent = legalDict.privacy.hermesTitle;
         const pHermB = document.getElementById("privacyHermesText");
-        if (pHermB) pHermB.textContent = dict.legal.privacy.hermesText;
+        if (pHermB) pHermB.textContent = legalDict.privacy.hermesText;
         const pAcc = document.getElementById("privacyModalAcceptBtn");
-        if (pAcc) pAcc.textContent = dict.legal.privacy.acceptBtn;
+        if (pAcc) pAcc.textContent = legalDict.privacy.acceptBtn;
 
         const tBadge = document.getElementById("termsBadge");
-        if (tBadge) tBadge.textContent = dict.legal.terms.badge;
+        if (tBadge) tBadge.textContent = legalDict.terms.badge;
         const tTitle = document.getElementById("termsTitle");
-        if (tTitle) tTitle.textContent = dict.legal.terms.title;
+        if (tTitle) tTitle.textContent = legalDict.terms.title;
         const tSub = document.getElementById("termsSubtitle");
-        if (tSub) tSub.textContent = dict.legal.terms.subtitle;
+        if (tSub) tSub.textContent = legalDict.terms.subtitle;
         const tS1T = document.getElementById("termsSec1Title");
-        if (tS1T) tS1T.textContent = dict.legal.terms.sec1Title;
+        if (tS1T) tS1T.textContent = legalDict.terms.sec1Title;
         const tS1B = document.getElementById("termsSec1Body");
-        if (tS1B) tS1B.innerHTML = dict.legal.terms.sec1Text;
+        if (tS1B) tS1B.innerHTML = legalDict.terms.sec1Text;
         const tS2T = document.getElementById("termsSec2Title");
-        if (tS2T) tS2T.textContent = dict.legal.terms.sec2Title;
+        if (tS2T) tS2T.textContent = legalDict.terms.sec2Title;
         const tS2B = document.getElementById("termsSec2Body");
-        if (tS2B) tS2B.innerHTML = dict.legal.terms.sec2Text;
+        if (tS2B) tS2B.innerHTML = legalDict.terms.sec2Text;
         const tS3T = document.getElementById("termsSec3Title");
-        if (tS3T) tS3T.textContent = dict.legal.terms.sec3Title;
+        if (tS3T) tS3T.textContent = legalDict.terms.sec3Title;
         const tS3B = document.getElementById("termsSec3Body");
-        if (tS3B) tS3B.innerHTML = dict.legal.terms.sec3Text;
+        if (tS3B) tS3B.innerHTML = legalDict.terms.sec3Text;
         const tS4T = document.getElementById("termsSec4Title");
-        if (tS4T) tS4T.textContent = dict.legal.terms.sec4Title;
+        if (tS4T) tS4T.textContent = legalDict.terms.sec4Title;
         const tS4B = document.getElementById("termsSec4Body");
-        if (tS4B) tS4B.innerHTML = dict.legal.terms.sec4Text;
+        if (tS4B) tS4B.innerHTML = legalDict.terms.sec4Text;
         const tS5T = document.getElementById("termsSec5Title");
-        if (tS5T) tS5T.textContent = dict.legal.terms.sec5Title;
+        if (tS5T) tS5T.textContent = legalDict.terms.sec5Title;
         const tS5B = document.getElementById("termsSec5Body");
-        if (tS5B) tS5B.innerHTML = dict.legal.terms.sec5Text;
+        if (tS5B) tS5B.innerHTML = legalDict.terms.sec5Text;
         const tS6T = document.getElementById("termsSec6Title");
-        if (tS6T) tS6T.textContent = dict.legal.terms.sec6Title;
+        if (tS6T) tS6T.textContent = legalDict.terms.sec6Title;
         const tS6B = document.getElementById("termsSec6Body");
-        if (tS6B) tS6B.innerHTML = dict.legal.terms.sec6Text;
+        if (tS6B) tS6B.innerHTML = legalDict.terms.sec6Text;
         const tAcc = document.getElementById("termsModalAcceptBtn");
-        if (tAcc) tAcc.textContent = dict.legal.terms.acceptBtn;
+        if (tAcc) tAcc.textContent = legalDict.terms.acceptBtn;
 
         const cBadge = document.getElementById("cookiesBadge");
-        if (cBadge) cBadge.textContent = dict.legal.cookies.badge;
+        if (cBadge) cBadge.textContent = legalDict.cookies.badge;
         const cTitle = document.getElementById("cookiesTitle");
-        if (cTitle) cTitle.textContent = dict.legal.cookies.title;
+        if (cTitle) cTitle.textContent = legalDict.cookies.title;
         const cSub = document.getElementById("cookiesSubtitle");
-        if (cSub) cSub.textContent = dict.legal.cookies.subtitle;
+        if (cSub) cSub.textContent = legalDict.cookies.subtitle;
         const cS1T = document.getElementById("cookiesSec1Title");
-        if (cS1T) cS1T.textContent = dict.legal.cookies.sec1Title;
+        if (cS1T) cS1T.textContent = legalDict.cookies.sec1Title;
         const cS1B = document.getElementById("cookiesSec1Body");
-        if (cS1B) cS1B.innerHTML = dict.legal.cookies.sec1Text;
+        if (cS1B) cS1B.innerHTML = legalDict.cookies.sec1Text;
         const cS2T = document.getElementById("cookiesSec2Title");
-        if (cS2T) cS2T.textContent = dict.legal.cookies.sec2Title;
+        if (cS2T) cS2T.textContent = legalDict.cookies.sec2Title;
         const cS2B = document.getElementById("cookiesSec2Body");
-        if (cS2B) cS2B.innerHTML = dict.legal.cookies.sec2Text;
+        if (cS2B) cS2B.innerHTML = legalDict.cookies.sec2Text;
         const cS3T = document.getElementById("cookiesSec3Title");
-        if (cS3T) cS3T.textContent = dict.legal.cookies.sec3Title;
+        if (cS3T) cS3T.textContent = legalDict.cookies.sec3Title;
         const cS3B = document.getElementById("cookiesSec3Body");
-        if (cS3B) cS3B.innerHTML = dict.legal.cookies.sec3Text;
+        if (cS3B) cS3B.innerHTML = legalDict.cookies.sec3Text;
         const cS4T = document.getElementById("cookiesSec4Title");
-        if (cS4T) cS4T.textContent = dict.legal.cookies.sec4Title;
+        if (cS4T) cS4T.textContent = legalDict.cookies.sec4Title;
         const cS4B = document.getElementById("cookiesSec4Body");
-        if (cS4B) cS4B.innerHTML = dict.legal.cookies.sec4Text;
+        if (cS4B) cS4B.innerHTML = legalDict.cookies.sec4Text;
         const cAcc = document.getElementById("cookiesModalAcceptBtn");
-        if (cAcc) cAcc.textContent = dict.legal.cookies.acceptBtn;
+        if (cAcc) cAcc.textContent = legalDict.cookies.acceptBtn;
     }
 
-    if (dict.admin) {
+    const adminDict = dict.admin || (dict.news && dict.news.admin);
+    if (adminDict) {
         const ad1 = document.getElementById("adminTabNextRaceTitle");
-        if (ad1) ad1.textContent = dict.admin.tabNextRace;
+        if (ad1) ad1.textContent = adminDict.tabNextRace;
         const ad2 = document.getElementById("adminTabRaceResultsTitle");
-        if (ad2) ad2.textContent = dict.admin.tabRaceResults;
+        if (ad2) ad2.textContent = adminDict.tabRaceResults;
         const ad3 = document.getElementById("adminTabStandingsTitle");
-        if (ad3) ad3.textContent = dict.admin.tabStandings;
+        if (ad3) ad3.textContent = adminDict.tabStandings;
         const ad4 = document.getElementById("adminTabDriversTitle");
-        if (ad4) ad4.textContent = dict.admin.tabDrivers;
+        if (ad4) ad4.textContent = adminDict.tabDrivers;
         const ad5 = document.getElementById("adminTabVerifyTitle");
-        if (ad5) ad5.textContent = dict.admin.tabVerify;
+        if (ad5) ad5.textContent = adminDict.tabVerify;
         const ad6 = document.getElementById("adminTabNewsTitle");
-        if (ad6) ad6.textContent = dict.admin.tabNews;
+        if (ad6) ad6.textContent = adminDict.tabNews;
         const ad7 = document.getElementById("adminTabPhotosTitle");
-        if (ad7) ad7.textContent = dict.admin.tabPhotos;
+        if (ad7) ad7.textContent = adminDict.tabPhotos;
         const ad8 = document.getElementById("adminTabSettingsTitle");
-        if (ad8) ad8.textContent = dict.admin.tabSettings;
+        if (ad8) ad8.textContent = adminDict.tabSettings;
 
         const apB = document.getElementById("adminPhotoBadge");
-        if (apB) apB.textContent = dict.admin.photoBadge;
+        if (apB) apB.textContent = adminDict.photoBadge;
         const apH = document.getElementById("adminPhotoHeading");
-        if (apH) apH.textContent = dict.admin.photoHeading;
+        if (apH) apH.textContent = adminDict.photoHeading;
         const apD = document.getElementById("adminPhotoDesc");
-        if (apD) apD.textContent = dict.admin.photoDesc;
+        if (apD) apD.textContent = adminDict.photoDesc;
+
+        // Admin Photos Tab filters & actions
+        const fAllBtn = document.querySelector('#adminPhotosFilters button[data-filter="all"]');
+        if (fAllBtn && adminDict.photosFilterAll) {
+            const countSpan = document.getElementById("adminPhotosFilterAllCount");
+            const cnt = countSpan ? countSpan.textContent : "0";
+            fAllBtn.innerHTML = `${adminDict.photosFilterAll} <span class="admin-news-count-chip" id="adminPhotosFilterAllCount">${cnt}</span>`;
+        }
+        const fPendBtn = document.querySelector('#adminPhotosFilters button[data-filter="pending"]');
+        if (fPendBtn && adminDict.photosFilterPending) {
+            const countSpan = document.getElementById("adminPhotosFilterPendingCount");
+            const cnt = countSpan ? countSpan.textContent : "0";
+            fPendBtn.innerHTML = `${adminDict.photosFilterPending} <span class="admin-news-count-chip chip-pending" id="adminPhotosFilterPendingCount">${cnt}</span>`;
+        }
+        const fAppBtn = document.querySelector('#adminPhotosFilters button[data-filter="approved"]');
+        if (fAppBtn && adminDict.photosFilterApproved) {
+            const countSpan = document.getElementById("adminPhotosFilterApprovedCount");
+            const cnt = countSpan ? countSpan.textContent : "0";
+            fAppBtn.innerHTML = `${adminDict.photosFilterApproved} <span class="admin-news-count-chip chip-approved" id="adminPhotosFilterApprovedCount">${cnt}</span>`;
+        }
+        const fRejBtn = document.querySelector('#adminPhotosFilters button[data-filter="rejected"]');
+        if (fRejBtn && adminDict.photosFilterRejected) {
+            const countSpan = document.getElementById("adminPhotosFilterRejectedCount");
+            const cnt = countSpan ? countSpan.textContent : "0";
+            fRejBtn.innerHTML = `${adminDict.photosFilterRejected} <span class="admin-news-count-chip chip-rejected" id="adminPhotosFilterRejectedCount">${cnt}</span>`;
+        }
+        const apSearch = document.getElementById("adminPhotosSearchInput");
+        if (apSearch && adminDict.photosSearchPlaceholder) {
+            apSearch.placeholder = adminDict.photosSearchPlaceholder;
+        }
+        const apUploadBtn = document.getElementById("btnAdminUploadPhoto");
+        if (apUploadBtn && adminDict.btnAdminUpload) {
+            apUploadBtn.innerHTML = adminDict.btnAdminUpload;
+        }
     }
 
     const rResBtn = document.getElementById("raceTabResultsBtn");
@@ -2778,6 +2942,15 @@ function setLanguage(lang) {
     if (typeof refreshAllCalendarCards === "function") {
         refreshAllCalendarCards();
     }
+    if (typeof renderGlobalPhotoGrid === "function") {
+        renderGlobalPhotoGrid();
+    }
+    if (typeof currentOpenRaceKey !== "undefined" && currentOpenRaceKey && typeof renderRaceModalPhotoGallery === "function") {
+        renderRaceModalPhotoGallery(currentOpenRaceKey);
+    }
+    if (typeof renderAdminPhotosTab === "function") {
+        renderAdminPhotosTab();
+    }
 }
 
 
@@ -3874,7 +4047,7 @@ const ADMIN_EMAILS = [
 const ADMIN_EMAIL = ADMIN_EMAILS[0];
 
 function isUserAdmin(user) {
-    const u = user !== undefined ? user : (typeof activeUserAuth !== "undefined" && activeUserAuth ? activeUserAuth : (typeof LocalAuthStore !== "undefined" ? LocalAuthStore.getCurrentUser() : null));
+    const u = user !== undefined ? user : (typeof activeUserAuth !== "undefined" && activeUserAuth ? activeUserAuth : ((typeof window !== "undefined" && window.LocalAuthStore) ? window.LocalAuthStore.getCurrentUser() : (typeof LocalAuthStore !== "undefined" ? LocalAuthStore.getCurrentUser() : null)));
     if (!u || !u.email) return false;
     const cleanEmail = u.email.trim().toLowerCase();
     return ADMIN_EMAILS.some(adminEmail => adminEmail.toLowerCase().trim() === cleanEmail);
@@ -4249,7 +4422,7 @@ function isAdminAuthenticated() {
 // Open and Close Admin Panel
 function openAdminPanel() {
     if (!isUserAdmin()) {
-        const u = typeof activeUserAuth !== "undefined" && activeUserAuth ? activeUserAuth : (typeof LocalAuthStore !== "undefined" ? LocalAuthStore.getCurrentUser() : null);
+        const u = typeof activeUserAuth !== "undefined" && activeUserAuth ? activeUserAuth : ((typeof window !== "undefined" && window.LocalAuthStore) ? window.LocalAuthStore.getCurrentUser() : (typeof LocalAuthStore !== "undefined" ? LocalAuthStore.getCurrentUser() : null));
         if (!u || !u.email) {
             openUserAuthModal("login");
             showAuthAlert(
@@ -8255,7 +8428,7 @@ function initFirestoreListeners() {
 }
 
 // Initialize on page load
-(function initializeSavedData() {
+function initializeSavedData() {
     renderNextRaceOnPage(getSavedNextRace());
     renderStandingsOnPage(getSavedStandings());
     renderSettingsOnPage(getSavedSettings());
@@ -8281,7 +8454,8 @@ function initFirestoreListeners() {
         return "es";
     })();
     setLanguage(initialLang);
-})();
+}
+window.initializeSavedData = initializeSavedData;
 
 // --- Admin Button Click & Permission Access ---
 if (headerAdminBtn) {
@@ -9970,7 +10144,7 @@ async function hashUserPassword(password) {
 }
 
 // Local fallback authentication store (enables offline capability & local cache)
-const LocalAuthStore = {
+var LocalAuthStore = {
     getUsers() {
         try {
             const raw = localStorage.getItem("ffc_registered_users");
@@ -10065,6 +10239,7 @@ const LocalAuthStore = {
         this.setCurrentUser(null);
     }
 };
+window.LocalAuthStore = LocalAuthStore;
 
 // Cloud Authentication Service with direct Firebase Firestore & backend synchronization
 const CloudAuthService = {
@@ -12607,7 +12782,7 @@ function getLineupScoreInRace(lineup, race) {
 }
 
 // Calculate frozen round-by-round fantasy points for a team
-const OFFICIAL_ROUND_10_POINTS = {
+var OFFICIAL_ROUND_10_POINTS = {
     "eduardolopez": 85,
     "alcracing": 85,
     "dieguiosk": 76,
@@ -12644,14 +12819,17 @@ const OFFICIAL_ROUND_10_POINTS = {
     "jvr": 18,
     "jvrffcteam": 18
 };
+window.OFFICIAL_ROUND_10_POINTS = OFFICIAL_ROUND_10_POINTS;
 
 function getOfficialRound10Score(teamState) {
     if (!teamState) return undefined;
+    const ptsMap = (typeof window !== "undefined" && window.OFFICIAL_ROUND_10_POINTS) ? window.OFFICIAL_ROUND_10_POINTS : (typeof OFFICIAL_ROUND_10_POINTS !== "undefined" ? OFFICIAL_ROUND_10_POINTS : {});
+    if (!ptsMap) return undefined;
     const normM = (teamState.managerName || "").toString().normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/[^a-z0-9]/g, "");
     const normT = (teamState.teamName || "").toString().normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/[^a-z0-9]/g, "");
-    if (normM && OFFICIAL_ROUND_10_POINTS[normM] !== undefined) return OFFICIAL_ROUND_10_POINTS[normM];
-    if (normT && OFFICIAL_ROUND_10_POINTS[normT] !== undefined) return OFFICIAL_ROUND_10_POINTS[normT];
-    for (const [k, v] of Object.entries(OFFICIAL_ROUND_10_POINTS)) {
+    if (normM && ptsMap[normM] !== undefined) return ptsMap[normM];
+    if (normT && ptsMap[normT] !== undefined) return ptsMap[normT];
+    for (const [k, v] of Object.entries(ptsMap)) {
         if (normM.includes(k) || k.includes(normM) || normT.includes(k) || k.includes(normT)) {
             return v;
         }
@@ -15208,6 +15386,9 @@ if (document.readyState === "loading") {
    LEGAL MODALS & COOKIE BANNER HANDLERS (GLOBAL SCOPE)
 ========================================================= */
 window.openPrivacyModal = function() {
+    if (typeof applyTranslations === "function" && typeof currentLanguage !== "undefined") {
+        applyTranslations(currentLanguage);
+    }
     const overlay = document.getElementById("privacyModalOverlay");
     if (overlay) {
         overlay.style.display = "flex";
@@ -15230,6 +15411,9 @@ window.closePrivacyModal = function() {
 };
 
 window.openTermsModal = function() {
+    if (typeof applyTranslations === "function" && typeof currentLanguage !== "undefined") {
+        applyTranslations(currentLanguage);
+    }
     const overlay = document.getElementById("termsModalOverlay");
     if (overlay) {
         overlay.style.display = "flex";
@@ -15252,6 +15436,9 @@ window.closeTermsModal = function() {
 };
 
 window.openCookiesModal = function() {
+    if (typeof applyTranslations === "function" && typeof currentLanguage !== "undefined") {
+        applyTranslations(currentLanguage);
+    }
     const overlay = document.getElementById("cookiesModalOverlay");
     const banner = document.getElementById("cookieConsentBanner");
     if (banner) banner.style.display = "none";
@@ -18016,6 +18203,30 @@ const RACE_TITLES_MAP = {
     "brazil": "Brazil GP - Interlagos (Ronda 15)"
 };
 
+function getRaceTitleLabel(raceId) {
+    const isEn = typeof currentLanguage !== "undefined" && currentLanguage === "en";
+    const roundPrefix = isEn ? "Round" : "Ronda";
+    const map = {
+        "barcelona_test": "Barcelona Test Days (T)",
+        "australia": `Australia GP (${roundPrefix} 01)`,
+        "malaysia": `Malaysia GP (${roundPrefix} 02)`,
+        "bahrain": `Bahrain GP (${roundPrefix} 03)`,
+        "turkey": `Turkey GP (${roundPrefix} 04)`,
+        "spain": `Spain GP (${roundPrefix} 05)`,
+        "italy": `Italy GP - Monza (${roundPrefix} 06)`,
+        "austria": `Austria GP (${roundPrefix} 07)`,
+        "silverstone": `Great Britain GP - Silverstone (${roundPrefix} 08)`,
+        "hockenheim": `Germany GP - Hockenheim (${roundPrefix} 09)`,
+        "nurburgring": `Europe GP - Nürburgring (${roundPrefix} 10)`,
+        "hungary": `Hungary GP - Hungaroring (${roundPrefix} 11)`,
+        "belgium": `Belgium GP - Spa (${roundPrefix} 12)`,
+        "singapore": `Singapore GP (${roundPrefix} 13)`,
+        "cota": `USA GP - COTA (${roundPrefix} 14)`,
+        "brazil": `Brazil GP - Interlagos (${roundPrefix} 15)`
+    };
+    return map[raceId] || RACE_TITLES_MAP[raceId] || raceId;
+}
+
 function populatePastRaceSelect(preselected = "") {
     const select = document.getElementById("uploadRaceSelect");
     if (!select) return;
@@ -18042,6 +18253,9 @@ function populatePastRaceSelect(preselected = "") {
 }
 
 window.openGlobalPhotoGallery = function() {
+    if (typeof applyTranslations === "function" && typeof currentLanguage !== "undefined") {
+        applyTranslations(currentLanguage);
+    }
     const modal = document.getElementById("globalPhotoGalleryModal");
     if (modal) {
         modal.classList.add("active");
@@ -18065,6 +18279,9 @@ window.closeGlobalPhotoGalleryModal = function() {
 };
 
 window.openUploadPhotoModal = function(preselectedRaceId = null) {
+    if (typeof applyTranslations === "function" && typeof currentLanguage !== "undefined") {
+        applyTranslations(currentLanguage);
+    }
     const u = typeof activeUserAuth !== "undefined" && activeUserAuth ? activeUserAuth : (typeof LocalAuthStore !== "undefined" ? LocalAuthStore.getCurrentUser() : null);
 
     const modal = document.getElementById("uploadPhotoModal");
@@ -18227,7 +18444,8 @@ function initPhotoUploadFormHandlers() {
             const countSpan = document.getElementById("selectedFilesCount");
             if (files.length === 0) return;
 
-            if (statusMsg) statusMsg.textContent = `Procesando ${files.length} foto(s) en alta calidad...`;
+            const isEn = typeof currentLanguage !== "undefined" && currentLanguage === "en";
+            if (statusMsg) statusMsg.textContent = isEn ? `Processing ${files.length} photo(s) in high quality...` : `Procesando ${files.length} foto(s) en alta calidad...`;
             currentCompressedBase64Array = [];
 
             try {
@@ -18236,12 +18454,12 @@ function initPhotoUploadFormHandlers() {
                     currentCompressedBase64Array.push(highResPhoto);
                 }
                 if (countSpan) {
-                    countSpan.textContent = `✓ ${currentCompressedBase64Array.length} foto(s) lista(s) en calidad original.`;
+                    countSpan.textContent = isEn ? `✓ ${currentCompressedBase64Array.length} photo(s) ready in original quality.` : `✓ ${currentCompressedBase64Array.length} foto(s) lista(s) en calidad original.`;
                 }
-                if (statusMsg) statusMsg.textContent = "¡Fotos preparadas con calidad óptima!";
+                if (statusMsg) statusMsg.textContent = isEn ? "Photos ready with optimal quality!" : "¡Fotos preparadas con calidad óptima!";
                 setTimeout(() => { if (statusMsg) statusMsg.textContent = ""; }, 2500);
             } catch (err) {
-                if (statusMsg) statusMsg.textContent = "Error al procesar las imágenes.";
+                if (statusMsg) statusMsg.textContent = isEn ? "Error processing images." : "Error al procesar las imágenes.";
             }
         });
     }
@@ -18251,8 +18469,9 @@ function initPhotoUploadFormHandlers() {
         urlInput.addEventListener("input", (e) => {
             const url = e.target.value.trim();
             const countSpan = document.getElementById("selectedFilesCount");
+            const isEn = typeof currentLanguage !== "undefined" && currentLanguage === "en";
             if (url && countSpan) {
-                countSpan.textContent = "✓ Enlace URL listo.";
+                countSpan.textContent = isEn ? "✓ Image URL ready." : "✓ Enlace URL listo.";
             }
         });
     }
@@ -18261,12 +18480,13 @@ function initPhotoUploadFormHandlers() {
     if (uploadForm) {
         uploadForm.addEventListener("submit", async (e) => {
             e.preventDefault();
+            const isEn = typeof currentLanguage !== "undefined" && currentLanguage === "en";
             const btnSubmit = document.getElementById("btnSubmitPhotoUpload");
             let raceId = document.getElementById("uploadRaceSelect")?.value || currentOpenRaceKey || "barcelona_test";
             const caption = (document.getElementById("photoCaptionInput")?.value || "").trim();
             const currentUser = typeof activeUserAuth !== "undefined" && activeUserAuth ? activeUserAuth : (typeof LocalAuthStore !== "undefined" ? LocalAuthStore.getCurrentUser() : null);
             const userIsAdmin = typeof isUserAdmin === "function" && isUserAdmin(currentUser);
-            const author = (currentUser && currentUser.displayName) ? currentUser.displayName : (currentUser && currentUser.email ? currentUser.email.split("@")[0] : (typeof currentSettings !== "undefined" && currentSettings?.driverName ? currentSettings.driverName : "Piloto FFC"));
+            const author = (currentUser && currentUser.displayName) ? currentUser.displayName : (currentUser && currentUser.email ? currentUser.email.split("@")[0] : (typeof currentSettings !== "undefined" && currentSettings?.driverName ? currentSettings.driverName : (isEn ? "FFC Driver" : "Piloto FFC")));
             const urlInputVal = (document.getElementById("photoUrlInput")?.value || "").trim();
             const statusMsg = document.getElementById("uploadStatusMsg");
 
@@ -18281,7 +18501,7 @@ function initPhotoUploadFormHandlers() {
             } else {
                 const fInput = document.getElementById("photoFileInput");
                 if (fInput && fInput.files && fInput.files.length > 0) {
-                    if (statusMsg) statusMsg.textContent = "Preparando fotos en alta calidad...";
+                    if (statusMsg) statusMsg.textContent = isEn ? "Preparing photos in high quality..." : "Preparando fotos en alta calidad...";
                     for (const file of fInput.files) {
                         try {
                             const comp = await processImagePreservingQuality(file);
@@ -18304,16 +18524,17 @@ function initPhotoUploadFormHandlers() {
             }
 
             if (photosToUpload.length === 0) {
-                if (statusMsg) statusMsg.textContent = "Por favor selecciona al menos una foto o introduce una URL.";
-                alert("Por favor selecciona una foto o introduce una URL de imagen.");
+                const noPhotosMsg = isEn ? "Please select at least one photo or enter an image URL." : "Por favor selecciona al menos una foto o introduce una URL.";
+                if (statusMsg) statusMsg.textContent = noPhotosMsg;
+                alert(noPhotosMsg);
                 return;
             }
 
             if (btnSubmit) {
                 btnSubmit.disabled = true;
-                btnSubmit.textContent = "Subiendo...";
+                btnSubmit.textContent = isEn ? "Uploading..." : "Subiendo...";
             }
-            if (statusMsg) statusMsg.textContent = `Guardando ${photosToUpload.length} foto(s)...`;
+            if (statusMsg) statusMsg.textContent = isEn ? `Saving ${photosToUpload.length} photo(s)...` : `Guardando ${photosToUpload.length} foto(s)...`;
 
             for (let i = 0; i < photosToUpload.length; i++) {
                 const photoId = "photo_" + Date.now() + "_" + Math.random().toString(36).substring(2, 8) + "_" + i;
@@ -18358,9 +18579,9 @@ function initPhotoUploadFormHandlers() {
 
             if (statusMsg) {
                 if (userIsAdmin) {
-                    statusMsg.textContent = "✓ ¡Fotos subidas y aprobadas automáticamente como Administrador!";
+                    statusMsg.textContent = isEn ? "✓ Photos uploaded and approved automatically as Administrator!" : "✓ ¡Fotos subidas y aprobadas automáticamente como Administrador!";
                 } else {
-                    statusMsg.textContent = "✓ ¡Fotos enviadas con éxito! Quedan pendientes de aprobación.";
+                    statusMsg.textContent = isEn ? "✓ Photos submitted successfully! Awaiting review and approval." : "✓ ¡Fotos enviadas con éxito! Quedan pendientes de aprobación.";
                 }
             }
 
@@ -18368,7 +18589,7 @@ function initPhotoUploadFormHandlers() {
                 closeUploadPhotoModal();
                 if (btnSubmit) {
                     btnSubmit.disabled = false;
-                    btnSubmit.textContent = "Subir foto";
+                    btnSubmit.textContent = isEn ? "Upload photo" : "Subir foto";
                 }
                 if (statusMsg) statusMsg.textContent = "";
                 if (typeof currentOpenRaceKey !== "undefined" && currentOpenRaceKey === raceId) {
@@ -18460,7 +18681,7 @@ function renderGlobalPhotoGrid() {
 
     if (!grid) return;
 
-    const u = typeof activeUserAuth !== "undefined" && activeUserAuth ? activeUserAuth : (typeof LocalAuthStore !== "undefined" ? LocalAuthStore.getCurrentUser() : null);
+    const u = typeof activeUserAuth !== "undefined" && activeUserAuth ? activeUserAuth : ((typeof window !== "undefined" && window.LocalAuthStore) ? window.LocalAuthStore.getCurrentUser() : (typeof LocalAuthStore !== "undefined" ? LocalAuthStore.getCurrentUser() : null));
     const userIsAdmin = typeof isUserAdmin === "function" && isUserAdmin(u);
 
     let visiblePhotos = currentPhotos.filter(photo => {
@@ -18483,7 +18704,7 @@ function renderGlobalPhotoGrid() {
     if (emptyState) emptyState.style.display = "none";
 
     filtered.forEach(photo => {
-        const raceLabel = RACE_TITLES_MAP[photo.raceId] || photo.raceId;
+        const raceLabel = getRaceTitleLabel(photo.raceId);
         const isPending = photo.status === "pending";
         const isEn = typeof currentLanguage !== "undefined" && currentLanguage === "en";
         const pendingBadge = isPending ? `<span style="position: absolute; bottom: 8px; left: 8px; background: rgba(251,191,36,0.9); color: #000; font-size: 10px; font-weight: 800; padding: 2px 6px; border-radius: 4px;">${isEn ? "🟡 Pending approval" : "🟡 Pendiente de aprobación"}</span>` : "";
@@ -18518,7 +18739,7 @@ function renderRaceModalPhotoGallery(raceKey) {
     const emptyState = document.getElementById("raceModalPhotoEmptyState");
     const countBadge = document.getElementById("raceModalPhotoCount");
 
-    const u = typeof activeUserAuth !== "undefined" && activeUserAuth ? activeUserAuth : (typeof LocalAuthStore !== "undefined" ? LocalAuthStore.getCurrentUser() : null);
+    const u = typeof activeUserAuth !== "undefined" && activeUserAuth ? activeUserAuth : ((typeof window !== "undefined" && window.LocalAuthStore) ? window.LocalAuthStore.getCurrentUser() : (typeof LocalAuthStore !== "undefined" ? LocalAuthStore.getCurrentUser() : null));
     const userIsAdmin = typeof isUserAdmin === "function" && isUserAdmin(u);
 
     const racePhotos = currentPhotos.filter(photo => {
@@ -18613,12 +18834,14 @@ window.openPhotoLightbox = function(photo) {
         const subBy = isEn ? "Uploaded by" : "Subido por";
         if (authorDate) authorDate.textContent = `${subBy} ${photo.author} • ${photo.createdAt || ''}`;
         if (downloadBtn) {
+            downloadBtn.textContent = isEn ? "⬇️ Download Photo" : "⬇️ Descargar Foto";
             downloadBtn.onclick = () => window.downloadCurrentLightboxPhoto();
         }
 
-        const u = typeof activeUserAuth !== "undefined" && activeUserAuth ? activeUserAuth : (typeof LocalAuthStore !== "undefined" ? LocalAuthStore.getCurrentUser() : null);
+        const u = typeof activeUserAuth !== "undefined" && activeUserAuth ? activeUserAuth : ((typeof window !== "undefined" && window.LocalAuthStore) ? window.LocalAuthStore.getCurrentUser() : (typeof LocalAuthStore !== "undefined" ? LocalAuthStore.getCurrentUser() : null));
         const userIsAdmin = typeof isUserAdmin === "function" && isUserAdmin(u);
         if (deleteBtn) {
+            deleteBtn.textContent = isEn ? "🗑️ Delete" : "🗑️ Eliminar";
             deleteBtn.style.display = userIsAdmin ? "inline-flex" : "none";
         }
 
@@ -18644,7 +18867,9 @@ window.closePhotoLightbox = function() {
 
 window.deleteCurrentLightboxPhoto = async function() {
     if (!currentLightboxPhoto || !currentLightboxPhoto.id) return;
-    if (confirm("¿Estás seguro de que deseas eliminar esta foto de la galería?")) {
+    const isEn = typeof currentLanguage !== "undefined" && currentLanguage === "en";
+    const confirmMsg = isEn ? "Are you sure you want to delete this photo from the gallery?" : "¿Estás seguro de que deseas eliminar esta foto de la galería?";
+    if (confirm(confirmMsg)) {
         const photoId = currentLightboxPhoto.id;
         closePhotoLightbox();
         await deleteAdminPhoto(photoId);
@@ -18761,46 +18986,63 @@ function renderAdminPhotosTab() {
         );
     }
 
+    const isEn = typeof currentLanguage !== "undefined" && currentLanguage === "en";
+    const langDict = (typeof translations !== "undefined" && translations[currentLanguage]) ? translations[currentLanguage] : null;
+    const adminDict = langDict ? (langDict.admin || (langDict.news && langDict.news.admin)) : null;
+
     if (filtered.length === 0) {
+        const emptyTitle = adminDict?.adminPhotosEmpty || (isEn ? "No photos found in this category." : "No se encontraron fotos en esta categoría.");
+        const emptyDesc = adminDict?.adminPhotosEmptySub || (isEn ? "Photos uploaded by drivers or admins will appear here for moderation." : "Las fotos subidas por los pilotos o administradores aparecerán aquí para su gestión.");
         list.innerHTML = `
             <div style="grid-column: 1 / -1; text-align: center; padding: 40px 20px; background: rgba(255, 255, 255, 0.02); border: 1px dashed rgba(255, 255, 255, 0.1); border-radius: 8px; color: #a0aec0;">
-                <p style="font-size: 15px; margin-bottom: 6px;">No se encontraron fotos en esta categoría.</p>
-                <span style="font-size: 13px; color: #718096;">Las fotos subidas por los pilotos o administradores aparecerán aquí para su gestión.</span>
+                <p style="font-size: 15px; margin-bottom: 6px;">${emptyTitle}</p>
+                <span style="font-size: 13px; color: #718096;">${emptyDesc}</span>
             </div>
         `;
         return;
     }
 
     list.innerHTML = filtered.map(photo => {
-        const raceLabel = RACE_TITLES_MAP[photo.raceId] || photo.raceId;
+        const raceLabel = typeof getRaceTitleLabel === "function" ? getRaceTitleLabel(photo.raceId) : (RACE_TITLES_MAP[photo.raceId] || photo.raceId);
         const status = photo.status || "pending";
         let statusBadge = "";
         if (status === "approved") {
-            statusBadge = `<span style="background: rgba(74, 222, 128, 0.15); color: #4ade80; border: 1px solid rgba(74, 222, 128, 0.4); padding: 2px 8px; border-radius: 4px; font-size: 10px; font-weight: 800;">🟢 APROBADA</span>`;
+            const badgeText = adminDict?.adminStatusApproved || (isEn ? "🟢 APPROVED" : "🟢 APROBADA");
+            statusBadge = `<span style="background: rgba(74, 222, 128, 0.15); color: #4ade80; border: 1px solid rgba(74, 222, 128, 0.4); padding: 2px 8px; border-radius: 4px; font-size: 10px; font-weight: 800;">${badgeText}</span>`;
         } else if (status === "rejected") {
-            statusBadge = `<span style="background: rgba(248, 113, 113, 0.15); color: #f87171; border: 1px solid rgba(248, 113, 113, 0.4); padding: 2px 8px; border-radius: 4px; font-size: 10px; font-weight: 800;">🔴 RECHAZADA</span>`;
+            const badgeText = adminDict?.adminStatusRejected || (isEn ? "🔴 REJECTED" : "🔴 RECHAZADA");
+            statusBadge = `<span style="background: rgba(248, 113, 113, 0.15); color: #f87171; border: 1px solid rgba(248, 113, 113, 0.4); padding: 2px 8px; border-radius: 4px; font-size: 10px; font-weight: 800;">${badgeText}</span>`;
         } else {
-            statusBadge = `<span style="background: rgba(251, 191, 36, 0.15); color: #fbbf24; border: 1px solid rgba(251, 191, 36, 0.4); padding: 2px 8px; border-radius: 4px; font-size: 10px; font-weight: 800;">🟡 PENDIENTE</span>`;
+            const badgeText = adminDict?.adminStatusPending || (isEn ? "🟡 PENDING" : "🟡 PENDIENTE");
+            statusBadge = `<span style="background: rgba(251, 191, 36, 0.15); color: #fbbf24; border: 1px solid rgba(251, 191, 36, 0.4); padding: 2px 8px; border-radius: 4px; font-size: 10px; font-weight: 800;">${badgeText}</span>`;
         }
 
-        const approveBtn = status !== "approved" ? `<button type="button" class="btn btn-sm" data-action="approve" data-id="${photo.id}" style="background: #16a34a; color: #fff; font-size: 11px; padding: 4px 10px; border-radius: 4px; cursor: pointer;">✅ Aprobar</button>` : "";
-        const rejectBtn = status !== "rejected" ? `<button type="button" class="btn btn-sm" data-action="reject" data-id="${photo.id}" style="background: #d97706; color: #fff; font-size: 11px; padding: 4px 10px; border-radius: 4px; cursor: pointer;">❌ Rechazar</button>` : "";
+        const approveText = adminDict?.adminBtnApprove || (isEn ? "✅ Approve" : "✅ Aprobar");
+        const rejectText = adminDict?.adminBtnReject || (isEn ? "❌ Reject" : "❌ Rechazar");
+        const dlText = adminDict?.adminBtnDownload || (isEn ? "⬇️ Download" : "⬇️ Descargar");
+        const dlTitle = isEn ? "Download high quality photo" : "Descargar foto en alta calidad";
+        const delTitle = isEn ? "Delete permanently" : "Eliminar permanentemente";
+        const noDescText = isEn ? "No description" : "Sin descripción";
+        const modRaceLabel = adminDict?.adminModifyRaceLabel || (isEn ? "🏁 Modify Assigned Race:" : "🏁 Modificar Carrera asignada:");
+
+        const approveBtn = status !== "approved" ? `<button type="button" class="btn btn-sm" data-action="approve" data-id="${photo.id}" style="background: #16a34a; color: #fff; font-size: 11px; padding: 4px 10px; border-radius: 4px; cursor: pointer;">${approveText}</button>` : "";
+        const rejectBtn = status !== "rejected" ? `<button type="button" class="btn btn-sm" data-action="reject" data-id="${photo.id}" style="background: #d97706; color: #fff; font-size: 11px; padding: 4px 10px; border-radius: 4px; cursor: pointer;">${rejectText}</button>` : "";
 
         // Options for the race modifier dropdown
-        const raceOptionsHtml = Object.entries(RACE_TITLES_MAP).map(([rKey, rTitle]) => `
-            <option value="${rKey}" ${photo.raceId === rKey ? 'selected' : ''}>${rTitle}</option>
+        const raceOptionsHtml = Object.keys(RACE_TITLES_MAP).map(rKey => `
+            <option value="${rKey}" ${photo.raceId === rKey ? 'selected' : ''}>${typeof getRaceTitleLabel === "function" ? getRaceTitleLabel(rKey) : RACE_TITLES_MAP[rKey]}</option>
         `).join("");
 
         return `
             <div style="background: rgba(15, 23, 42, 0.85); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 8px; overflow: hidden; display: flex; flex-direction: column;">
                 <div style="position: relative; height: 160px; background: #000; overflow: hidden;">
-                    <img src="${escapeHtml(photo.photoUrl)}" alt="${escapeHtml(photo.caption || 'Foto')}" data-preview-id="${photo.id}" style="width: 100%; height: 100%; object-fit: cover; cursor: pointer;">
+                    <img src="${escapeHtml(photo.photoUrl)}" alt="${escapeHtml(photo.caption || (isEn ? 'Photo' : 'Foto'))}" data-preview-id="${photo.id}" style="width: 100%; height: 100%; object-fit: cover; cursor: pointer;">
                     <div style="position: absolute; top: 8px; left: 8px;">${statusBadge}</div>
                     <div style="position: absolute; top: 8px; right: 8px; background: rgba(0,0,0,0.75); color: #f5e29f; font-size: 10px; font-weight: 700; padding: 3px 6px; border-radius: 4px; border: 1px solid rgba(214,180,92,0.3);">${escapeHtml(raceLabel)}</div>
                 </div>
                 <div style="padding: 12px; display: flex; flex-direction: column; flex-grow: 1; justify-content: space-between;">
                     <div>
-                        <div style="font-size: 13px; font-weight: 600; color: #f8fafc; margin-bottom: 4px;">${escapeHtml(photo.caption || 'Sin descripción')}</div>
+                        <div style="font-size: 13px; font-weight: 600; color: #f8fafc; margin-bottom: 4px;">${escapeHtml(photo.caption || noDescText)}</div>
                         <div style="font-size: 11px; color: #94a3b8; display: flex; justify-content: space-between; margin-bottom: 8px;">
                             <span>👤 ${escapeHtml(photo.author)}</span>
                             <span>${escapeHtml(photo.createdAt || '')}</span>
@@ -18809,7 +19051,7 @@ function renderAdminPhotosTab() {
                         <!-- MODIFICADOR DE CARRERA PARA ADMINISTRADORES -->
                         <div style="margin: 8px 0; background: rgba(0, 0, 0, 0.35); padding: 8px; border-radius: 6px; border: 1px solid rgba(255, 255, 255, 0.08);">
                             <label style="font-size: 11px; font-weight: 700; color: #f5e29f; display: flex; align-items: center; gap: 4px; margin-bottom: 4px;">
-                                🏁 Modificar Carrera asignada:
+                                ${modRaceLabel}
                             </label>
                             <select class="admin-photo-race-select" data-photo-id="${photo.id}" style="width: 100%; background: #0b1120; color: #f8fafc; border: 1px solid rgba(214, 180, 92, 0.4); padding: 5px 8px; border-radius: 4px; font-size: 12px; font-weight: 500; cursor: pointer;">
                                 ${raceOptionsHtml}
@@ -18819,8 +19061,8 @@ function renderAdminPhotosTab() {
                     <div style="display: flex; gap: 6px; margin-top: 10px; border-top: 1px solid rgba(255,255,255,0.06); padding-top: 8px; flex-wrap: wrap; align-items: center;">
                         ${approveBtn}
                         ${rejectBtn}
-                        <button type="button" class="btn btn-sm" data-action="download" data-id="${photo.id}" style="background: rgba(255,255,255,0.1); color: #fff; font-size: 11px; padding: 4px 10px; border-radius: 4px; border: 1px solid rgba(255,255,255,0.2); cursor: pointer;" title="Descargar foto en alta calidad">⬇️ Descargar</button>
-                        <button type="button" class="btn btn-sm" data-action="delete" data-id="${photo.id}" style="background: #dc2626; color: #fff; font-size: 11px; padding: 4px 10px; border-radius: 4px; margin-left: auto; cursor: pointer;" title="Eliminar permanentemente">🗑️</button>
+                        <button type="button" class="btn btn-sm" data-action="download" data-id="${photo.id}" style="background: rgba(255,255,255,0.1); color: #fff; font-size: 11px; padding: 4px 10px; border-radius: 4px; border: 1px solid rgba(255,255,255,0.2); cursor: pointer;" title="${dlTitle}">${dlText}</button>
+                        <button type="button" class="btn btn-sm" data-action="delete" data-id="${photo.id}" style="background: #dc2626; color: #fff; font-size: 11px; padding: 4px 10px; border-radius: 4px; margin-left: auto; cursor: pointer;" title="${delTitle}">🗑️</button>
                     </div>
                 </div>
             </div>
@@ -18862,7 +19104,8 @@ function renderAdminPhotosTab() {
                     window.downloadPhoto(target.photoUrl, `ffc-${target.raceId}-${target.id}.jpg`);
                 }
             } else if (action === "delete") {
-                if (confirm("¿Estás seguro de eliminar permanentemente esta foto?")) {
+                const confirmMsg = isEn ? "Are you sure you want to permanently delete this photo?" : "¿Estás seguro de eliminar permanentemente esta foto?";
+                if (confirm(confirmMsg)) {
                     await deleteAdminPhoto(photoId);
                 }
             }
@@ -18987,6 +19230,15 @@ window.renderAdminPhotosTab = renderAdminPhotosTab;
 window.updatePhotoStatus = updatePhotoStatus;
 window.updatePhotoRace = updatePhotoRace;
 window.deleteAdminPhoto = deleteAdminPhoto;
+
+// Bootstrap and render initial saved data after all modules and singletons are initialized
+if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", () => {
+        initializeSavedData();
+    });
+} else {
+    initializeSavedData();
+}
 
 
 
