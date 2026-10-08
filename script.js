@@ -759,6 +759,103 @@ const translations = {
                     reliability: "🛡️ FIABILIDAD MECÁNICA",
                     consistency: "🎯 REGULARIDAD EN TOP 10",
                     podiumEff: "🏆 EFECTIVIDAD EN PODIOS"
+                },
+                photos: {
+                    galleryKicker: "COMUNIDAD FFC",
+                    galleryTitle: "GALERÍA DE FOTOS POR CARRERA",
+                    uploadNewBtn: "+ Subir Nueva Foto",
+                    filterLabel: "Filtrar por Gran Premio:",
+                    allGps: "🏁 Todas las Carreras y GPs",
+                    emptyTitle: "No hay fotos en esta categoría todavía",
+                    emptyDesc: "¡Sé el primero en compartir tus capturas de esta carrera con la comunidad!",
+                    uploadFirstBtn: "Subir primera foto",
+                    modalKicker: "ASISTENTE DE SUBIDA FFC",
+                    modalTitle: "SUBIR FOTO DE SIMRACING",
+                    adminNotice: "🛡️ <strong>Modo Administrador Activo:</strong> Las fotos que subas se publicarán aprobadas automáticamente sin necesidad de moderación previa.",
+                    loginPromptTitle: "Inicia sesión para subir fotos",
+                    loginPromptDesc: "Debes iniciar sesión con tu cuenta de Formula Factor para compartir tus capturas en la galería oficial.",
+                    loginPromptBtn: "Iniciar Sesión / Registrarse",
+                    labelRace: "Gran Premio / Carrera pasada *",
+                    selectRacePlaceholder: "-- Selecciona una carrera --",
+                    labelMethod: "Método de Subida de Imagen *",
+                    methodFile: "📁 Archivo Local (PC / Móvil)",
+                    methodUrl: "🔗 Enlace URL Directo",
+                    fileLabel: "Seleccionar Imágenes (Puedes subir varias a la vez)",
+                    fileHint: "Selecciona una o más fotos. Se preserva la máxima calidad y resolución original.",
+                    urlLabel: "Pegar Enlace de Imagen (Discord, Imgur, Postimages...)",
+                    urlPlaceholder: "https://i.imgur.com/example.jpg",
+                    captionLabel: "Pie de foto / Descripción (Opcional)",
+                    captionPlaceholder: "Ej: Salida curva 1, Batalla por el podio...",
+                    btnCancel: "Cancelar",
+                    btnSubmit: "Subir foto",
+                    homeBannerTitle: "GALERÍA FOTOGRÁFICA DE LAS CARRERAS",
+                    homeBannerDesc: "Explora las capturas, adelantamientos épicos, podios y momentos en pista subidos por la comunidad.",
+                    homeBannerBtn: "📸 Ver Galería Completa de Fotos",
+                    raceTabGallery: "📸 Galería de Fotos",
+                    raceGalleryTitle: "Galería Fotográfica de la Carrera",
+                    raceGalleryDesc: "Capturas, podios y momentos en pista subidos por la comunidad.",
+                    raceUploadBtn1: "+ Subir Foto a este GP",
+                    raceEmptyTitle: "No hay fotos para este Gran Premio todavía",
+                    raceEmptyDesc: "¡Sé el primero en subir una foto de esta carrera!",
+                    raceUploadBtn2: "Subir foto ahora"
+                },
+                legal: {
+                    footerCopyright: "© 2026 Formula Factor Championship. Todos los derechos reservados. Campeonato de Sim Racing Oficial.",
+                    privacyBtn: "Política de Privacidad",
+                    termsBtn: "Términos y Condiciones",
+                    cookiesBtn: "Política de Cookies",
+                    privacy: {
+                        badge: "FFC // LEGAL & PRIVACIDAD",
+                        title: "POLÍTICA DE PRIVACIDAD",
+                        subtitle: "Última actualización: Septiembre 2026",
+                        sec1Title: "1. Información que Recopilamos",
+                        sec1Text: "En <strong>Formula Factor Championship (FFC)</strong> recopilamos exclusivamente la información necesaria para el funcionamiento de la liga, la gestión de clasificaciones y la interacción en la comunidad:\\n<ul>\\n    <li><strong>Perfil y Cuenta:</strong> Nombre de piloto / apodo y correo electrónico para la autenticación en la plataforma.</li>\\n    <li><strong>Tarjeta de Piloto (FFC Driver Card):</strong> Redes sociales opcionales (Twitch, YouTube, X/Twitter, Discord), avatar o foto de perfil, nacionalidad oficial e información de estilo de conducción.</li>\\n    <li><strong>Estadísticas e Historial:</strong> Datos deportivos de carreras, puntos en el campeonato y equipos seleccionados en FFC Fantasy.</li>\\n</ul>",
+                        sec2Title: "2. Uso de la Información",
+                        sec2Text: "Tus datos se emplean únicamente para los siguientes fines legítimos de la organización:\\n<ul>\\n    <li>Gestionar las tablas de posiciones oficiales y el control de sanciones administrativas.</li>\\n    <li>Permitir la participación interactiva en la Liga Fantasy de FFC.</li>\\n    <li>Mostrar tu tarjeta pública de piloto durante las transmisiones en directo y listas oficiales.</li>\\n    <li>Mantener la seguridad de la cuenta y la autenticación de usuarios.</li>\\n</ul>",
+                        sec3Title: "3. Seguridad y Almacenamiento",
+                        sec3Text: "Utilizamos la infraestructura en la nube de <strong>Google Firebase (Firestore y Auth)</strong>, garantizando el cifrado en tránsito y en reposo de las credenciales de los usuarios. FFC no vende ni comercializa ningún dato personal con terceros.",
+                        sec4Title: "4. Cookies y Almacenamiento Local",
+                        sec4Text: "Esta plataforma hace uso exclusivo de la memoria local del navegador (<code>localStorage</code>) para guardar la sesión iniciada y preferencias de navegación de forma rápida y segura, sin utilizar cookies de rastreo publicitario.",
+                        sec5Title: "5. Tus Derechos y Gestión de Datos",
+                        sec5Text: "Puedes editar tus datos de perfil en cualquier momento desde el panel de edición de tu tarjeta. Si deseas darte de baja o eliminar permanentemente tu cuenta y datos asociados, puedes solicitarlo directamente a la administración a través de nuestro Discord oficial.",
+                        sec6Title: "6. Contacto",
+                        sec6Text: "Para cualquier consulta respecto a la privacidad, puedes contactar con la administración de Formula Factor Championship a través del canal de soporte oficial en Discord.",
+                        hermesTitle: "Nota de Hermes",
+                        hermesText: "\"Basicamente que no hacemos nada con vuestros correos, no nos sirven de nada panolis\"",
+                        acceptBtn: "ENTENDIDO"
+                    },
+                    terms: {
+                        badge: "FFC // LEGAL & CONDICIONES",
+                        title: "TÉRMINOS Y CONDICIONES DE USO",
+                        subtitle: "Última actualización: Septiembre 2026",
+                        sec1Title: "1. Objeto y Aceptación",
+                        sec1Text: "Los presentes Términos y Condiciones regulan el acceso y uso de la plataforma web de <strong>Formula Factor Championship (FFC)</strong>, campeonato oficial de Sim Racing. La utilización de la plataforma implica la aceptación íntegra y sin reservas de todas las disposiciones aquí incluidas.",
+                        sec2Title: "2. Normas de Participación y Fair Play",
+                        sec2Text: "Todos los pilotos y miembros registrados en FFC se comprometen a:\\n<ul>\\n    <li>Mantener una conducta deportiva ejemplar (\"Fair Play\") tanto en pista durante las sesiones y Grandes Premios como en los canales de comunicación de la comunidad.</li>\\n    <li>Respetar las decisiones de los comisarios deportivos y el reglamento oficial del campeonato disponible en la sección de información.</li>\\n    <li>No utilizar software de trampas, modificaciones no autorizadas ni alterar deliberadamente la telemetría o los resultados oficiales.</li>\\n</ul>",
+                        sec3Title: "3. Liga FFC Fantasy",
+                        sec3Text: "El modo de juego interactivo FFC Fantasy es una competición recreativa basada en el rendimiento deportivo real de los pilotos en el campeonato. La organización se reserva el derecho de auditar puntuaciones y corregir errores técnicos en las clasificaciones del Fantasy.",
+                        sec4Title: "4. Propiedad Intelectual",
+                        sec4Text: "Todos los contenidos, logotipos, marcas, diseños, estadísticas, gráficos y software de la plataforma FFC están protegidos por derechos de propiedad intelectual e industrial. Queda prohibida su reproducción total o parcial sin autorización expresa de la organización.",
+                        sec5Title: "5. Limitación de Responsabilidad",
+                        sec5Text: "FFC opera como una liga independiente de Sim Racing sin ánimo de lucro. La organización no se hace responsable de interrupciones técnicas imprevistas del servidor, pérdida de datos ajena a nuestro control o incidencias de conexión de los participantes.",
+                        sec6Title: "6. Modificaciones",
+                        sec6Text: "La organización podrá actualizar o modificar estos términos en cualquier momento para adaptarlos a la normativa vigente o mejoras de la competición. Las modificaciones entrarán en vigor desde su publicación en la plataforma.",
+                        acceptBtn: "ENTENDIDO"
+                    },
+                    cookies: {
+                        badge: "FFC // LEGAL & COOKIES",
+                        title: "POLÍTICA DE COOKIES",
+                        subtitle: "Última actualización: Septiembre 2026",
+                        sec1Title: "1. ¿Qué son las Cookies?",
+                        sec1Text: "Una cookie es un pequeño archivo de texto que los sitios web almacenan en su ordenador o dispositivo móvil cuando visita la página. Permiten recordar sus acciones y preferencias durante un tiempo para que no tenga que volver a introducirlas cada vez que navegue.",
+                        sec2Title: "2. Tipos de Cookies que Utiliza FFC",
+                        sec2Text: "En Formula Factor Championship utilizamos exclusivamente:\\n<ul>\\n    <li><strong>Cookies Técnicas y de Sesión:</strong> Esenciales para permitir la autenticación de usuarios, recordar el idioma seleccionado y garantizar el correcto funcionamiento del panel de usuario y la Liga Fantasy.</li>\\n    <li><strong>Almacenamiento Local (localStorage):</strong> Empleado para guardar de forma segura sus preferencias de visualización y caché local de resultados para una carga rápida.</li>\\n    <li><strong>Google Analytics (Medición anónima):</strong> Estadísticas de tráfico anónimas para mejorar el rendimiento de la plataforma.</li>\\n</ul>",
+                        sec3Title: "3. Gestión y Desactivación de Cookies",
+                        sec3Text: "Usted puede permitir, bloquear o eliminar las cookies instaladas en su equipo mediante la configuración de las opciones del navegador instalado en su dispositivo:\\n<ul>\\n    <li><strong>Google Chrome:</strong> Configuración -> Privacidad y seguridad -> Cookies.</li>\\n    <li><strong>Mozilla Firefox:</strong> Opciones -> Privacidad y seguridad -> Cookies y datos del sitio.</li>\\n    <li><strong>Safari:</strong> Preferencias -> Privacidad.</li>\\n</ul>",
+                        sec4Title: "4. Actualizaciones",
+                        sec4Text: "Esta política de cookies puede actualizarse en función de exigencias legislativas o técnicas, por lo que se recomienda a los usuarios revisarla periódicamente.",
+                        acceptBtn: "ACEPTAR Y CERRAR"
+                    }
                 }
             }
         }
@@ -1124,6 +1221,103 @@ const translations = {
                     reliability: "🛡️ MECHANICAL RELIABILITY",
                     consistency: "🎯 TOP 10 CONSISTENCY",
                     podiumEff: "🏆 PODIUM EFFICIENCY"
+                },
+                photos: {
+                    galleryKicker: "FFC COMMUNITY",
+                    galleryTitle: "RACE PHOTO GALLERY",
+                    uploadNewBtn: "+ Upload New Photo",
+                    filterLabel: "Filter by Grand Prix:",
+                    allGps: "🏁 All Races & GPs",
+                    emptyTitle: "No photos in this category yet",
+                    emptyDesc: "Be the first to share your captures from this race with the community!",
+                    uploadFirstBtn: "Upload first photo",
+                    modalKicker: "FFC UPLOAD ASSISTANT",
+                    modalTitle: "UPLOAD SIMRACING PHOTO",
+                    adminNotice: "🛡️ <strong>Admin Mode Active:</strong> Photos you upload will be published automatically without prior moderation.",
+                    loginPromptTitle: "Log in to upload photos",
+                    loginPromptDesc: "You must log in with your Formula Factor account to share your captures in the official gallery.",
+                    loginPromptBtn: "Log In / Register",
+                    labelRace: "Grand Prix / Past Race *",
+                    selectRacePlaceholder: "-- Select a race --",
+                    labelMethod: "Image Upload Method *",
+                    methodFile: "📁 Local File (PC / Mobile)",
+                    methodUrl: "🔗 Direct URL Link",
+                    fileLabel: "Select Images (You can upload multiple at once)",
+                    fileHint: "Select one or more photos. Maximum quality and original resolution are preserved.",
+                    urlLabel: "Paste Image Link (Discord, Imgur, Postimages...)",
+                    urlPlaceholder: "https://i.imgur.com/example.jpg",
+                    captionLabel: "Caption / Description (Optional)",
+                    captionPlaceholder: "e.g. Turn 1 start, Podium battle...",
+                    btnCancel: "Cancel",
+                    btnSubmit: "Upload photo",
+                    homeBannerTitle: "RACE PHOTO GALLERY",
+                    homeBannerDesc: "Explore captures, epic overtakes, podiums, and track moments uploaded by the community.",
+                    homeBannerBtn: "📸 View Full Photo Gallery",
+                    raceTabGallery: "📸 Photo Gallery",
+                    raceGalleryTitle: "Race Photographic Gallery",
+                    raceGalleryDesc: "Captures, podiums, and on-track moments uploaded by the community.",
+                    raceUploadBtn1: "+ Upload Photo to this GP",
+                    raceEmptyTitle: "No photos for this Grand Prix yet",
+                    raceEmptyDesc: "Be the first to upload a photo of this race!",
+                    raceUploadBtn2: "Upload photo now"
+                },
+                legal: {
+                    footerCopyright: "© 2026 Formula Factor Championship. All rights reserved. Official Sim Racing Championship.",
+                    privacyBtn: "Privacy Policy",
+                    termsBtn: "Terms & Conditions",
+                    cookiesBtn: "Cookies Policy",
+                    privacy: {
+                        badge: "FFC // LEGAL & PRIVACY",
+                        title: "PRIVACY POLICY",
+                        subtitle: "Last update: September 2026",
+                        sec1Title: "1. Information We Collect",
+                        sec1Text: "At <strong>Formula Factor Championship (FFC)</strong> we exclusively collect the information necessary for league operations, standings management, and community interaction:\\n<ul>\\n    <li><strong>Profile & Account:</strong> Driver name / alias and email address for platform authentication.</li>\\n    <li><strong>Driver Card (FFC Driver Card):</strong> Optional social media (Twitch, YouTube, X/Twitter, Discord), avatar or profile photo, official nationality, and driving style information.</li>\\n    <li><strong>Stats & History:</strong> Race sporting data, championship points, and teams selected in FFC Fantasy.</li>\\n</ul>",
+                        sec2Title: "2. Use of Information",
+                        sec2Text: "Your data is used solely for the following legitimate purposes of the organization:\\n<ul>\\n    <li>Manage official standings tables and administrative penalty control.</li>\\n    <li>Allow interactive participation in the FFC Fantasy League.</li>\\n    <li>Display your public driver card during live streams and official lists.</li>\\n    <li>Maintain account security and user authentication.</li>\\n</ul>",
+                        sec3Title: "3. Security & Storage",
+                        sec3Text: "We use <strong>Google Firebase (Firestore and Auth)</strong> cloud infrastructure, ensuring encryption in transit and at rest for user credentials. FFC does not sell or commercialize any personal data with third parties.",
+                        sec4Title: "4. Cookies & Local Storage",
+                        sec4Text: "This platform exclusively uses browser local memory (<code>localStorage</code>) to save logged-in sessions and navigation preferences quickly and securely, without using advertising tracking cookies.",
+                        sec5Title: "5. Your Rights & Data Management",
+                        sec5Text: "You can edit your profile data at any time from your card editing panel. If you wish to unsubscribe or permanently delete your account and associated data, you can request it directly from administration through our official Discord.",
+                        sec6Title: "6. Contact",
+                        sec6Text: "For any privacy-related inquiries, you can contact the Formula Factor Championship administration through the official support channel on Discord.",
+                        hermesTitle: "Hermes Note",
+                        hermesText: "\"Basically we don't do anything with your emails, they are useless to you chumps\"",
+                        acceptBtn: "UNDERSTOOD"
+                    },
+                    terms: {
+                        badge: "FFC // LEGAL & CONDITIONS",
+                        title: "TERMS & CONDITIONS OF USE",
+                        subtitle: "Last update: September 2026",
+                        sec1Title: "1. Object & Acceptance",
+                        sec1Text: "These Terms & Conditions regulate the access and use of the web platform of <strong>Formula Factor Championship (FFC)</strong>, official Sim Racing championship. Using the platform implies full and unreserved acceptance of all provisions included herein.",
+                        sec2Title: "2. Participation Rules & Fair Play",
+                        sec2Text: "All drivers and members registered in FFC commit to:\\n<ul>\\n    <li>Maintain exemplary sporting conduct (\"Fair Play\") both on track during sessions and Grands Prix and in community communication channels.</li>\\n    <li>Respect the decisions of sporting stewards and the official championship regulations available in the info section.</li>\\n    <li>Do not use cheating software, unauthorized modifications, or deliberately alter telemetry or official results.</li>\\n</ul>",
+                        sec3Title: "3. FFC Fantasy League",
+                        sec3Text: "The FFC Fantasy interactive game mode is a recreational competition based on the actual sporting performance of drivers in the championship. The organization reserves the right to audit scores and correct technical errors in Fantasy standings.",
+                        sec4Title: "4. Intellectual Property",
+                        sec4Text: "All content, logos, trademarks, designs, statistics, graphics, and software of the FFC platform are protected by intellectual and industrial property rights. Total or partial reproduction without express authorization from the organization is prohibited.",
+                        sec5Title: "5. Limitation of Liability",
+                        sec5Text: "FFC operates as an independent non-profit Sim Racing league. The organization is not responsible for unforeseen technical server interruptions, loss of data outside our control, or participant connection issues.",
+                        sec6Title: "6. Modifications",
+                        sec6Text: "The organization may update or modify these terms at any time to adapt them to current regulations or competition improvements. Modifications will take effect upon publication on the platform.",
+                        acceptBtn: "UNDERSTOOD"
+                    },
+                    cookies: {
+                        badge: "FFC // LEGAL & COOKIES",
+                        title: "COOKIES POLICY",
+                        subtitle: "Last update: September 2026",
+                        sec1Title: "1. What are Cookies?",
+                        sec1Text: "A cookie is a small text file that websites store on your computer or mobile device when you visit the page. They allow your actions and preferences to be remembered for a time so you don't have to re-enter them every time you browse.",
+                        sec2Title: "2. Types of Cookies Used by FFC",
+                        sec2Text: "In Formula Factor Championship we exclusively use:\\n<ul>\\n    <li><strong>Technical & Session Cookies:</strong> Essential to allow user authentication, remember selected language, and ensure proper functioning of the user panel and Fantasy League.</li>\\n    <li><strong>Local Storage (localStorage):</strong> Used to securely save your display preferences and local results cache for fast loading.</li>\\n    <li><strong>Google Analytics (Anonymous Measurement):</strong> Anonymous traffic statistics to improve platform performance.</li>\\n</ul>",
+                        sec3Title: "3. Management & Disabling of Cookies",
+                        sec3Text: "You can allow, block, or delete cookies installed on your device by configuring the browser settings installed on your device:\\n<ul>\\n    <li><strong>Google Chrome:</strong> Settings -> Privacy and security -> Cookies.</li>\\n    <li><strong>Mozilla Firefox:</strong> Options -> Privacy and security -> Cookies and site data.</li>\\n    <li><strong>Safari:</strong> Preferences -> Privacy.</li>\\n</ul>",
+                        sec4Title: "4. Updates",
+                        sec4Text: "This cookies policy may be updated based on legislative or technical requirements, so users are recommended to review it periodically.",
+                        acceptBtn: "ACCEPT & CLOSE"
+                    }
                 }
             }
         }
@@ -1195,6 +1389,197 @@ function applyTranslations(lang) {
     if (navCmp && dict.nav && dict.nav.compare) navCmp.textContent = dict.nav.compare;
     const navF = document.getElementById("navFantasyText");
     if (navF && dict.nav && dict.nav.fantasy) navF.textContent = dict.nav.fantasy;
+
+    if (dict.photos) {
+        const gk = document.getElementById("galleryModalKicker");
+        if (gk) gk.textContent = dict.photos.galleryKicker;
+        const gt = document.getElementById("galleryModalTitle");
+        if (gt) gt.textContent = dict.photos.galleryTitle;
+        const btnUp1 = document.getElementById("btnOpenUploadPhoto1");
+        if (btnUp1) btnUp1.textContent = dict.photos.uploadNewBtn;
+        const btnUp2 = document.getElementById("btnOpenUploadPhoto2");
+        if (btnUp2) btnUp2.textContent = dict.photos.uploadNewBtn;
+        const lblFil = document.getElementById("lblGalleryFilter");
+        if (lblFil) lblFil.textContent = dict.photos.filterLabel;
+        const optAll = document.getElementById("optFilterAll");
+        if (optAll) optAll.textContent = dict.photos.allGps;
+        const gEmptyT = document.getElementById("galleryEmptyTitle");
+        if (gEmptyT) gEmptyT.textContent = dict.photos.emptyTitle;
+        const gEmptyD = document.getElementById("galleryEmptyDesc");
+        if (gEmptyD) gEmptyD.textContent = dict.photos.emptyDesc;
+        const btnUpFirst = document.getElementById("btnOpenUploadPhotoFirst");
+        if (btnUpFirst) btnUpFirst.textContent = dict.photos.uploadFirstBtn;
+
+        const upKicker = document.getElementById("uploadModalKicker");
+        if (upKicker) upKicker.textContent = dict.photos.modalKicker;
+        const upTitle = document.getElementById("uploadModalTitle");
+        if (upTitle) upTitle.textContent = dict.photos.modalTitle;
+        const upAdmin = document.getElementById("uploadAdminNotice");
+        if (upAdmin) upAdmin.innerHTML = dict.photos.adminNotice;
+        const upLogT = document.getElementById("uploadLoginPromptTitle");
+        if (upLogT) upLogT.textContent = dict.photos.loginPromptTitle;
+        const upLogD = document.getElementById("uploadLoginPromptDesc");
+        if (upLogD) upLogD.textContent = dict.photos.loginPromptDesc;
+        const upLogBtn = document.getElementById("uploadLoginPromptBtn");
+        if (upLogBtn) upLogBtn.textContent = dict.photos.loginPromptBtn;
+
+        const lblR = document.getElementById("lblUploadRace");
+        if (lblR) lblR.textContent = dict.photos.labelRace;
+        const lblM = document.getElementById("lblUploadMethod");
+        if (lblM) lblM.textContent = dict.photos.labelMethod;
+        const tabF = document.getElementById("tabUploadFile");
+        if (tabF) tabF.textContent = dict.photos.methodFile;
+        const tabU = document.getElementById("tabUploadUrl");
+        if (tabU) tabU.textContent = dict.photos.methodUrl;
+        const lblFile = document.getElementById("lblPhotoFileInput");
+        if (lblFile) lblFile.textContent = dict.photos.fileLabel;
+        const lblHint = document.getElementById("lblPhotoFileHint");
+        if (lblHint) lblHint.textContent = dict.photos.fileHint;
+        const lblUrl = document.getElementById("lblPhotoUrlInput");
+        if (lblUrl) lblUrl.textContent = dict.photos.urlLabel;
+        const inUrl = document.getElementById("photoUrlInput");
+        if (inUrl) inUrl.placeholder = dict.photos.urlPlaceholder;
+        const lblCap = document.getElementById("lblPhotoCaptionInput");
+        if (lblCap) lblCap.textContent = dict.photos.captionLabel;
+        const inCap = document.getElementById("photoCaptionInput");
+        if (inCap) inCap.placeholder = dict.photos.captionPlaceholder;
+        const btnC = document.getElementById("uploadModalCancelBtn");
+        if (btnC) btnC.textContent = dict.photos.btnCancel;
+        const btnS = document.getElementById("btnSubmitPhotoUpload");
+        if (btnS) btnS.textContent = dict.photos.btnSubmit;
+
+        const hBanTitle = document.getElementById("homePhotoBannerTitle");
+        if (hBanTitle) hBanTitle.textContent = dict.photos.homeBannerTitle;
+        const hBanDesc = document.getElementById("homePhotoBannerDesc");
+        if (hBanDesc) hBanDesc.textContent = dict.photos.homeBannerDesc;
+        const hBanBtn = document.getElementById("homePhotoBannerBtn");
+        if (hBanBtn) hBanBtn.textContent = dict.photos.homeBannerBtn;
+
+        const rTabGal = document.getElementById("raceTabGalleryBtn");
+        if (rTabGal) {
+            const countSpan = document.getElementById("raceModalPhotoCount");
+            const countVal = countSpan ? countSpan.textContent : "0";
+            rTabGal.innerHTML = `${dict.photos.raceTabGallery} (<span id="raceModalPhotoCount">${countVal}</span>)`;
+        }
+        const rGalTitle = document.getElementById("raceGalleryTabTitle");
+        if (rGalTitle) rGalTitle.textContent = dict.photos.raceGalleryTitle;
+        const rGalDesc = document.getElementById("raceGalleryTabDesc");
+        if (rGalDesc) rGalDesc.textContent = dict.photos.raceGalleryDesc;
+        const rGalUp1 = document.getElementById("raceGalleryUploadBtn1");
+        if (rGalUp1) rGalUp1.textContent = dict.photos.raceUploadBtn1;
+        const rGalEmptyT = document.getElementById("raceGalleryEmptyTitle");
+        if (rGalEmptyT) rGalEmptyT.textContent = dict.photos.raceEmptyTitle;
+        const rGalEmptyD = document.getElementById("raceGalleryEmptyDesc");
+        if (rGalEmptyD) rGalEmptyD.textContent = dict.photos.raceEmptyDesc;
+        const rGalUp2 = document.getElementById("raceGalleryUploadBtn2");
+        if (rGalUp2) rGalUp2.textContent = dict.photos.raceUploadBtn2;
+    }
+
+    if (dict.legal) {
+        const fCopy = document.getElementById("footerCopyright");
+        if (fCopy) fCopy.textContent = dict.legal.footerCopyright;
+        const fPriv = document.getElementById("footerPrivacyBtn");
+        if (fPriv) fPriv.textContent = dict.legal.privacyBtn;
+        const fTerm = document.getElementById("footerTermsBtn");
+        if (fTerm) fTerm.textContent = dict.legal.termsBtn;
+        const fCook = document.getElementById("footerCookiesBtn");
+        if (fCook) fCook.textContent = dict.legal.cookiesBtn;
+
+        const pBadge = document.getElementById("privacyBadge");
+        if (pBadge) pBadge.textContent = dict.legal.privacy.badge;
+        const pTitle = document.getElementById("privacyTitle");
+        if (pTitle) pTitle.textContent = dict.legal.privacy.title;
+        const pSub = document.getElementById("privacySubtitle");
+        if (pSub) pSub.textContent = dict.legal.privacy.subtitle;
+        const pS1T = document.getElementById("privacySec1Title");
+        if (pS1T) pS1T.textContent = dict.legal.privacy.sec1Title;
+        const pS1B = document.getElementById("privacySec1Body");
+        if (pS1B) pS1B.innerHTML = dict.legal.privacy.sec1Text;
+        const pS2T = document.getElementById("privacySec2Title");
+        if (pS2T) pS2T.textContent = dict.legal.privacy.sec2Title;
+        const pS2B = document.getElementById("privacySec2Body");
+        if (pS2B) pS2B.innerHTML = dict.legal.privacy.sec2Text;
+        const pS3T = document.getElementById("privacySec3Title");
+        if (pS3T) pS3T.textContent = dict.legal.privacy.sec3Title;
+        const pS3B = document.getElementById("privacySec3Body");
+        if (pS3B) pS3B.innerHTML = dict.legal.privacy.sec3Text;
+        const pS4T = document.getElementById("privacySec4Title");
+        if (pS4T) pS4T.textContent = dict.legal.privacy.sec4Title;
+        const pS4B = document.getElementById("privacySec4Body");
+        if (pS4B) pS4B.innerHTML = dict.legal.privacy.sec4Text;
+        const pS5T = document.getElementById("privacySec5Title");
+        if (pS5T) pS5T.textContent = dict.legal.privacy.sec5Title;
+        const pS5B = document.getElementById("privacySec5Body");
+        if (pS5B) pS5B.innerHTML = dict.legal.privacy.sec5Text;
+        const pS6T = document.getElementById("privacySec6Title");
+        if (pS6T) pS6T.textContent = dict.legal.privacy.sec6Title;
+        const pS6B = document.getElementById("privacySec6Body");
+        if (pS6B) pS6B.innerHTML = dict.legal.privacy.sec6Text;
+        const pHermT = document.getElementById("privacyHermesTitle");
+        if (pHermT) pHermT.textContent = dict.legal.privacy.hermesTitle;
+        const pHermB = document.getElementById("privacyHermesText");
+        if (pHermB) pHermB.textContent = dict.legal.privacy.hermesText;
+        const pAcc = document.getElementById("privacyModalAcceptBtn");
+        if (pAcc) pAcc.textContent = dict.legal.privacy.acceptBtn;
+
+        const tBadge = document.getElementById("termsBadge");
+        if (tBadge) tBadge.textContent = dict.legal.terms.badge;
+        const tTitle = document.getElementById("termsTitle");
+        if (tTitle) tTitle.textContent = dict.legal.terms.title;
+        const tSub = document.getElementById("termsSubtitle");
+        if (tSub) tSub.textContent = dict.legal.terms.subtitle;
+        const tS1T = document.getElementById("termsSec1Title");
+        if (tS1T) tS1T.textContent = dict.legal.terms.sec1Title;
+        const tS1B = document.getElementById("termsSec1Body");
+        if (tS1B) tS1B.innerHTML = dict.legal.terms.sec1Text;
+        const tS2T = document.getElementById("termsSec2Title");
+        if (tS2T) tS2T.textContent = dict.legal.terms.sec2Title;
+        const tS2B = document.getElementById("termsSec2Body");
+        if (tS2B) tS2B.innerHTML = dict.legal.terms.sec2Text;
+        const tS3T = document.getElementById("termsSec3Title");
+        if (tS3T) tS3T.textContent = dict.legal.terms.sec3Title;
+        const tS3B = document.getElementById("termsSec3Body");
+        if (tS3B) tS3B.innerHTML = dict.legal.terms.sec3Text;
+        const tS4T = document.getElementById("termsSec4Title");
+        if (tS4T) tS4T.textContent = dict.legal.terms.sec4Title;
+        const tS4B = document.getElementById("termsSec4Body");
+        if (tS4B) tS4B.innerHTML = dict.legal.terms.sec4Text;
+        const tS5T = document.getElementById("termsSec5Title");
+        if (tS5T) tS5T.textContent = dict.legal.terms.sec5Title;
+        const tS5B = document.getElementById("termsSec5Body");
+        if (tS5B) tS5B.innerHTML = dict.legal.terms.sec5Text;
+        const tS6T = document.getElementById("termsSec6Title");
+        if (tS6T) tS6T.textContent = dict.legal.terms.sec6Title;
+        const tS6B = document.getElementById("termsSec6Body");
+        if (tS6B) tS6B.innerHTML = dict.legal.terms.sec6Text;
+        const tAcc = document.getElementById("termsModalAcceptBtn");
+        if (tAcc) tAcc.textContent = dict.legal.terms.acceptBtn;
+
+        const cBadge = document.getElementById("cookiesBadge");
+        if (cBadge) cBadge.textContent = dict.legal.cookies.badge;
+        const cTitle = document.getElementById("cookiesTitle");
+        if (cTitle) cTitle.textContent = dict.legal.cookies.title;
+        const cSub = document.getElementById("cookiesSubtitle");
+        if (cSub) cSub.textContent = dict.legal.cookies.subtitle;
+        const cS1T = document.getElementById("cookiesSec1Title");
+        if (cS1T) cS1T.textContent = dict.legal.cookies.sec1Title;
+        const cS1B = document.getElementById("cookiesSec1Body");
+        if (cS1B) cS1B.innerHTML = dict.legal.cookies.sec1Text;
+        const cS2T = document.getElementById("cookiesSec2Title");
+        if (cS2T) cS2T.textContent = dict.legal.cookies.sec2Title;
+        const cS2B = document.getElementById("cookiesSec2Body");
+        if (cS2B) cS2B.innerHTML = dict.legal.cookies.sec2Text;
+        const cS3T = document.getElementById("cookiesSec3Title");
+        if (cS3T) cS3T.textContent = dict.legal.cookies.sec3Title;
+        const cS3B = document.getElementById("cookiesSec3Body");
+        if (cS3B) cS3B.innerHTML = dict.legal.cookies.sec3Text;
+        const cS4T = document.getElementById("cookiesSec4Title");
+        if (cS4T) cS4T.textContent = dict.legal.cookies.sec4Title;
+        const cS4B = document.getElementById("cookiesSec4Body");
+        if (cS4B) cS4B.innerHTML = dict.legal.cookies.sec4Text;
+        const cAcc = document.getElementById("cookiesModalAcceptBtn");
+        if (cAcc) cAcc.textContent = dict.legal.cookies.acceptBtn;
+    }
 
     // Hero
     const heroEye = document.getElementById("heroEyebrow");
@@ -17581,17 +17966,11 @@ function populatePastRaceSelect(preselected = "") {
         });
     }
 
-    select.innerHTML = `<option value="">-- Selecciona una carrera --</option>` + options.map(opt => `
+    select.innerHTML = `<option value="" disabled selected>-- Selecciona una carrera --</option>` + options.map(opt => `
         <option value="${opt.key}">${opt.label}</option>
     `).join("");
 
-    if (preselected && options.some(o => o.key === preselected)) {
-        select.value = preselected;
-    } else if (currentOpenRaceKey && options.some(o => o.key === currentOpenRaceKey)) {
-        select.value = currentOpenRaceKey;
-    } else if (options.length > 0) {
-        select.value = options[0].key;
-    }
+    select.value = "";
 }
 
 window.openGlobalPhotoGallery = function() {
@@ -17618,21 +17997,33 @@ window.closeGlobalPhotoGalleryModal = function() {
 };
 
 window.openUploadPhotoModal = function(preselectedRaceId = null) {
+    const u = typeof activeUserAuth !== "undefined" && activeUserAuth ? activeUserAuth : (typeof LocalAuthStore !== "undefined" ? LocalAuthStore.getCurrentUser() : null);
+
     const modal = document.getElementById("uploadPhotoModal");
+    const form = document.getElementById("photoUploadForm");
+    const loginPrompt = document.getElementById("uploadLoginPrompt");
+    const adminNotice = document.getElementById("uploadAdminNotice");
+
     if (modal) {
         modal.classList.add("active");
         modal.style.display = "flex";
         modal.style.opacity = "1";
         modal.style.visibility = "visible";
         document.body.classList.add("modal-open");
-        populatePastRaceSelect(preselectedRaceId || currentOpenRaceKey || "");
-        clearPhotoSelection();
 
-        const adminNotice = document.getElementById("uploadAdminNotice");
-        if (adminNotice) {
-            const u = typeof activeUserAuth !== "undefined" && activeUserAuth ? activeUserAuth : (typeof LocalAuthStore !== "undefined" ? LocalAuthStore.getCurrentUser() : null);
-            const isAdmin = typeof isUserAdmin === "function" && isUserAdmin(u);
-            adminNotice.style.display = isAdmin ? "block" : "none";
+        if (!u) {
+            if (form) form.style.display = "none";
+            if (loginPrompt) loginPrompt.style.display = "block";
+            if (adminNotice) adminNotice.style.display = "none";
+        } else {
+            if (form) form.style.display = "block";
+            if (loginPrompt) loginPrompt.style.display = "none";
+            populatePastRaceSelect("");
+            clearPhotoSelection();
+            if (adminNotice) {
+                const isAdmin = typeof isUserAdmin === "function" && isUserAdmin(u);
+                adminNotice.style.display = isAdmin ? "block" : "none";
+            }
         }
     }
 };

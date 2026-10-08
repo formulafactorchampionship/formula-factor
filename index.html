@@ -90,6 +90,9 @@
                 <span class="fantasy-nav-dot" aria-hidden="true"></span>
                 <span id="navFantasyText">FANTASY</span>
             </a>
+            <a href="#sheets" id="navGoogleSheets" class="nav-item nav-sheets-link" title="Exportar a Google Sheets" onclick="if(window.openGoogleSheetsModal){window.openGoogleSheetsModal();return false;}">
+                📊 SHEETS
+            </a>
 
         </nav>
 
@@ -1179,12 +1182,12 @@
     <!-- BANNER DE FOTOS COLOCADO DEBAJO DEL CALENDARIO -->
     <div class="calendar-photo-banner" style="margin-top: 32px;">
         <div class="calendar-banner-left">
-            <span class="calendar-banner-badge">📸 COMUNIDAD FFC</span>
-            <h3>GALERÍA FOTOGRÁFICA DE LAS CARRERAS</h3>
-            <p>Explora las capturas, adelantamientos épicos, podios y momentos en pista subidos por la comunidad.</p>
+            <span class="calendar-banner-badge" id="homePhotoBannerBadge">📸 COMUNIDAD FFC</span>
+            <h3 id="homePhotoBannerTitle">GALERÍA FOTOGRÁFICA DE LAS CARRERAS</h3>
+            <p id="homePhotoBannerDesc">Explora las capturas, adelantamientos épicos, podios y momentos en pista subidos por la comunidad.</p>
         </div>
         <div class="calendar-banner-right">
-            <button type="button" class="btn btn-secondary btn-sm" onclick="if(window.openGlobalPhotoGallery) window.openGlobalPhotoGallery()">📸 Ver Galería Completa de Fotos</button>
+            <button type="button" class="btn btn-secondary btn-sm" id="homePhotoBannerBtn" onclick="if(window.openGlobalPhotoGallery) window.openGlobalPhotoGallery()">📸 Ver Galería Completa de Fotos</button>
         </div>
     </div>
 
@@ -1364,7 +1367,7 @@
     <div class="footer-inner">
         <div class="footer-brand-col">
             <div class="footer-logo">FORMULA FACTOR // FFC</div>
-            <p class="footer-copy">© 2026 Formula Factor Championship. Todos los derechos reservados. Campeonato de Sim Racing Oficial.</p>
+            <p class="footer-copy" id="footerCopyright">© 2026 Formula Factor Championship. Todos los derechos reservados. Campeonato de Sim Racing Oficial.</p>
         </div>
         <div class="footer-links-col">
             <button type="button" class="footer-link-btn" id="footerPrivacyBtn" onclick="if(window.openPrivacyModal){window.openPrivacyModal();return false;}">Política de Privacidad</button>
@@ -1829,18 +1832,18 @@
             <div class="race-gallery-header-row">
                 <div>
                     <h3 id="raceGalleryTabTitle">Galería Fotográfica de la Carrera</h3>
-                    <p>Capturas, podios y momentos en pista subidos por la comunidad.</p>
+                    <p id="raceGalleryTabDesc">Capturas, podios y momentos en pista subidos por la comunidad.</p>
                 </div>
-                <button type="button" class="btn btn-primary btn-sm" onclick="openUploadPhotoModalForCurrentRace()">+ Subir Foto a este GP</button>
+                <button type="button" class="btn btn-primary btn-sm" id="raceGalleryUploadBtn1" onclick="openUploadPhotoModalForCurrentRace()">+ Subir Foto a este GP</button>
             </div>
             <div class="photo-grid" id="raceModalPhotoGrid">
                 <!-- Dynamic photos -->
             </div>
             <div class="photo-empty-state" id="raceModalPhotoEmptyState" style="display: none;">
                 <span class="empty-icon">📸</span>
-                <h4>No hay fotos para este Gran Premio todavía</h4>
-                <p>¡Sé el primero en subir una foto de esta carrera!</p>
-                <button type="button" class="btn btn-primary btn-sm" onclick="openUploadPhotoModalForCurrentRace()">Subir foto ahora</button>
+                <h4 id="raceGalleryEmptyTitle">No hay fotos para este Gran Premio todavía</h4>
+                <p id="raceGalleryEmptyDesc">¡Sé el primero en subir una foto de esta carrera!</p>
+                <button type="button" class="btn btn-primary btn-sm" id="raceGalleryUploadBtn2" onclick="openUploadPhotoModalForCurrentRace()">Subir foto ahora</button>
             </div>
         </div>
 
@@ -3476,15 +3479,15 @@
         <button class="admin-modal-close-btn" id="privacyModalClose" aria-label="Cerrar política de privacidad">&times;</button>
         
         <header class="privacy-modal-header">
-            <div class="privacy-badge">FFC // LEGAL & PRIVACIDAD</div>
-            <h2 class="privacy-title">POLÍTICA DE PRIVACIDAD</h2>
-            <p class="privacy-subtitle">Última actualización: Septiembre 2026</p>
+            <div class="privacy-badge" id="privacyBadge">FFC // LEGAL & PRIVACIDAD</div>
+            <h2 class="privacy-title" id="privacyTitle">POLÍTICA DE PRIVACIDAD</h2>
+            <p class="privacy-subtitle" id="privacySubtitle">Última actualización: Septiembre 2026</p>
         </header>
 
         <div class="privacy-modal-body">
             <section class="privacy-section">
-                <h3>1. Información que Recopilamos</h3>
-                <p>En <strong>Formula Factor Championship (FFC)</strong> recopilamos exclusivamente la información necesaria para el funcionamiento de la liga, la gestión de clasificaciones y la interacción en la comunidad:</p>
+                <h3 id="privacySec1Title">1. Información que Recopilamos</h3>
+                <p id="privacySec1Body">En <strong>Formula Factor Championship (FFC)</strong> recopilamos exclusivamente la información necesaria para el funcionamiento de la liga, la gestión de clasificaciones y la interacción en la comunidad:</p>
                 <ul>
                     <li><strong>Perfil y Cuenta:</strong> Nombre de piloto / apodo y correo electrónico para la autenticación en la plataforma.</li>
                     <li><strong>Tarjeta de Piloto (FFC Driver Card):</strong> Redes sociales opcionales (Twitch, YouTube, X/Twitter, Discord), avatar o foto de perfil, nacionalidad oficial e información de estilo de conducción.</li>
@@ -3493,8 +3496,8 @@
             </section>
 
             <section class="privacy-section">
-                <h3>2. Uso de la Información</h3>
-                <p>Tus datos se emplean únicamente para los siguientes fines legítimos de la organización:</p>
+                <h3 id="privacySec2Title">2. Uso de la Información</h3>
+                <p id="privacySec2Body">Tus datos se emplean únicamente para los siguientes fines legítimos de la organización:</p>
                 <ul>
                     <li>Gestionar las tablas de posiciones oficiales y el control de sanciones administrativas.</li>
                     <li>Permitir la participación interactiva en la Liga Fantasy de FFC.</li>
@@ -3504,28 +3507,28 @@
             </section>
 
             <section class="privacy-section">
-                <h3>3. Seguridad y Almacenamiento</h3>
-                <p>Utilizamos la infraestructura en la nube de <strong>Google Firebase (Firestore y Auth)</strong>, garantizando el cifrado en tránsito y en reposo de las credenciales de los usuarios. FFC no vende ni comercializa ningún dato personal con terceros.</p>
+                <h3 id="privacySec3Title">3. Seguridad y Almacenamiento</h3>
+                <p id="privacySec3Body">Utilizamos la infraestructura en la nube de <strong>Google Firebase (Firestore y Auth)</strong>, garantizando el cifrado en tránsito y en reposo de las credenciales de los usuarios. FFC no vende ni comercializa ningún dato personal con terceros.</p>
             </section>
 
             <section class="privacy-section">
-                <h3>4. Cookies y Almacenamiento Local</h3>
-                <p>Esta plataforma hace uso exclusivo de la memoria local del navegador (<code>localStorage</code>) para guardar la sesión iniciada y preferencias de navegación de forma rápida y segura, sin utilizar cookies de rastreo publicitario.</p>
+                <h3 id="privacySec4Title">4. Cookies y Almacenamiento Local</h3>
+                <p id="privacySec4Body">Esta plataforma hace uso exclusivo de la memoria local del navegador (<code>localStorage</code>) para guardar la sesión iniciada y preferencias de navegación de forma rápida y segura, sin utilizar cookies de rastreo publicitario.</p>
             </section>
 
             <section class="privacy-section">
-                <h3>5. Tus Derechos y Gestión de Datos</h3>
-                <p>Puedes editar tus datos de perfil en cualquier momento desde el panel de edición de tu tarjeta. Si deseas darte de baja o eliminar permanentemente tu cuenta y datos asociados, puedes solicitarlo directamente a la administración a través de nuestro Discord oficial.</p>
+                <h3 id="privacySec5Title">5. Tus Derechos y Gestión de Datos</h3>
+                <p id="privacySec5Body">Puedes editar tus datos de perfil en cualquier momento desde el panel de edición de tu tarjeta. Si deseas darte de baja o eliminar permanentemente tu cuenta y datos asociados, puedes solicitarlo directamente a la administración a través de nuestro Discord oficial.</p>
             </section>
 
             <section class="privacy-section">
-                <h3>6. Contacto</h3>
-                <p>Para cualquier consulta respecto a la privacidad, puedes contactar con la administración de Formula Factor Championship a través del canal de soporte oficial en Discord.</p>
+                <h3 id="privacySec6Title">6. Contacto</h3>
+                <p id="privacySec6Body">Para cualquier consulta respecto a la privacidad, puedes contactar con la administración de Formula Factor Championship a través del canal de soporte oficial en Discord.</p>
             </section>
 
             <section class="privacy-section" style="background: rgba(214, 180, 92, 0.08); border-left: 3px solid #d6b45c; padding: 10px 14px; border-radius: 4px; margin-top: 8px;">
-                <h3 style="color: #d6b45c; margin-bottom: 4px;">Nota de Hermes</h3>
-                <p style="font-style: italic; color: #f1f5f9;">"Basicamente que no hacemos nada con vuestros correos, no nos sirven de nada panolis"</p>
+                <h3 style="color: #d6b45c; margin-bottom: 4px;" id="privacyHermesTitle">Nota de Hermes</h3>
+                <p style="font-style: italic; color: #f1f5f9;" id="privacyHermesText">"Basicamente que no hacemos nada con vuestros correos, no nos sirven de nada panolis"</p>
             </section>
         </div>
 
@@ -3544,20 +3547,20 @@
         <button class="admin-modal-close-btn" id="termsModalClose" aria-label="Cerrar términos y condiciones">&times;</button>
         
         <header class="privacy-modal-header">
-            <div class="privacy-badge">FFC // LEGAL & CONDICIONES</div>
-            <h2 class="privacy-title">TÉRMINOS Y CONDICIONES DE USO</h2>
-            <p class="privacy-subtitle">Última actualización: Septiembre 2026</p>
+            <div class="privacy-badge" id="termsBadge">FFC // LEGAL & CONDICIONES</div>
+            <h2 class="privacy-title" id="termsTitle">TÉRMINOS Y CONDICIONES DE USO</h2>
+            <p class="privacy-subtitle" id="termsSubtitle">Última actualización: Septiembre 2026</p>
         </header>
 
         <div class="privacy-modal-body">
             <section class="privacy-section">
-                <h3>1. Objeto y Aceptación</h3>
-                <p>Los presentes Términos y Condiciones regulan el acceso y uso de la plataforma web de <strong>Formula Factor Championship (FFC)</strong>, campeonato oficial de Sim Racing. La utilización de la plataforma implica la aceptación íntegra y sin reservas de todas las disposiciones aquí incluidas.</p>
+                <h3 id="termsSec1Title">1. Objeto y Aceptación</h3>
+                <p id="termsSec1Body">Los presentes Términos y Condiciones regulan el acceso y uso de la plataforma web de <strong>Formula Factor Championship (FFC)</strong>, campeonato oficial de Sim Racing. La utilización de la plataforma implica la aceptación íntegra y sin reservas de todas las disposiciones aquí incluidas.</p>
             </section>
 
             <section class="privacy-section">
-                <h3>2. Normas de Participación y Fair Play</h3>
-                <p>Todos los pilotos y miembros registrados en FFC se comprometen a:</p>
+                <h3 id="termsSec2Title">2. Normas de Participación y Fair Play</h3>
+                <p id="termsSec2Body">Todos los pilotos y miembros registrados en FFC se comprometen a:</p>
                 <ul>
                     <li>Mantener una conducta deportiva ejemplar ("Fair Play") tanto en pista durante las sesiones y Grandes Premios como en los canales de comunicación de la comunidad.</li>
                     <li>Respetar las decisiones de los comisarios deportivos y el reglamento oficial del campeonato disponible en la sección de información.</li>
@@ -3566,23 +3569,23 @@
             </section>
 
             <section class="privacy-section">
-                <h3>3. Liga FFC Fantasy</h3>
-                <p>El modo de juego interactivo FFC Fantasy es una competición recreativa basada en el rendimiento deportivo real de los pilotos en el campeonato. La organización se reserva el derecho de auditar puntuaciones y corregir errores técnicos en las clasificaciones del Fantasy.</p>
+                <h3 id="termsSec3Title">3. Liga FFC Fantasy</h3>
+                <p id="termsSec3Body">El modo de juego interactivo FFC Fantasy es una competición recreativa basada en el rendimiento deportivo real de los pilotos en el campeonato. La organización se reserva el derecho de auditar puntuaciones y corregir errores técnicos en las clasificaciones del Fantasy.</p>
             </section>
 
             <section class="privacy-section">
-                <h3>4. Propiedad Intelectual</h3>
-                <p>Todos los contenidos, logotipos, marcas, diseños, estadísticas, gráficos y software de la plataforma FFC están protegidos por derechos de propiedad intelectual e industrial. Queda prohibida su reproducción total o parcial sin autorización expresa de la organización.</p>
+                <h3 id="termsSec4Title">4. Propiedad Intelectual</h3>
+                <p id="termsSec4Body">Todos los contenidos, logotipos, marcas, diseños, estadísticas, gráficos y software de la plataforma FFC están protegidos por derechos de propiedad intelectual e industrial. Queda prohibida su reproducción total o parcial sin autorización expresa de la organización.</p>
             </section>
 
             <section class="privacy-section">
-                <h3>5. Limitación de Responsabilidad</h3>
-                <p>FFC opera como una liga independiente de Sim Racing sin ánimo de lucro. La organización no se hace responsable de interrupciones técnicas imprevistas del servidor, pérdida de datos ajena a nuestro control o incidencias de conexión de los participantes.</p>
+                <h3 id="termsSec5Title">5. Limitación de Responsabilidad</h3>
+                <p id="termsSec5Body">FFC opera como una liga independiente de Sim Racing sin ánimo de lucro. La organización no se hace responsable de interrupciones técnicas imprevistas del servidor, pérdida de datos ajena a nuestro control o incidencias de conexión de los participantes.</p>
             </section>
 
             <section class="privacy-section">
-                <h3>6. Modificaciones</h3>
-                <p>La organización podrá actualizar o modificar estos términos en cualquier momento para adaptarlos a la normativa vigente o mejoras de la competición. Las modificaciones entrarán en vigor desde su publicación en la plataforma.</p>
+                <h3 id="termsSec6Title">6. Modificaciones</h3>
+                <p id="termsSec6Body">La organización podrá actualizar o modificar estos términos en cualquier momento para adaptarlos a la normativa vigente o mejoras de la competición. Las modificaciones entrarán en vigor desde su publicación en la plataforma.</p>
             </section>
         </div>
 
@@ -3601,20 +3604,20 @@
         <button class="admin-modal-close-btn" id="cookiesModalClose" aria-label="Cerrar política de cookies">&times;</button>
         
         <header class="privacy-modal-header">
-            <div class="privacy-badge">FFC // LEGAL & COOKIES</div>
-            <h2 class="privacy-title">POLÍTICA DE COOKIES</h2>
-            <p class="privacy-subtitle">Última actualización: Septiembre 2026</p>
+            <div class="privacy-badge" id="cookiesBadge">FFC // LEGAL & COOKIES</div>
+            <h2 class="privacy-title" id="cookiesTitle">POLÍTICA DE COOKIES</h2>
+            <p class="privacy-subtitle" id="cookiesSubtitle">Última actualización: Septiembre 2026</p>
         </header>
 
         <div class="privacy-modal-body">
             <section class="privacy-section">
-                <h3>1. ¿Qué son las Cookies?</h3>
-                <p>Una cookie es un pequeño archivo de texto que los sitios web almacenan en su ordenador o dispositivo móvil cuando visita la página. Permiten recordar sus acciones y preferencias durante un tiempo para que no tenga que volver a introducirlas cada vez que navegue.</p>
+                <h3 id="cookiesSec1Title">1. ¿Qué son las Cookies?</h3>
+                <p id="cookiesSec1Body">Una cookie es un pequeño archivo de texto que los sitios web almacenan en su ordenador o dispositivo móvil cuando visita la página. Permiten recordar sus acciones y preferencias durante un tiempo para que no tenga que volver a introducirlas cada vez que navegue.</p>
             </section>
 
             <section class="privacy-section">
-                <h3>2. Tipos de Cookies que Utiliza FFC</h3>
-                <p>En Formula Factor Championship utilizamos exclusivamente:</p>
+                <h3 id="cookiesSec2Title">2. Tipos de Cookies que Utiliza FFC</h3>
+                <p id="cookiesSec2Body">En Formula Factor Championship utilizamos exclusivamente:</p>
                 <ul>
                     <li><strong>Cookies Técnicas y de Sesión:</strong> Esenciales para permitir la autenticación de usuarios, recordar el idioma seleccionado y garantizar el correcto funcionamiento del panel de usuario y la Liga Fantasy.</li>
                     <li><strong>Almacenamiento Local (localStorage):</strong> Empleado para guardar de forma segura sus preferencias de visualización y caché local de resultados para una carga rápida.</li>
@@ -3623,8 +3626,8 @@
             </section>
 
             <section class="privacy-section">
-                <h3>3. Gestión y Desactivación de Cookies</h3>
-                <p>Usted puede permitir, bloquear o eliminar las cookies instaladas en su equipo mediante la configuración de las opciones del navegador instalado en su dispositivo:</p>
+                <h3 id="cookiesSec3Title">3. Gestión y Desactivación de Cookies</h3>
+                <p id="cookiesSec3Body">Usted puede permitir, bloquear o eliminar las cookies instaladas en su equipo mediante la configuración de las opciones del navegador instalado en su dispositivo:</p>
                 <ul>
                     <li><strong>Google Chrome:</strong> Configuración -> Privacidad y seguridad -> Cookies.</li>
                     <li><strong>Mozilla Firefox:</strong> Opciones -> Privacidad y seguridad -> Cookies y datos del sitio.</li>
@@ -3633,8 +3636,8 @@
             </section>
 
             <section class="privacy-section">
-                <h3>4. Actualizaciones</h3>
-                <p>Esta política de cookies puede actualizarse en función de exigencias legislativas o técnicas, por lo que se recomienda a los usuarios revisarla periódicamente.</p>
+                <h3 id="cookiesSec4Title">4. Actualizaciones</h3>
+                <p id="cookiesSec4Body">Esta política de cookies puede actualizarse en función de exigencias legislativas o técnicas, por lo que se recomienda a los usuarios revisarla periódicamente.</p>
             </section>
         </div>
 
@@ -3657,6 +3660,65 @@
             <button type="button" class="btn btn-secondary btn-sm" id="cookieRejectBtn">Solo esenciales</button>
             <button type="button" class="btn btn-primary btn-sm" id="cookieAcceptBtn">Aceptar todas</button>
         </div>
+    </div>
+</div>
+
+
+<!-- =========================================================
+     GOOGLE SHEETS EXPORT MODAL
+========================================================= -->
+<div class="user-auth-overlay" id="googleSheetsModalOverlay" aria-hidden="true" style="display: none;">
+    <div class="privacy-modal-card sheets-modal-card">
+        <button class="admin-modal-close-btn" id="sheetsModalClose" aria-label="Cerrar modal de Google Sheets">&times;</button>
+        
+        <header class="privacy-modal-header">
+            <div class="privacy-badge">FFC // GOOGLE WORKSPACE INTEGRATION</div>
+            <h2 class="privacy-title">EXPORTAR A GOOGLE SHEETS</h2>
+            <p class="privacy-subtitle">Sincroniza las clasificaciones del campeonato y resultados con una hoja de cálculo</p>
+        </header>
+
+        <div class="privacy-modal-body" style="text-align: center; padding: 20px 0;">
+            <div id="sheetsAuthSection" style="margin-bottom: 20px;">
+                <p style="color: #cbd5e1; font-size: 13.5px; margin-bottom: 16px;">
+                    Conecta tu cuenta de Google para exportar automáticamente los datos oficiales del campeonato a una nueva Google Sheet en tu Drive.
+                </p>
+                <button type="button" class="gsi-material-button" id="googleSheetsSignInBtn" style="margin: 0 auto; display: inline-flex;">
+                    <div class="gsi-material-button-state"></div>
+                    <div class="gsi-material-button-content-wrapper">
+                        <div class="gsi-material-button-icon">
+                            <svg version="1.1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" style="display: block; width: 18px; height: 18px;">
+                                <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"></path>
+                                <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"></path>
+                                <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"></path>
+                                <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"></path>
+                                <path fill="none" d="M0 0h48v48H0z"></path>
+                            </svg>
+                        </div>
+                        <span class="gsi-material-button-contents">Sign in with Google</span>
+                    </div>
+                </button>
+            </div>
+
+            <div id="sheetsActionSection" style="display: none;">
+                <div id="sheetsUserBadge" style="font-size: 13px; color: #86efac; margin-bottom: 14px;"></div>
+                <button type="button" class="btn btn-primary" id="exportToSheetsBtn" style="padding: 10px 24px; font-size: 14px;">
+                    📊 Crear y Exportar a Google Sheets
+                </button>
+            </div>
+
+            <div id="sheetsStatusMsg" style="margin-top: 16px; font-size: 13px; color: #94a3b8;"></div>
+
+            <div id="sheetsResultContainer" style="display: none; margin-top: 16px; background: rgba(74, 222, 128, 0.1); border: 1px solid rgba(74, 222, 128, 0.3); border-radius: 8px; padding: 14px;">
+                <p style="color: #4ade80; font-weight: 600; margin-bottom: 8px;">¡Hoja de cálculo creada con éxito!</p>
+                <a id="sheetsOpenLink" href="#" target="_blank" rel="noopener noreferrer" class="btn btn-secondary btn-sm" style="display: inline-flex; align-items: center; gap: 6px;">
+                    🔗 Abrir Google Sheet en Google Drive
+                </a>
+            </div>
+        </div>
+
+        <footer class="privacy-modal-footer">
+            <button type="button" class="btn btn-secondary" id="sheetsModalCloseBtn">Cerrar</button>
+        </footer>
     </div>
 </div>
 
@@ -4085,17 +4147,17 @@
         <button class="close-photo-modal" onclick="closeGlobalPhotoGalleryModal()" aria-label="Cerrar galería">×</button>
         <div class="photo-modal-header">
             <div>
-                <span class="section-kicker">COMUNIDAD FFC</span>
-                <h2>GALERÍA DE FOTOS POR CARRERA</h2>
+                <span class="section-kicker" id="galleryModalKicker">COMUNIDAD FFC</span>
+                <h2 id="galleryModalTitle">GALERÍA DE FOTOS POR CARRERA</h2>
             </div>
             <div class="photo-modal-header-actions">
-                <button type="button" class="btn btn-primary btn-sm" onclick="openUploadPhotoModal()">+ Subir Nueva Foto</button>
+                <button type="button" class="btn btn-primary btn-sm" id="btnOpenUploadPhoto1" onclick="openUploadPhotoModal()">+ Subir Nueva Foto</button>
             </div>
         </div>
         <div class="photo-filter-row">
-            <label for="galleryRaceFilterSelect">Filtrar por Gran Premio:</label>
+            <label for="galleryRaceFilterSelect" id="lblGalleryFilter">Filtrar por Gran Premio:</label>
             <select id="galleryRaceFilterSelect" class="photo-select">
-                <option value="all">🏁 Todas las Carreras y GPs</option>
+                <option value="all" id="optFilterAll">🏁 Todas las Carreras y GPs</option>
                 <option value="barcelona_test">T - Barcelona Test Days</option>
                 <option value="australia">01 - Australia GP</option>
                 <option value="malaysia">02 - Malaysia GP</option>
@@ -4120,9 +4182,9 @@
             </div>
             <div class="photo-empty-state" id="globalPhotoEmptyState" style="display: none;">
                 <span class="empty-icon">📸</span>
-                <h4>No hay fotos en esta categoría todavía</h4>
-                <p>¡Sé el primero en compartir tus capturas de esta carrera con la comunidad!</p>
-                <button type="button" class="btn btn-primary btn-sm" onclick="openUploadPhotoModal()">Subir primera foto</button>
+                <h4 id="galleryEmptyTitle">No hay fotos en esta categoría todavía</h4>
+                <p id="galleryEmptyDesc">¡Sé el primero en compartir tus capturas de esta carrera con la comunidad!</p>
+                <button type="button" class="btn btn-primary btn-sm" id="btnOpenUploadPhoto2" onclick="openUploadPhotoModal()">Subir primera foto</button>
             </div>
         </div>
     </div>
@@ -4137,23 +4199,31 @@
         <button class="close-photo-modal" onclick="closeUploadPhotoModal()" aria-label="Cerrar subida">×</button>
         <div class="photo-modal-header">
             <div>
-                <span class="section-kicker">ASISTENTE DE SUBIDA FFC</span>
-                <h2>SUBIR FOTO DE SIMRACING</h2>
+                <span class="section-kicker" id="uploadModalKicker">ASISTENTE DE SUBIDA FFC</span>
+                <h2 id="uploadModalTitle">SUBIR FOTO DE SIMRACING</h2>
             </div>
         </div>
         <div id="uploadAdminNotice" style="display: none; background: rgba(74, 222, 128, 0.12); border: 1px solid rgba(74, 222, 128, 0.4); border-radius: 6px; padding: 8px 12px; margin: 0 0 14px 0; font-size: 12px; color: #86efac;">
             🛡️ <strong>Modo Administrador Activo:</strong> Las fotos que subas se publicarán aprobadas automáticamente sin necesidad de moderación previa.
         </div>
+
+        <div id="uploadLoginPrompt" style="display: none; text-align: center; padding: 30px 20px;">
+            <div style="font-size: 48px; margin-bottom: 12px;">🔒</div>
+            <h3 style="color: #f1f5f9; margin-bottom: 8px;" id="uploadLoginPromptTitle">Inicia sesión para subir fotos</h3>
+            <p style="color: #94a3b8; font-size: 14px; margin-bottom: 20px;" id="uploadLoginPromptDesc">Debes iniciar sesión con tu cuenta de Formula Factor para compartir tus capturas en la galería oficial.</p>
+            <button type="button" class="btn btn-primary" id="uploadLoginPromptBtn" onclick="closeUploadPhotoModal(); if(typeof closeGlobalPhotoGalleryModal === 'function') closeGlobalPhotoGalleryModal(); if(window.openUserAuthModal) openUserAuthModal('login');">Iniciar Sesión / Registrarse</button>
+        </div>
+
         <form id="photoUploadForm" class="photo-upload-form">
             <div class="form-group">
-                <label for="uploadRaceSelect">Gran Premio / Carrera pasada *</label>
+                <label for="uploadRaceSelect" id="lblUploadRace">Gran Premio / Carrera pasada *</label>
                 <select id="uploadRaceSelect" class="photo-select" required>
                     <!-- Populated dynamically with past races only -->
                 </select>
             </div>
 
             <div class="form-group">
-                <label>Método de Subida de Imagen *</label>
+                <label id="lblUploadMethod">Método de Subida de Imagen *</label>
                 <div class="upload-method-tabs">
                     <button type="button" class="method-tab active" id="tabUploadFile" onclick="switchUploadMethod('file')">📁 Archivo Local (PC / Móvil)</button>
                     <button type="button" class="method-tab" id="tabUploadUrl" onclick="switchUploadMethod('url')">🔗 Enlace URL Directo</button>
@@ -4161,26 +4231,26 @@
             </div>
 
             <div class="form-group" id="fileUploadGroup">
-                <label for="photoFileInput">Seleccionar Imágenes (Puedes subir varias a la vez)</label>
+                <label for="photoFileInput" id="lblPhotoFileInput">Seleccionar Imágenes (Puedes subir varias a la vez)</label>
                 <input type="file" id="photoFileInput" accept="image/*" class="photo-file-input" multiple>
-                <small class="form-hint">Selecciona una o más fotos. Se preserva la máxima calidad y resolución original.</small>
+                <small class="form-hint" id="lblPhotoFileHint">Selecciona una o más fotos. Se preserva la máxima calidad y resolución original.</small>
                 <span id="selectedFilesCount" style="color: #38bdf8; font-size: 13px; margin-top: 6px; display: block;"></span>
             </div>
 
             <div class="form-group" id="urlUploadGroup" style="display: none;">
-                <label for="photoUrlInput">Pegar Enlace de Imagen (Discord, Imgur, Postimages...)</label>
+                <label for="photoUrlInput" id="lblPhotoUrlInput">Pegar Enlace de Imagen (Discord, Imgur, Postimages...)</label>
                 <input type="url" id="photoUrlInput" placeholder="https://i.imgur.com/example.jpg" class="photo-input">
             </div>
 
             <div class="form-group">
-                <label for="photoCaptionInput">Pie de foto / Descripción (Opcional)</label>
+                <label for="photoCaptionInput" id="lblPhotoCaptionInput">Pie de foto / Descripción (Opcional)</label>
                 <input type="text" id="photoCaptionInput" placeholder="Ej: Salida curva 1, Batalla por el podio..." class="photo-input" maxlength="120">
             </div>
 
             <div class="upload-form-footer">
                 <span id="uploadStatusMsg" class="upload-status-msg"></span>
                 <div class="upload-actions">
-                    <button type="button" class="btn btn-secondary" onclick="closeUploadPhotoModal()">Cancelar</button>
+                    <button type="button" class="btn btn-secondary" id="uploadModalCancelBtn" onclick="closeUploadPhotoModal()">Cancelar</button>
                     <button type="submit" class="btn btn-primary" id="btnSubmitPhotoUpload">Subir foto</button>
                 </div>
             </div>
