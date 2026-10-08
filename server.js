@@ -338,7 +338,7 @@ async function deletePhotoFromFirestore(photoId) {
 app.get('/api/carreras/fotos', async (req, res) => {
   let photos = getPhotos();
   try {
-    const firestoreUrl = `https://firestore.googleapis.com/v1/projects/formula-factor/databases/(default)/documents/carreras_fotos?key=AIzaSyAS4RecsGAS4JWUn1d-9_VyqFRKmkF_CNs`;
+    const firestoreUrl = `https://firestore.googleapis.com/v1/projects/formula-factor/databases/(default)/documents/carreras_fotos?pageSize=100&key=AIzaSyAS4RecsGAS4JWUn1d-9_VyqFRKmkF_CNs`;
     const fRes = await fetch(firestoreUrl);
     if (fRes.ok) {
       const fData = await fRes.json();
@@ -348,6 +348,7 @@ app.get('/api/carreras/fotos', async (req, res) => {
           const docId = doc.name.split('/').pop();
           const fields = doc.fields || {};
           const exists = photos.find(p => p.id === docId);
+          const rawTimestamp = fields.timestamp?.integerValue ?? fields.timestamp?.doubleValue ?? fields.timestamp?.stringValue;
           const photoObj = {
             id: docId,
             raceId: fields.raceId?.stringValue || 'barcelona_test',
@@ -356,7 +357,7 @@ app.get('/api/carreras/fotos', async (req, res) => {
             author: fields.author?.stringValue || 'Piloto FFC',
             status: fields.status?.stringValue || 'pending',
             createdAt: fields.createdAt?.stringValue || '',
-            timestamp: parseInt(fields.timestamp?.integerValue || Date.now(), 10)
+            timestamp: rawTimestamp ? parseInt(rawTimestamp, 10) : Date.now()
           };
           if (!exists) {
             photos.push(photoObj);
@@ -420,7 +421,10 @@ app.patch('/api/carreras/fotos/:id', async (req, res) => {
     mirrorPhotoToFirestore(photos[idx]);
     return res.json({ success: true, photo: photos[idx] });
   }
-  return res.status(404).json({ error: 'Photo not found' });
+  if (status !== undefined) {
+    mirrorPhotoToFirestore({ id: photoId, status });
+  }
+  return res.json({ success: true, photo: { id: photoId, status } });
 });
 
 app.delete('/api/carreras/fotos/:id', async (req, res) => {

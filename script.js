@@ -7880,6 +7880,9 @@ adminTabButtons.forEach(btn => {
             }
         }
         if (targetId === "tab-photos") {
+            if (typeof syncPhotosFromSources === "function") {
+                syncPhotosFromSources();
+            }
             if (typeof renderAdminPhotosTab === "function") {
                 renderAdminPhotosTab();
             }
@@ -17718,7 +17721,7 @@ function compressImageFile(file, maxWidth = 960, maxHeight = 960, quality = 0.72
     });
 }
 
-document.addEventListener("DOMContentLoaded", () => {
+function initPhotoUploadFormHandlers() {
     const fileInput = document.getElementById("photoFileInput");
     if (fileInput) {
         fileInput.addEventListener("change", async (e) => {
@@ -17732,14 +17735,14 @@ document.addEventListener("DOMContentLoaded", () => {
 
             try {
                 for (const file of files) {
-                    const compressed = await compressImageFile(file, 960, 960, 0.72);
+                    const compressed = await compressImageFile(file, 1000, 1000, 0.72);
                     currentCompressedBase64Array.push(compressed);
                 }
                 if (countSpan) {
                     countSpan.textContent = `✓ ${currentCompressedBase64Array.length} foto(s) optimizada(s) y lista(s) para subir.`;
                 }
                 if (statusMsg) statusMsg.textContent = "¡Imágenes optimizadas para subida rápida!";
-                setTimeout(() => { if (statusMsg) statusMsg.textContent = ""; }, 3000);
+                setTimeout(() => { if (statusMsg) statusMsg.textContent = ""; }, 2500);
             } catch (err) {
                 if (statusMsg) statusMsg.textContent = "Error al procesar las imágenes.";
             }
@@ -17752,7 +17755,7 @@ document.addEventListener("DOMContentLoaded", () => {
             const url = e.target.value.trim();
             const countSpan = document.getElementById("selectedFilesCount");
             if (url && countSpan) {
-                countSpan.textContent = "✓ Enlace URL válido.";
+                countSpan.textContent = "✓ Enlace URL listo.";
             }
         });
     }
@@ -17761,127 +17764,109 @@ document.addEventListener("DOMContentLoaded", () => {
     if (uploadForm) {
         uploadForm.addEventListener("submit", async (e) => {
             e.preventDefault();
-            let raceId = document.getElementById("uploadRaceSelect")?.value;
-            const caption = document.getElementById("photoCaptionInput")?.value || "";
+            const btnSubmit = document.getElementById("btnSubmitPhotoUpload");
+            let raceId = document.getElementById("uploadRaceSelect")?.value || currentOpenRaceKey || "barcelona_test";
+            const caption = (document.getElementById("photoCaptionInput")?.value || "").trim();
             const currentUser = typeof activeUserAuth !== "undefined" && activeUserAuth ? activeUserAuth : (typeof LocalAuthStore !== "undefined" ? LocalAuthStore.getCurrentUser() : null);
             const author = (currentUser && currentUser.displayName) ? currentUser.displayName : (currentUser && currentUser.email ? currentUser.email.split("@")[0] : (typeof currentSettings !== "undefined" && currentSettings?.driverName ? currentSettings.driverName : "Piloto FFC"));
-            const urlInputVal = document.getElementById("photoUrlInput")?.value || "";
+            const urlInputVal = (document.getElementById("photoUrlInput")?.value || "").trim();
             const statusMsg = document.getElementById("uploadStatusMsg");
 
-            if (!raceId) {
-                raceId = currentOpenRaceKey || "barcelona_test";
-            }
-
             let photosToUpload = [];
-            if (activeUploadMethod === 'file') {
-                if (currentCompressedBase64Array.length > 0) {
-                    photosToUpload = currentCompressedBase64Array;
-                } else {
-                    const fileInput = document.getElementById("photoFileInput");
-                    if (fileInput && fileInput.files && fileInput.files.length > 0) {
-                        if (statusMsg) statusMsg.textContent = "Procesando y optimizando imágenes...";
-                        for (const file of fileInput.files) {
-                            try {
-                                const compressed = await compressImageFile(file, 960, 960, 0.72);
-                                photosToUpload.push(compressed);
-                            } catch (e) {
-                                const base64 = await new Promise((res) => {
-                                    const r = new FileReader();
-                                    r.onload = (evt) => res(evt.target.result);
-                                    r.readAsDataURL(file);
-                                });
-                                photosToUpload.push(base64);
-                            }
+
+            // 1. Gather files (already compressed or compress on the fly)
+            if (currentCompressedBase64Array.length > 0) {
+                photosToUpload = [...currentCompressedBase64Array];
+            } else {
+                const fInput = document.getElementById("photoFileInput");
+                if (fInput && fInput.files && fInput.files.length > 0) {
+                    if (statusMsg) statusMsg.textContent = "Optimizando imágenes para subida...";
+                    for (const file of fInput.files) {
+                        try {
+                            const comp = await compressImageFile(file, 1000, 1000, 0.72);
+                            photosToUpload.push(comp);
+                        } catch (err) {
+                            const b64 = await new Promise(res => {
+                                const r = new FileReader();
+                                r.onload = evt => res(evt.target.result);
+                                r.readAsDataURL(file);
+                            });
+                            photosToUpload.push(b64);
                         }
                     }
                 }
-            } else if (urlInputVal) {
-                photosToUpload = [urlInputVal.trim()];
+            }
+
+            // 2. URL fallback if no files
+            if (photosToUpload.length === 0 && urlInputVal) {
+                photosToUpload = [urlInputVal];
             }
 
             if (photosToUpload.length === 0) {
                 if (statusMsg) statusMsg.textContent = "Por favor selecciona al menos una foto o introduce una URL.";
-                alert("Por favor selecciona al menos un archivo o introduce una URL de imagen.");
+                alert("Por favor selecciona una foto o introduce una URL de imagen.");
                 return;
             }
 
-            if (statusMsg) statusMsg.textContent = `Subiendo ${photosToUpload.length} foto(s) a Firebase y panel de moderación...`;
-
-            try {
-                for (let i = 0; i < photosToUpload.length; i++) {
-                    const photoUniqueId = "photo_" + Date.now() + "_" + Math.random().toString(36).substring(2, 7) + "_" + i;
-                    const newPhotoData = {
-                        raceId: raceId,
-                        photoUrl: photosToUpload[i],
-                        caption: caption.trim(),
-                        author: author.trim(),
-                        status: "pending",
-                        createdAt: new Date().toLocaleString(),
-                        timestamp: Date.now() + i
-                    };
-
-                    let finalDocId = photoUniqueId;
-
-                    // 1. Direct Firestore write
-                    try {
-                        const docRef = await addDoc(collection(db, "carreras_fotos"), newPhotoData);
-                        if (docRef && docRef.id) finalDocId = docRef.id;
-                    } catch (fbErr) {
-                        console.warn("Direct Firestore addDoc notice:", fbErr?.message || fbErr);
-                    }
-
-                    const savedPhotoObj = { id: finalDocId, ...newPhotoData };
-
-                    // 2. Server API sync for instant multi-user cross-browser persistence
-                    try {
-                        await fetch('/api/carreras/fotos', {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify(savedPhotoObj)
-                        });
-                    } catch (srvErr) {
-                        console.warn("Server photo sync notice:", srvErr);
-                    }
-
-                    // Add locally to immediate memory
-                    currentPhotos = currentPhotos.filter(p => p.id !== finalDocId);
-                    currentPhotos.unshift(savedPhotoObj);
-                }
-
-                currentPhotos.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
-                saveCachedPhotos(currentPhotos);
-                updatePhotoGalleriesUI();
-
-                if (statusMsg) statusMsg.textContent = "¡Fotos subidas con éxito! Pendientes de aprobación en el panel de administrador.";
-                setTimeout(() => {
-                    closeUploadPhotoModal();
-                    if (statusMsg) statusMsg.textContent = "";
-                    if (typeof currentOpenRaceKey !== "undefined" && currentOpenRaceKey === raceId) {
-                        renderRaceModalPhotoGallery(raceId);
-                    }
-                }, 1200);
-            } catch (err) {
-                console.error("Error saving photos:", err);
-                for (let i = 0; i < photosToUpload.length; i++) {
-                    currentPhotos.unshift({
-                        id: "photo_local_" + Date.now() + "_" + i,
-                        raceId: raceId,
-                        photoUrl: photosToUpload[i],
-                        caption: caption.trim(),
-                        author: author.trim(),
-                        status: "pending",
-                        createdAt: new Date().toLocaleString(),
-                        timestamp: Date.now() + i
-                    });
-                }
-                saveCachedPhotos(currentPhotos);
-                updatePhotoGalleriesUI();
-                if (statusMsg) statusMsg.textContent = "¡Fotos guardadas y enviadas para moderación!";
-                setTimeout(() => {
-                    closeUploadPhotoModal();
-                    if (statusMsg) statusMsg.textContent = "";
-                }, 1200);
+            if (btnSubmit) {
+                btnSubmit.disabled = true;
+                btnSubmit.textContent = "Subiendo...";
             }
+            if (statusMsg) statusMsg.textContent = `Guardando ${photosToUpload.length} foto(s)...`;
+
+            for (let i = 0; i < photosToUpload.length; i++) {
+                const photoId = "photo_" + Date.now() + "_" + Math.random().toString(36).substring(2, 8) + "_" + i;
+                const newPhotoData = {
+                    id: photoId,
+                    raceId: raceId,
+                    photoUrl: photosToUpload[i],
+                    caption: caption,
+                    author: author,
+                    status: "pending",
+                    createdAt: new Date().toLocaleString(),
+                    timestamp: Date.now() + i
+                };
+
+                // A. INSTANT OPTIMISTIC IN-MEMORY INSERTION
+                currentPhotos = currentPhotos.filter(p => p.id !== photoId);
+                currentPhotos.unshift(newPhotoData);
+
+                // B. Background Server API sync (persists to photos_db.json + mirrors to Firestore REST)
+                fetch('/api/carreras/fotos', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(newPhotoData)
+                }).catch(srvErr => console.warn("Server photo sync warning:", srvErr));
+
+                // C. Background Firestore direct write
+                try {
+                    setDoc(doc(db, "carreras_fotos", photoId), newPhotoData).catch(fbErr => {
+                        console.warn("Direct Firestore setDoc notice:", fbErr?.message || fbErr);
+                    });
+                } catch (fbInitErr) {
+                    console.warn("Firestore direct write notice:", fbInitErr);
+                }
+            }
+
+            currentPhotos.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
+            saveCachedPhotos(currentPhotos);
+            updatePhotoGalleriesUI();
+            if (typeof renderAdminPhotosTab === "function") {
+                renderAdminPhotosTab();
+            }
+
+            if (statusMsg) statusMsg.textContent = "✓ ¡Fotos enviadas con éxito! Disponibles en el panel de moderación.";
+            setTimeout(() => {
+                closeUploadPhotoModal();
+                if (btnSubmit) {
+                    btnSubmit.disabled = false;
+                    btnSubmit.textContent = "Subir foto";
+                }
+                if (statusMsg) statusMsg.textContent = "";
+                if (typeof currentOpenRaceKey !== "undefined" && currentOpenRaceKey === raceId) {
+                    renderRaceModalPhotoGallery(raceId);
+                }
+            }, 1000);
         });
     }
 
@@ -17891,7 +17876,13 @@ document.addEventListener("DOMContentLoaded", () => {
             renderGlobalPhotoGrid();
         });
     }
-});
+}
+
+if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", initPhotoUploadFormHandlers);
+} else {
+    initPhotoUploadFormHandlers();
+}
 
 // Periodic and Source Synchronization for Photos
 async function syncPhotosFromSources() {
@@ -18137,26 +18128,30 @@ window.switchRaceModalTab = function(tabName) {
     }
 };
 
-document.addEventListener("DOMContentLoaded", () => {
-    setTimeout(() => {
-        document.querySelectorAll(".calendar-card[data-race]").forEach(card => {
-            const raceKey = card.dataset.race;
-            const footer = card.querySelector(".calendar-card-footer");
-            if (footer && !card.querySelector(".calendar-card-upload-btn")) {
-                const btn = document.createElement("button");
-                btn.type = "button";
-                btn.className = "calendar-card-upload-btn";
-                btn.innerHTML = "📸 + Subir Foto";
-                btn.title = "Subir foto a este Gran Premio";
-                btn.addEventListener("click", (e) => {
-                    e.stopPropagation();
-                    window.openUploadPhotoModal(raceKey);
-                });
-                footer.appendChild(btn);
-            }
-        });
-    }, 500);
-});
+function initCalendarPhotoButtons() {
+    document.querySelectorAll(".calendar-card[data-race]").forEach(card => {
+        const raceKey = card.dataset.race;
+        const footer = card.querySelector(".calendar-card-footer");
+        if (footer && !card.querySelector(".calendar-card-upload-btn")) {
+            const btn = document.createElement("button");
+            btn.type = "button";
+            btn.className = "calendar-card-upload-btn";
+            btn.innerHTML = "📸 + Subir Foto";
+            btn.title = "Subir foto a este Gran Premio";
+            btn.addEventListener("click", (e) => {
+                e.stopPropagation();
+                openUploadPhotoModal(raceKey);
+            });
+            footer.appendChild(btn);
+        }
+    });
+}
+
+if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", () => setTimeout(initCalendarPhotoButtons, 400));
+} else {
+    setTimeout(initCalendarPhotoButtons, 400);
+}
 
 function updateCalendarCardPhotoBadges() {
     document.querySelectorAll(".calendar-card[data-race]").forEach(card => {
@@ -18312,6 +18307,22 @@ function renderAdminPhotosTab() {
 window.renderAdminPhotosTab = renderAdminPhotosTab;
 
 async function updatePhotoStatus(photoId, newStatus) {
+    // 1. Instant optimistic UI update
+    const p = currentPhotos.find(item => item.id === photoId);
+    if (p) {
+        p.status = newStatus;
+        saveCachedPhotos(currentPhotos);
+        updatePhotoGalleriesUI();
+        renderAdminPhotosTab();
+    }
+
+    // 2. Parallel background sync
+    fetch(`/api/carreras/fotos/${encodeURIComponent(photoId)}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status: newStatus })
+    }).catch(srvErr => console.warn("Server status sync note:", srvErr));
+
     try {
         await updateDoc(doc(db, "carreras_fotos", photoId), {
             status: newStatus
@@ -18319,46 +18330,28 @@ async function updatePhotoStatus(photoId, newStatus) {
     } catch (err) {
         console.warn("Firestore updateDoc note:", err);
     }
-
-    try {
-        await fetch(`/api/carreras/fotos/${encodeURIComponent(photoId)}`, {
-            method: 'PATCH',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ status: newStatus })
-        });
-    } catch (srvErr) {
-        console.warn("Server status sync note:", srvErr);
-    }
-
-    const p = currentPhotos.find(item => item.id === photoId);
-    if (p) p.status = newStatus;
-    saveCachedPhotos(currentPhotos);
-    updatePhotoGalleriesUI();
-    renderAdminPhotosTab();
 }
 
 async function deleteAdminPhoto(photoId) {
+    // 1. Instant optimistic UI removal
+    currentPhotos = currentPhotos.filter(item => item.id !== photoId);
+    saveCachedPhotos(currentPhotos);
+    updatePhotoGalleriesUI();
+    renderAdminPhotosTab();
+
+    // 2. Parallel background sync
+    fetch(`/api/carreras/fotos/${encodeURIComponent(photoId)}`, {
+        method: 'DELETE'
+    }).catch(srvErr => console.warn("Server delete sync note:", srvErr));
+
     try {
         await deleteDoc(doc(db, "carreras_fotos", photoId));
     } catch (err) {
         console.warn("Firestore deleteDoc note:", err);
     }
-
-    try {
-        await fetch(`/api/carreras/fotos/${encodeURIComponent(photoId)}`, {
-            method: 'DELETE'
-        });
-    } catch (srvErr) {
-        console.warn("Server delete sync note:", srvErr);
-    }
-
-    currentPhotos = currentPhotos.filter(item => item.id !== photoId);
-    saveCachedPhotos(currentPhotos);
-    updatePhotoGalleriesUI();
-    renderAdminPhotosTab();
 }
 
-document.addEventListener("DOMContentLoaded", () => {
+function initAdminPhotosModerationHandlers() {
     const adminPhotosFilterBtns = document.querySelectorAll(".admin-photos-filter-btn");
     adminPhotosFilterBtns.forEach(btn => {
         btn.addEventListener("click", () => {
@@ -18376,7 +18369,30 @@ document.addEventListener("DOMContentLoaded", () => {
             renderAdminPhotosTab();
         });
     }
-});
+}
+
+if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", initAdminPhotosModerationHandlers);
+} else {
+    initAdminPhotosModerationHandlers();
+}
+
+window.openGlobalPhotoGallery = openGlobalPhotoGallery;
+window.closeGlobalPhotoGalleryModal = closeGlobalPhotoGalleryModal;
+window.openUploadPhotoModal = openUploadPhotoModal;
+window.openUploadPhotoModalForRace = openUploadPhotoModalForRace;
+window.openUploadPhotoModalForCurrentRace = openUploadPhotoModalForCurrentRace;
+window.closeUploadPhotoModal = closeUploadPhotoModal;
+window.switchUploadMethod = switchUploadMethod;
+window.clearPhotoSelection = clearPhotoSelection;
+window.openPhotoLightbox = openPhotoLightbox;
+window.closePhotoLightbox = closePhotoLightbox;
+window.deleteCurrentLightboxPhoto = deleteCurrentLightboxPhoto;
+window.switchRaceModalTab = switchRaceModalTab;
+window.syncPhotosFromSources = syncPhotosFromSources;
+window.renderAdminPhotosTab = renderAdminPhotosTab;
+window.updatePhotoStatus = updatePhotoStatus;
+window.deleteAdminPhoto = deleteAdminPhoto;
 
 
 
