@@ -7,11 +7,13 @@ import { initCalendarBorderGlow } from "./BorderGlow.js";
 import { initSideRaysBackground } from "./SideRays.js";
 import { initCobeGlobe } from "./CobeGlobe.js";
 import { initLightPillar } from "./LightPillar.js";
+import { initDriftWall, refreshDriftWallPhotos } from "./DriftWall.js";
 
 // Initialize interactive background layers
 const handleInitBackgrounds = () => {
     initShapeWavesBackground();
     initCalendarBorderGlow();
+    initDriftWall("hero-drift-wall-bg");
     
     // Mount the React Bits SideRays component
     initSideRaysBackground("hero-siderays-bg", {
@@ -17430,9 +17432,15 @@ function saveCachedPhotos(photos) {
     try {
         localStorage.setItem("ffc_local_photos", JSON.stringify(photos));
     } catch (e) {}
+    if (typeof window !== "undefined") {
+        window.currentPhotos = photos;
+    }
 }
 
 let currentPhotos = loadCachedPhotos();
+if (typeof window !== "undefined") {
+    window.currentPhotos = currentPhotos;
+}
 let activeUploadMethod = 'file'; // 'file' or 'url'
 let currentCompressedBase64Array = [];
 let currentLightboxPhoto = null;
@@ -17870,6 +17878,9 @@ syncPhotosFromSources();
 setInterval(syncPhotosFromSources, 10000);
 
 function updatePhotoGalleriesUI() {
+    if (typeof window !== "undefined") {
+        window.currentPhotos = currentPhotos;
+    }
     renderGlobalPhotoGrid();
     if (typeof currentOpenRaceKey !== "undefined" && currentOpenRaceKey) {
         renderRaceModalPhotoGallery(currentOpenRaceKey);
@@ -17879,6 +17890,9 @@ function updatePhotoGalleriesUI() {
     const photosTab = document.getElementById("tab-photos");
     if (photosTab && photosTab.classList.contains("active")) {
         renderAdminPhotosTab();
+    }
+    if (typeof window.refreshDriftWallPhotos === "function") {
+        window.refreshDriftWallPhotos();
     }
 }
 

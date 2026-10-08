@@ -1246,6 +1246,17 @@ button {
     overflow: hidden;
 }
 
+#hero-drift-wall-bg {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+    pointer-events: none;
+    overflow: hidden;
+    opacity: 0.65;
+}
+
 #hero-cobe-globe-container {
     position: absolute;
     top: calc(50% + 24px);
@@ -1257,7 +1268,7 @@ button {
     max-height: 95vw;
     z-index: 1;
     pointer-events: auto;
-    opacity: 0.85;
+    opacity: 1;
     display: flex;
     justify-content: center;
     align-items: center;
