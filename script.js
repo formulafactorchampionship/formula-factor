@@ -14749,6 +14749,7 @@ window.openPrivacyModal = function() {
     const overlay = document.getElementById("privacyModalOverlay");
     if (overlay) {
         overlay.style.display = "flex";
+        overlay.classList.add("active");
         overlay.setAttribute("aria-hidden", "false");
     }
 };
@@ -14756,7 +14757,12 @@ window.openPrivacyModal = function() {
 window.closePrivacyModal = function() {
     const overlay = document.getElementById("privacyModalOverlay");
     if (overlay) {
-        overlay.style.display = "none";
+        overlay.classList.remove("active");
+        setTimeout(() => {
+            if (!overlay.classList.contains("active")) {
+                overlay.style.display = "none";
+            }
+        }, 250);
         overlay.setAttribute("aria-hidden", "true");
     }
 };
@@ -14765,6 +14771,7 @@ window.openTermsModal = function() {
     const overlay = document.getElementById("termsModalOverlay");
     if (overlay) {
         overlay.style.display = "flex";
+        overlay.classList.add("active");
         overlay.setAttribute("aria-hidden", "false");
     }
 };
@@ -14772,7 +14779,12 @@ window.openTermsModal = function() {
 window.closeTermsModal = function() {
     const overlay = document.getElementById("termsModalOverlay");
     if (overlay) {
-        overlay.style.display = "none";
+        overlay.classList.remove("active");
+        setTimeout(() => {
+            if (!overlay.classList.contains("active")) {
+                overlay.style.display = "none";
+            }
+        }, 250);
         overlay.setAttribute("aria-hidden", "true");
     }
 };
@@ -14783,6 +14795,7 @@ window.openCookiesModal = function() {
     if (banner) banner.style.display = "none";
     if (overlay) {
         overlay.style.display = "flex";
+        overlay.classList.add("active");
         overlay.setAttribute("aria-hidden", "false");
     }
 };
@@ -14790,7 +14803,12 @@ window.openCookiesModal = function() {
 window.closeCookiesModal = function() {
     const overlay = document.getElementById("cookiesModalOverlay");
     if (overlay) {
-        overlay.style.display = "none";
+        overlay.classList.remove("active");
+        setTimeout(() => {
+            if (!overlay.classList.contains("active")) {
+                overlay.style.display = "none";
+            }
+        }, 250);
         overlay.setAttribute("aria-hidden", "true");
     }
 };
