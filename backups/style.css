@@ -1891,6 +1891,512 @@ button {
     display: inline-block;
 }
 
+/* =========================
+   WORLD CHAMPION HERO MODE
+========================= */
+
+.hero.is-champion-mode {
+    padding-bottom: 80px;
+}
+
+/* CHAMPION POPUP IN BOTTOM-CENTER ZONE OF HERO */
+.hero-champion-popup {
+    position: absolute;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: min(880px, calc(100% - 36px));
+    z-index: 50;
+    pointer-events: auto;
+    animation: championPopupSlideUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes championPopupSlideUp {
+    from {
+        opacity: 0;
+        transform: translate(-50%, 28px) scale(0.97);
+    }
+    to {
+        opacity: 1;
+        transform: translate(-50%, 0) scale(1);
+    }
+}
+
+.champion-popup-card {
+    position: relative;
+    background: linear-gradient(135deg, rgba(8, 12, 22, 0.95) 0%, rgba(14, 20, 36, 0.97) 50%, rgba(10, 15, 27, 0.96) 100%);
+    border: 1.5px solid rgba(214, 180, 92, 0.75);
+    border-radius: 16px;
+    padding: 18px 24px 16px;
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    box-shadow: 0 16px 48px rgba(0, 0, 0, 0.85), 0 0 32px rgba(214, 180, 92, 0.28), inset 0 1px 0 rgba(255, 255, 255, 0.12);
+}
+
+.champion-popup-close {
+    position: absolute;
+    top: 12px;
+    right: 14px;
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    border-radius: 50%;
+    color: #cbd5e1;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    padding: 0;
+    z-index: 5;
+}
+
+.champion-popup-close:hover {
+    background: rgba(214, 180, 92, 0.25);
+    border-color: rgba(214, 180, 92, 0.7);
+    color: #ffd700;
+    transform: scale(1.08);
+}
+
+.champion-popup-top {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 8px;
+    flex-wrap: wrap;
+}
+
+.champion-popup-headline {
+    margin: 0 0 4px 0 !important;
+    font-size: clamp(24px, 3.2vw, 40px) !important;
+    line-height: 1.05 !important;
+    flex-direction: row !important;
+    flex-wrap: wrap !important;
+    align-items: baseline !important;
+    gap: 6px 12px !important;
+}
+
+.champion-popup-tribute {
+    margin: 0 0 12px 0 !important;
+    font-size: 13.5px !important;
+    line-height: 1.45 !important;
+    color: #94a3b8 !important;
+    max-width: 100% !important;
+}
+
+.champion-popup-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+    flex-wrap: wrap;
+}
+
+.champion-popup-meta {
+    margin-bottom: 0 !important;
+    padding: 8px 16px !important;
+    background: rgba(5, 8, 15, 0.75) !important;
+    border: 1px solid rgba(214, 180, 92, 0.35) !important;
+}
+
+.champion-popup-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.champion-popup-cta {
+    padding: 9px 18px !important;
+    font-size: 12.5px !important;
+    font-weight: 800 !important;
+    letter-spacing: 0.8px !important;
+}
+
+.champion-popup-secondary-btn {
+    padding: 9px 16px !important;
+    font-size: 12px !important;
+    font-weight: 700 !important;
+}
+
+/* MINIMIZED CHAMPION PILL IN BOTTOM-CENTER ZONE */
+.champion-minimized-pill {
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 50;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    background: linear-gradient(135deg, rgba(8, 12, 22, 0.94) 0%, rgba(15, 22, 38, 0.96) 100%);
+    border: 1.5px solid rgba(214, 180, 92, 0.75);
+    border-radius: 9999px;
+    padding: 8px 18px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.7), 0 0 20px rgba(214, 180, 92, 0.3);
+    backdrop-filter: blur(14px);
+    cursor: pointer;
+    transition: all 0.25s ease;
+    animation: championPopupSlideUp 0.35s ease;
+    font-family: "Barlow Condensed", sans-serif;
+    color: #fce79a;
+}
+
+.champion-minimized-pill:hover {
+    border-color: #ffd700;
+    box-shadow: 0 12px 36px rgba(0, 0, 0, 0.8), 0 0 28px rgba(214, 180, 92, 0.5);
+    transform: translate(-50%, -2px);
+}
+
+.champ-min-crown {
+    font-size: 15px;
+}
+
+.champ-min-text {
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+    color: #ffffff;
+}
+
+.champ-min-text strong {
+    color: #ffd700;
+}
+
+.champ-min-action {
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 1px;
+    color: #d6b45c;
+    background: rgba(214, 180, 92, 0.15);
+    padding: 3px 8px;
+    border-radius: 9999px;
+    border: 1px solid rgba(214, 180, 92, 0.4);
+}
+
+@media (max-width: 768px) {
+    .hero-champion-popup {
+        bottom: 12px;
+        width: calc(100% - 24px);
+    }
+    .champion-popup-card {
+        padding: 14px 16px 14px;
+    }
+    .champion-popup-headline {
+        font-size: clamp(20px, 5.5vw, 28px) !important;
+    }
+    .champion-popup-footer {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 10px;
+    }
+    .champion-popup-meta {
+        justify-content: space-between;
+        width: 100%;
+        box-sizing: border-box;
+    }
+    .champion-popup-actions {
+        width: 100%;
+    }
+    .champion-popup-cta, .champion-popup-secondary-btn {
+        flex: 1;
+        text-align: center;
+        justify-content: center;
+    }
+    .champion-minimized-pill {
+        bottom: 12px;
+        padding: 6px 14px;
+        font-size: 12px;
+    }
+}
+
+.champion-coronation-banner {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+}
+
+.champion-sparkle-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: linear-gradient(135deg, rgba(214, 180, 92, 0.22) 0%, rgba(245, 158, 11, 0.12) 100%);
+    border: 1.5px solid rgba(214, 180, 92, 0.65);
+    padding: 6px 16px;
+    border-radius: 9999px;
+    font-family: "Barlow Condensed", sans-serif;
+    font-size: 13.5px;
+    font-weight: 800;
+    letter-spacing: 1.8px;
+    color: #fce79a;
+    box-shadow: 0 0 20px rgba(214, 180, 92, 0.35);
+    text-transform: uppercase;
+}
+
+.champion-crown-icon {
+    font-size: 16px;
+    animation: crownBounce 2s infinite ease-in-out;
+}
+
+@keyframes crownBounce {
+    0%, 100% { transform: translateY(0) rotate(0deg); }
+    50% { transform: translateY(-3px) rotate(-6deg); }
+}
+
+.champion-stars-strip {
+    color: #ffd700;
+    letter-spacing: 4px;
+    font-size: 14px;
+    text-shadow: 0 0 10px rgba(255, 215, 0, 0.6);
+}
+
+.champion-main-header {
+    margin-bottom: 20px;
+}
+
+.champion-headline {
+    margin: 0;
+    font-family: "Barlow Condensed", sans-serif;
+    font-size: clamp(52px, 6vw, 96px);
+    line-height: 0.92;
+    font-weight: 900;
+    letter-spacing: -1.5px;
+    text-transform: uppercase;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.champion-driver-name {
+    color: #ffffff;
+    text-shadow: 0 4px 30px rgba(0, 0, 0, 0.95), 0 0 24px rgba(255, 255, 255, 0.35);
+    display: inline-block;
+    word-break: break-word;
+}
+
+.champion-gold-lead {
+    background: linear-gradient(135deg, #fff3b0 0%, #d6b45c 40%, #ffc038 75%, #e6a817 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    filter: drop-shadow(0 4px 18px rgba(214, 180, 92, 0.5));
+    display: inline-block;
+}
+
+.champion-meta-card {
+    display: inline-flex;
+    align-items: center;
+    gap: 18px;
+    background: rgba(10, 15, 26, 0.85);
+    border: 1px solid rgba(214, 180, 92, 0.45);
+    padding: 14px 22px;
+    border-radius: 8px;
+    backdrop-filter: blur(14px);
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.6), inset 0 0 20px rgba(214, 180, 92, 0.08);
+    margin-bottom: 20px;
+    width: fit-content;
+    max-width: 100%;
+    flex-wrap: wrap;
+}
+
+.champion-meta-item {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.champ-meta-label {
+    font-family: "Barlow Condensed", sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    color: #94a3b8;
+    text-transform: uppercase;
+}
+
+.champ-meta-val {
+    font-family: "Barlow Condensed", sans-serif;
+    font-size: 20px;
+    font-weight: 800;
+    color: #ffffff;
+    letter-spacing: 0.5px;
+}
+
+.gold-glow-val {
+    color: var(--gold-light);
+    text-shadow: 0 0 12px rgba(214, 180, 92, 0.6);
+}
+
+.champion-meta-divider {
+    width: 1px;
+    height: 32px;
+    background: rgba(214, 180, 92, 0.25);
+}
+
+.champion-tribute-text {
+    font-size: 15.5px;
+    line-height: 1.6;
+    color: #cbd5e1;
+    max-width: 620px;
+    margin: 0 0 24px 0;
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.8);
+}
+
+.champion-btn-gold {
+    background: linear-gradient(135deg, #d6b45c 0%, #b89230 100%) !important;
+    color: #0b0f19 !important;
+    font-weight: 900 !important;
+    border: 1px solid #ffd56b !important;
+    box-shadow: 0 6px 20px rgba(214, 180, 92, 0.45) !important;
+}
+
+.champion-btn-gold:hover {
+    background: linear-gradient(135deg, #f5d47a 0%, #d6b45c 100%) !important;
+    color: #000000 !important;
+    box-shadow: 0 8px 28px rgba(214, 180, 92, 0.65) !important;
+    transform: translateY(-2px);
+}
+
+/* World Champion Card Inside Hero Aside */
+.next-race-champion-view {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 100%;
+    min-height: 480px;
+    animation: championFadeIn 0.5s ease-out;
+}
+
+.champ-card-top {
+    background: rgba(214, 180, 92, 0.18) !important;
+    border-color: rgba(214, 180, 92, 0.5) !important;
+    color: var(--gold-light) !important;
+}
+
+.champ-round-badge {
+    background: rgba(214, 180, 92, 0.12) !important;
+    border: 1px solid rgba(214, 180, 92, 0.4) !important;
+    color: #fce79a !important;
+}
+
+.champ-hero-card-body {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: 24px 10px;
+}
+
+.champ-avatar-circle {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(214, 180, 92, 0.3) 0%, rgba(10, 15, 26, 0.8) 70%);
+    border: 2px solid rgba(214, 180, 92, 0.65);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 38px;
+    box-shadow: 0 0 28px rgba(214, 180, 92, 0.45);
+    margin-bottom: 14px;
+}
+
+.champ-podium-label {
+    font-family: "Barlow Condensed", sans-serif;
+    font-size: 11.5px;
+    font-weight: 800;
+    letter-spacing: 2px;
+    color: var(--gold);
+    text-transform: uppercase;
+    margin-bottom: 4px;
+}
+
+.champ-card-driver {
+    font-family: "Barlow Condensed", sans-serif;
+    font-size: 38px;
+    font-weight: 900;
+    color: #ffffff;
+    margin: 0 0 10px 0;
+    line-height: 1;
+    text-shadow: 0 2px 14px rgba(0, 0, 0, 0.8);
+}
+
+.champ-card-team-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 5px 14px;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 9999px;
+    font-family: "Barlow Condensed", sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    color: #e2e8f0;
+    margin-bottom: 22px;
+}
+
+.champ-card-stats-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    width: 100%;
+}
+
+.champ-stat-tile {
+    background: rgba(4, 6, 10, 0.55);
+    border: 1px solid rgba(214, 180, 92, 0.25);
+    border-radius: 6px;
+    padding: 10px 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.champ-stat-tile .tile-label {
+    font-family: "Barlow Condensed", sans-serif;
+    font-size: 10.5px;
+    font-weight: 700;
+    letter-spacing: 1.2px;
+    color: #94a3b8;
+    text-transform: uppercase;
+}
+
+.champ-stat-tile .tile-val {
+    font-family: "Barlow Condensed", sans-serif;
+    font-size: 19px;
+    font-weight: 900;
+    color: #f1f5f9;
+}
+
+.champ-gold-btn {
+    border-color: rgba(214, 180, 92, 0.45) !important;
+    background: rgba(214, 180, 92, 0.12) !important;
+    color: #fce79a !important;
+}
+
+.champ-gold-btn:hover {
+    background: rgba(214, 180, 92, 0.25) !important;
+    border-color: var(--gold) !important;
+    color: #ffffff !important;
+    box-shadow: 0 4px 16px rgba(214, 180, 92, 0.3) !important;
+}
+
+.next-race-card.is-champion-mode {
+    border-color: rgba(214, 180, 92, 0.4) !important;
+    box-shadow: 0 20px 45px rgba(0, 0, 0, 0.6), 0 0 25px rgba(214, 180, 92, 0.12);
+}
+
+.admin-switch input#adminChampionMode:checked + .admin-slider {
+    background-color: #d6b45c;
+    border-color: #d6b45c;
+    box-shadow: 0 0 12px rgba(214, 180, 92, 0.5);
+}
+
 /* Admin Live Mode Settings Section */
 .admin-live-settings-card {
     background: rgba(239, 68, 68, 0.05);
@@ -2466,7 +2972,8 @@ button {
 .twitch-chat-aspect {
     flex: 1;
     width: 100%;
-    min-height: 390px;
+    min-height: 420px;
+    height: 440px;
     border-radius: 10px;
     overflow: hidden;
     background: #06090e;
@@ -2478,7 +2985,7 @@ button {
 .twitch-chat-aspect iframe {
     width: 100%;
     height: 100%;
-    min-height: 390px;
+    min-height: 420px;
     border: none;
     display: block;
 }

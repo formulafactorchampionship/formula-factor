@@ -427,6 +427,71 @@
 
     </div>
 
+    <!-- WORLD CHAMPION HERO POPUP (Shown as a popup in the bottom-center zone of the hero) -->
+    <div class="hero-champion-popup" id="heroContentChampion" style="display: none;" role="region" aria-label="Proclamación de Campeón del Mundo">
+        <div class="champion-popup-card">
+            <button class="champion-popup-close" id="championPopupCloseBtn" type="button" aria-label="Minimizar aviso de Campeón del Mundo" title="Minimizar">
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
+                    <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
+                </svg>
+            </button>
+
+            <div class="champion-popup-top">
+                <div class="champion-sparkle-pill">
+                    <span class="champion-crown-icon">👑</span>
+                    <span id="championSeasonBadge">FORMULA FACTOR // CAMPEÓN DEL MUNDO 2026</span>
+                </div>
+                <div class="champion-stars-strip">★★★★★</div>
+            </div>
+
+            <div class="champion-popup-main">
+                <h2 class="champion-headline champion-popup-headline" id="championHeadline">
+                    <span class="champion-driver-name" id="championDriverName">XX</span>
+                    <span class="champion-gold-lead" id="championGoldLead">ES CAMPEÓN DEL MUNDO</span>
+                </h2>
+
+                <p class="champion-tribute-text champion-popup-tribute" id="championTributeText">
+                    ¡Enhorabuena al nuevo monarca de Formula Factor Championship tras una temporada histórica en el asfalto!
+                </p>
+
+                <div class="champion-popup-footer">
+                    <div class="champion-meta-card champion-popup-meta">
+                        <div class="champion-meta-item">
+                            <span class="champ-meta-label" id="champMetaLabelTeam">ESCUDERÍA</span>
+                            <strong class="champ-meta-val" id="championTeamName">--</strong>
+                        </div>
+                        <div class="champion-meta-divider"></div>
+                        <div class="champion-meta-item">
+                            <span class="champ-meta-label" id="champMetaLabelPoints">PUNTOS TOTALES</span>
+                            <strong class="champ-meta-val gold-glow-val" id="championPointsVal">-- PTS</strong>
+                        </div>
+                        <div class="champion-meta-divider"></div>
+                        <div class="champion-meta-item">
+                            <span class="champ-meta-label" id="champMetaLabelWins">VICTORIAS</span>
+                            <strong class="champ-meta-val" id="championWinsVal">-- WINS</strong>
+                        </div>
+                    </div>
+
+                    <div class="champion-popup-actions">
+                        <a href="#standings" class="btn btn-primary champion-btn-gold champion-popup-cta" id="championBtnStandings">
+                            🏆 VER CUADRO DE HONOR
+                        </a>
+                        <a href="#calendar" class="btn btn-secondary champion-popup-secondary-btn" id="championBtnCalendar">
+                            REPASO DE TEMPORADA
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MINIMIZED CHAMPION POPUP PILL (Docked in bottom-center zone if user minimizes) -->
+    <button class="champion-minimized-pill" id="championMinimizedPill" style="display: none;" type="button" title="Ver proclamación de Campeón del Mundo">
+        <span class="champ-min-crown">👑</span>
+        <span class="champ-min-text" id="championMinText"><strong>XX</strong> · CAMPEÓN DEL MUNDO</span>
+        <span class="champ-min-action" id="championMinActionText">VER PROCLAMACIÓN ▲</span>
+    </button>
+
 
     <aside class="next-race-card" id="heroAsideCard">
 
@@ -518,7 +583,77 @@
 
         </div>
 
+        <!-- LIVE CHAT VIEW (Shown when Live Mode is active) -->
+        <div class="next-race-live-chat-view" id="nextRaceLiveChatView" style="display: none;">
+            <div class="live-chat-header-wrap">
+                <div class="live-chat-status-bar">
+                    <span class="live-pulse-dot"></span>
+                    <span id="liveChatBadgeText">EN DIRECTO</span>
+                </div>
+                <div class="live-chat-title-box">
+                    <h3 class="live-chat-gp-heading">
+                        <span id="liveChatGpName">NÜRBURGRING GP</span>
+                        <span class="gold-text-glow" id="liveChatSuffixText">CHAT EN VIVO</span>
+                    </h3>
+                </div>
+            </div>
 
+            <div class="live-chat-frame-wrapper">
+                <div class="twitch-chat-aspect" id="twitchChatPlayerContainer">
+                    <!-- Twitch Chat iframe loaded dynamically -->
+                </div>
+                <div class="live-chat-footer-action">
+                    <a href="https://www.twitch.tv/popout/driezzz12/chat" target="_blank" rel="noopener noreferrer" class="twitch-popout-btn" id="twitchChatPopoutLink" title="Abrir chat en ventana flotante">
+                        <svg viewBox="0 0 24 24" width="13" height="13" fill="currentColor">
+                            <path d="M19 19H5V5h7V3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2v-7h-2v7zM14 3v2h3.59l-9.83 9.83 1.41 1.41L19 6.41V10h2V3h-7z"/>
+                        </svg>
+                        <span>ABRIR CHAT EXTERNO ↗</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- WORLD CHAMPION CARD VIEW (Shown when World Champion Mode is active) -->
+        <div class="next-race-champion-view" id="nextRaceChampionView" style="display: none;">
+            <div class="next-race-header-row">
+                <div class="card-top champ-card-top">
+                    <span class="champ-trophy-dot">🏆</span>
+                    <span id="champCardTopText">TÍTULO DECIDIDO</span>
+                </div>
+                <div class="round-label champ-round-badge" id="champSeasonStatusBadge">
+                    TEMPORADA 1 CONCLUIDA
+                </div>
+            </div>
+
+            <div class="champ-hero-card-body">
+                <div class="champ-avatar-circle" id="champAvatarCircle">
+                    <span class="champ-trophy-icon">🏆</span>
+                </div>
+                <div class="champ-podium-label" id="champPodiumLabel">CAMPEÓN OFICIAL FFC</div>
+                <h2 class="champ-card-driver" id="champCardDriver">XX</h2>
+                <div class="champ-card-team-pill" id="champCardTeamPill">
+                    <span class="team-dot" id="champCardTeamDot"></span>
+                    <span id="champCardTeamName">TEAM</span>
+                </div>
+                <div class="champ-card-stats-grid">
+                    <div class="champ-stat-tile">
+                        <span class="tile-label" id="champTilePtsLabel">PUNTOS</span>
+                        <strong class="tile-val" id="champTilePtsVal">--</strong>
+                    </div>
+                    <div class="champ-stat-tile">
+                        <span class="tile-label" id="champTileMarginLabel">DIFERENCIA</span>
+                        <strong class="tile-val" id="champTileMarginVal">+0 PTS</strong>
+                    </div>
+                </div>
+            </div>
+
+            <a href="#standings" class="next-race-details-btn champ-gold-btn" id="champCardCtaBtn">
+                <span id="champCardCtaText">VER CLASIFICACIÓN FINAL</span>
+                <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor" aria-hidden="true">
+                    <path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.41z"/>
+                </svg>
+            </a>
+        </div>
 
     </aside>
 
@@ -2442,6 +2577,13 @@
                     <strong class="admin-quick-op-val" id="adminQuickVerifiedCount">0</strong>
                 </div>
             </div>
+            <div class="admin-quick-op-item" title="Estado del modo Campeón del Mundo">
+                <span class="admin-quick-op-icon">👑</span>
+                <div class="admin-quick-op-text">
+                    <span class="admin-quick-op-label">Campeón Mundial</span>
+                    <strong class="admin-quick-op-val" id="adminQuickChampionStatus">DESACTIVADO</strong>
+                </div>
+            </div>
             <div class="admin-quick-op-item" title="Estado de la retransmisión Twitch">
                 <span class="admin-quick-op-icon">🔴</span>
                 <div class="admin-quick-op-text">
@@ -3058,6 +3200,60 @@
                 </div>
 
                 <form id="generalSettingsForm">
+                    <!-- MÓDULO 0: MODO CAMPEÓN DEL MUNDO (WORLD CHAMPION HERO) -->
+                    <div class="admin-settings-section-card champion-admin-border" style="border: 1px solid rgba(214, 180, 92, 0.45); background: linear-gradient(135deg, rgba(214, 180, 92, 0.08) 0%, rgba(10, 15, 26, 0.95) 100%);">
+                        <div class="admin-live-header">
+                            <div class="admin-live-badge" style="background: rgba(214, 180, 92, 0.2); color: var(--gold); border: 1px solid rgba(214, 180, 92, 0.45);">
+                                <span>👑</span>
+                                PORTADA HERO &bull; MODO CAMPEÓN DEL MUNDO
+                            </div>
+                            <label class="admin-switch-label" for="adminChampionMode">
+                                <span class="admin-switch-text" id="adminChampionSwitchStatusText">MODO CAMPEÓN DESACTIVADO</span>
+                                <div class="admin-switch">
+                                    <input type="checkbox" id="adminChampionMode">
+                                    <span class="admin-slider"></span>
+                                </div>
+                            </label>
+                        </div>
+                        <p class="admin-field-hint" style="margin-top: 10px; margin-bottom: 16px;">
+                            Activa este modo cuando un piloto gane matemáticamente o corone el campeonato del mundo. En la portada principal del sitio (Hero) se mostrará la proclamación dorada de <strong>"[Piloto] ES CAMPEÓN DEL MUNDO"</strong> (o <strong>"[Driver] IS THE WORLD CHAMPION"</strong> en inglés) con sus estadísticas de temporada.
+                        </p>
+
+                        <div class="admin-form-grid" style="margin-bottom: 0;">
+                            <div class="admin-field admin-field-full">
+                                <label for="adminChampionDriverSelect">Piloto Campeón del Mundo Oficial</label>
+                                <select id="adminChampionDriverSelect" class="admin-select">
+                                    <option value="">-- Seleccionar Piloto Campeón --</option>
+                                </select>
+                                <span class="admin-field-hint">Selecciona el piloto coronado campeón de la lista oficial de Formula Factor Championship.</span>
+                            </div>
+                            <div class="admin-field">
+                                <label for="adminChampionCustomName">Nombre a Mostrar (Opcional si difiere)</label>
+                                <input type="text" id="adminChampionCustomName" placeholder="Ej: Dieguiosk, Suforr...">
+                                <span class="admin-field-hint">Si se deja vacío, tomará el nombre del piloto seleccionado arriba.</span>
+                            </div>
+                            <div class="admin-field">
+                                <label for="adminChampionTeam">Escudería del Campeón</label>
+                                <input type="text" id="adminChampionTeam" placeholder="Ej: HRT, Mercedes, Ferrari...">
+                                <span class="admin-field-hint">Se autocompleta con el equipo del piloto, o puedes personalizarlo.</span>
+                            </div>
+                            <div class="admin-field">
+                                <label for="adminChampionPoints">Puntos Acumulados / Finales</label>
+                                <input type="number" id="adminChampionPoints" placeholder="Ej: 145">
+                                <span class="admin-field-hint">Se autocompleta con sus puntos de la tabla general si está vacío.</span>
+                            </div>
+                            <div class="admin-field">
+                                <label for="adminChampionWins">Victorias de Temporada</label>
+                                <input type="number" id="adminChampionWins" placeholder="Ej: 4">
+                                <span class="admin-field-hint">Cantidad de victorias en Grandes Premios durante la temporada.</span>
+                            </div>
+                            <div class="admin-field admin-field-full">
+                                <label for="adminChampionTribute">Texto de Homenaje / Dedicatoria</label>
+                                <input type="text" id="adminChampionTribute" placeholder="¡Enhorabuena al nuevo monarca de Formula Factor Championship tras una temporada histórica!" value="¡Enhorabuena al nuevo monarca de Formula Factor Championship tras una temporada histórica en el asfalto!">
+                            </div>
+                        </div>
+                    </div>
+
                     <!-- MÓDULO 1: MODO DIRECTO / TRANSMISIÓN TWITCH -->
                     <div class="admin-settings-section-card">
                         <div class="admin-live-header">

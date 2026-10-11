@@ -2923,6 +2923,7 @@ function setLanguage(lang) {
     if (profileLangEnBtn) profileLangEnBtn.classList.toggle("active", lang === "en");
 
     applyTranslations(lang);
+    renderSettingsOnPage(getSavedSettings());
     renderNextRaceOnPage(getSavedNextRace());
     if (typeof renderPublicNewsSection === "function") {
         renderPublicNewsSection();
@@ -4217,6 +4218,13 @@ const defaultSettings = {
     twitchChannel: "https://www.twitch.tv/driezzz12",
     liveTitle: "ESTAMOS EN DIRECTO",
     liveSubtitle: "Sigue la retransmisión oficial de la carrera en vivo por Twitch.",
+    championMode: false,
+    championDriver: "Dieguiosk",
+    championCustomName: "",
+    championTeam: "HRT",
+    championPoints: "145",
+    championWins: "4",
+    championTribute: "¡Enhorabuena al nuevo monarca de Formula Factor Championship tras una temporada histórica en el asfalto!",
     fantasyLocked: false,
     fantasyLockMessage: "Mercado de fichajes congelado por Gran Premio en curso.",
     fantasyFluctuationEnabled: true,
@@ -4337,6 +4345,18 @@ const adminLiveTitle = document.getElementById("adminLiveTitle");
 const adminLiveRaceTitle = document.getElementById("adminLiveRaceTitle");
 const adminLiveSubtitle = document.getElementById("adminLiveSubtitle");
 const adminSwitchStatusText = document.getElementById("adminSwitchStatusText");
+
+// World Champion Admin Elements
+const adminChampionMode = document.getElementById("adminChampionMode");
+const adminChampionDriverSelect = document.getElementById("adminChampionDriverSelect");
+const adminChampionCustomName = document.getElementById("adminChampionCustomName");
+const adminChampionTeam = document.getElementById("adminChampionTeam");
+const adminChampionPoints = document.getElementById("adminChampionPoints");
+const adminChampionWins = document.getElementById("adminChampionWins");
+const adminChampionTribute = document.getElementById("adminChampionTribute");
+const adminChampionSwitchStatusText = document.getElementById("adminChampionSwitchStatusText");
+const adminQuickChampionStatus = document.getElementById("adminQuickChampionStatus");
+
 const adminFantasyLocked = document.getElementById("adminFantasyLocked");
 const adminFantasyLockStatusText = document.getElementById("adminFantasyLockStatusText");
 const adminFantasyLockMessage = document.getElementById("adminFantasyLockMessage");
@@ -6987,23 +7007,7 @@ function extractTwitchChannel(input) {
     return match ? match[1] : (cleaned || "driezzz12");
 }
 
-function buildTwitchEmbedUrl(channelInput) {
-    const chan = extractTwitchChannel(channelInput);
-    const parents = new Set();
-    if (typeof window !== "undefined" && window.location && window.location.hostname) {
-        parents.add(window.location.hostname);
-    }
-    parents.add("ais-dev-llhirdz3pjvgtgrzjmkdqn-850418529081.europe-west2.run.app");
-    parents.add("ais-pre-llhirdz3pjvgtgrzjmkdqn-850418529081.europe-west2.run.app");
-    parents.add("localhost");
-    parents.add("127.0.0.1");
-
-    const parentQuery = Array.from(parents).map(p => `parent=${encodeURIComponent(p)}`).join("&");
-    return `https://player.twitch.tv/?channel=${encodeURIComponent(chan)}&${parentQuery}&autoplay=true&muted=false`;
-}
-
-function buildTwitchChatEmbedUrl(channelInput) {
-    const chan = extractTwitchChannel(channelInput);
+function getTwitchParentDomains() {
     const parents = new Set();
     if (typeof window !== "undefined" && window.location && window.location.hostname) {
         parents.add(window.location.hostname);
@@ -7019,14 +7023,34 @@ function buildTwitchChatEmbedUrl(channelInput) {
             parents.add(window.parent.location.hostname);
         }
     } catch(e) {}
+    try {
+        if (typeof window !== "undefined" && window.top && window.top.location && window.top.location.hostname) {
+            parents.add(window.top.location.hostname);
+        }
+    } catch(e) {}
+
+    parents.add("ais-dev-ni75niazb24cgcsiqgnmdt-850418529081.europe-west2.run.app");
+    parents.add("ais-pre-ni75niazb24cgcsiqgnmdt-850418529081.europe-west2.run.app");
     parents.add("ais-dev-llhirdz3pjvgtgrzjmkdqn-850418529081.europe-west2.run.app");
     parents.add("ais-pre-llhirdz3pjvgtgrzjmkdqn-850418529081.europe-west2.run.app");
-    parents.add("ai.studio");
     parents.add("aistudio.google.com");
+    parents.add("makersuite.google.com");
+    parents.add("ai.studio");
     parents.add("localhost");
     parents.add("127.0.0.1");
 
-    const parentQuery = Array.from(parents).filter(Boolean).map(p => `parent=${encodeURIComponent(p)}`).join("&");
+    return Array.from(parents).filter(Boolean);
+}
+
+function buildTwitchEmbedUrl(channelInput) {
+    const chan = extractTwitchChannel(channelInput);
+    const parentQuery = getTwitchParentDomains().map(p => `parent=${encodeURIComponent(p)}`).join("&");
+    return `https://player.twitch.tv/?channel=${encodeURIComponent(chan)}&${parentQuery}&autoplay=true&muted=false`;
+}
+
+function buildTwitchChatEmbedUrl(channelInput) {
+    const chan = extractTwitchChannel(channelInput);
+    const parentQuery = getTwitchParentDomains().map(p => `parent=${encodeURIComponent(p)}`).join("&");
     return `https://www.twitch.tv/embed/${encodeURIComponent(chan)}/chat?${parentQuery}&darkpopout=true`;
 }
 
@@ -7077,36 +7101,153 @@ function renderSettingsOnPage(settings) {
     if (statRoundsEl && settings.rounds) statRoundsEl.textContent = settings.rounds;
     if (statDriversEl && settings.drivers) statDriversEl.textContent = settings.drivers;
 
-    // Live Mode (Transmisión en directo Twitch & Chat & Live Timing)
+    // World Champion Mode vs Live Mode vs Standard Mode
     const heroSection = document.getElementById("home");
     const heroContentStandard = document.getElementById("heroContentStandard");
     const heroContentLive = document.getElementById("heroContentLive");
+    const heroContentChampion = document.getElementById("heroContentChampion");
     const twitchPlayerContainer = document.getElementById("twitchPlayerContainer");
     const twitchExternalLink = document.getElementById("twitchExternalLink");
     const heroLiveHeading = document.getElementById("heroLiveHeading");
     const heroLiveSubtitle = document.getElementById("heroLiveSubtitle");
 
-    // Next Race Card: Standard Countdown View vs Live Chat View
+    // Next Race Card: Standard Countdown View vs Live Chat View vs Champion View
     const heroAsideCard = document.getElementById("heroAsideCard");
     const nextRaceStandardView = document.getElementById("nextRaceStandardView");
     const nextRaceLiveChatView = document.getElementById("nextRaceLiveChatView");
+    const nextRaceChampionView = document.getElementById("nextRaceChampionView");
     const liveChatGpName = document.getElementById("liveChatGpName");
     const liveChatBadgeText = document.getElementById("liveChatBadgeText");
     const liveChatSuffixText = document.getElementById("liveChatSuffixText");
     const twitchChatPlayerContainer = document.getElementById("twitchChatPlayerContainer");
     const twitchChatPopoutLink = document.getElementById("twitchChatPopoutLink");
 
-    const isLive = Boolean(settings && settings.liveMode);
+    const isChampion = Boolean(settings && settings.championMode);
+    const isLive = Boolean(settings && settings.liveMode && !isChampion);
     const channel = extractTwitchChannel(settings?.twitchChannel || "https://www.twitch.tv/driezzz12");
     const twitchUrl = `https://www.twitch.tv/${channel}`;
 
     if (heroSection) {
+        heroSection.classList.toggle("is-champion-mode", isChampion);
         heroSection.classList.toggle("is-live-mode", isLive);
     }
 
     if (heroContentStandard && heroContentLive) {
-        if (isLive) {
+        if (isChampion && heroContentChampion) {
+            heroContentStandard.style.display = "block";
+            heroContentLive.style.display = "none";
+            heroContentChampion.style.display = "block";
+
+            const championMinimizedPill = document.getElementById("championMinimizedPill");
+            if (championMinimizedPill) {
+                championMinimizedPill.style.display = "none";
+            }
+
+            const championPopupCloseBtn = document.getElementById("championPopupCloseBtn");
+            if (championPopupCloseBtn && !championPopupCloseBtn.dataset.bound) {
+                championPopupCloseBtn.dataset.bound = "true";
+                championPopupCloseBtn.addEventListener("click", () => {
+                    if (heroContentChampion) heroContentChampion.style.display = "none";
+                    if (championMinimizedPill) championMinimizedPill.style.display = "inline-flex";
+                });
+            }
+
+            if (championMinimizedPill && !championMinimizedPill.dataset.bound) {
+                championMinimizedPill.dataset.bound = "true";
+                championMinimizedPill.addEventListener("click", () => {
+                    if (heroContentChampion) heroContentChampion.style.display = "block";
+                    if (championMinimizedPill) championMinimizedPill.style.display = "none";
+                });
+            }
+
+            if (twitchPlayerContainer) twitchPlayerContainer.innerHTML = "";
+            if (typeof window.stopLiveTimingPoll === "function") window.stopLiveTimingPoll();
+
+            // Populate World Champion Hero Copy & Stats
+            const champDriver = (settings && (settings.championCustomName || settings.championDriver)) ? (settings.championCustomName || settings.championDriver).trim() : "Dieguiosk";
+            let champTeam = (settings && settings.championTeam) ? settings.championTeam.trim() : "";
+            let champPts = (settings && settings.championPoints !== undefined && settings.championPoints !== "") ? String(settings.championPoints) : "";
+            let champWins = (settings && settings.championWins !== undefined && settings.championWins !== "") ? String(settings.championWins) : "";
+            const champTribute = (settings && settings.championTribute) ? settings.championTribute.trim() : "";
+
+            // Auto-fallback from standings if team or points not specified
+            if (!champTeam || !champPts) {
+                const standings = (typeof currentPilotos !== "undefined" && Array.isArray(currentPilotos) && currentPilotos.length > 0) ? currentPilotos : getSavedStandings();
+                const foundP = standings.find(p => p.driver && normalizeDriverKey(p.driver) === normalizeDriverKey(champDriver));
+                if (foundP) {
+                    if (!champTeam) champTeam = foundP.team || getDriverTeam(champDriver) || "FFC";
+                    if (!champPts) champPts = String(foundP.pts || 0);
+                } else {
+                    if (!champTeam) champTeam = getDriverTeam(champDriver) || "FFC";
+                    if (!champPts) champPts = "145";
+                }
+            }
+            if (!champWins) champWins = "4";
+
+            const isEn = (typeof currentLanguage !== "undefined" && currentLanguage === "en");
+
+            // Hero World Champion Title & Headline: "XX ES CAMPEÓN DEL MUNDO" / "XX IS THE WORLD CHAMPION"
+            const champHeadlineEl = document.getElementById("championHeadline");
+            if (champHeadlineEl) {
+                const goldLeadText = isEn ? "IS THE WORLD CHAMPION" : "ES CAMPEÓN DEL MUNDO";
+                champHeadlineEl.innerHTML = `
+                    <span class="champion-driver-name" id="championDriverName">${escapeHtml(champDriver)}</span>
+                    <span class="champion-gold-lead" id="championGoldLead">${goldLeadText}</span>
+                `;
+            }
+
+            const champSeasonBadge = document.getElementById("championSeasonBadge");
+            if (champSeasonBadge) {
+                champSeasonBadge.textContent = isEn 
+                    ? `FORMULA FACTOR // WORLD CHAMPION ${new Date().getFullYear()}` 
+                    : `FORMULA FACTOR // CAMPEÓN DEL MUNDO ${new Date().getFullYear()}`;
+            }
+
+            const championMinText = document.getElementById("championMinText");
+            if (championMinText) {
+                championMinText.innerHTML = isEn
+                    ? `<strong>${escapeHtml(champDriver)}</strong> · IS THE WORLD CHAMPION`
+                    : `<strong>${escapeHtml(champDriver)}</strong> · ES CAMPEÓN DEL MUNDO`;
+            }
+            const championMinActionText = document.getElementById("championMinActionText");
+            if (championMinActionText) {
+                championMinActionText.textContent = isEn ? "VIEW PROCLAMATION ▲" : "VER PROCLAMACIÓN ▲";
+            }
+
+            const champTeamEl = document.getElementById("championTeamName");
+            if (champTeamEl) champTeamEl.textContent = champTeam || "--";
+
+            const champPtsEl = document.getElementById("championPointsVal");
+            if (champPtsEl) champPtsEl.textContent = `${champPts} PTS`;
+
+            const champWinsEl = document.getElementById("championWinsVal");
+            if (champWinsEl) champWinsEl.textContent = `${champWins} ${isEn ? "WINS" : "VICTORIAS"}`;
+
+            const champTributeEl = document.getElementById("championTributeText");
+            if (champTributeEl) {
+                const defaultTribute = isEn 
+                    ? `Congratulations to the new monarch of Formula Factor Championship after a historic and dominant season on track!` 
+                    : `¡Enhorabuena al nuevo monarca de Formula Factor Championship tras una temporada histórica en el asfalto!`;
+                champTributeEl.textContent = champTribute || defaultTribute;
+            }
+
+            // Labels translation
+            const champMetaLabelTeam = document.getElementById("champMetaLabelTeam");
+            if (champMetaLabelTeam) champMetaLabelTeam.textContent = isEn ? "CONSTRUCTOR" : "ESCUDERÍA";
+            const champMetaLabelPoints = document.getElementById("champMetaLabelPoints");
+            if (champMetaLabelPoints) champMetaLabelPoints.textContent = isEn ? "TOTAL POINTS" : "PUNTOS TOTALES";
+            const champMetaLabelWins = document.getElementById("champMetaLabelWins");
+            if (champMetaLabelWins) champMetaLabelWins.textContent = isEn ? "VICTORIES" : "VICTORIAS";
+            const championBtnStandings = document.getElementById("championBtnStandings");
+            if (championBtnStandings) championBtnStandings.textContent = isEn ? "🏆 VIEW HALL OF FAME" : "🏆 VER CUADRO DE HONOR";
+            const championBtnCalendar = document.getElementById("championBtnCalendar");
+            if (championBtnCalendar) championBtnCalendar.textContent = isEn ? "SEASON RECAP" : "REPASO DE TEMPORADA";
+
+        } else if (isLive) {
             heroContentStandard.style.display = "none";
+            if (heroContentChampion) heroContentChampion.style.display = "none";
+            const championMinimizedPill = document.getElementById("championMinimizedPill");
+            if (championMinimizedPill) championMinimizedPill.style.display = "none";
             heroContentLive.style.display = "flex";
 
             if (heroLiveHeading) {
@@ -7146,6 +7287,10 @@ function renderSettingsOnPage(settings) {
         } else {
             heroContentStandard.style.display = "block";
             heroContentLive.style.display = "none";
+            if (heroContentChampion) heroContentChampion.style.display = "none";
+            const championMinimizedPill = document.getElementById("championMinimizedPill");
+            if (championMinimizedPill) championMinimizedPill.style.display = "none";
+
             if (twitchPlayerContainer) {
                 twitchPlayerContainer.innerHTML = "";
             }
@@ -7155,12 +7300,15 @@ function renderSettingsOnPage(settings) {
         }
     }
 
-    // Toggle and configure Next Race Card Live Chat View
-    if (heroAsideCard && nextRaceStandardView && nextRaceLiveChatView) {
+    // Toggle and configure Next Race Card (Champion View vs Live Chat View vs Standard Countdown View)
+    // Toggle and configure Next Race Card (Live Chat View vs Standard Countdown View)
+    if (heroAsideCard) {
         if (isLive) {
+            heroAsideCard.classList.remove("is-champion-mode");
             heroAsideCard.classList.add("is-live-chat-mode");
-            nextRaceStandardView.style.display = "none";
-            nextRaceLiveChatView.style.display = "flex";
+            if (nextRaceStandardView) nextRaceStandardView.style.display = "none";
+            if (nextRaceLiveChatView) nextRaceLiveChatView.style.display = "flex";
+            if (nextRaceChampionView) nextRaceChampionView.style.display = "none";
 
             // Resolve GP Name for Live Chat Header
             let activeGpName = (settings && settings.liveRaceTitle) ? settings.liveRaceTitle.trim() : "";
@@ -7202,8 +7350,9 @@ function renderSettingsOnPage(settings) {
             }
         } else {
             heroAsideCard.classList.remove("is-live-chat-mode");
-            nextRaceStandardView.style.display = "flex";
-            nextRaceLiveChatView.style.display = "none";
+            if (nextRaceStandardView) nextRaceStandardView.style.display = "flex";
+            if (nextRaceLiveChatView) nextRaceLiveChatView.style.display = "none";
+            if (nextRaceChampionView) nextRaceChampionView.style.display = "none";
             if (twitchChatPlayerContainer) {
                 twitchChatPlayerContainer.innerHTML = "";
             }
@@ -7996,6 +8145,29 @@ function populateAdminForms() {
     if (adminLiveTitle) adminLiveTitle.value = settings.liveTitle || "ESTAMOS EN DIRECTO";
     if (adminLiveRaceTitle) adminLiveRaceTitle.value = settings.liveRaceTitle || "";
     if (adminLiveSubtitle) adminLiveSubtitle.value = settings.liveSubtitle || "Sigue la retransmisión oficial de la carrera en vivo por Twitch.";
+
+    // World Champion Settings Form Population
+    const isChamp = Boolean(settings.championMode);
+    if (adminChampionMode) {
+        adminChampionMode.checked = isChamp;
+    }
+    if (adminChampionSwitchStatusText) {
+        adminChampionSwitchStatusText.textContent = isChamp ? "👑 MODO CAMPEÓN ACTIVADO (EN PORTADA)" : "MODO CAMPEÓN DESACTIVADO";
+        adminChampionSwitchStatusText.classList.toggle("is-active", isChamp);
+    }
+    if (adminQuickChampionStatus) {
+        adminQuickChampionStatus.textContent = isChamp ? "👑 ACTIVO" : "DESACTIVADO";
+        adminQuickChampionStatus.style.color = isChamp ? "var(--gold-light)" : "#8c929c";
+    }
+    if (adminChampionDriverSelect) {
+        populateDriverSelect(adminChampionDriverSelect, settings.championDriver || "Dieguiosk", "-- Seleccionar Piloto Campeón --");
+    }
+    if (adminChampionCustomName) adminChampionCustomName.value = settings.championCustomName || "";
+    if (adminChampionTeam) adminChampionTeam.value = settings.championTeam || "";
+    if (adminChampionPoints) adminChampionPoints.value = settings.championPoints !== undefined ? settings.championPoints : "";
+    if (adminChampionWins) adminChampionWins.value = settings.championWins !== undefined ? settings.championWins : "";
+    if (adminChampionTribute) adminChampionTribute.value = settings.championTribute || "¡Enhorabuena al nuevo monarca de Formula Factor Championship tras una temporada histórica en el asfalto!";
+
     if (adminDiscordUrl) adminDiscordUrl.value = settings.discordUrl || "";
     if (adminXUrl) adminXUrl.value = settings.xUrl || "";
     if (adminInstagramUrl) adminInstagramUrl.value = settings.instagramUrl || "";
@@ -8232,6 +8404,39 @@ function initFirestoreListeners() {
                 if (adminLiveTitle) adminLiveTitle.value = currentSettings.liveTitle || "ESTAMOS EN DIRECTO";
                 if (adminLiveRaceTitle) adminLiveRaceTitle.value = currentSettings.liveRaceTitle || "";
                 if (adminLiveSubtitle) adminLiveSubtitle.value = currentSettings.liveSubtitle || "Sigue la retransmisión oficial de la carrera en vivo por Twitch.";
+
+                // World Champion Realtime Sync
+                const isChamp = Boolean(currentSettings.championMode);
+                if (adminChampionMode) {
+                    adminChampionMode.checked = isChamp;
+                }
+                if (adminChampionSwitchStatusText) {
+                    adminChampionSwitchStatusText.textContent = isChamp ? "👑 MODO CAMPEÓN ACTIVADO (EN PORTADA)" : "MODO CAMPEÓN DESACTIVADO";
+                    adminChampionSwitchStatusText.classList.toggle("is-active", isChamp);
+                }
+                if (adminQuickChampionStatus) {
+                    adminQuickChampionStatus.textContent = isChamp ? "👑 ACTIVO" : "DESACTIVADO";
+                    adminQuickChampionStatus.style.color = isChamp ? "var(--gold-light)" : "#8c929c";
+                }
+                if (adminChampionDriverSelect && document.activeElement !== adminChampionDriverSelect) {
+                    populateDriverSelect(adminChampionDriverSelect, currentSettings.championDriver || "Dieguiosk", "-- Seleccionar Piloto Campeón --");
+                }
+                if (adminChampionCustomName && document.activeElement !== adminChampionCustomName) {
+                    adminChampionCustomName.value = currentSettings.championCustomName || "";
+                }
+                if (adminChampionTeam && document.activeElement !== adminChampionTeam) {
+                    adminChampionTeam.value = currentSettings.championTeam || "";
+                }
+                if (adminChampionPoints && document.activeElement !== adminChampionPoints) {
+                    adminChampionPoints.value = currentSettings.championPoints !== undefined ? currentSettings.championPoints : "";
+                }
+                if (adminChampionWins && document.activeElement !== adminChampionWins) {
+                    adminChampionWins.value = currentSettings.championWins !== undefined ? currentSettings.championWins : "";
+                }
+                if (adminChampionTribute && document.activeElement !== adminChampionTribute) {
+                    adminChampionTribute.value = currentSettings.championTribute || "¡Enhorabuena al nuevo monarca de Formula Factor Championship tras una temporada histórica en el asfalto!";
+                }
+
                 if (adminDiscordUrl) adminDiscordUrl.value = currentSettings.discordUrl || "";
                 if (adminXUrl) adminXUrl.value = currentSettings.xUrl || "";
                 if (adminInstagramUrl) adminInstagramUrl.value = currentSettings.instagramUrl || "";
@@ -9012,6 +9217,37 @@ if (adminRecalculatePricesBtn) {
     });
 }
 
+// Toggle World Champion switch status label & Quick KPI
+if (adminChampionMode) {
+    adminChampionMode.addEventListener("change", () => {
+        const isChamp = adminChampionMode.checked;
+        if (adminChampionSwitchStatusText) {
+            adminChampionSwitchStatusText.textContent = isChamp ? "👑 MODO CAMPEÓN ACTIVADO (EN PORTADA)" : "MODO CAMPEÓN DESACTIVADO";
+            adminChampionSwitchStatusText.classList.toggle("is-active", isChamp);
+        }
+        if (adminQuickChampionStatus) {
+            adminQuickChampionStatus.textContent = isChamp ? "👑 ACTIVO" : "DESACTIVADO";
+            adminQuickChampionStatus.style.color = isChamp ? "var(--gold-light)" : "#8c929c";
+        }
+    });
+}
+
+// Auto-fill champion fields when a driver is selected from dropdown
+if (adminChampionDriverSelect) {
+    adminChampionDriverSelect.addEventListener("change", () => {
+        const selected = adminChampionDriverSelect.value.trim();
+        if (!selected) return;
+        if (adminChampionTeam && !adminChampionTeam.value) {
+            adminChampionTeam.value = getDriverTeam(selected) || "FFC";
+        }
+        if (adminChampionPoints && !adminChampionPoints.value) {
+            const standings = (typeof currentPilotos !== "undefined" && Array.isArray(currentPilotos) && currentPilotos.length > 0) ? currentPilotos : getSavedStandings();
+            const p = standings.find(x => x.driver && normalizeDriverKey(x.driver) === normalizeDriverKey(selected));
+            if (p && p.pts !== undefined) adminChampionPoints.value = p.pts;
+        }
+    });
+}
+
 // Save General Settings
 if (generalSettingsForm) {
     generalSettingsForm.addEventListener("submit", async (e) => {
@@ -9022,6 +9258,13 @@ if (generalSettingsForm) {
             liveTitle: adminLiveTitle ? adminLiveTitle.value.trim() : "ESTAMOS EN DIRECTO",
             liveRaceTitle: adminLiveRaceTitle ? adminLiveRaceTitle.value.trim() : "",
             liveSubtitle: adminLiveSubtitle ? adminLiveSubtitle.value.trim() : "Sigue la retransmisión oficial de la carrera en vivo por Twitch.",
+            championMode: adminChampionMode ? adminChampionMode.checked : false,
+            championDriver: adminChampionDriverSelect ? (adminChampionDriverSelect.value || "Dieguiosk") : "Dieguiosk",
+            championCustomName: adminChampionCustomName ? adminChampionCustomName.value.trim() : "",
+            championTeam: adminChampionTeam ? adminChampionTeam.value.trim() : "",
+            championPoints: adminChampionPoints ? adminChampionPoints.value.trim() : "",
+            championWins: adminChampionWins ? adminChampionWins.value.trim() : "",
+            championTribute: adminChampionTribute ? adminChampionTribute.value.trim() : "",
             fantasyLocked: adminFantasyLocked ? adminFantasyLocked.checked : false,
             fantasyLockMessage: adminFantasyLockMessage ? adminFantasyLockMessage.value.trim() : "Mercado de fichajes congelado por Gran Premio en curso.",
             fantasyFluctuationEnabled: adminFantasyFluctuation ? adminFantasyFluctuation.checked : true,
@@ -12821,7 +13064,59 @@ var OFFICIAL_ROUND_10_POINTS = {
 };
 window.OFFICIAL_ROUND_10_POINTS = OFFICIAL_ROUND_10_POINTS;
 
+// Master historical snapshot of Round 10 & Round 11 official fantasy points
+// This protects all earned points across past rounds, allowing drivers to be changed for future rounds without modifying previous results.
+var OFFICIAL_PAST_ROUNDS_SCORES = {
+    "adriangalindomele_gmail_com": {"managerName":"Galindo📸","teamName":"Netanyahu FFC Team","totalBeforeRound12":136,"roundScores":{"nurburgring":73,"hungary":63}},
+    "alexvanocastaneda_gmail_com": {"managerName":"MUNTISEXO33","teamName":"ACRR","totalBeforeRound12":94,"roundScores":{"nurburgring":69,"hungary":25}},
+    "biljjana_hotmail_com": {"managerName":"Sebinho","teamName":"Mi Escudería FFC","totalBeforeRound12":0,"roundScores":{"nurburgring":0,"hungary":51}},
+    "dericktonly_gmail_com": {"managerName":"IWantMozaR5","teamName":"Mi Escudería FFC","totalBeforeRound12":0,"roundScores":{"nurburgring":0,"hungary":0}},
+    "eduardoxlopez2_gmail_com": {"managerName":"Eduardo Lopez","teamName":"AlcRacing","totalBeforeRound12":121,"roundScores":{"nurburgring":85,"hungary":36}},
+    "enzo_castillo_lomb_gmail_com": {"managerName":"Hermes","teamName":"hermes israel","totalBeforeRound12":108,"roundScores":{"nurburgring":71,"hungary":37}},
+    "formulafactorchampionship_gmail_com": {"managerName":"Formula Factor Championship","teamName":"Scuderia Driezz","totalBeforeRound12":126,"roundScores":{"nurburgring":66,"hungary":60}},
+    "formularinuno8_gmail_com": {"managerName":"Dieguiosk","teamName":"chandal gris de 85 euros","totalBeforeRound12":136,"roundScores":{"nurburgring":76,"hungary":60}},
+    "franciscoalbarran1726_gmail_com": {"managerName":"Fran_1726","teamName":"Cipote FM Racing Team","totalBeforeRound12":76,"roundScores":{"nurburgring":76,"hungary":51}},
+    "gaelperezcovelo2011_gmail_com": {"managerName":"Farlonso","teamName":"Femboys","totalBeforeRound12":101,"roundScores":{"nurburgring":62,"hungary":39}},
+    "hugotapgar27_gmail_com": {"managerName":"Hijoputapro","teamName":"Mi Escudería FFC","totalBeforeRound12":56,"roundScores":{"nurburgring":56,"hungary":50}},
+    "ivanrodriguezpereira2006_gmail_com": {"managerName":"IvánR","teamName":"Anchoa EuroFormula Open Team","totalBeforeRound12":87,"roundScores":{"nurburgring":70,"hungary":17}},
+    "javicho610_gmail_com": {"managerName":"JvR","teamName":"JvR FFC Team","totalBeforeRound12":38,"roundScores":{"nurburgring":18,"hungary":20}},
+    "misadiarte18_gmail_com": {"managerName":"Nova","teamName":"Mi Escudería RETARDA","totalBeforeRound12":38,"roundScores":{"nurburgring":38,"hungary":18}},
+    "naggetepic_gmail_com": {"managerName":"Victor","teamName":"Swiss Racing Team","totalBeforeRound12":75,"roundScores":{"nurburgring":51,"hungary":24}},
+    "nektasjez33xd_proton_me": {"managerName":"river","teamName":"prime williams","totalBeforeRound12":98,"roundScores":{"nurburgring":71,"hungary":27}},
+    "osoriaferrero_gmail_com": {"managerName":"Oscar Soria","teamName":"OS Racing","totalBeforeRound12":61,"roundScores":{"nurburgring":60,"hungary":1}},
+    "suforr2005_gmail_com": {"managerName":"suforr","teamName":"sexo","totalBeforeRound12":117,"roundScores":{"nurburgring":75,"hungary":42}},
+    "theagus60_gmail_com": {"managerName":"Theagus60","teamName":"QVuelvaFranco","totalBeforeRound12":87,"roundScores":{"nurburgring":44,"hungary":43}}
+};
+window.OFFICIAL_PAST_ROUNDS_SCORES = OFFICIAL_PAST_ROUNDS_SCORES;
+
+function getOfficialPastRoundScore(teamState, roundKey) {
+    if (!teamState || !roundKey) return undefined;
+    const pastMap = (typeof window !== "undefined" && window.OFFICIAL_PAST_ROUNDS_SCORES) ? window.OFFICIAL_PAST_ROUNDS_SCORES : (typeof OFFICIAL_PAST_ROUNDS_SCORES !== "undefined" ? OFFICIAL_PAST_ROUNDS_SCORES : null);
+    if (!pastMap) return undefined;
+
+    const normM = (teamState.managerName || "").toString().normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/[^a-z0-9]/g, "");
+    const normT = (teamState.teamName || "").toString().normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/[^a-z0-9]/g, "");
+    const cleanId = (teamState.userId || teamState.id || teamState.email || "").toString().toLowerCase().trim().replace(/[^a-z0-9_]/g, "_");
+
+    if (cleanId && pastMap[cleanId] && pastMap[cleanId].roundScores && pastMap[cleanId].roundScores[roundKey] !== undefined) {
+        return pastMap[cleanId].roundScores[roundKey];
+    }
+
+    for (const [key, item] of Object.entries(pastMap)) {
+        if (!item || !item.roundScores || item.roundScores[roundKey] === undefined) continue;
+        const entryNormM = (item.managerName || "").toString().normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/[^a-z0-9]/g, "");
+        const entryNormT = (item.teamName || "").toString().normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/[^a-z0-9]/g, "");
+        if ((normM && entryNormM && (normM === entryNormM || normM.includes(entryNormM) || entryNormM.includes(normM))) ||
+            (normT && entryNormT && (normT === entryNormT || normT.includes(entryNormT) || entryNormT.includes(normT)))) {
+            return item.roundScores[roundKey];
+        }
+    }
+    return undefined;
+}
+
 function getOfficialRound10Score(teamState) {
+    const pastVal = getOfficialPastRoundScore(teamState, "nurburgring");
+    if (pastVal !== undefined) return pastVal;
     if (!teamState) return undefined;
     const ptsMap = (typeof window !== "undefined" && window.OFFICIAL_ROUND_10_POINTS) ? window.OFFICIAL_ROUND_10_POINTS : (typeof OFFICIAL_ROUND_10_POINTS !== "undefined" ? OFFICIAL_ROUND_10_POINTS : {});
     if (!ptsMap) return undefined;
@@ -12850,7 +13145,11 @@ function calculateFantasyTeamPoints(teamState) {
 
     completedRaces.forEach(({ key, race }) => {
         let rPts = 0;
-        if (key === "nurburgring") {
+        // 1. Check official locked historical scores for past rounds
+        const officialPastPts = getOfficialPastRoundScore(teamState, key);
+        if (officialPastPts !== undefined) {
+            rPts = officialPastPts;
+        } else if (key === "nurburgring") {
             const officialPts = getOfficialRound10Score(teamState);
             if (officialPts !== undefined) {
                 rPts = officialPts;
@@ -12866,6 +13165,7 @@ function calculateFantasyTeamPoints(teamState) {
                 rPts = isComplete ? getLineupScoreInRace(lineup, race) : 0;
             }
         } else {
+            // For other races (Belgium, Singapore, etc.), use the round lineup snapshot if exists, or current lineup
             const lineup = teamState.roundLineups[key] || {
                 driver1: teamState.driver1,
                 driver2: teamState.driver2,
@@ -13093,6 +13393,11 @@ async function saveFantasyTeamToStorage() {
         const userKey = cleanDocId 
             ? ("ffc_fantasy_team_" + cleanDocId) 
             : FANTASY_LOCAL_STORAGE_KEY;
+
+        // Safeguard historical roundLineups: ensure previous completed rounds remain frozen
+        if (!ffcFantasyState.roundLineups) {
+            ffcFantasyState.roundLineups = {};
+        }
 
         const dataToSave = {
             teamName: ffcFantasyState.teamName,
