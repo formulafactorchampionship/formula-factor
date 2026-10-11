@@ -3336,21 +3336,30 @@ const defaultRaceResults = {
         round: "ROUND 12",
         title: "SPA-FRANCORCHAMPS",
         location: "SPA · BELGIUM",
-        date: "08 OCT",
-        status: "NEXT RACE",
-        winner: "TBA",
-        pole: "TBA",
-        fastest: "TBA",
-        driverDay: "TBA",
-        drivers: []
+        date: "11 OCT",
+        status: "COMPLETED",
+        winner: "Muntii",
+        pole: "Muntii · 1:45.031",
+        fastest: "Suforr · 1:46.064",
+        driverDay: "Dericcc",
+        drivers: [
+            { pos: 1, driver: "Muntii", team: "Red Bull", grid: 2, status: "FINISHED" },
+            { pos: 2, driver: "Dericcc", team: "Virgin", grid: 6, status: "FINISHED" },
+            { pos: 3, driver: "Dieguiosk", team: "HRT", grid: 3, status: "FINISHED" },
+            { pos: 4, driver: "Victor", team: "McLaren", grid: 4, status: "FINISHED" },
+            { pos: 5, driver: "Suforr", team: "Mercedes", grid: 1, status: "DNF" },
+            { pos: 6, driver: "Nando_FA14", team: "HRT", grid: 7, status: "DNF" },
+            { pos: 7, driver: "TheWereGH", team: "Sauber", grid: 5, status: "DNF" },
+            { pos: 8, driver: "Sebinho", team: "Renault", grid: 8, status: "DNS" }
+        ]
     },
 
     singapore: {
         round: "ROUND 13",
         title: "SINGAPORE",
         location: "MARINA BAY · SINGAPORE",
-        date: "TBA",
-        status: "UPCOMING",
+        date: "18 OCT",
+        status: "NEXT RACE",
         winner: "TBA",
         pole: "TBA",
         fastest: "TBA",
@@ -3400,8 +3409,8 @@ const seasonRacesMeta = {
     hockenheim: { round: "ROUND 09", title: "HOCKENHEIM", location: "HOCKENHEIMRING · GERMANY", date: "13 SEP", replayUrl: "https://www.youtube.com/watch?v=eU1ciNDcuKg" },
     nurburgring: { round: "ROUND 10", title: "NÜRBURGRING GP", location: "NÜRBURGRING · EUROPE", date: "20 SEP", replayUrl: "https://www.youtube.com/watch?v=WOl7kH5ac8A" },
     hungary: { round: "ROUND 11", title: "HUNGARORING", location: "BUDAPEST · HUNGARY", date: "27 SEP", replayUrl: "https://www.youtube.com/watch?v=kgdyds8paqQ" },
-    belgium: { round: "ROUND 12", title: "SPA-FRANCORCHAMPS", location: "SPA · BELGIUM", date: "04 OCT" },
-    singapore: { round: "ROUND 13", title: "SINGAPORE", location: "MARINA BAY · SINGAPORE", date: "11 OCT" },
+    belgium: { round: "ROUND 12", title: "SPA-FRANCORCHAMPS", location: "SPA · BELGIUM", date: "11 OCT" },
+    singapore: { round: "ROUND 13", title: "SINGAPORE", location: "MARINA BAY · SINGAPORE", date: "18 OCT" },
     cota: { round: "ROUND 14", title: "COTA", location: "AUSTIN · USA", date: "18 OCT" },
     brazil: { round: "ROUND 15", title: "BRAZIL", location: "INTERLAGOS · BRAZIL", date: "25 OCT" }
 };
@@ -4056,42 +4065,42 @@ function isUserAdmin(user) {
 
 // Default configuration datasets
 const defaultNextRace = {
-    round: "ROUND 10",
-    title: "NÜRBURGRING GP",
-    location: "NÜRBURGRING · EUROPE",
-    dateText: "20 SEP · 17:00 CEST",
-    dateTime: "2026-09-20T17:00",
-    weatherTemp: "22°C",
-    weatherCondition: "sunny"
+    round: "ROUND 13",
+    title: "SINGAPORE GP",
+    location: "MARINA BAY · SINGAPORE",
+    dateText: "18 OCT · 17:00 CEST",
+    dateTime: "2026-10-18T17:00",
+    weatherTemp: "29°C",
+    weatherCondition: "cloudy"
 };
 
 const defaultStandings = [
-    { pos: 1, driver: "Dieguiosk", team: "HRT", pts: 153 },
-    { pos: 2, driver: "Muntii", team: "Red Bull", pts: 125 },
+    { pos: 1, driver: "Dieguiosk", team: "HRT", pts: 168 },
+    { pos: 2, driver: "Muntii", team: "Red Bull", pts: 150 },
     { pos: 3, driver: "Novitaa", team: "Red Bull", pts: 88 },
     { pos: 4, driver: "BigTheo", team: "Ferrari", pts: 64 },
-    { pos: 5, driver: "Suforr", team: "Mercedes", pts: 53 },
+    { pos: 5, driver: "Suforr", team: "Mercedes", pts: 64 },
     { pos: 6, driver: "IvánR", team: "HRT", pts: 52 },
-    { pos: 7, driver: "Sbinn", team: "Toro Rosso", pts: 35 },
-    { pos: 8, driver: "Licha", team: "Ferrari", pts: 33 },
-    { pos: 9, driver: "TheWereGH", team: "Sauber", pts: 32 },
-    { pos: 10, driver: "Victor", team: "McLaren", pts: 22 },
-    { pos: 11, driver: "Gold", team: "Williams", pts: 20 },
-    { pos: 12, driver: "Viktolo", team: "Toro Rosso", pts: 20 },
-    { pos: 13, driver: "Farlonso", team: "Lotus", pts: 20 },
-    { pos: 14, driver: "AMF", team: "Williams", pts: 20 },
-    { pos: 15, driver: "ElMamut", team: "Virgin", pts: 18 },
-    { pos: 16, driver: "Baena", team: "Mercedes", pts: 16 },
-    { pos: 17, driver: "Sir Galactic", team: "Renault", pts: 16 },
-    { pos: 18, driver: "DiegoSniper69", team: "Sauber", pts: 15 },
-    { pos: 19, driver: "Erik Brenna", team: "Force India", pts: 15 },
-    { pos: 20, driver: "CarlosUre", team: "Force India", pts: 15 },
-    { pos: 21, driver: "Dericcc", team: "Virgin", pts: 13 },
-    { pos: 22, driver: "Lil", team: "Lotus", pts: 12 },
-    { pos: 23, driver: "Kri", team: "Renault", pts: 12 },
-    { pos: 24, driver: "Novi", team: "Ferrari", pts: 11 },
-    { pos: 25, driver: "Daidaiiro", team: "Lotus", pts: 9 },
-    { pos: 26, driver: "Nando_FA14", team: "HRT", pts: 8 },
+    { pos: 7, driver: "TheWereGH", team: "Sauber", pts: 38 },
+    { pos: 8, driver: "Sbinn", team: "Toro Rosso", pts: 35 },
+    { pos: 9, driver: "Victor", team: "McLaren", pts: 34 },
+    { pos: 10, driver: "Licha", team: "Ferrari", pts: 33 },
+    { pos: 11, driver: "Dericcc", team: "Virgin", pts: 31 },
+    { pos: 12, driver: "Gold", team: "Williams", pts: 20 },
+    { pos: 13, driver: "Viktolo", team: "Toro Rosso", pts: 20 },
+    { pos: 14, driver: "Farlonso", team: "Lotus", pts: 20 },
+    { pos: 15, driver: "AMF", team: "Williams", pts: 20 },
+    { pos: 16, driver: "ElMamut", team: "Virgin", pts: 18 },
+    { pos: 17, driver: "Nando_FA14", team: "HRT", pts: 16 },
+    { pos: 18, driver: "Baena", team: "Mercedes", pts: 16 },
+    { pos: 19, driver: "Sir Galactic", team: "Renault", pts: 16 },
+    { pos: 20, driver: "DiegoSniper69", team: "Sauber", pts: 15 },
+    { pos: 21, driver: "Erik Brenna", team: "Force India", pts: 15 },
+    { pos: 22, driver: "CarlosUre", team: "Force India", pts: 15 },
+    { pos: 23, driver: "Lil", team: "Lotus", pts: 12 },
+    { pos: 24, driver: "Kri", team: "Renault", pts: 12 },
+    { pos: 25, driver: "Novi", team: "Ferrari", pts: 11 },
+    { pos: 26, driver: "Daidaiiro", team: "Lotus", pts: 9 },
     { pos: 27, driver: "Krisdemurr", team: "Williams", pts: 8 },
     { pos: 28, driver: "Rafale", team: "McLaren", pts: 6 },
     { pos: 29, driver: "TheAgus60", team: "McLaren", pts: 5 },
@@ -8489,7 +8498,10 @@ function initFirestoreListeners() {
         snapshot.forEach(docSnap => {
             existingKeys.add(docSnap.id);
             const rData = docSnap.data();
-            if ((docSnap.id === "nurburgring" || docSnap.id === "hungary") && (!rData || rData.status !== "COMPLETED" || !Array.isArray(rData.drivers) || rData.drivers.length === 0)) {
+            if ((docSnap.id === "nurburgring" || docSnap.id === "hungary" || docSnap.id === "belgium") && (!rData || rData.status !== "COMPLETED" || !Array.isArray(rData.drivers) || rData.drivers.length === 0)) {
+                raceResults[docSnap.id] = { ...defaultRaceResults[docSnap.id] };
+                hasLegacyRaceData = true;
+            } else if (docSnap.id === "singapore" && rData && rData.status !== "NEXT RACE") {
                 raceResults[docSnap.id] = { ...defaultRaceResults[docSnap.id] };
                 hasLegacyRaceData = true;
             } else {
@@ -13067,25 +13079,25 @@ window.OFFICIAL_ROUND_10_POINTS = OFFICIAL_ROUND_10_POINTS;
 // Master historical snapshot of Round 10 & Round 11 official fantasy points
 // This protects all earned points across past rounds, allowing drivers to be changed for future rounds without modifying previous results.
 var OFFICIAL_PAST_ROUNDS_SCORES = {
-    "adriangalindomele_gmail_com": {"managerName":"Galindo📸","teamName":"Netanyahu FFC Team","totalBeforeRound12":136,"roundScores":{"nurburgring":73,"hungary":63}},
-    "alexvanocastaneda_gmail_com": {"managerName":"MUNTISEXO33","teamName":"ACRR","totalBeforeRound12":94,"roundScores":{"nurburgring":69,"hungary":25}},
-    "biljjana_hotmail_com": {"managerName":"Sebinho","teamName":"Mi Escudería FFC","totalBeforeRound12":0,"roundScores":{"nurburgring":0,"hungary":51}},
-    "dericktonly_gmail_com": {"managerName":"IWantMozaR5","teamName":"Mi Escudería FFC","totalBeforeRound12":0,"roundScores":{"nurburgring":0,"hungary":0}},
-    "eduardoxlopez2_gmail_com": {"managerName":"Eduardo Lopez","teamName":"AlcRacing","totalBeforeRound12":121,"roundScores":{"nurburgring":85,"hungary":36}},
-    "enzo_castillo_lomb_gmail_com": {"managerName":"Hermes","teamName":"hermes israel","totalBeforeRound12":108,"roundScores":{"nurburgring":71,"hungary":37}},
-    "formulafactorchampionship_gmail_com": {"managerName":"Formula Factor Championship","teamName":"Scuderia Driezz","totalBeforeRound12":126,"roundScores":{"nurburgring":66,"hungary":60}},
-    "formularinuno8_gmail_com": {"managerName":"Dieguiosk","teamName":"chandal gris de 85 euros","totalBeforeRound12":136,"roundScores":{"nurburgring":76,"hungary":60}},
-    "franciscoalbarran1726_gmail_com": {"managerName":"Fran_1726","teamName":"Cipote FM Racing Team","totalBeforeRound12":76,"roundScores":{"nurburgring":76,"hungary":51}},
-    "gaelperezcovelo2011_gmail_com": {"managerName":"Farlonso","teamName":"Femboys","totalBeforeRound12":101,"roundScores":{"nurburgring":62,"hungary":39}},
-    "hugotapgar27_gmail_com": {"managerName":"Hijoputapro","teamName":"Mi Escudería FFC","totalBeforeRound12":56,"roundScores":{"nurburgring":56,"hungary":50}},
-    "ivanrodriguezpereira2006_gmail_com": {"managerName":"IvánR","teamName":"Anchoa EuroFormula Open Team","totalBeforeRound12":87,"roundScores":{"nurburgring":70,"hungary":17}},
-    "javicho610_gmail_com": {"managerName":"JvR","teamName":"JvR FFC Team","totalBeforeRound12":38,"roundScores":{"nurburgring":18,"hungary":20}},
-    "misadiarte18_gmail_com": {"managerName":"Nova","teamName":"Mi Escudería RETARDA","totalBeforeRound12":38,"roundScores":{"nurburgring":38,"hungary":18}},
-    "naggetepic_gmail_com": {"managerName":"Victor","teamName":"Swiss Racing Team","totalBeforeRound12":75,"roundScores":{"nurburgring":51,"hungary":24}},
-    "nektasjez33xd_proton_me": {"managerName":"river","teamName":"prime williams","totalBeforeRound12":98,"roundScores":{"nurburgring":71,"hungary":27}},
-    "osoriaferrero_gmail_com": {"managerName":"Oscar Soria","teamName":"OS Racing","totalBeforeRound12":61,"roundScores":{"nurburgring":60,"hungary":1}},
-    "suforr2005_gmail_com": {"managerName":"suforr","teamName":"sexo","totalBeforeRound12":117,"roundScores":{"nurburgring":75,"hungary":42}},
-    "theagus60_gmail_com": {"managerName":"Theagus60","teamName":"QVuelvaFranco","totalBeforeRound12":87,"roundScores":{"nurburgring":44,"hungary":43}}
+    "adriangalindomele_gmail_com": {"managerName":"Galindo📸","teamName":"Netanyahu FFC Team","totalBeforeRound13":189,"roundScores":{"nurburgring":73,"hungary":63,"belgium":53}},
+    "alexvanocastaneda_gmail_com": {"managerName":"MUNTISEXO33","teamName":"ACRR","totalBeforeRound13":167,"roundScores":{"nurburgring":69,"hungary":25,"belgium":73}},
+    "biljjana_hotmail_com": {"managerName":"Sebinho","teamName":"Mi Escudería FFC","totalBeforeRound13":92,"roundScores":{"nurburgring":0,"hungary":51,"belgium":41}},
+    "dericktonly_gmail_com": {"managerName":"IWantMozaR5","teamName":"Mi Escudería FFC","totalBeforeRound13":18,"roundScores":{"nurburgring":0,"hungary":0,"belgium":18}},
+    "eduardoxlopez2_gmail_com": {"managerName":"Eduardo Lopez","teamName":"AlcRacing","totalBeforeRound13":147,"roundScores":{"nurburgring":85,"hungary":36,"belgium":26}},
+    "enzo_castillo_lomb_gmail_com": {"managerName":"Hermes","teamName":"hermes israel","totalBeforeRound13":145,"roundScores":{"nurburgring":71,"hungary":37,"belgium":37}},
+    "formulafactorchampionship_gmail_com": {"managerName":"Formula Factor Championship","teamName":"Scuderia Driezz","totalBeforeRound13":173,"roundScores":{"nurburgring":66,"hungary":60,"belgium":47}},
+    "formularinuno8_gmail_com": {"managerName":"Dieguiosk","teamName":"chandal gris de 85 euros","totalBeforeRound13":178,"roundScores":{"nurburgring":76,"hungary":60,"belgium":42}},
+    "franciscoalbarran1726_gmail_com": {"managerName":"Fran_1726","teamName":"Cipote FM Racing Team","totalBeforeRound13":193,"roundScores":{"nurburgring":76,"hungary":51,"belgium":66}},
+    "gaelperezcovelo2011_gmail_com": {"managerName":"Farlonso","teamName":"Femboys","totalBeforeRound13":112,"roundScores":{"nurburgring":62,"hungary":39,"belgium":11}},
+    "hugotapgar27_gmail_com": {"managerName":"Hijoputapro","teamName":"Mi Escudería FFC","totalBeforeRound13":161,"roundScores":{"nurburgring":56,"hungary":50,"belgium":55}},
+    "ivanrodriguezpereira2006_gmail_com": {"managerName":"IvánR","teamName":"Anchoa EuroFormula Open Team","totalBeforeRound13":140,"roundScores":{"nurburgring":70,"hungary":17,"belgium":53}},
+    "javicho610_gmail_com": {"managerName":"JvR","teamName":"JvR FFC Team","totalBeforeRound13":60,"roundScores":{"nurburgring":18,"hungary":20,"belgium":22}},
+    "misadiarte18_gmail_com": {"managerName":"Nova","teamName":"Mi Escudería RETARDA","totalBeforeRound13":81,"roundScores":{"nurburgring":38,"hungary":18,"belgium":25}},
+    "naggetepic_gmail_com": {"managerName":"Victor","teamName":"Swiss Racing Team","totalBeforeRound13":121,"roundScores":{"nurburgring":51,"hungary":24,"belgium":46}},
+    "nektasjez33xd_proton_me": {"managerName":"river","teamName":"prime williams","totalBeforeRound13":157,"roundScores":{"nurburgring":71,"hungary":27,"belgium":59}},
+    "osoriaferrero_gmail_com": {"managerName":"Oscar Soria","teamName":"OS Racing","totalBeforeRound13":122,"roundScores":{"nurburgring":60,"hungary":1,"belgium":61}},
+    "suforr2005_gmail_com": {"managerName":"suforr","teamName":"sexo","totalBeforeRound13":168,"roundScores":{"nurburgring":75,"hungary":42,"belgium":51}},
+    "theagus60_gmail_com": {"managerName":"Theagus60","teamName":"QVuelvaFranco","totalBeforeRound13":123,"roundScores":{"nurburgring":44,"hungary":43,"belgium":36}},
 };
 window.OFFICIAL_PAST_ROUNDS_SCORES = OFFICIAL_PAST_ROUNDS_SCORES;
 

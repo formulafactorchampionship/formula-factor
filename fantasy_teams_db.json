@@ -2,7 +2,7 @@
   {
     "id": "adriangalindomele_gmail_com",
     "managerName": "Galindo📸",
-    "totalPoints": 136,
+    "totalPoints": 189,
     "driver3": "Sbinn",
     "driver1": "Dieguiosk",
     "team": "McLaren",
@@ -13,6 +13,20 @@
         "driver2": "Suforr",
         "driver1": "Dieguiosk",
         "team": "McLaren"
+      },
+      "belgium": {
+        "driver1": "Dieguiosk",
+        "driver2": "Suforr",
+        "driver3": "Sbinn",
+        "team": "McLaren",
+        "turboDriver": "Dieguiosk"
+      },
+      "nurburgring": {
+        "driver1": "Dieguiosk",
+        "driver2": "Suforr",
+        "driver3": "Sbinn",
+        "team": "McLaren",
+        "turboDriver": "Dieguiosk"
       }
     },
     "teamValue": 73.3,
@@ -42,10 +56,24 @@
         "driver1": "Muntii",
         "team": "McLaren",
         "turboDriver": "Muntii"
+      },
+      "belgium": {
+        "driver1": "Muntii",
+        "driver2": "TheAgus60",
+        "driver3": "Suforr",
+        "team": "McLaren",
+        "turboDriver": "Muntii"
+      },
+      "nurburgring": {
+        "driver1": "Muntii",
+        "driver2": "TheAgus60",
+        "driver3": "Suforr",
+        "team": "McLaren",
+        "turboDriver": "Muntii"
       }
     },
     "managerName": "MUNTISEXO33",
-    "totalPoints": 94,
+    "totalPoints": 167,
     "driver1": "Muntii",
     "updatedAt": "2026-09-18T14:53:30.337Z",
     "roundPoints": {},
@@ -53,7 +81,7 @@
   },
   {
     "id": "biljjana_hotmail_com",
-    "totalPoints": 0,
+    "totalPoints": 92,
     "managerName": "Sebinho",
     "email": "biljjana@hotmail.com",
     "driver2": "Suforr",
@@ -67,6 +95,13 @@
         "driver3": null
       },
       "hungary": {
+        "driver1": "Dieguiosk",
+        "driver2": "Suforr",
+        "driver3": "Novitaa",
+        "team": null,
+        "turboDriver": "Dieguiosk"
+      },
+      "belgium": {
         "driver1": "Dieguiosk",
         "driver2": "Suforr",
         "driver3": "Novitaa",
@@ -93,7 +128,7 @@
     "teamName": "Mi Escudería FFC",
     "userId": "dericktonly_gmail_com",
     "managerName": "IWantMozaR5",
-    "totalPoints": 0,
+    "totalPoints": 18,
     "turboDriver": null,
     "teamValue": 17.7,
     "roundLineups": {
@@ -105,6 +140,13 @@
         "turboDriver": null
       },
       "hungary": {
+        "driver1": null,
+        "driver2": null,
+        "driver3": null,
+        "team": "Virgin",
+        "turboDriver": null
+      },
+      "belgium": {
         "driver1": null,
         "driver2": null,
         "driver3": null,
@@ -126,11 +168,25 @@
         "driver3": "Dieguiosk",
         "driver1": "Lil",
         "team": "Lotus"
+      },
+      "belgium": {
+        "driver1": "Lil",
+        "driver2": "Suforr",
+        "driver3": "Dieguiosk",
+        "team": "Lotus",
+        "turboDriver": "Lil"
+      },
+      "nurburgring": {
+        "driver1": "Lil",
+        "driver2": "Suforr",
+        "driver3": "Dieguiosk",
+        "team": "Lotus",
+        "turboDriver": "Lil"
       }
     },
     "teamValue": 72.3,
     "userId": "eduardoxlopez2_gmail_com",
-    "totalPoints": 121,
+    "totalPoints": 147,
     "managerName": "Eduardo Lopez",
     "driver2": "Suforr",
     "email": "eduardoxlopez2@gmail.com",
@@ -164,12 +220,19 @@
         "turboDriver": "Suforr",
         "team": "Red Bull",
         "driver1": "TheWereGH"
+      },
+      "belgium": {
+        "driver1": "Dieguiosk",
+        "driver2": "Suforr",
+        "driver3": "Lil",
+        "team": "Lotus",
+        "turboDriver": "Suforr"
       }
     },
     "email": "enzo.castillo.lomb@gmail.com",
     "teamName": "hermes israel",
     "team": "Lotus",
-    "totalPoints": 108,
+    "totalPoints": 145,
     "managerName": "Hermes",
     "driver2": "Suforr",
     "userId": "enzo_castillo_lomb_gmail_com",
@@ -184,7 +247,7 @@
     "driver1": "TheWereGH",
     "team": "Lotus",
     "teamValue": 74.9,
-    "totalPoints": 126,
+    "totalPoints": 173,
     "managerName": "Formula Factor Championship",
     "userId": "formulafactorchampionship_gmail_com",
     "driver2": "Suforr",
@@ -204,6 +267,13 @@
         "driver1": "RikiDorsa",
         "driver2": "Novitaa",
         "driver3": "Dieguiosk"
+      },
+      "belgium": {
+        "driver1": "TheWereGH",
+        "driver2": "Suforr",
+        "driver3": "Dieguiosk",
+        "team": "Lotus",
+        "turboDriver": "Dieguiosk"
       }
     },
     "roundPoints": {},
@@ -213,7 +283,7 @@
     "id": "formularinuno8_gmail_com",
     "driver3": "Victor",
     "managerName": "Dieguiosk",
-    "totalPoints": 136,
+    "totalPoints": 178,
     "teamName": "chandal gris de 85 euros",
     "team": "Lotus",
     "userId": "formularinuno8_gmail_com",
@@ -227,6 +297,20 @@
         "turboDriver": "Dieguiosk",
         "driver3": "Victor",
         "driver1": "Dieguiosk"
+      },
+      "belgium": {
+        "driver1": "Dieguiosk",
+        "driver2": "Lil",
+        "driver3": "Victor",
+        "team": "Lotus",
+        "turboDriver": "Dieguiosk"
+      },
+      "nurburgring": {
+        "driver1": "Dieguiosk",
+        "driver2": "Lil",
+        "driver3": "Victor",
+        "team": "Lotus",
+        "turboDriver": "Dieguiosk"
       }
     },
     "driver2": "Lil",
@@ -247,10 +331,24 @@
         "driver3": "Suforr",
         "team": null,
         "turboDriver": "Dieguiosk"
+      },
+      "belgium": {
+        "driver1": "Dieguiosk",
+        "driver2": "Muntii",
+        "driver3": "Suforr",
+        "team": null,
+        "turboDriver": "Dieguiosk"
+      },
+      "nurburgring": {
+        "driver1": "Dieguiosk",
+        "driver2": "Muntii",
+        "driver3": "Suforr",
+        "team": null,
+        "turboDriver": "Dieguiosk"
       }
     },
     "managerName": "Fran_1726",
-    "totalPoints": 76,
+    "totalPoints": 193,
     "driver1": "Dieguiosk",
     "updatedAt": "2026-09-20T14:48:17.989Z",
     "turboDriver": "Dieguiosk",
@@ -266,7 +364,7 @@
     "userId": "gaelperezcovelo2011_gmail_com",
     "driver2": "Farlonso",
     "teamName": "Femboys",
-    "totalPoints": 101,
+    "totalPoints": 112,
     "managerName": "Farlonso",
     "teamValue": 70,
     "team": "Ferrari",
@@ -289,6 +387,13 @@
         "turboDriver": "Victor",
         "driver2": "Farlonso",
         "driver3": "Dieguiosk"
+      },
+      "belgium": {
+        "driver1": "Novitaa",
+        "driver2": "Farlonso",
+        "driver3": "Suforr",
+        "team": "Ferrari",
+        "turboDriver": "Farlonso"
       }
     },
     "roundPoints": {},
@@ -300,7 +405,7 @@
     "driver1": "Dieguiosk",
     "teamName": "Mi Escudería FFC",
     "driver2": null,
-    "totalPoints": 56,
+    "totalPoints": 161,
     "managerName": "Hijoputapro",
     "turboDriver": "Dieguiosk",
     "email": "hugotapgar27@gmail.com",
@@ -310,6 +415,20 @@
     "teamValue": 69.7,
     "roundLineups": {
       "hungary": {
+        "driver1": "Dieguiosk",
+        "driver2": null,
+        "driver3": null,
+        "team": "Red Bull",
+        "turboDriver": "Dieguiosk"
+      },
+      "belgium": {
+        "driver1": "Dieguiosk",
+        "driver2": null,
+        "driver3": null,
+        "team": "Red Bull",
+        "turboDriver": "Dieguiosk"
+      },
+      "nurburgring": {
         "driver1": "Dieguiosk",
         "driver2": null,
         "driver3": null,
@@ -337,6 +456,13 @@
         "driver3": "VGXEmi",
         "driver1": "Suforr",
         "turboDriver": "Suforr"
+      },
+      "belgium": {
+        "driver1": "Suforr",
+        "driver2": "Lil",
+        "driver3": "TheWereGH",
+        "team": "Red Bull",
+        "turboDriver": "Suforr"
       }
     },
     "updatedAt": "2026-09-20T16:39:10.569Z",
@@ -348,7 +474,7 @@
     "driver3": "TheWereGH",
     "team": "Red Bull",
     "driver1": "Suforr",
-    "totalPoints": 87,
+    "totalPoints": 140,
     "managerName": "IvánR",
     "roundPoints": {},
     "frozenTotalBeforeBelgium": 87
@@ -370,6 +496,13 @@
         "team": "Ferrari",
         "driver2": "BigTheo",
         "driver3": "Sbinn"
+      },
+      "belgium": {
+        "driver1": "Suforr",
+        "driver2": "BigTheo",
+        "driver3": "Sbinn",
+        "team": "Ferrari",
+        "turboDriver": "Suforr"
       }
     },
     "userId": "javicho610_gmail_com",
@@ -378,7 +511,7 @@
     "driver2": "BigTheo",
     "teamName": "JvR FFC Team",
     "email": "javicho610@gmail.com",
-    "totalPoints": 38,
+    "totalPoints": 60,
     "managerName": "JvR",
     "driver3": "Sbinn",
     "driver1": "Suforr",
@@ -398,10 +531,24 @@
     "driver3": null,
     "updatedAt": "2026-09-18T14:49:23.379Z",
     "team": "Red Bull",
-    "totalPoints": 38,
+    "totalPoints": 81,
     "managerName": "Nova",
     "roundLineups": {
       "hungary": {
+        "driver1": "Novitaa",
+        "driver2": "Licha",
+        "driver3": null,
+        "team": "Red Bull",
+        "turboDriver": "Novitaa"
+      },
+      "belgium": {
+        "driver1": "Novitaa",
+        "driver2": "Licha",
+        "driver3": null,
+        "team": "Red Bull",
+        "turboDriver": "Novitaa"
+      },
+      "nurburgring": {
         "driver1": "Novitaa",
         "driver2": "Licha",
         "driver3": null,
@@ -415,7 +562,7 @@
   {
     "id": "naggetepic_gmail_com",
     "managerName": "Victor",
-    "totalPoints": 75,
+    "totalPoints": 121,
     "driver3": "Farlonso",
     "teamValue": 52.7,
     "updatedAt": "2026-09-20T18:33:03.673Z",
@@ -434,6 +581,13 @@
         "turboDriver": "Suforr",
         "driver3": "Farlonso",
         "driver2": "Victor"
+      },
+      "belgium": {
+        "driver1": "Suforr",
+        "driver2": "Victor",
+        "driver3": "Farlonso",
+        "team": "McLaren",
+        "turboDriver": "Suforr"
       }
     },
     "team": "McLaren",
@@ -451,7 +605,7 @@
     "updatedAt": "2026-10-03T11:30:57.661Z",
     "team": "Sauber",
     "email": "nektasjez33xd@proton.me",
-    "totalPoints": 98,
+    "totalPoints": 157,
     "managerName": "river",
     "userId": "nektasjez33xd_proton_me",
     "driver3": "Victor",
@@ -466,6 +620,20 @@
         "driver3": "Victor",
         "driver2": "Suforr",
         "team": "Williams"
+      },
+      "belgium": {
+        "driver1": "Dieguiosk",
+        "driver2": "Suforr",
+        "driver3": "Victor",
+        "team": "Sauber",
+        "turboDriver": "Dieguiosk"
+      },
+      "nurburgring": {
+        "driver1": "Dieguiosk",
+        "driver2": "Suforr",
+        "driver3": "Victor",
+        "team": "Sauber",
+        "turboDriver": "Dieguiosk"
       }
     },
     "roundPoints": {},
@@ -477,7 +645,7 @@
     "teamValue": 75,
     "teamName": "OS Racing",
     "driver2": "Novitaa",
-    "totalPoints": 61,
+    "totalPoints": 122,
     "managerName": "Oscar Soria",
     "userId": "osoriaferrero_gmail_com",
     "updatedAt": "2026-09-19T09:13:44.728Z",
@@ -488,6 +656,20 @@
         "driver2": "Novitaa",
         "turboDriver": "Muntii",
         "driver3": "Rafale"
+      },
+      "belgium": {
+        "driver1": "Muntii",
+        "driver2": "Novitaa",
+        "driver3": "Rafale",
+        "team": "Mercedes",
+        "turboDriver": "Muntii"
+      },
+      "nurburgring": {
+        "driver1": "Muntii",
+        "driver2": "Novitaa",
+        "driver3": "Rafale",
+        "team": "Mercedes",
+        "turboDriver": "Muntii"
       }
     },
     "driver1": "Muntii",
@@ -503,7 +685,7 @@
     "teamValue": 73.4,
     "email": "suforr2005@gmail.com",
     "driver1": "Suforr",
-    "totalPoints": 117,
+    "totalPoints": 168,
     "managerName": "suforr",
     "driver3": "TheWereGH",
     "roundLineups": {
@@ -520,6 +702,13 @@
         "turboDriver": "Suforr",
         "driver2": "Lil",
         "driver3": "TheWereGH"
+      },
+      "belgium": {
+        "driver1": "Suforr",
+        "driver2": "Lil",
+        "driver3": "TheWereGH",
+        "team": "HRT",
+        "turboDriver": "Suforr"
       }
     },
     "updatedAt": "2026-09-20T17:11:40.296Z",
@@ -538,7 +727,7 @@
     "teamValue": 73.6,
     "updatedAt": "2026-09-18T14:35:33.806Z",
     "managerName": "Theagus60",
-    "totalPoints": 87,
+    "totalPoints": 123,
     "driver3": "Suforr",
     "turboDriver": "TheAgus60",
     "email": "theagus60@gmail.com",
@@ -549,6 +738,20 @@
         "team": "Ferrari",
         "driver3": "Suforr",
         "driver2": "Muntii",
+        "turboDriver": "TheAgus60"
+      },
+      "belgium": {
+        "driver1": "TheAgus60",
+        "driver2": "Muntii",
+        "driver3": "Suforr",
+        "team": "Ferrari",
+        "turboDriver": "TheAgus60"
+      },
+      "nurburgring": {
+        "driver1": "TheAgus60",
+        "driver2": "Muntii",
+        "driver3": "Suforr",
+        "team": "Ferrari",
         "turboDriver": "TheAgus60"
       }
     },
