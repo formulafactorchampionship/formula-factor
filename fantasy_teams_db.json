@@ -21,7 +21,9 @@
     "teamName": "Netanyahu FFC Team",
     "email": "adriangalindomele@gmail.com",
     "userId": "adriangalindomele_gmail_com",
-    "driver2": "Suforr"
+    "driver2": "Suforr",
+    "roundPoints": {},
+    "frozenTotalBeforeBelgium": 136
   },
   {
     "id": "alexvanocastaneda_gmail_com",
@@ -45,7 +47,9 @@
     "managerName": "MUNTISEXO33",
     "totalPoints": 94,
     "driver1": "Muntii",
-    "updatedAt": "2026-09-18T14:53:30.337Z"
+    "updatedAt": "2026-09-18T14:53:30.337Z",
+    "roundPoints": {},
+    "frozenTotalBeforeBelgium": 94
   },
   {
     "id": "biljjana_hotmail_com",
@@ -61,6 +65,13 @@
         "team": null,
         "driver2": null,
         "driver3": null
+      },
+      "hungary": {
+        "driver1": "Dieguiosk",
+        "driver2": "Suforr",
+        "driver3": "Novitaa",
+        "team": null,
+        "turboDriver": "Dieguiosk"
       }
     },
     "updatedAt": "2026-09-20T20:04:05.444Z",
@@ -69,7 +80,9 @@
     "driver1": "Dieguiosk",
     "teamName": "Mi Escudería FFC",
     "driver3": "Novitaa",
-    "turboDriver": "Dieguiosk"
+    "turboDriver": "Dieguiosk",
+    "roundPoints": {},
+    "frozenTotalBeforeBelgium": 0
   },
   {
     "id": "dericktonly_gmail_com",
@@ -90,10 +103,19 @@
         "driver1": null,
         "team": null,
         "turboDriver": null
+      },
+      "hungary": {
+        "driver1": null,
+        "driver2": null,
+        "driver3": null,
+        "team": "Virgin",
+        "turboDriver": null
       }
     },
     "updatedAt": "2026-09-20T16:52:13.310Z",
-    "driver2": null
+    "driver2": null,
+    "roundPoints": {},
+    "frozenTotalBeforeBelgium": 0
   },
   {
     "id": "eduardoxlopez2_gmail_com",
@@ -117,7 +139,9 @@
     "driver3": "Dieguiosk",
     "teamName": "AlcRacing",
     "turboDriver": "Lil",
-    "driver1": "Lil"
+    "driver1": "Lil",
+    "roundPoints": {},
+    "frozenTotalBeforeBelgium": 121
   },
   {
     "id": "enzo_castillo_lomb_gmail_com",
@@ -148,7 +172,9 @@
     "totalPoints": 108,
     "managerName": "Hermes",
     "driver2": "Suforr",
-    "userId": "enzo_castillo_lomb_gmail_com"
+    "userId": "enzo_castillo_lomb_gmail_com",
+    "roundPoints": {},
+    "frozenTotalBeforeBelgium": 108
   },
   {
     "id": "formulafactorchampionship_gmail_com",
@@ -179,7 +205,9 @@
         "driver2": "Novitaa",
         "driver3": "Dieguiosk"
       }
-    }
+    },
+    "roundPoints": {},
+    "frozenTotalBeforeBelgium": 126
   },
   {
     "id": "formularinuno8_gmail_com",
@@ -203,14 +231,24 @@
     },
     "driver2": "Lil",
     "teamValue": 67.9,
-    "turboDriver": "Dieguiosk"
+    "turboDriver": "Dieguiosk",
+    "roundPoints": {},
+    "frozenTotalBeforeBelgium": 136
   },
   {
     "id": "franciscoalbarran1726_gmail_com",
     "email": "franciscoalbarran1726@gmail.com",
     "driver2": "Muntii",
     "userId": "franciscoalbarran1726_gmail_com",
-    "roundLineups": {},
+    "roundLineups": {
+      "hungary": {
+        "driver1": "Dieguiosk",
+        "driver2": "Muntii",
+        "driver3": "Suforr",
+        "team": null,
+        "turboDriver": "Dieguiosk"
+      }
+    },
     "managerName": "Fran_1726",
     "totalPoints": 76,
     "driver1": "Dieguiosk",
@@ -219,7 +257,9 @@
     "teamName": "Cipote FM Racing Team",
     "team": null,
     "driver3": "Suforr",
-    "teamValue": 70.7
+    "teamValue": 70.7,
+    "roundPoints": {},
+    "frozenTotalBeforeBelgium": 76
   },
   {
     "id": "gaelperezcovelo2011_gmail_com",
@@ -250,7 +290,9 @@
         "driver2": "Farlonso",
         "driver3": "Dieguiosk"
       }
-    }
+    },
+    "roundPoints": {},
+    "frozenTotalBeforeBelgium": 101
   },
   {
     "id": "hugotapgar27_gmail_com",
@@ -265,7 +307,18 @@
     "userId": "hugotapgar27_gmail_com",
     "driver3": null,
     "team": "Red Bull",
-    "teamValue": 69.7
+    "teamValue": 69.7,
+    "roundLineups": {
+      "hungary": {
+        "driver1": "Dieguiosk",
+        "driver2": null,
+        "driver3": null,
+        "team": "Red Bull",
+        "turboDriver": "Dieguiosk"
+      }
+    },
+    "roundPoints": {},
+    "frozenTotalBeforeBelgium": 56
   },
   {
     "id": "ivanrodriguezpereira2006_gmail_com",
@@ -296,7 +349,9 @@
     "team": "Red Bull",
     "driver1": "Suforr",
     "totalPoints": 87,
-    "managerName": "IvánR"
+    "managerName": "IvánR",
+    "roundPoints": {},
+    "frozenTotalBeforeBelgium": 87
   },
   {
     "id": "javicho610_gmail_com",
@@ -327,7 +382,9 @@
     "managerName": "JvR",
     "driver3": "Sbinn",
     "driver1": "Suforr",
-    "team": "Ferrari"
+    "team": "Ferrari",
+    "roundPoints": {},
+    "frozenTotalBeforeBelgium": 38
   },
   {
     "id": "misadiarte18_gmail_com",
@@ -342,7 +399,18 @@
     "updatedAt": "2026-09-18T14:49:23.379Z",
     "team": "Red Bull",
     "totalPoints": 38,
-    "managerName": "Nova"
+    "managerName": "Nova",
+    "roundLineups": {
+      "hungary": {
+        "driver1": "Novitaa",
+        "driver2": "Licha",
+        "driver3": null,
+        "team": "Red Bull",
+        "turboDriver": "Novitaa"
+      }
+    },
+    "roundPoints": {},
+    "frozenTotalBeforeBelgium": 38
   },
   {
     "id": "naggetepic_gmail_com",
@@ -373,7 +441,9 @@
     "userId": "naggetepic_gmail_com",
     "email": "naggetepic@gmail.com",
     "driver2": "Victor",
-    "turboDriver": "Suforr"
+    "turboDriver": "Suforr",
+    "roundPoints": {},
+    "frozenTotalBeforeBelgium": 75
   },
   {
     "id": "nektasjez33xd_proton_me",
@@ -397,7 +467,9 @@
         "driver2": "Suforr",
         "team": "Williams"
       }
-    }
+    },
+    "roundPoints": {},
+    "frozenTotalBeforeBelgium": 98
   },
   {
     "id": "osoriaferrero_gmail_com",
@@ -421,7 +493,9 @@
     "driver1": "Muntii",
     "turboDriver": "Muntii",
     "team": "Mercedes",
-    "driver3": "Rafale"
+    "driver3": "Rafale",
+    "roundPoints": {},
+    "frozenTotalBeforeBelgium": 61
   },
   {
     "id": "suforr2005_gmail_com",
@@ -452,7 +526,9 @@
     "team": "HRT",
     "driver2": "Lil",
     "turboDriver": "Suforr",
-    "teamName": "sexo"
+    "teamName": "sexo",
+    "roundPoints": {},
+    "frozenTotalBeforeBelgium": 117
   },
   {
     "id": "theagus60_gmail_com",
@@ -476,6 +552,8 @@
         "turboDriver": "TheAgus60"
       }
     },
-    "userId": "theagus60_gmail_com"
+    "userId": "theagus60_gmail_com",
+    "roundPoints": {},
+    "frozenTotalBeforeBelgium": 87
   }
 ]

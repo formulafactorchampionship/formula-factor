@@ -12821,7 +12821,59 @@ var OFFICIAL_ROUND_10_POINTS = {
 };
 window.OFFICIAL_ROUND_10_POINTS = OFFICIAL_ROUND_10_POINTS;
 
+// Master historical snapshot of Round 10 & Round 11 official fantasy points
+// This protects all earned points across past rounds, allowing drivers to be changed for future rounds without modifying previous results.
+var OFFICIAL_PAST_ROUNDS_SCORES = {
+    "adriangalindomele_gmail_com": {"managerName":"Galindo📸","teamName":"Netanyahu FFC Team","totalBeforeRound12":136,"roundScores":{"nurburgring":73,"hungary":63}},
+    "alexvanocastaneda_gmail_com": {"managerName":"MUNTISEXO33","teamName":"ACRR","totalBeforeRound12":94,"roundScores":{"nurburgring":69,"hungary":25}},
+    "biljjana_hotmail_com": {"managerName":"Sebinho","teamName":"Mi Escudería FFC","totalBeforeRound12":0,"roundScores":{"nurburgring":0,"hungary":51}},
+    "dericktonly_gmail_com": {"managerName":"IWantMozaR5","teamName":"Mi Escudería FFC","totalBeforeRound12":0,"roundScores":{"nurburgring":0,"hungary":0}},
+    "eduardoxlopez2_gmail_com": {"managerName":"Eduardo Lopez","teamName":"AlcRacing","totalBeforeRound12":121,"roundScores":{"nurburgring":85,"hungary":36}},
+    "enzo_castillo_lomb_gmail_com": {"managerName":"Hermes","teamName":"hermes israel","totalBeforeRound12":108,"roundScores":{"nurburgring":71,"hungary":37}},
+    "formulafactorchampionship_gmail_com": {"managerName":"Formula Factor Championship","teamName":"Scuderia Driezz","totalBeforeRound12":126,"roundScores":{"nurburgring":66,"hungary":60}},
+    "formularinuno8_gmail_com": {"managerName":"Dieguiosk","teamName":"chandal gris de 85 euros","totalBeforeRound12":136,"roundScores":{"nurburgring":76,"hungary":60}},
+    "franciscoalbarran1726_gmail_com": {"managerName":"Fran_1726","teamName":"Cipote FM Racing Team","totalBeforeRound12":76,"roundScores":{"nurburgring":76,"hungary":51}},
+    "gaelperezcovelo2011_gmail_com": {"managerName":"Farlonso","teamName":"Femboys","totalBeforeRound12":101,"roundScores":{"nurburgring":62,"hungary":39}},
+    "hugotapgar27_gmail_com": {"managerName":"Hijoputapro","teamName":"Mi Escudería FFC","totalBeforeRound12":56,"roundScores":{"nurburgring":56,"hungary":50}},
+    "ivanrodriguezpereira2006_gmail_com": {"managerName":"IvánR","teamName":"Anchoa EuroFormula Open Team","totalBeforeRound12":87,"roundScores":{"nurburgring":70,"hungary":17}},
+    "javicho610_gmail_com": {"managerName":"JvR","teamName":"JvR FFC Team","totalBeforeRound12":38,"roundScores":{"nurburgring":18,"hungary":20}},
+    "misadiarte18_gmail_com": {"managerName":"Nova","teamName":"Mi Escudería RETARDA","totalBeforeRound12":38,"roundScores":{"nurburgring":38,"hungary":18}},
+    "naggetepic_gmail_com": {"managerName":"Victor","teamName":"Swiss Racing Team","totalBeforeRound12":75,"roundScores":{"nurburgring":51,"hungary":24}},
+    "nektasjez33xd_proton_me": {"managerName":"river","teamName":"prime williams","totalBeforeRound12":98,"roundScores":{"nurburgring":71,"hungary":27}},
+    "osoriaferrero_gmail_com": {"managerName":"Oscar Soria","teamName":"OS Racing","totalBeforeRound12":61,"roundScores":{"nurburgring":60,"hungary":1}},
+    "suforr2005_gmail_com": {"managerName":"suforr","teamName":"sexo","totalBeforeRound12":117,"roundScores":{"nurburgring":75,"hungary":42}},
+    "theagus60_gmail_com": {"managerName":"Theagus60","teamName":"QVuelvaFranco","totalBeforeRound12":87,"roundScores":{"nurburgring":44,"hungary":43}}
+};
+window.OFFICIAL_PAST_ROUNDS_SCORES = OFFICIAL_PAST_ROUNDS_SCORES;
+
+function getOfficialPastRoundScore(teamState, roundKey) {
+    if (!teamState || !roundKey) return undefined;
+    const pastMap = (typeof window !== "undefined" && window.OFFICIAL_PAST_ROUNDS_SCORES) ? window.OFFICIAL_PAST_ROUNDS_SCORES : (typeof OFFICIAL_PAST_ROUNDS_SCORES !== "undefined" ? OFFICIAL_PAST_ROUNDS_SCORES : null);
+    if (!pastMap) return undefined;
+
+    const normM = (teamState.managerName || "").toString().normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/[^a-z0-9]/g, "");
+    const normT = (teamState.teamName || "").toString().normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/[^a-z0-9]/g, "");
+    const cleanId = (teamState.userId || teamState.id || teamState.email || "").toString().toLowerCase().trim().replace(/[^a-z0-9_]/g, "_");
+
+    if (cleanId && pastMap[cleanId] && pastMap[cleanId].roundScores && pastMap[cleanId].roundScores[roundKey] !== undefined) {
+        return pastMap[cleanId].roundScores[roundKey];
+    }
+
+    for (const [key, item] of Object.entries(pastMap)) {
+        if (!item || !item.roundScores || item.roundScores[roundKey] === undefined) continue;
+        const entryNormM = (item.managerName || "").toString().normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/[^a-z0-9]/g, "");
+        const entryNormT = (item.teamName || "").toString().normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/[^a-z0-9]/g, "");
+        if ((normM && entryNormM && (normM === entryNormM || normM.includes(entryNormM) || entryNormM.includes(normM))) ||
+            (normT && entryNormT && (normT === entryNormT || normT.includes(entryNormT) || entryNormT.includes(normT)))) {
+            return item.roundScores[roundKey];
+        }
+    }
+    return undefined;
+}
+
 function getOfficialRound10Score(teamState) {
+    const pastVal = getOfficialPastRoundScore(teamState, "nurburgring");
+    if (pastVal !== undefined) return pastVal;
     if (!teamState) return undefined;
     const ptsMap = (typeof window !== "undefined" && window.OFFICIAL_ROUND_10_POINTS) ? window.OFFICIAL_ROUND_10_POINTS : (typeof OFFICIAL_ROUND_10_POINTS !== "undefined" ? OFFICIAL_ROUND_10_POINTS : {});
     if (!ptsMap) return undefined;
@@ -12850,7 +12902,11 @@ function calculateFantasyTeamPoints(teamState) {
 
     completedRaces.forEach(({ key, race }) => {
         let rPts = 0;
-        if (key === "nurburgring") {
+        // 1. Check official locked historical scores for past rounds
+        const officialPastPts = getOfficialPastRoundScore(teamState, key);
+        if (officialPastPts !== undefined) {
+            rPts = officialPastPts;
+        } else if (key === "nurburgring") {
             const officialPts = getOfficialRound10Score(teamState);
             if (officialPts !== undefined) {
                 rPts = officialPts;
@@ -12866,6 +12922,7 @@ function calculateFantasyTeamPoints(teamState) {
                 rPts = isComplete ? getLineupScoreInRace(lineup, race) : 0;
             }
         } else {
+            // For other races (Belgium, Singapore, etc.), use the round lineup snapshot if exists, or current lineup
             const lineup = teamState.roundLineups[key] || {
                 driver1: teamState.driver1,
                 driver2: teamState.driver2,
@@ -13093,6 +13150,11 @@ async function saveFantasyTeamToStorage() {
         const userKey = cleanDocId 
             ? ("ffc_fantasy_team_" + cleanDocId) 
             : FANTASY_LOCAL_STORAGE_KEY;
+
+        // Safeguard historical roundLineups: ensure previous completed rounds remain frozen
+        if (!ffcFantasyState.roundLineups) {
+            ffcFantasyState.roundLineups = {};
+        }
 
         const dataToSave = {
             teamName: ffcFantasyState.teamName,
