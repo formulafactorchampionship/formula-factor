@@ -294,7 +294,7 @@ function updateCountdown() {
     const heroCard = document.getElementById("heroAsideCard");
     const standardViewEl = document.getElementById("nextRaceStandardView");
     const startingSoonTitleEl = document.getElementById("startingSoonMainTitle");
-    const raceTitleStr = (currentNextRace && currentNextRace.title) ? currentNextRace.title : "NÜRBURGRING GP";
+    const raceTitleStr = (currentNextRace && currentNextRace.title) ? currentNextRace.title : "FUJI GP";
     const isStartingSoon = (difference > 0 && difference <= 3600000); // 1 hour or less
 
     if (heroCard && standardViewEl) {
@@ -492,6 +492,8 @@ const translations = {
                 "EUROPE": "EUROPA",
                 "HUNGARY": "HUNGRÍA",
                 "BELGIUM": "BÉLGICA",
+                "FUJI": "FUJI",
+                "JAPAN": "JAPÓN",
                 "SINGAPORE": "SINGAPUR",
                 "USA": "ESTADOS UNIDOS",
                 "BRAZIL": "BRASIL"
@@ -1002,6 +1004,8 @@ const translations = {
                 "EUROPE": "EUROPE",
                 "HUNGARY": "HUNGARY",
                 "BELGIUM": "BELGIUM",
+                "FUJI": "FUJI",
+                "JAPAN": "JAPAN",
                 "SINGAPORE": "SINGAPORE",
                 "USA": "USA",
                 "BRAZIL": "BRAZIL"
@@ -3354,10 +3358,23 @@ const defaultRaceResults = {
         ]
     },
 
+    fuji: {
+        round: "ROUND 13",
+        title: "FUJI",
+        location: "FUJI SPEEDWAY · JAPÓN",
+        date: "18 OCT",
+        status: "NEXT RACE",
+        winner: "TBA",
+        pole: "TBA",
+        fastest: "TBA",
+        driverDay: "TBA",
+        drivers: []
+    },
+
     singapore: {
         round: "ROUND 13",
-        title: "SINGAPORE",
-        location: "MARINA BAY · SINGAPORE",
+        title: "FUJI",
+        location: "FUJI SPEEDWAY · JAPÓN",
         date: "18 OCT",
         status: "NEXT RACE",
         winner: "TBA",
@@ -3410,7 +3427,8 @@ const seasonRacesMeta = {
     nurburgring: { round: "ROUND 10", title: "NÜRBURGRING GP", location: "NÜRBURGRING · EUROPE", date: "20 SEP", replayUrl: "https://www.youtube.com/watch?v=WOl7kH5ac8A" },
     hungary: { round: "ROUND 11", title: "HUNGARORING", location: "BUDAPEST · HUNGARY", date: "27 SEP", replayUrl: "https://www.youtube.com/watch?v=kgdyds8paqQ" },
     belgium: { round: "ROUND 12", title: "SPA-FRANCORCHAMPS", location: "SPA · BELGIUM", date: "11 OCT" },
-    singapore: { round: "ROUND 13", title: "SINGAPORE", location: "MARINA BAY · SINGAPORE", date: "18 OCT" },
+    fuji: { round: "ROUND 13", title: "FUJI SPEEDWAY", location: "FUJI SPEEDWAY · JAPAN", date: "18 OCT" },
+    singapore: { round: "ROUND 13", title: "FUJI SPEEDWAY", location: "FUJI SPEEDWAY · JAPAN", date: "18 OCT" },
     cota: { round: "ROUND 14", title: "COTA", location: "AUSTIN · USA", date: "18 OCT" },
     brazil: { round: "ROUND 15", title: "BRAZIL", location: "INTERLAGOS · BRAZIL", date: "25 OCT" }
 };
@@ -3428,7 +3446,7 @@ const SEASON_RACE_ORDER = [
     "nurburgring",
     "hungary",
     "belgium",
-    "singapore",
+    "fuji",
     "cota",
     "brazil"
 ];
@@ -4066,12 +4084,12 @@ function isUserAdmin(user) {
 // Default configuration datasets
 const defaultNextRace = {
     round: "ROUND 13",
-    title: "SINGAPORE GP",
-    location: "MARINA BAY · SINGAPORE",
+    title: "FUJI GP",
+    location: "FUJI SPEEDWAY · JAPÓN",
     dateText: "18 OCT · 17:00 CEST",
     dateTime: "2026-10-18T17:00",
-    weatherTemp: "29°C",
-    weatherCondition: "cloudy"
+    weatherTemp: "19°C",
+    weatherCondition: "partly-cloudy"
 };
 
 const defaultStandings = [
@@ -5432,7 +5450,7 @@ const FFC_SEASON_GPS = [
     { r: 10, flag: "🇪🇺", code: "EUR", name: "Europa", raceKey: "nurburgring" },
     { r: 11, flag: "🇭🇺", code: "HUN", name: "Hungría", raceKey: "hungary" },
     { r: 12, flag: "🇧🇪", code: "BEL", name: "Bélgica", raceKey: "belgium" },
-    { r: 13, flag: "🇸🇬", code: "SIN", name: "Singapur", raceKey: "singapore" },
+    { r: 13, flag: "🇯🇵", code: "FUJ", name: "Fuji", raceKey: "fuji" },
     { r: 14, flag: "🇺🇸", code: "USA", name: "Estados Unidos", raceKey: "cota" },
     { r: 15, flag: "🇧🇷", code: "BRA", name: "Brasil", raceKey: "brazil" }
 ];
@@ -8042,7 +8060,8 @@ const OFFICIAL_GP_PRESETS = {
     nurburgring: { round: "ROUND 10", title: "NÜRBURGRING GP", location: "NÜRBURGRING · EUROPE", dateText: "20 SEP · 17:00 CEST", dateTime: "2026-09-20T17:00", weatherTemp: "22°C", weatherCondition: "sunny" },
     hungary: { round: "ROUND 11", title: "HUNGARIAN GP", location: "HUNGARORING · BUDAPEST", dateText: "27 SEP · 17:00 CEST", dateTime: "2026-09-27T17:00", weatherTemp: "29°C", weatherCondition: "sunny" },
     belgium: { round: "ROUND 12", title: "BELGIAN GP", location: "CIRCUIT DE SPA-FRANCORCHAMPS", dateText: "04 OCT · 17:00 CEST", dateTime: "2026-10-04T17:00", weatherTemp: "18°C", weatherCondition: "rainy" },
-    singapore: { round: "ROUND 13", title: "SINGAPORE GP", location: "MARINA BAY STREET CIRCUIT", dateText: "11 OCT · 17:00 CEST", dateTime: "2026-10-11T17:00", weatherTemp: "30°C", weatherCondition: "partly-cloudy" },
+    fuji: { round: "ROUND 13", title: "FUJI GP", location: "FUJI SPEEDWAY · JAPAN", dateText: "18 OCT · 17:00 CEST", dateTime: "2026-10-18T17:00", weatherTemp: "19°C", weatherCondition: "partly-cloudy" },
+    singapore: { round: "ROUND 13", title: "FUJI GP", location: "FUJI SPEEDWAY · JAPAN", dateText: "18 OCT · 17:00 CEST", dateTime: "2026-10-18T17:00", weatherTemp: "19°C", weatherCondition: "partly-cloudy" },
     cota: { round: "ROUND 14", title: "UNITED STATES GP", location: "CIRCUIT OF THE AMERICAS · AUSTIN", dateText: "18 OCT · 17:00 CEST", dateTime: "2026-10-18T17:00", weatherTemp: "27°C", weatherCondition: "sunny" },
     brazil: { round: "ROUND 15", title: "BRAZILIAN GP", location: "AUTÓDROMO JOSÉ CARLOS PACE · INTERLAGOS", dateText: "25 OCT · 17:00 CEST", dateTime: "2026-10-25T17:00", weatherTemp: "25°C", weatherCondition: "rainy" }
 };
@@ -8358,7 +8377,14 @@ function initFirestoreListeners() {
     // 2. Synchronize next race in real-time from configuracion/proxima_carrera
     onSnapshot(doc(db, "configuracion", "proxima_carrera"), async (docSnap) => {
         if (docSnap.exists()) {
-            currentNextRace = docSnap.data();
+            let rData = docSnap.data();
+            if (rData && (String(rData.title || "").toUpperCase().includes("SINGAPORE") || String(rData.title || "").toUpperCase().includes("SINGAPUR") || String(rData.location || "").toUpperCase().includes("SINGAPORE") || String(rData.location || "").toUpperCase().includes("MARINA BAY"))) {
+                rData = { ...defaultNextRace };
+                try {
+                    await setDoc(doc(db, "configuracion", "proxima_carrera"), defaultNextRace);
+                } catch (e) {}
+            }
+            currentNextRace = rData;
             try {
                 localStorage.setItem("ffc_next_race_cache", JSON.stringify(currentNextRace));
             } catch (e) {}
@@ -8501,8 +8527,8 @@ function initFirestoreListeners() {
             if ((docSnap.id === "nurburgring" || docSnap.id === "hungary" || docSnap.id === "belgium") && (!rData || rData.status !== "COMPLETED" || !Array.isArray(rData.drivers) || rData.drivers.length === 0)) {
                 raceResults[docSnap.id] = { ...defaultRaceResults[docSnap.id] };
                 hasLegacyRaceData = true;
-            } else if (docSnap.id === "singapore" && rData && rData.status !== "NEXT RACE") {
-                raceResults[docSnap.id] = { ...defaultRaceResults[docSnap.id] };
+            } else if ((docSnap.id === "fuji" || docSnap.id === "singapore") && (!rData || (rData.status !== "NEXT RACE" && rData.status !== "COMPLETED") || String(rData.title || "").toUpperCase().includes("SINGAPORE"))) {
+                raceResults[docSnap.id] = { ...defaultRaceResults.fuji };
                 hasLegacyRaceData = true;
             } else {
                 raceResults[docSnap.id] = rData;
@@ -8512,6 +8538,12 @@ function initFirestoreListeners() {
                 hasLegacyRaceData = true;
             }
         });
+
+        // Ensure both fuji and singapore are populated in raceResults
+        if (raceResults["fuji"] && !raceResults["singapore"]) raceResults["singapore"] = raceResults["fuji"];
+        if (raceResults["singapore"] && !raceResults["fuji"]) raceResults["fuji"] = raceResults["singapore"];
+        if (!raceResults["fuji"]) raceResults["fuji"] = { ...defaultRaceResults.fuji };
+        if (!raceResults["singapore"]) raceResults["singapore"] = raceResults["fuji"];
 
         // Refresh all calendar cards based on current race progression
         refreshAllCalendarCards();
@@ -12930,7 +12962,7 @@ function isFantasyScoringRace(raceKey, race) {
     const roundNum = parseInt((race.round || "").replace(/\D/g, ""), 10);
     if (!isNaN(roundNum) && roundNum >= 10) return true;
 
-    const postNurburgringKeys = ["nurburgring", "hungary", "belgium", "singapore", "cota", "brazil"];
+    const postNurburgringKeys = ["nurburgring", "hungary", "belgium", "fuji", "singapore", "cota", "brazil"];
     if (postNurburgringKeys.includes(String(raceKey).toLowerCase())) return true;
 
     return false;
@@ -18515,7 +18547,8 @@ const RACE_TITLES_MAP = {
     "nurburgring": "Europe GP - Nürburgring (Ronda 10)",
     "hungary": "Hungary GP - Hungaroring (Ronda 11)",
     "belgium": "Belgium GP - Spa (Ronda 12)",
-    "singapore": "Singapore GP (Ronda 13)",
+    "fuji": "Fuji GP (Ronda 13)",
+    "singapore": "Fuji GP (Ronda 13)",
     "cota": "USA GP - COTA (Ronda 14)",
     "brazil": "Brazil GP - Interlagos (Ronda 15)"
 };
@@ -18537,7 +18570,8 @@ function getRaceTitleLabel(raceId) {
         "nurburgring": `Europe GP - Nürburgring (${roundPrefix} 10)`,
         "hungary": `Hungary GP - Hungaroring (${roundPrefix} 11)`,
         "belgium": `Belgium GP - Spa (${roundPrefix} 12)`,
-        "singapore": `Singapore GP (${roundPrefix} 13)`,
+        "fuji": `Fuji GP (${roundPrefix} 13)`,
+        "singapore": `Fuji GP (${roundPrefix} 13)`,
         "cota": `USA GP - COTA (${roundPrefix} 14)`,
         "brazil": `Brazil GP - Interlagos (${roundPrefix} 15)`
     };

@@ -12,9 +12,9 @@ export const FFC_CIRCUITS_DATA = [
     { id: "silverstone", name: "GP de Gran Bretaña", circuit: "Silverstone Circuit", location: "Silverstone, UK", round: "ROUND 08", date: "07 SEP", lat: 52.0786, lon: -1.0169 },
     { id: "hockenheim", name: "GP de Alemania", circuit: "Hockenheimring", location: "Hockenheim, Germany", round: "ROUND 09", date: "13 SEP", lat: 49.3278, lon: 8.5658 },
     { id: "nurburgring", name: "GP de Europa", circuit: "Nürburgring GP", location: "Nürburg, Germany", round: "ROUND 10", date: "20 SEP", lat: 50.3341, lon: 6.9427 },
-    { id: "hungary", name: "GP de Hungría", circuit: "Hungaroring", location: "Budapest, Hungary", round: "ROUND 11", date: "TBA", lat: 47.5830, lon: 19.2486 },
-    { id: "belgium", name: "GP de Bélgica", circuit: "Circuit de Spa-Francorchamps", location: "Spa, Belgium", round: "ROUND 12", date: "TBA", lat: 50.4372, lon: 5.9714 },
-    { id: "singapore", name: "GP de Singapur", circuit: "Marina Bay Street Circuit", location: "Marina Bay, Singapore", round: "ROUND 13", date: "TBA", lat: 1.2914, lon: 103.8644 },
+    { id: "hungary", name: "GP de Hungría", circuit: "Hungaroring", location: "Budapest, Hungary", round: "ROUND 11", date: "27 SEP", lat: 47.5830, lon: 19.2486 },
+    { id: "belgium", name: "GP de Bélgica", circuit: "Circuit de Spa-Francorchamps", location: "Spa, Belgium", round: "ROUND 12", date: "11 OCT", lat: 50.4372, lon: 5.9714 },
+    { id: "fuji", name: "GP de Fuji", circuit: "Fuji Speedway", location: "Oyama, Japón", round: "ROUND 13", date: "18 OCT", lat: 35.3717, lon: 138.9272 },
     { id: "cota", name: "GP de Estados Unidos", circuit: "Circuit of the Americas", location: "Austin, USA", round: "ROUND 14", date: "TBA", lat: 30.1328, lon: -97.6411 },
     { id: "brazil", name: "GP de Brasil", circuit: "Autódromo José Carlos Pace", location: "Interlagos, Brazil", round: "ROUND 15", date: "TBA", lat: -23.7036, lon: -46.6997 }
 ];
@@ -161,7 +161,8 @@ export function initCobeGlobe(containerId) {
             nurburgring: "NÜRBURGRING",
             hungary: "BUDAPEST",
             belgium: "SPA",
-            singapore: "SINGAPUR",
+            fuji: "FUJI",
+            singapore: "FUJI",
             cota: "AUSTIN",
             brazil: "SÃO PAULO"
         };
