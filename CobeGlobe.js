@@ -1,13 +1,4 @@
-let createGlobePromise = null;
-function getCreateGlobe() {
-    if (!createGlobePromise) {
-        createGlobePromise = import('https://esm.sh/cobe@0.1.2').then(m => m.default || m).catch(() => {
-            console.warn("esm.sh failed for cobe, falling back to jsDelivr...");
-            return import('https://cdn.jsdelivr.net/npm/cobe@0.1.2/+esm').then(m => m.default || m);
-        });
-    }
-    return createGlobePromise;
-}
+import createGlobe from 'https://esm.sh/cobe@0.1.2';
 
 // FFC official Grand Prix coordinates (Latitude, Longitude)
 export const FFC_CIRCUITS_DATA = [
@@ -175,9 +166,8 @@ export function initCobeGlobe(containerId) {
             }
         }
 
-        getCreateGlobe().then(createGlobeFn => {
-            if (!createGlobeFn || globe) return;
-            globe = createGlobeFn(canvas, {
+        try {
+            globe = createGlobe(canvas, {
                 devicePixelRatio: dpr,
                 width: width * dpr,
                 height: width * dpr,
@@ -239,10 +229,10 @@ export function initCobeGlobe(containerId) {
                 }
             });
             canvas.style.opacity = "1";
-        }).catch(err => {
+        } catch (err) {
             console.error("Error creating CobeGlobe instance:", err);
-            canvas.style.opacity = "1";
-        });
+            canvas.style.opacity = "1"; // ensure visibility fallback
+        }
     }
 
     const ro = new ResizeObserver((entries) => {

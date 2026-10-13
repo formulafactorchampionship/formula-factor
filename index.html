@@ -29,36 +29,10 @@
         <link rel="preconnect" href="https://esm.sh" crossorigin>
     <link rel="preconnect" href="https://flagcdn.com" crossorigin>
     <link rel="preconnect" href="https://firestore.googleapis.com" crossorigin>
-    <link rel="stylesheet" href="style.css?v=20261014_rc1">
+    <link rel="stylesheet" href="style.css?v=20261013_admin2">
     <link rel="stylesheet" href="BorderGlow.css">
     <link rel="stylesheet" href="LightPillar.css">
     <script>
-        window.purgeCorruptedCacheAndReload = function() {
-            try {
-                for (var i = localStorage.length - 1; i >= 0; i--) {
-                    var k = localStorage.key(i);
-                    if (k && k.startsWith("ffc_")) localStorage.removeItem(k);
-                }
-                indexedDB.deleteDatabase('firebaseLocalStorageDb');
-                if (indexedDB.databases) {
-                    indexedDB.databases().then(dbs => {
-                        dbs.forEach(db => {
-                            if (db.name && (db.name.includes('firebase') || db.name.includes('firestore'))) {
-                                indexedDB.deleteDatabase(db.name);
-                            }
-                        });
-                    });
-                }
-            } catch (e) {}
-            setTimeout(() => window.location.reload(), 500);
-        };
-        setTimeout(function() {
-            if (!window.__FFC_BOOT_OK && !sessionStorage.getItem('ffc_watchdog_healed')) {
-                sessionStorage.setItem('ffc_watchdog_healed', 'true');
-                window.purgeCorruptedCacheAndReload();
-            }
-        }, 3500);
-
         // Early instant hook for FFC Fantasy Portal
         window.openFantasyPortal = function() {
             var main = document.getElementById("mainSiteContent");
@@ -83,29 +57,6 @@
             if (window._renderFantasyPortalInternal) {
                 window._renderFantasyPortalInternal();
             }
-            setTimeout(function() {
-                var body = document.getElementById("fantasyLeaderboardBody");
-                if (body && body.innerHTML.trim() === "") {
-                    fetch('./fantasy_teams_db.json')
-                        .then(r => r.json())
-                        .then(data => {
-                            // Sort by totalPoints descending
-                            data.sort((a, b) => b.totalPoints - a.totalPoints);
-                            
-                            var html = '';
-                            data.forEach((team, index) => {
-                                html += '<tr>' +
-                                    '<td>' + (index + 1) + '</td>' +
-                                    '<td>' + team.teamName + ' / ' + team.managerName + '</td>' +
-                                    '<td>' + (team.drivers ? team.drivers.join(', ') : '') + '</td>' +
-                                    '<td>' + team.teamValue + 'M€</td>' +
-                                    '<td>' + team.totalPoints + '</td>' +
-                                    '</tr>';
-                            });
-                            body.innerHTML = html;
-                        });
-                }
-            }, 700);
         };
 
         // Global Error & Promise Rejection Handler for auto-healing cache / IndexedDB once per session
@@ -146,13 +97,6 @@
 
         // DOMContentLoaded Fallback for Login & Fantasy Login Prompt
         document.addEventListener("DOMContentLoaded", function() {
-            setTimeout(function() {
-                var globeContainer = document.getElementById('hero-cobe-globe-container');
-                if (globeContainer && !globeContainer.querySelector('canvas')) {
-                    import('./CobeGlobe.js?v=20261014_rc1').then(m => m.initCobeGlobe('hero-cobe-globe-container'));
-                }
-            }, 1200);
-
             var authBtn = document.getElementById("authHeaderBtn");
             if (authBtn) {
                 authBtn.addEventListener("click", function() {
@@ -202,6 +146,9 @@
 </head>
 
 <body>
+
+
+
 <header class="navbar">
     <div class="nav-inner">
 
@@ -6101,32 +6048,7 @@
 
 
 
-<script type="module" src="script.js?v=20261014_rc1"></script>
+<script type="module" src="script.js?v=20261013_admin2"></script>
 
-    <div id="adminPanel">
-        <aside id="adminPanelSidebar">
-            <div class="admin-sidebar-header">
-                FFC // RACE CONTROL
-                <div class="admin-cloud-status">🟢 Cloud Synced</div>
-            </div>
-            <nav>
-                <div class="admin-nav-item active" data-tab="control">⚡ Control Rápido</div>
-                <div class="admin-nav-item" data-tab="results">🏁 Resultados & Pilotos</div>
-                <div class="admin-nav-item" data-tab="fantasy">🏆 Fantasy Manager</div>
-                <div class="admin-nav-item" data-tab="moderation">📰 Moderación</div>
-                <div class="admin-nav-item" data-tab="verification">🔑 Códigos & Verificación</div>
-            </nav>
-            <div class="admin-back-btn" id="closeAdminPanel">← Volver a la Web</div>
-        </aside>
-        <main id="adminPanelMain">
-            <header class="admin-panel-header">
-                <h2 id="adminPanelTitle">Control Rápido</h2>
-                <button class="btn btn-primary" id="adminSaveGlobalBtn">Guardar Cambios</button>
-            </header>
-            <div id="adminPanelContent">
-                <!-- Content will be injected here dynamically based on tab -->
-            </div>
-        </main>
-    </div>
 </body>
 </html>
