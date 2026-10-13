@@ -10497,36 +10497,68 @@ function initFirestoreListeners() {
 }
 
 // Initialize on page load
+function sanitizeAndRepairLocalStorageCache() {
+    try {
+        for (let i = 0; i < localStorage.length; i++) {
+            const key = localStorage.key(i);
+            if (key && (key.startsWith("ffc_") || key.includes("fantasy") || key.includes("user"))) {
+                const val = localStorage.getItem(key);
+                if (val && (val.trim().startsWith("{") || val.trim().startsWith("["))) {
+                    try {
+                        JSON.parse(val);
+                    } catch (e) {
+                        console.warn("Auto-repair: purging corrupted cache key due to invalid JSON syntax:", key);
+                        localStorage.removeItem(key);
+                    }
+                }
+            }
+        }
+    } catch (e) {
+        console.warn("Cache sanitization check error:", e);
+    }
+}
+window.ffcRepairCacheAndReload = () => {
+    try {
+        localStorage.clear();
+        sessionStorage.clear();
+        alert("¡Caché local reparado y reiniciado con éxito! Recargando aplicación...");
+        window.location.reload();
+    } catch (e) {
+        window.location.reload();
+    }
+};
+
 function initializeSavedData() {
-    renderNextRaceOnPage(getSavedNextRace());
-    renderStandingsOnPage(getSavedStandings());
-    renderSettingsOnPage(getSavedSettings());
-    initRaceResults();
-    if (typeof initCalendarMasterDetail === "function") {
-        initCalendarMasterDetail();
-    }
-    if (typeof initCalendarViewToggle === "function") {
-        initCalendarViewToggle();
-    }
-    if (typeof renderHomeTop3Podium === "function") {
-        renderHomeTop3Podium();
-    }
-    if (typeof initTabNavigation === "function") {
-        initTabNavigation();
-    }
+    sanitizeAndRepairLocalStorageCache();
+    try { renderNextRaceOnPage(getSavedNextRace()); } catch (e) { console.warn("Next race init:", e); }
+    try { renderStandingsOnPage(getSavedStandings()); } catch (e) { console.warn("Standings init:", e); }
+    try { renderSettingsOnPage(getSavedSettings()); } catch (e) { console.warn("Settings init:", e); }
+    try { initRaceResults(); } catch (e) { console.warn("Race results init:", e); }
+    try {
+        if (typeof initCalendarMasterDetail === "function") initCalendarMasterDetail();
+    } catch (e) {}
+    try {
+        if (typeof initCalendarViewToggle === "function") initCalendarViewToggle();
+    } catch (e) {}
+    try {
+        if (typeof renderHomeTop3Podium === "function") renderHomeTop3Podium();
+    } catch (e) {}
+    try {
+        if (typeof initTabNavigation === "function") initTabNavigation();
+    } catch (e) {}
 
     // Start real-time Firestore synchronization
-    initFirestoreListeners();
+    try { initFirestoreListeners(); } catch (e) {}
 
     // Initialize custom dropdowns (Language & Timezone)
-    initCustomDropdowns();
-    renderTimezoneOptions();
+    try { initCustomDropdowns(); } catch (e) {}
+    try { renderTimezoneOptions(); } catch (e) {}
 
     // Initialize Matrix Spreadsheet, View Tabs and Driver Stats Modal
-    initStandingsViewTabs();
-    initDriverStatsModal();
-    renderFfcMatrixTable();
-    enhanceAllFlagsInDom();
+    try { initStandingsViewTabs(); } catch (e) {}
+    try { initDriverStatsModal(); } catch (e) {}
+    try { renderFfcMatrixTable(); } catch (e) {}
+    try { enhanceAllFlagsInDom(); } catch (e) {}
 
     const initialLang = (() => {
         try {
@@ -10535,7 +10567,7 @@ function initializeSavedData() {
         } catch (e) {}
         return "es";
     })();
-    setLanguage(initialLang);
+    try { setLanguage(initialLang); } catch (e) {}
 }
 window.initializeSavedData = initializeSavedData;
 
