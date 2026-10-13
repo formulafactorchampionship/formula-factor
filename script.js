@@ -22098,3 +22098,44 @@ window.loadAndRenderEmailAudit = loadAndRenderEmailAudit;
 window.updateAdminEmailAuditBadge = updateAdminEmailAuditBadge;
 window.openAuditDeleteConfirmModal = openAuditDeleteConfirmModal;
 window.closeAuditDeleteConfirmModal = closeAuditDeleteConfirmModal;
+
+/* =========================================================
+   GLOBAL RESILIENCE & EVENT DELEGATION
+========================================================= */
+function initGlobalResilienceAndHealing() {
+    // Global Event Delegation for Login, Fantasy, and Navigation
+    document.addEventListener("click", (e) => {
+        const target = e.target;
+        
+        // Login button delegation
+        const loginTrigger = target.closest("#authHeaderBtn, .auth-header-btn, [data-action='login'], .nav-login-btn");
+        if (loginTrigger) {
+            e.preventDefault();
+            if (typeof openUserAuthModal === "function") {
+                openUserAuthModal("login");
+            } else {
+                console.warn("openUserAuthModal not defined");
+            }
+            return;
+        }
+
+        // Fantasy button delegation
+        const fantasyTrigger = target.closest(".nav-fantasy-link, [href='#fantasy'], [data-action='fantasy']");
+        if (fantasyTrigger) {
+            e.preventDefault();
+            if (typeof openFantasyPortal === "function") {
+                openFantasyPortal();
+            } else if (typeof switchMainTab === "function") {
+                switchMainTab("home", true);
+            }
+            return;
+        }
+    }, true);
+}
+
+if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", initGlobalResilienceAndHealing);
+} else {
+    initGlobalResilienceAndHealing();
+}
+
