@@ -26,7 +26,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;500;600;700;800;900&family=Inter:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
 
-    <link rel="stylesheet" href="style.css?v=20260918_v3">
+    <link rel="stylesheet" href="style.css?v=20261013_v4">
     <link rel="stylesheet" href="BorderGlow.css">
     <link rel="stylesheet" href="LightPillar.css">
     <script>
@@ -55,6 +55,89 @@
                 window._renderFantasyPortalInternal();
             }
         };
+
+        // Global Error & Promise Rejection Handler for auto-healing cache / IndexedDB once per session
+        window.addEventListener('error', function(event) {
+            var msg = (event.message || "").toLowerCase();
+            if ((msg.includes("json") || msg.includes("syntaxerror") || msg.includes("cannot read") || msg.includes("undefined") || msg.includes("null") || msg.includes("indexeddb") || msg.includes("quota") || msg.includes("storage")) && !sessionStorage.getItem('ffc_auto_healed')) {
+                sessionStorage.setItem('ffc_auto_healed', 'true');
+                try {
+                    for (var i = localStorage.length - 1; i >= 0; i--) {
+                        var k = localStorage.key(i);
+                        if (k && (k.startsWith("ffc_") || k.includes("fantasy") || k.includes("user"))) {
+                            localStorage.removeItem(k);
+                        }
+                    }
+                } catch (e) {}
+                console.warn("Auto-healed corrupted cache/storage error, reloading page...");
+                window.location.reload();
+            }
+        });
+
+        window.addEventListener('unhandledrejection', function(event) {
+            var reason = event.reason ? (event.reason.message || String(event.reason)) : "";
+            var low = reason.toLowerCase();
+            if ((low.includes("json") || low.includes("syntaxerror") || low.includes("cannot read") || low.includes("undefined") || low.includes("null") || low.includes("indexeddb") || low.includes("quota") || low.includes("storage")) && !sessionStorage.getItem('ffc_auto_healed')) {
+                sessionStorage.setItem('ffc_auto_healed', 'true');
+                try {
+                    for (var i = localStorage.length - 1; i >= 0; i--) {
+                        var k = localStorage.key(i);
+                        if (k && (k.startsWith("ffc_") || k.includes("fantasy") || k.includes("user"))) {
+                            localStorage.removeItem(k);
+                        }
+                    }
+                } catch (e) {}
+                console.warn("Auto-healed unhandled promise rejection cache error, reloading page...");
+                window.location.reload();
+            }
+        });
+
+        // DOMContentLoaded Fallback for Login & Fantasy Login Prompt
+        document.addEventListener("DOMContentLoaded", function() {
+            var authBtn = document.getElementById("authHeaderBtn");
+            if (authBtn) {
+                authBtn.addEventListener("click", function() {
+                    setTimeout(function() {
+                        var overlay = document.getElementById("userAuthOverlay");
+                        var profileMenu = document.getElementById("userProfileMenu");
+                        var btnLabel = document.getElementById("authBtnLabel");
+                        var labelText = btnLabel ? btnLabel.textContent.trim().toUpperCase() : "ACCEDER";
+                        var isGuest = (labelText === "ACCEDER" || labelText === "LOGIN" || labelText === "SIGN IN");
+                        var menuOpened = profileMenu && (profileMenu.classList.contains("active") || profileMenu.classList.contains("open") || profileMenu.style.display === "block");
+                        if (isGuest && !menuOpened && overlay && !overlay.classList.contains("active")) {
+                            overlay.style.display = "flex";
+                            overlay.classList.add("active");
+                            overlay.setAttribute("aria-hidden", "false");
+                            document.body.classList.add("modal-open");
+                        }
+                    }, 50);
+                });
+            }
+            var fantasyPromptBtn = document.getElementById("fantasyLoginPromptBtn");
+            if (fantasyPromptBtn) {
+                fantasyPromptBtn.addEventListener("click", function() {
+                    var overlay = document.getElementById("userAuthOverlay");
+                    if (overlay) {
+                        overlay.style.display = "flex";
+                        overlay.classList.add("active");
+                        overlay.setAttribute("aria-hidden", "false");
+                        document.body.classList.add("modal-open");
+                    }
+                });
+            }
+            var closeAuthBtns = document.querySelectorAll("#userAuthClose, #loginCancelBtn, #registerCancelBtn, #authResetCancelBtn");
+            closeAuthBtns.forEach(function(btn) {
+                btn.addEventListener("click", function() {
+                    var overlay = document.getElementById("userAuthOverlay");
+                    if (overlay) {
+                        overlay.style.display = "none";
+                        overlay.classList.remove("active");
+                        overlay.setAttribute("aria-hidden", "true");
+                        document.body.classList.remove("modal-open");
+                    }
+                });
+            });
+        });
     </script>
     <script src="https://unpkg.com/lucide@latest"></script>
 </head>
@@ -113,7 +196,7 @@
             </div>
             <a href="#calendar" id="navCalendar" class="nav-item">CALENDARIO</a>
             <a href="#news" id="navNews" class="nav-item">NOTICIAS</a>
-            <a href="#fantasy" id="navFantasy" class="nav-item text-amber-400 font-bold">FANTASY</a>
+            <a href="#fantasy" id="navFantasy" class="nav-item text-amber-400 font-bold" onclick="if(window.openFantasyPortal){window.openFantasyPortal();return false;}">FANTASY</a>
         </nav>
 
         <div class="nav-actions">
@@ -5949,7 +6032,7 @@
 
 
 
-<script type="module" src="script.js"></script>
+<script type="module" src="script.js?v=20261013_v4"></script>
 
 </body>
 </html>

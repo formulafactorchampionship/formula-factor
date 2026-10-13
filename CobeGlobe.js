@@ -24,29 +24,24 @@ function project(lat, lon, phi, theta, r) {
     const latRad = (lat * Math.PI) / 180;
     const lonRad = (lon * Math.PI) / 180 - Math.PI;
     
-    // Position of the marker on the unit sphere in COBE's coordinate system
     const cos_lat = Math.cos(latRad);
     const jx = -cos_lat * Math.cos(lonRad);
     const jy = Math.sin(latRad);
     const jz = cos_lat * Math.sin(lonRad);
     
-    // COBE's WebGL shader rotations
     const cos_phi = Math.cos(phi);
     const sin_phi = Math.sin(phi);
     const cos_theta = Math.cos(theta);
     const sin_theta = Math.sin(theta);
     
-    // Inverse transformation of G(phi, theta) matrix from the WebGL fragment shader
     const cx = jx * cos_theta + jz * sin_theta;
     const cy = jx * sin_theta * sin_phi + jy * cos_phi - jz * cos_theta * sin_phi;
     const cz = -jx * sin_theta * cos_phi + jy * sin_phi + jz * cos_theta * cos_phi;
     
-    // COBE sphere scale is exactly 0.8 of half-width (r).
     const scale = 0.8;
     const screenX = r + cx * r * scale;
     const screenY = r - cy * r * scale;
     
-    // Only show labels when on the front-facing hemisphere of the globe
     return { x: screenX, y: screenY, visible: cz > 0.05 };
 }
 
@@ -54,10 +49,8 @@ export function initCobeGlobe(containerId) {
     const container = document.getElementById(containerId);
     if (!container) return;
 
-    // Clear previous children
     container.innerHTML = "";
 
-    // Build internal canvas
     const canvas = document.createElement("canvas");
     canvas.style.width = "100%";
     canvas.style.height = "100%";
@@ -132,12 +125,23 @@ export function initCobeGlobe(containerId) {
     window.addEventListener("pointermove", handlePointerMove, { passive: true });
     window.addEventListener("pointerup", handlePointerUp, { passive: true });
 
+    // Requirement 4: Handle WebGL context lost gracefully
+    canvas.addEventListener("webglcontextlost", (e) => {
+        e.preventDefault();
+        console.warn("WebGL context lost on CobeGlobe canvas. Attempting to recreate...");
+        if (globe) {
+            try { globe.destroy(); } catch (err) {}
+            globe = null;
+        }
+        setTimeout(() => init(), 500);
+    }, false);
+
     let globe = null;
     let animationId;
     let phi = 0;
 
     function init() {
-        const width = canvas.offsetWidth;
+        const width = canvas.offsetWidth || container.clientWidth || 500;
         if (width === 0 || globe) return;
 
         const dpr = Math.min(window.devicePixelRatio || 1, 2);
@@ -147,25 +151,6 @@ export function initCobeGlobe(containerId) {
             size: 0.017,
             id: c.id
         }));
-
-        const CIRCUIT_PIN_NAMES = {
-            australia: "MELBOURNE",
-            malaysia: "SEPANG",
-            bahrain: "SAKHIR",
-            turkey: "ESTAMBUL",
-            spain: "BARCELONA",
-            italy: "MONZA",
-            austria: "SPIELBERG",
-            silverstone: "SILVERSTONE",
-            hockenheim: "HOCKENHEIM",
-            nurburgring: "NÜRBURGRING",
-            hungary: "BUDAPEST",
-            belgium: "SPA",
-            fuji: "FUJI",
-            singapore: "FUJI",
-            cota: "AUSTIN",
-            brazil: "SÃO PAULO"
-        };
 
         function updatePanel(circuit) {
             const infoRound = document.getElementById("mapInfoRound");
@@ -181,74 +166,73 @@ export function initCobeGlobe(containerId) {
             }
         }
 
+        try {
+            globe = createGlobe(canvas, {
+                devicePixelRatio: dpr,
+                width: width * dpr,
+                height: width * dpr,
+                phi: 3.8,
+                theta: 0.15,
+                dark: 1,
+                diffuse: 1.4,
+                mapSamples: 24000,
+                mapBrightness: 10,
+                baseColor: [0.18, 0.25, 0.40], 
+                markerColor: [0.0, 0.9, 1.0], 
+                glowColor: [0.25, 0.35, 0.55], 
+                markerElevation: 0.15,
+                markers: formattedMarkers,
+                opacity: 1,
+                onRender: (state) => {
+                    if (!isVisibleInViewport) return;
+                    if (!isPaused) {
+                        phi += 0.0012; 
+                        
+                        if (Math.abs(velocity.phi) > 0.0001 || Math.abs(velocity.theta) > 0.0001) {
+                            phiOffset += velocity.phi;
+                            thetaOffset += velocity.theta;
+                            velocity.phi *= 0.95;
+                            velocity.theta *= 0.95;
+                        }
 
+                        const thetaMin = -0.5, thetaMax = 0.5;
+                        if (thetaOffset < thetaMin) {
+                            thetaOffset += (thetaMin - thetaOffset) * 0.1;
+                        } else if (thetaOffset > thetaMax) {
+                            thetaOffset += (thetaMax - thetaOffset) * 0.1;
+                        }
+                    }
 
-        globe = createGlobe(canvas, {
-            devicePixelRatio: dpr,
-            width: width * dpr,
-            height: width * dpr,
-            phi: 3.8,
-            theta: 0.15,
-            dark: 1,
-            diffuse: 1.4,
-            mapSamples: 24000,
-            mapBrightness: 10,
-            baseColor: [0.18, 0.25, 0.40], 
-            markerColor: [0.0, 0.9, 1.0], 
-            glowColor: [0.25, 0.35, 0.55], 
-            markerElevation: 0.15,
-            markers: formattedMarkers,
-            opacity: 1,
-            onRender: (state) => {
-                if (!isVisibleInViewport) return;
-                if (!isPaused) {
-                    phi += 0.0012; 
+                    const currentPhi = phi + phiOffset + dragOffset.phi;
+                    const currentTheta = thetaOffset + dragOffset.theta;
                     
-                    if (Math.abs(velocity.phi) > 0.0001 || Math.abs(velocity.theta) > 0.0001) {
-                        phiOffset += velocity.phi;
-                        thetaOffset += velocity.theta;
-                        velocity.phi *= 0.95;
-                        velocity.theta *= 0.95;
-                    }
+                    state.phi = currentPhi;
+                    state.theta = currentTheta;
 
-                    const thetaMin = -0.5, thetaMax = 0.5;
-                    if (thetaOffset < thetaMin) {
-                        thetaOffset += (thetaMin - thetaOffset) * 0.1;
-                    } else if (thetaOffset > thetaMax) {
-                        thetaOffset += (thetaMax - thetaOffset) * 0.1;
+                    const centerLon = (((-currentPhi + Math.PI) % (Math.PI * 2)) * 180) / Math.PI;
+                    let closest = null;
+                    let minDiff = Infinity;
+
+                    FFC_CIRCUITS_DATA.forEach(c => {
+                        let diff = Math.abs(c.lon - centerLon);
+                        if (diff > 180) diff = 360 - diff;
+                        if (diff < minDiff) {
+                            minDiff = diff;
+                            closest = c;
+                        }
+                    });
+
+                    if (closest && (!focusedCircuit || focusedCircuit.id !== closest.id)) {
+                        focusedCircuit = closest;
+                        updatePanel(closest);
                     }
                 }
-
-                const currentPhi = phi + phiOffset + dragOffset.phi;
-                const currentTheta = thetaOffset + dragOffset.theta;
-                
-                state.phi = currentPhi;
-                state.theta = currentTheta;
-
-                // Calculate which circuit is closest to the front of the screen view
-                const centerLon = (((-currentPhi + Math.PI) % (Math.PI * 2)) * 180) / Math.PI;
-                let closest = null;
-                let minDiff = Infinity;
-
-                FFC_CIRCUITS_DATA.forEach(c => {
-                    let diff = Math.abs(c.lon - centerLon);
-                    if (diff > 180) diff = 360 - diff;
-                    if (diff < minDiff) {
-                        minDiff = diff;
-                        closest = c;
-                    }
-                });
-
-                if (closest && (!focusedCircuit || focusedCircuit.id !== closest.id)) {
-                    focusedCircuit = closest;
-                    updatePanel(closest);
-                }
-
-
-            }
-        });
-
-        canvas.style.opacity = "1";
+            });
+            canvas.style.opacity = "1";
+        } catch (err) {
+            console.error("Error creating CobeGlobe instance:", err);
+            canvas.style.opacity = "1"; // ensure visibility fallback
+        }
     }
 
     const ro = new ResizeObserver((entries) => {
@@ -259,10 +243,22 @@ export function initCobeGlobe(containerId) {
     });
     ro.observe(canvas);
 
-    // Return custom cleanup function to call on unload if needed
+    // Immediate check & fallback timers as requested in requirement 4
+    if (canvas.offsetWidth > 0 || container.clientWidth > 0) {
+        init();
+    }
+    setTimeout(() => {
+        if (!globe) init();
+    }, 250);
+    setTimeout(() => {
+        if (!globe) init();
+    }, 1000);
+
     return () => {
         if (animationId) cancelAnimationFrame(animationId);
-        if (globe) globe.destroy();
+        if (globe) {
+            try { globe.destroy(); } catch (e) {}
+        }
         canvas.removeEventListener("pointerdown", handlePointerDown);
         window.removeEventListener("pointermove", handlePointerMove);
         window.removeEventListener("pointerup", handlePointerUp);

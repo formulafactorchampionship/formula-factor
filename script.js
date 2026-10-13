@@ -2,60 +2,81 @@
    FIREBASE FIRESTORE SETUP (MODULAR SDK v10 VIA CDN)
 ========================================================= */
 
+/* =========================================================
+   SAFE LOCAL STORAGE JSON HELPER
+========================================================= */
+function safeGetLocalJSON(key, fallback = null) {
+    try {
+        const raw = localStorage.getItem(key);
+        if (!raw) return fallback;
+        const parsed = JSON.parse(raw);
+        return parsed !== null && parsed !== undefined ? parsed : fallback;
+    } catch (err) {
+        console.warn(`Datos corruptos en localStorage para [${key}], limpiando clave...`, err);
+        try { localStorage.removeItem(key); } catch (e) {}
+        return fallback;
+    }
+}
+window.safeGetLocalJSON = safeGetLocalJSON;
+
 import { initShapeWavesBackground } from "./ShapeWaves.js";
 import { initCalendarBorderGlow } from "./BorderGlow.js";
 import { initSideRaysBackground } from "./SideRays.js";
 import { initCobeGlobe } from "./CobeGlobe.js";
 import { initLightPillar } from "./LightPillar.js";
 
-// Initialize interactive background layers
+// Initialize interactive background layers safely
 const handleInitBackgrounds = () => {
-    initShapeWavesBackground();
-    initCalendarBorderGlow();
+    try { initShapeWavesBackground(); } catch (e) { console.warn("ShapeWaves init:", e); }
+    try { initCalendarBorderGlow(); } catch (e) { console.warn("BorderGlow init:", e); }
     
-    // Mount the React Bits SideRays component
-    initSideRaysBackground("hero-siderays-bg", {
-        speed: 2.5,
-        rayColor1: "#d6b45c", // Gold accent
-        rayColor2: "#00d2be", // High speed Mercedes teal / cyan
-        intensity: 2.0,
-        spread: 2.4,
-        origin: "top-right",
-        tilt: -5,
-        saturation: 1.4,
-        blend: 0.65,
-        falloff: 1.5,
-        opacity: 0.55
-    });
+    try {
+        initSideRaysBackground("hero-siderays-bg", {
+            speed: 2.5,
+            rayColor1: "#d6b45c",
+            rayColor2: "#00d2be",
+            intensity: 2.0,
+            spread: 2.4,
+            origin: "top-right",
+            tilt: -5,
+            saturation: 1.4,
+            blend: 0.65,
+            falloff: 1.5,
+            opacity: 0.55
+        });
+    } catch (e) {}
 
-    initSideRaysBackground("fantasy-siderays-bg", {
-        speed: 1.8,
-        rayColor1: "#d6b45c", // Gold accent
-        rayColor2: "#10b981", // Turbo Mint accent
-        intensity: 1.8,
-        spread: 2.2,
-        origin: "top-right",
-        tilt: -8,
-        saturation: 1.3,
-        blend: 0.6,
-        falloff: 1.6,
-        opacity: 0.6
-    });
+    try {
+        initSideRaysBackground("fantasy-siderays-bg", {
+            speed: 1.8,
+            rayColor1: "#d6b45c",
+            rayColor2: "#10b981",
+            intensity: 1.8,
+            spread: 2.2,
+            origin: "top-right",
+            tilt: -8,
+            saturation: 1.3,
+            blend: 0.6,
+            falloff: 1.6,
+            opacity: 0.6
+        });
+    } catch (e) {}
 
-    // Mount a single, continuous, unified LightPillar component for the entire wrapper
-    initLightPillar("unified-lightpillar-bg", {
-        topColor: "#f5e29f",    // Official FFC Light Gold/Yellow (#f5e29f)
-        bottomColor: "#06080d", // Official page background color (#06080d) to fade beautifully into dark
-        intensity: 0.65,        // Reduced for a much darker/subtle effect
-        rotationSpeed: 0.45,    // Increased speed for a more energetic movement
-        interactive: true,
-        glowAmount: 0.005,      // Reduced glow spread
-        pillarWidth: 1.1,       // Much thinner pillar
-        pillarHeight: 0.35,
-        noiseIntensity: 0.18,
-        pillarRotation: 12,
-        quality: "medium"
-    });
+    try {
+        initLightPillar("unified-lightpillar-bg", {
+            topColor: "#f5e29f",
+            bottomColor: "#06080d",
+            intensity: 0.65,
+            rotationSpeed: 0.45,
+            interactive: true,
+            glowAmount: 0.005,
+            pillarWidth: 1.1,
+            pillarHeight: 0.35,
+            noiseIntensity: 0.18,
+            pillarRotation: 12,
+            quality: "medium"
+        });
+    } catch (e) {}
 };
 
 if (document.readyState === "loading") {
