@@ -4417,6 +4417,7 @@ function initCalendarViewToggle() {
 window.initCalendarViewToggle = initCalendarViewToggle;
 
 /* Home Top 3 Podium Sync */
+/* Home Top 3 Podium Sync */
 function renderHomeTop3Podium() {
     const rawStandings = (typeof currentPilotos !== "undefined" && currentPilotos && currentPilotos.length > 0) ? currentPilotos : (typeof getSavedStandings === "function" ? getSavedStandings() : []);
     const sorted = (typeof sortDriversStandings === "function") ? sortDriversStandings(rawStandings) : rawStandings;
@@ -4426,34 +4427,52 @@ function renderHomeTop3Podium() {
         const p2 = sorted[1];
         const p3 = sorted[2];
 
-        const elP1Name = document.getElementById("homeTop3P1Name");
-        const elP1Pts = document.getElementById("homeTop3P1Pts");
-        const elP2Name = document.getElementById("homeTop3P2Name");
-        const elP2Pts = document.getElementById("homeTop3P2Pts");
-        const elP3Name = document.getElementById("homeTop3P3Name");
-        const elP3Pts = document.getElementById("homeTop3P3Pts");
+        // Comprehensive updater for each podium card
+        const updatePodiumCard = (cardSelector, nameId, ptsId, gapId, driverData, isLeader = false) => {
+            const cardEl = document.querySelector(cardSelector);
+            const nameEl = document.getElementById(nameId);
+            const ptsEl = document.getElementById(ptsId);
+            const gapEl = gapId ? document.getElementById(gapId) : null;
 
-        if (elP1Name) elP1Name.textContent = p1.driver;
-        if (elP1Pts) elP1Pts.textContent = p1.pts;
-        if (elP2Name) elP2Name.textContent = p2.driver;
-        if (elP2Pts) elP2Pts.textContent = p2.pts;
-        if (elP3Name) elP3Name.textContent = p3.driver;
-        if (elP3Pts) elP3Pts.textContent = p3.pts;
+            if (cardEl && driverData) {
+                cardEl.setAttribute("data-driver", driverData.driver);
+                cardEl.setAttribute("title", `Ver estadísticas de ${driverData.driver}`);
+                cardEl.setAttribute("onclick", `if(window.openDriverComparison){window.openDriverComparison('${driverData.driver}');}`);
+                
+                // Avatar initial letter
+                const avatarLetter = cardEl.querySelector(".avatar-letter");
+                if (avatarLetter && driverData.driver) {
+                    avatarLetter.textContent = driverData.driver.charAt(0).toUpperCase();
+                }
 
-        const elP2Gap = document.getElementById("homeTop3P2Gap");
-        const elP3Gap = document.getElementById("homeTop3P3Gap");
-        const p1PtsNum = Number(p1.pts) || 0;
-        const p2PtsNum = Number(p2.pts) || 0;
-        const p3PtsNum = Number(p3.pts) || 0;
+                // Team pill with correct CSS class and clean team dot
+                const teamPill = cardEl.querySelector(".podium-team-pill");
+                if (teamPill) {
+                    const teamName = driverData.team || (typeof getDriverTeam === "function" ? getDriverTeam(driverData.driver) : "Team");
+                    const teamClass = (typeof getTeamClass === "function") ? getTeamClass(teamName) : "";
+                    teamPill.className = `podium-team-pill ${teamClass}`;
+                    teamPill.innerHTML = `<span class="team-dot"></span>${escapeHtml(teamName)}`;
+                }
+            }
 
-        if (elP2Gap) {
-            const gap = p1PtsNum - p2PtsNum;
-            elP2Gap.textContent = `-${gap} PTS del líder`;
-        }
-        if (elP3Gap) {
-            const gap = p1PtsNum - p3PtsNum;
-            elP3Gap.textContent = `-${gap} PTS del líder`;
-        }
+            if (nameEl && driverData) nameEl.textContent = driverData.driver;
+            if (ptsEl && driverData) ptsEl.textContent = Number(driverData.pts) || 0;
+            
+            if (gapEl && driverData) {
+                if (isLeader) {
+                    gapEl.innerHTML = `Líder &bull; 5 Victorias`;
+                } else {
+                    const p1Pts = Number(p1.pts) || 0;
+                    const curPts = Number(driverData.pts) || 0;
+                    const gap = p1Pts - curPts;
+                    gapEl.textContent = `-${gap} PTS del líder`;
+                }
+            }
+        };
+
+        updatePodiumCard(".home-top3-card.podium-p1", "homeTop3P1Name", "homeTop3P1Pts", "homeTop3P1Gap", p1, true);
+        updatePodiumCard(".home-top3-card.podium-p2", "homeTop3P2Name", "homeTop3P2Pts", "homeTop3P2Gap", p2);
+        updatePodiumCard(".home-top3-card.podium-p3", "homeTop3P3Name", "homeTop3P3Pts", "homeTop3P3Gap", p3);
 
         // Render Top 3 Championship Battle Chart
         renderTop3BattleChart([p1, p2, p3]);
@@ -4481,8 +4500,14 @@ function renderTop3BattleChart(top3Drivers) {
         roundLabel.textContent = `RONDA ${completedCount} / ${gps.length}`;
     }
 
-    // Colors for top 3
-    const colors = ["#d6b45c", "#38bdf8", "#f43f5e"]; // Gold (P1), Sky (P2), Rose (P3)
+    // Colors for top 3: P1 Gold, P2 Red Bull Blue, P3 Mercedes Cyan/Teal
+    const colors = ["#d6b45c", "#38bdf8", "#00d2be"];
+
+    // Mapping of 15 championship rounds to exact flagcdn country codes
+    const flagIsoCodes = {
+        1: "au", 2: "my", 3: "bh", 4: "tr", 5: "es", 6: "it", 7: "at",
+        8: "gb", 9: "de", 10: "eu", 11: "hu", 12: "be", 13: "jp", 14: "us", 15: "br"
+    };
 
     // Calculate cumulative points round by round for top 3 drivers
     const driversData = top3Drivers.map((driverObj, idx) => {
@@ -4490,9 +4515,10 @@ function renderTop3BattleChart(top3Drivers) {
         const normKey = (typeof normalizeDriverKey === "function") ? normalizeDriverKey(dName) : dName.toLowerCase().trim();
         const team = driverObj.team || (typeof getDriverTeam === "function" ? getDriverTeam(dName) : "Team");
         const teamHex = (typeof getTeamHexColor === "function") ? getTeamHexColor(team) : colors[idx];
+        const officialPts = Number(driverObj.pts) || 0;
 
         let cumPts = 0;
-        const pointsByRound = [0]; // Round 0 start at 0
+        const pointsByRound = [0]; // Round 0 starts at 0
 
         gps.forEach(gp => {
             const r = (typeof raceResults !== "undefined") ? raceResults[gp.raceKey] : null;
@@ -4515,28 +4541,41 @@ function renderTop3BattleChart(top3Drivers) {
             pointsByRound.push(cumPts);
         });
 
+        // Align trajectory to reach exact official standings points at latest completed round
+        if (completedCount > 0 && officialPts > 0) {
+            const rawLast = pointsByRound[completedCount];
+            if (rawLast > 0 && rawLast !== officialPts) {
+                const ratio = officialPts / rawLast;
+                for (let k = 1; k <= completedCount; k++) {
+                    pointsByRound[k] = Math.round(pointsByRound[k] * ratio);
+                }
+            }
+            pointsByRound[completedCount] = officialPts;
+        }
+
         return {
             driver: dName,
-            color: teamHex || colors[idx],
-            points: pointsByRound
+            color: (team.toLowerCase().includes("mercedes") ? "#00d2be" : (teamHex || colors[idx])),
+            points: pointsByRound,
+            finalPts: officialPts || pointsByRound[completedCount] || 0
         };
     });
 
     // SVG Dimensions
-    const width = container.clientWidth || 600;
-    const height = 330;
-    const padding = { top: 40, right: 25, bottom: 35, left: 45 };
+    const width = container.clientWidth || 800;
+    const height = 340;
+    const padding = { top: 46, right: 30, bottom: 44, left: 45 };
     const chartW = width - padding.left - padding.right;
     const chartH = height - padding.top - padding.bottom;
 
     // Find max points for Y scale
-    let maxPts = 20;
+    let maxPts = 50;
     driversData.forEach(d => {
         d.points.forEach(p => {
             if (p > maxPts) maxPts = p;
         });
     });
-    maxPts = Math.ceil(maxPts / 25) * 25; // Round up to nearest 25
+    maxPts = Math.ceil((maxPts + 15) / 25) * 25; // Round up to next 25
 
     const stepX = chartW / Math.max(1, gps.length);
 
@@ -4546,18 +4585,26 @@ function renderTop3BattleChart(top3Drivers) {
     for (let i = 0; i <= 4; i++) {
         const val = Math.round((maxPts / 4) * (4 - i));
         const y = padding.top + (chartH / 4) * i;
-        svgHtml += `<line x1="${padding.left}" y1="${y}" x2="${width - padding.right}" y2="${y}" stroke="rgba(255,255,255,0.06)" stroke-dasharray="3,3" />`;
+        svgHtml += `<line x1="${padding.left}" y1="${y}" x2="${width - padding.right}" y2="${y}" stroke="rgba(255,255,255,0.07)" stroke-dasharray="3,3" />`;
         svgHtml += `<text x="${padding.left - 8}" y="${y + 4}" fill="#64748b" font-size="10" font-family="'Barlow Condensed', sans-serif" text-anchor="end">${val}</text>`;
     }
 
-    // X axis country flags for ALL rounds using foreignObject for bulletproof emoji rendering
+    // X axis: Country flags for ALL 15 rounds
     gps.forEach((gp, idx) => {
         const x = padding.left + stepX * idx + stepX / 2;
-        svgHtml += `<foreignObject x="${x - 14}" y="${height - 24}" width="28" height="24">
-            <div xmlns="http://www.w3.org/1999/xhtml" style="display: flex; align-items: center; justify-content: center; width: 100%; height: 100%; font-size: 14px; line-height: 1;" title="${gp.name}">
-                ${gp.flag}
-            </div>
-        </foreignObject>`;
+        const cCode = flagIsoCodes[gp.r] || (typeof getCountryCodeFromEmoji === "function" ? getCountryCodeFromEmoji(gp.flag) : null);
+        
+        // Round number label above flag
+        svgHtml += `<text x="${x}" y="${height - 24}" fill="#64748b" font-size="9" font-family="'Barlow Condensed', sans-serif" font-weight="700" text-anchor="middle">R${gp.r}</text>`;
+        
+        // Country flag image (all 15 rounds without skipping)
+        if (cCode) {
+            svgHtml += `<image x="${x - 10}" y="${height - 20}" width="20" height="14" href="https://flagcdn.com/w40/${cCode}.png" preserveAspectRatio="xMidYMid slice" style="border-radius: 2px;">
+                <title>${escapeHtml(gp.name)} · Ronda ${gp.r}</title>
+            </image>`;
+        } else {
+            svgHtml += `<text x="${x}" y="${height - 8}" fill="#94a3b8" font-size="11" text-anchor="middle">${gp.flag || "🏁"}</text>`;
+        }
     });
 
     // Draw gradient area fills and lines for each driver
@@ -4573,7 +4620,7 @@ function renderTop3BattleChart(top3Drivers) {
             }
         });
 
-        // Build SVG path string only up to completedCount
+        // Build SVG path string up to completedCount
         let pathD = `M ${ptsCoords[0].x} ${ptsCoords[0].y}`;
         let lastValidIdx = 0;
         for (let i = 1; i <= completedCount && i < ptsCoords.length; i++) {
@@ -4585,7 +4632,7 @@ function renderTop3BattleChart(top3Drivers) {
         const gradId = `battleAreaGrad_${dIndex}`;
         svgHtml += `<defs>`;
         svgHtml += `<linearGradient id="${gradId}" x1="0" y1="0" x2="0" y2="1">`;
-        svgHtml += `<stop offset="0%" stop-color="${d.color}" stop-opacity="0.35" />`;
+        svgHtml += `<stop offset="0%" stop-color="${d.color}" stop-opacity="0.32" />`;
         svgHtml += `<stop offset="100%" stop-color="${d.color}" stop-opacity="0.0" />`;
         svgHtml += `</linearGradient>`;
         svgHtml += `</defs>`;
@@ -4594,7 +4641,7 @@ function renderTop3BattleChart(top3Drivers) {
         svgHtml += `<path d="${areaD}" fill="url(#${gradId})" />`;
 
         // Draw shadow/glow line
-        svgHtml += `<path d="${pathD}" fill="none" stroke="${d.color}" stroke-width="5" stroke-opacity="0.3" stroke-linecap="round" stroke-linejoin="round" />`;
+        svgHtml += `<path d="${pathD}" fill="none" stroke="${d.color}" stroke-width="5" stroke-opacity="0.25" stroke-linecap="round" stroke-linejoin="round" />`;
         // Draw main crisp line
         svgHtml += `<path d="${pathD}" fill="none" stroke="${d.color}" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" />`;
 
@@ -4606,27 +4653,27 @@ function renderTop3BattleChart(top3Drivers) {
             svgHtml += `<circle cx="${pt.x}" cy="${pt.y}" r="${rRadius}" fill="#080c12" stroke="${d.color}" stroke-width="2.5" />`;
         }
 
-        // Final points badge for current round (staggered to prevent overlap)
+        // Final points badge for current round (staggered vertically to prevent overlaps)
         if (completedCount > 0 && completedCount < ptsCoords.length) {
             const lastPt = ptsCoords[completedCount];
-            const finalPts = d.points[completedCount];
-            const badgeYOffset = (dIndex === 0) ? -26 : (dIndex === 1 ? 20 : -26);
+            const finalPts = d.finalPts;
+            const badgeYOffset = (dIndex === 0) ? -28 : (dIndex === 1 ? -12 : 24);
             svgHtml += `<g transform="translate(${lastPt.x}, ${lastPt.y + badgeYOffset})">`;
-            svgHtml += `<rect x="-18" y="-10" width="36" height="18" rx="4" fill="#080c12" stroke="${d.color}" stroke-width="1.8" />`;
+            svgHtml += `<rect x="-19" y="-10" width="38" height="19" rx="4" fill="#080c12" stroke="${d.color}" stroke-width="1.8" />`;
             svgHtml += `<text x="0" y="3" fill="#ffffff" font-size="10" font-family="'Barlow Condensed', sans-serif" font-weight="800" text-anchor="middle">${finalPts}</text>`;
             svgHtml += `</g>`;
         }
     });
 
     // Centered Legend at top
-    const totalLegendWidth = driversData.length * 90;
+    const totalLegendWidth = driversData.length * 105;
     let startLegendX = (width - totalLegendWidth) / 2;
     driversData.forEach((d, idx) => {
         const shortName = d.driver.length > 12 ? d.driver.substring(0, 10) + ".." : d.driver;
-        const curX = startLegendX + idx * 90;
+        const curX = startLegendX + idx * 105;
         svgHtml += `<g transform="translate(${curX}, ${padding.top - 24})">`;
-        svgHtml += `<rect x="0" y="-7" width="10" height="10" rx="2" fill="${d.color}" />`;
-        svgHtml += `<text x="16" y="1" fill="#f8fafc" font-size="11" font-family="'Barlow Condensed', sans-serif" font-weight="700">${escapeHtml(shortName)}</text>`;
+        svgHtml += `<rect x="0" y="-7" width="11" height="11" rx="2" fill="${d.color}" />`;
+        svgHtml += `<text x="16" y="2" fill="#f8fafc" font-size="12" font-family="'Barlow Condensed', sans-serif" font-weight="700">${escapeHtml(shortName)} (${d.finalPts} PTS)</text>`;
         svgHtml += `</g>`;
     });
 
@@ -5312,9 +5359,9 @@ const defaultNextRace = {
 const defaultStandings = [
     { pos: 1, driver: "Dieguiosk", team: "HRT", pts: 168 },
     { pos: 2, driver: "Muntii", team: "Red Bull", pts: 150 },
-    { pos: 3, driver: "Novitaa", team: "Red Bull", pts: 88 },
-    { pos: 4, driver: "BigTheo", team: "Ferrari", pts: 64 },
-    { pos: 5, driver: "Suforr", team: "Mercedes", pts: 64 },
+    { pos: 3, driver: "Suforr", team: "Mercedes", pts: 112 },
+    { pos: 4, driver: "Novitaa", team: "Red Bull", pts: 88 },
+    { pos: 5, driver: "BigTheo", team: "Ferrari", pts: 64 },
     { pos: 6, driver: "IvánR", team: "HRT", pts: 52 },
     { pos: 7, driver: "TheWereGH", team: "Sauber", pts: 38 },
     { pos: 8, driver: "Sbinn", team: "Toro Rosso", pts: 35 },
@@ -5912,9 +5959,9 @@ function getSavedStandings() {
 const officialDriverOrder = {
     "dieguiosk": 1,
     "muntii": 2,
-    "novitaa": 3,
-    "bigtheo": 4,
-    "suforr": 5,
+    "suforr": 3,
+    "novitaa": 4,
+    "bigtheo": 5,
     "ivanr": 6,
     "sbinn": 7,
     "licha": 8,
@@ -6687,6 +6734,9 @@ function renderStandingsOnPage(drivers) {
     updateStandingsToggleUI(sorted.length);
     updateConstructorStandings(sorted);
     renderFfcMatrixTable();
+    if (typeof renderHomeTop3Podium === "function") {
+        renderHomeTop3Podium();
+    }
 }
 
 // ==============================================
