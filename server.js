@@ -67,8 +67,42 @@ app.post('/api/auth/register', (req, res) => {
     return res.status(400).json({ error: 'Missing required fields' });
   }
 
-  const cleanEmail = email.trim().toLowerCase();
-  const cleanName = (name || '').trim() || cleanEmail.split('@')[0];
+  const cleanEmail = String(email || '').trim().toLowerCase();
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!emailRegex.test(cleanEmail)) {
+    return res.status(400).json({ error: 'Invalid email format', code: 'auth/invalid-email' });
+  }
+  if (cleanEmail.length > 128) {
+    return res.status(400).json({ error: 'Email too long', code: 'auth/email-too-long' });
+  }
+
+  const rawName = String(name || '').trim();
+  const sanitizedName = rawName.replace(/<[^>]*>?/gm, '');
+  const cleanName = sanitizedName || cleanEmail.split('@')[0];
+  if (cleanName.length > 50) {
+    return res.status(400).json({ error: 'Username too long', code: 'auth/username-too-long' });
+  }
+
+  // Check reserved admin username variations (case-insensitive, leetspeak, numbers, separators)
+  const normalizedAdminCheck = cleanName
+    .toLowerCase()
+    .normalize('NFD').replace(/[\u0300-\u036f]/g, '') // remove accents (á, etc)
+    .replace(/[@4]/g, 'a')
+    .replace(/[|1!l]/g, 'i')
+    .replace(/[0]/g, 'o')
+    .replace(/[3]/g, 'e')
+    .replace(/[^a-z]/g, ''); // strip spaces, underscores, hyphens, numbers
+
+  if (normalizedAdminCheck.includes('admin') || cleanName.toLowerCase().includes('admin')) {
+    return res.status(400).json({ 
+      error: 'Username not allowed: contains admin or reserved variations', 
+      code: 'auth/username-reserved-admin' 
+    });
+  }
+
+  if (password && password.length < 6) {
+    return res.status(400).json({ error: 'Password must have at least 6 characters', code: 'auth/weak-password' });
+  }
   const users = getUsers();
 
   const existingEmail = users.find(u => (u.email || '').toLowerCase().trim() === cleanEmail);

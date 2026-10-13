@@ -1217,7 +1217,7 @@ const translations = {
             btnLabel: "LOG IN",
             badge: "FORMULA FACTOR // DRIVER ACCESS",
             tabLogin: "LOG IN",
-            tabRegister: "REGISTER",
+            tabRegister: "SIGN UP",
             loginSub: "Enter your email and password to access your driver account.",
             registerSub: "Create your driver account on Formula Factor Championship.",
             resetSub: "Enter your email to receive an official password reset link.",
@@ -1229,7 +1229,7 @@ const translations = {
             btnCancel: "CANCEL",
             btnBack: "BACK",
             btnSubmitLogin: "LOG IN",
-            btnSubmitRegister: "CREATE ACCOUNT",
+            btnSubmitRegister: "SIGN UP",
             btnSubmitReset: "SEND RESET LINK",
             statusConnected: "CONNECTED",
             statusAdmin: "ADMINISTRATOR",
@@ -2364,6 +2364,16 @@ function applyTranslations(lang) {
 
         const forgotLink = document.getElementById("authForgotBtn");
         if (forgotLink) forgotLink.textContent = dict.auth.forgotLink;
+        document.querySelectorAll(".pwd-toggle-label").forEach(el => {
+            const btn = el.closest("button");
+            const hideIcon = btn ? btn.querySelector(".eye-hide") : null;
+            const isShowing = hideIcon && hideIcon.style.display !== "none" && hideIcon.style.display !== "";
+            if (isShowing) {
+                el.textContent = lang === "en" ? "Hide" : "Ocultar";
+            } else {
+                el.textContent = lang === "en" ? "Show" : "Mostrar";
+            }
+        });
         const logCancel = document.getElementById("loginCancelBtn");
         if (logCancel) logCancel.textContent = dict.auth.btnCancel;
         const regCancel = document.getElementById("registerCancelBtn");
@@ -12250,6 +12260,28 @@ async function hashUserPassword(password) {
     }
 }
 
+// Reserved admin username detection (forbids "admin" and any variation: casing, leetspeak, numbers, symbols, spaces)
+function isReservedAdminUsername(name) {
+    if (!name) return false;
+    const str = String(name);
+    // Direct case-insensitive check
+    if (/admin/i.test(str)) return true;
+
+    // Normalize accents and leetspeak variations:
+    // @, 4 -> a; 1, !, |, l -> i; 0 -> o; 3 -> e; etc.
+    const normalized = str
+        .toLowerCase()
+        .normalize('NFD').replace(/[\u0300-\u036f]/g, '') // remove diacritics
+        .replace(/[@4]/g, 'a')
+        .replace(/[|1!l]/g, 'i')
+        .replace(/[0]/g, 'o')
+        .replace(/[3]/g, 'e')
+        .replace(/[^a-z]/g, ''); // strip any non-alpha characters (dots, spaces, numbers, underscores)
+
+    return normalized.includes('admin');
+}
+window.isReservedAdminUsername = isReservedAdminUsername;
+
 // Local fallback authentication store (enables offline capability & local cache)
 var LocalAuthStore = {
     getUsers() {
@@ -12311,11 +12343,29 @@ var LocalAuthStore = {
         } catch (e) {}
     },
     register(displayName, email, password) {
-        const users = this.getUsers();
-        const normalizedEmail = email.toLowerCase().trim();
-        const cleanName = (displayName || "").trim() || normalizedEmail.split("@")[0];
+        const cleanEmail = (email || "").toLowerCase().trim();
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(cleanEmail)) {
+            throw { code: "auth/invalid-email", message: "Invalid email format" };
+        }
+        if (cleanEmail.length > 128) {
+            throw { code: "auth/email-too-long", message: "Email too long" };
+        }
 
-        const existingEmail = users.find(u => (u.email || "").toLowerCase().trim() === normalizedEmail);
+        const rawName = (displayName || "").trim();
+        const cleanName = rawName.replace(/<[^>]*>?/gm, '') || cleanEmail.split("@")[0];
+        if (cleanName.length > 50) {
+            throw { code: "auth/username-too-long", message: "Username too long" };
+        }
+        if (isReservedAdminUsername(cleanName)) {
+            throw { code: "auth/username-reserved-admin", message: "Username not allowed: contains admin or reserved variations" };
+        }
+        if (password && password.length < 6) {
+            throw { code: "auth/weak-password", message: "Password must have at least 6 characters" };
+        }
+
+        const users = this.getUsers();
+        const existingEmail = users.find(u => (u.email || "").toLowerCase().trim() === cleanEmail);
         if (existingEmail) {
             throw { code: "auth/email-already-in-use", message: "Email already in use" };
         }
@@ -12328,7 +12378,7 @@ var LocalAuthStore = {
         const newUser = {
             uid: "user_" + Date.now() + "_" + Math.random().toString(36).substring(2, 7),
             displayName: cleanName,
-            email: normalizedEmail,
+            email: cleanEmail,
             password: password,
             createdAt: new Date().toISOString()
         };
@@ -12359,8 +12409,27 @@ window.LocalAuthStore = LocalAuthStore;
 // Cloud Authentication Service with direct Firebase Firestore & backend synchronization
 const CloudAuthService = {
     async registerUser(displayName, email, password) {
-        const cleanEmail = email.trim().toLowerCase();
-        const cleanName = displayName.trim() || cleanEmail.split("@")[0];
+        const cleanEmail = (email || "").toLowerCase().trim();
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(cleanEmail)) {
+            throw { code: "auth/invalid-email", message: "Invalid email format" };
+        }
+        if (cleanEmail.length > 128) {
+            throw { code: "auth/email-too-long", message: "Email too long" };
+        }
+
+        const rawName = (displayName || "").trim();
+        const cleanName = rawName.replace(/<[^>]*>?/gm, '') || cleanEmail.split("@")[0];
+        if (cleanName.length > 50) {
+            throw { code: "auth/username-too-long", message: "Username too long" };
+        }
+        if (isReservedAdminUsername(cleanName)) {
+            throw { code: "auth/username-reserved-admin", message: "Username not allowed: contains admin or reserved variations" };
+        }
+        if (password && password.length < 6) {
+            throw { code: "auth/weak-password", message: "Password must have at least 6 characters" };
+        }
+
         const docId = getUserDocId(cleanEmail);
         const pHash = await hashUserPassword(password);
 
@@ -12666,9 +12735,9 @@ const authTabsNav = document.getElementById("authTabsNav");
 const authTabLogin = document.getElementById("authTabLogin");
 const authTabRegister = document.getElementById("authTabRegister");
 
-const authLoginSub = document.getElementById("authLoginSub");
-const authRegisterSub = document.getElementById("authRegisterSub");
-const authResetSub = document.getElementById("authResetSub");
+const authLoginSub = document.getElementById("loginSubtitle") || document.getElementById("authLoginSub");
+const authRegisterSub = document.getElementById("registerSubtitle") || document.getElementById("authRegisterSub");
+const authResetSub = document.getElementById("resetSubtitle") || document.getElementById("authResetSub");
 
 const authAlertBox = document.getElementById("authAlertBox");
 const authAlertText = document.getElementById("authAlertText");
@@ -12730,6 +12799,9 @@ function getAuthErrorMessage(errCode) {
     if (str.includes("username-already-in-use")) {
         return isEn ? "This username is already taken. Please choose another one." : "Este nombre de usuario ya está en uso. Por favor elige otro.";
     }
+    if (str.includes("username-reserved-admin") || str.includes("reserved-admin") || str.includes("admin")) {
+        return isEn ? "Usernames containing 'admin' or variations are not allowed." : "No se permite usar 'admin' ni ninguna de sus variaciones en el nombre.";
+    }
     if (str.includes("weak-password")) {
         return isEn ? "Password is too weak. Please use at least 6 characters." : "La contraseña es muy débil. Debe tener al menos 6 caracteres.";
     }
@@ -12763,12 +12835,22 @@ function switchUserAuthTab(tab) {
     }
 
     if (authTabLogin) {
-        if (tab === "login") authTabLogin.classList.add("active");
-        else authTabLogin.classList.remove("active");
+        if (tab === "login") {
+            authTabLogin.classList.add("active");
+            authTabLogin.setAttribute("aria-selected", "true");
+        } else {
+            authTabLogin.classList.remove("active");
+            authTabLogin.setAttribute("aria-selected", "false");
+        }
     }
     if (authTabRegister) {
-        if (tab === "register") authTabRegister.classList.add("active");
-        else authTabRegister.classList.remove("active");
+        if (tab === "register") {
+            authTabRegister.classList.add("active");
+            authTabRegister.setAttribute("aria-selected", "true");
+        } else {
+            authTabRegister.classList.remove("active");
+            authTabRegister.setAttribute("aria-selected", "false");
+        }
     }
 
     // Auto-focus first input
@@ -13065,21 +13147,26 @@ if (resetBackBtn) {
 }
 
 // Toggle password visibility
-if (toggleLoginPwdBtn && loginPasswordInput) {
-    toggleLoginPwdBtn.addEventListener("click", () => {
-        const isPassword = loginPasswordInput.type === "password";
-        loginPasswordInput.type = isPassword ? "text" : "password";
-        toggleLoginPwdBtn.textContent = isPassword ? "🙈" : "👁";
+function setupPasswordVisibilityToggle(btn, input) {
+    if (!btn || !input) return;
+    btn.addEventListener("click", () => {
+        const isPassword = input.type === "password";
+        input.type = isPassword ? "text" : "password";
+        const showIcon = btn.querySelector(".eye-show");
+        const hideIcon = btn.querySelector(".eye-hide");
+        const label = btn.querySelector(".pwd-toggle-label");
+        if (showIcon && hideIcon) {
+            showIcon.style.display = isPassword ? "none" : "inline-block";
+            hideIcon.style.display = isPassword ? "inline-block" : "none";
+        }
+        if (label) {
+            const isEn = typeof currentLanguage !== "undefined" && currentLanguage === "en";
+            label.textContent = isPassword ? (isEn ? "Hide" : "Ocultar") : (isEn ? "Show" : "Mostrar");
+        }
     });
 }
-
-if (toggleRegisterPwdBtn && registerPasswordInput) {
-    toggleRegisterPwdBtn.addEventListener("click", () => {
-        const isPassword = registerPasswordInput.type === "password";
-        registerPasswordInput.type = isPassword ? "text" : "password";
-        toggleRegisterPwdBtn.textContent = isPassword ? "🙈" : "👁";
-    });
-}
+setupPasswordVisibilityToggle(toggleLoginPwdBtn, loginPasswordInput);
+setupPasswordVisibilityToggle(toggleRegisterPwdBtn, registerPasswordInput);
 
 // --- Login Form Submit ---
 if (userLoginForm) {
@@ -13146,6 +13233,11 @@ if (userRegisterForm) {
             return;
         }
 
+        if (isReservedAdminUsername(name)) {
+            showAuthAlert(isEn ? "Usernames containing 'admin' or variations are not allowed." : "No se permite usar 'admin' ni ninguna de sus variaciones en el nombre.");
+            return;
+        }
+
         const regSubSpan = document.getElementById("registerSubmitBtnText");
         if (registerSubmitBtn) {
             registerSubmitBtn.disabled = true;
@@ -13167,7 +13259,7 @@ if (userRegisterForm) {
             if (registerSubmitBtn) {
                 registerSubmitBtn.disabled = false;
                 const dict = translations[currentLanguage] || translations.es;
-                const text = dict.auth ? dict.auth.btnSubmitRegister : (isEn ? "CREATE ACCOUNT" : "CREAR CUENTA");
+                const text = dict.auth ? dict.auth.btnSubmitRegister : (isEn ? "SIGN UP" : "CREAR CUENTA");
                 registerSubmitBtn.innerHTML = `<span class="btn-text" id="registerSubmitBtnText">${text}</span>`;
             }
         }
