@@ -71,23 +71,26 @@ app.post('/api/auth/register', (req, res) => {
   const cleanName = (name || '').trim() || cleanEmail.split('@')[0];
   const users = getUsers();
 
-  const existingIdx = users.findIndex(u => (u.email || '').toLowerCase().trim() === cleanEmail);
-  const pHash = passwordHash || hashPassword(password);
+  const existingEmail = users.find(u => (u.email || '').toLowerCase().trim() === cleanEmail);
+  if (existingEmail) {
+    return res.status(400).json({ error: 'Email already in use', code: 'auth/email-already-in-use' });
+  }
 
+  const existingName = users.find(u => (u.displayName || '').toLowerCase().trim() === cleanName.toLowerCase().trim());
+  if (existingName) {
+    return res.status(400).json({ error: 'Username already in use', code: 'auth/username-already-in-use' });
+  }
+
+  const pHash = passwordHash || hashPassword(password);
   const userData = {
-    uid: existingIdx >= 0 ? users[existingIdx].uid : ('user_' + Date.now() + '_' + Math.random().toString(36).substring(2, 7)),
+    uid: 'user_' + Date.now() + '_' + Math.random().toString(36).substring(2, 7),
     displayName: cleanName,
     email: cleanEmail,
     passwordHash: pHash,
-    createdAt: existingIdx >= 0 ? users[existingIdx].createdAt : new Date().toISOString()
+    createdAt: new Date().toISOString()
   };
 
-  if (existingIdx >= 0) {
-    users[existingIdx] = { ...users[existingIdx], ...userData };
-  } else {
-    users.push(userData);
-  }
-
+  users.push(userData);
   saveUsers(users);
   return res.json({ success: true, user: userData });
 });

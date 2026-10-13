@@ -12313,13 +12313,21 @@ var LocalAuthStore = {
     register(displayName, email, password) {
         const users = this.getUsers();
         const normalizedEmail = email.toLowerCase().trim();
-        const existing = users.find(u => (u.email || "").toLowerCase().trim() === normalizedEmail);
-        if (existing) {
+        const cleanName = (displayName || "").trim() || normalizedEmail.split("@")[0];
+
+        const existingEmail = users.find(u => (u.email || "").toLowerCase().trim() === normalizedEmail);
+        if (existingEmail) {
             throw { code: "auth/email-already-in-use", message: "Email already in use" };
         }
+
+        const existingName = users.find(u => (u.displayName || "").toLowerCase().trim() === cleanName.toLowerCase().trim());
+        if (existingName) {
+            throw { code: "auth/username-already-in-use", message: "Username already in use" };
+        }
+
         const newUser = {
             uid: "user_" + Date.now() + "_" + Math.random().toString(36).substring(2, 7),
-            displayName: displayName.trim() || email.split("@")[0],
+            displayName: cleanName,
             email: normalizedEmail,
             password: password,
             createdAt: new Date().toISOString()
@@ -12355,6 +12363,24 @@ const CloudAuthService = {
         const cleanName = displayName.trim() || cleanEmail.split("@")[0];
         const docId = getUserDocId(cleanEmail);
         const pHash = await hashUserPassword(password);
+
+        // 0. Check Firestore database for existing email or username
+        try {
+            const emailQuery = query(collection(db, "usuarios"), where("email", "==", cleanEmail));
+            const emailSnap = await getDocs(emailQuery);
+            if (!emailSnap.empty) {
+                throw { code: "auth/email-already-in-use", message: "Email already in use" };
+            }
+
+            const nameQuery = query(collection(db, "usuarios"), where("displayName", "==", cleanName));
+            const nameSnap = await getDocs(nameQuery);
+            if (!nameSnap.empty) {
+                throw { code: "auth/username-already-in-use", message: "Username already in use" };
+            }
+        } catch (dbCheckErr) {
+            if (dbCheckErr.code) throw dbCheckErr;
+        }
+
         let cloudUser = null;
 
         // 1. Try Firebase Auth first
@@ -12390,17 +12416,9 @@ const CloudAuthService = {
             };
         }
 
-        // 2. Direct Cloud Firestore write
+        // 2. Server backend registration check (validates database uniqueness on server)
         try {
-            const userRef = doc(db, "usuarios", docId);
-            await setDoc(userRef, cloudUser, { merge: true });
-        } catch (dbErr) {
-            console.warn("Firestore user setDoc notice:", dbErr);
-        }
-
-        // 3. Server backend synchronization
-        try {
-            await fetch('/api/auth/register', {
+            const sRes = await fetch('/api/auth/register', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
@@ -12410,8 +12428,25 @@ const CloudAuthService = {
                     passwordHash: pHash
                 })
             });
+            if (!sRes.ok) {
+                const sData = await sRes.json().catch(() => ({}));
+                throw { code: sData.code || "auth/registration-failed", message: sData.error || "Registration failed" };
+            }
+            const sData = await sRes.json().catch(() => null);
+            if (sData && sData.user && sData.user.uid) {
+                cloudUser.uid = sData.user.uid;
+            }
         } catch (sErr) {
+            if (sErr.code) throw sErr;
             console.warn("Server auth register notice:", sErr);
+        }
+
+        // 3. Direct Cloud Firestore write
+        try {
+            const userRef = doc(db, "usuarios", docId);
+            await setDoc(userRef, cloudUser, { merge: true });
+        } catch (dbErr) {
+            console.warn("Firestore user setDoc notice:", dbErr);
         }
 
         // 4. Local storage cache & active session
@@ -12691,6 +12726,9 @@ function getAuthErrorMessage(errCode) {
     }
     if (str.includes("email-already-in-use")) {
         return isEn ? "This email is already registered. Please log in instead." : "Este correo electrónico ya está registrado. Inicia sesión.";
+    }
+    if (str.includes("username-already-in-use")) {
+        return isEn ? "This username is already taken. Please choose another one." : "Este nombre de usuario ya está en uso. Por favor elige otro.";
     }
     if (str.includes("weak-password")) {
         return isEn ? "Password is too weak. Please use at least 6 characters." : "La contraseña es muy débil. Debe tener al menos 6 caracteres.";
