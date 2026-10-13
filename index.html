@@ -116,20 +116,10 @@
     }
 
     window.openAdminLoginPrompt = function() {
-        const emailInput = prompt("Introduce el correo de Administrador para acceder:");
-        if (!emailInput) return;
-        const clean = emailInput.trim().toLowerCase();
-        const ADMIN_EMAILS = [
-            "enzo.castillo.lomb@gmail.com",
-            "formulafactorchampionship@gmail.com"
-        ];
-        if (ADMIN_EMAILS.includes(clean)) {
-            localStorage.setItem("ffc_admin_override", "true");
-            alert("✓ Acceso de Administrador concedido. ¡Bienvenido!");
-            checkMaintenanceMode();
-            window.location.reload();
+        if (typeof openUserAuthModal === "function") {
+            openUserAuthModal("login");
         } else {
-            alert("❌ Correo no autorizado como administrador.");
+            alert("Inicia sesión en la web para acceder como administrador.");
         }
     };
 
