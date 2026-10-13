@@ -284,6 +284,14 @@ function updateCountdown() {
         hoursEl.textContent = "--";
         minsEl.textContent = "--";
         secsEl.textContent = "--";
+        const cddDays = document.getElementById("calDetailCdDays");
+        const cddHours = document.getElementById("calDetailCdHours");
+        const cddMins = document.getElementById("calDetailCdMins");
+        const cddSecs = document.getElementById("calDetailCdSecs");
+        if (cddDays) cddDays.textContent = "--";
+        if (cddHours) cddHours.textContent = "--";
+        if (cddMins) cddMins.textContent = "--";
+        if (cddSecs) cddSecs.textContent = "--";
         if (countdownEl) countdownEl.classList.remove("countdown-massive");
         return;
     }
@@ -314,11 +322,20 @@ function updateCountdown() {
         }
     }
 
+    const cddDays = document.getElementById("calDetailCdDays");
+    const cddHours = document.getElementById("calDetailCdHours");
+    const cddMins = document.getElementById("calDetailCdMins");
+    const cddSecs = document.getElementById("calDetailCdSecs");
+
     if (difference <= 0) {
         daysEl.textContent = "00";
         hoursEl.textContent = "00";
         minsEl.textContent = "00";
         secsEl.textContent = "00";
+        if (cddDays) cddDays.textContent = "00";
+        if (cddHours) cddHours.textContent = "00";
+        if (cddMins) cddMins.textContent = "00";
+        if (cddSecs) cddSecs.textContent = "00";
         return;
     }
 
@@ -338,10 +355,20 @@ function updateCountdown() {
         (difference / 1000) % 60
     );
 
-    daysEl.textContent = String(days).padStart(2, "0");
-    hoursEl.textContent = String(hours).padStart(2, "0");
-    minsEl.textContent = String(minutes).padStart(2, "0");
-    secsEl.textContent = String(seconds).padStart(2, "0");
+    const dStr = String(days).padStart(2, "0");
+    const hStr = String(hours).padStart(2, "0");
+    const mStr = String(minutes).padStart(2, "0");
+    const sStr = String(seconds).padStart(2, "0");
+
+    daysEl.textContent = dStr;
+    hoursEl.textContent = hStr;
+    minsEl.textContent = mStr;
+    secsEl.textContent = sStr;
+
+    if (cddDays) cddDays.textContent = dStr;
+    if (cddHours) cddHours.textContent = hStr;
+    if (cddMins) cddMins.textContent = mStr;
+    if (cddSecs) cddSecs.textContent = sStr;
 }
 
 updateCountdown();
@@ -411,8 +438,8 @@ const translations = {
             fantasy: "FANTASY"
         },
         hero: {
-            eyebrow: "TEMPORADA 1 FORMULA FACTOR CHAMPIONSHIP",
-            title: "CORRE RUEDA A RUEDA<br>EN LA PARRILLA <span class=\"gold-text-glow\">FFC</span>",
+            eyebrow: "TEMPORADA 1 · COMPETICIÓN OFICIAL SIM RACING",
+            title: "FORMULA FACTOR<br><span class=\"gold-text-glow\">CHAMPIONSHIP</span>",
             tagGps: "15 GRANDES PREMIOS",
             tagDrivers: "44 PILOTOS INSCRITOS",
             tagChampion: "1 CAMPEÓN FFC",
@@ -507,7 +534,7 @@ const translations = {
             nextEvent: "PRÓXIMO EVENTO"
         },
         info: {
-            heading: "INFORMACIÓN",
+            heading: "QUIENES SOMOS",
             p1: "Formula Factor Championship es una competición en Assetto Corsa diseñada para reunir a pilotos amantes de la simulación y del automovilismo, especialmente de la Fórmula 1 de las eras V8 y V10.",
             p2: "Este campeonato ofrece carreras competitivas y de alto realismo. Buscamos recrear la experiencia de un campeonato profesional de motorsport. A lo largo de la temporada, los pilotos deberán demostrar no solo velocidad, sino también constancia, estrategia y capacidad de adaptación para alzarse con el título.",
             p3: "El campeonato constará de diversas citas en diferentes circuitos, con un sistema de puntuación basado en el sistema oficial de la Fórmula 1. Además, se promueve el respeto entre pilotos, el juego limpio en pista y una comunidad sana donde disfrutar de carreras igualadas.",
@@ -923,8 +950,8 @@ const translations = {
             fantasy: "FANTASY"
         },
         hero: {
-            eyebrow: "SEASON 1 FORMULA FACTOR CHAMPIONSHIP",
-            title: "RACE WHEEL-TO-WHEEL<br>ON THE <span class=\"gold-text-glow\">FFC GRID</span>",
+            eyebrow: "SEASON 1 · OFFICIAL SIM RACING COMPETITION",
+            title: "FORMULA FACTOR<br><span class=\"gold-text-glow\">CHAMPIONSHIP</span>",
             tagGps: "15 GRAND PRIX",
             tagDrivers: "44 REGISTERED DRIVERS",
             tagChampion: "1 FFC CHAMPION",
@@ -1478,6 +1505,24 @@ function updateCalendarCards(lang) {
             countryEl.textContent = dict.countries[origC] || origC;
         }
     });
+
+    const kickerEl = document.getElementById("calendarKicker");
+    const headingEl = document.getElementById("calendarHeading");
+    const roundsLbl = document.getElementById("calendarRoundsLabel");
+    if (kickerEl) kickerEl.textContent = (lang === "en") ? "SCHEDULE & RESULTS" : "CALENDARIO & RESULTADOS";
+    if (headingEl) headingEl.textContent = (lang === "en") ? "SEASON RACES 2026" : "CARRERAS TEMPORADA 2026";
+    if (roundsLbl) roundsLbl.textContent = (lang === "en") ? "ROUNDS" : "RONDAS";
+
+    const tabChampSpan = document.querySelector("#tabChampionship span:first-child");
+    const tabTrainSpan = document.querySelector("#tabTraining span:first-child");
+    const tabSpecSpan = document.querySelector("#tabSpecial span:first-child");
+    if (tabChampSpan) tabChampSpan.textContent = (lang === "en") ? "Championship" : "Campeonato";
+    if (tabTrainSpan) tabTrainSpan.textContent = (lang === "en") ? "Training / Sessions" : "Entrenamientos";
+    if (tabSpecSpan) tabSpecSpan.textContent = (lang === "en") ? "Special Events" : "Eventos Especiales";
+
+    if (typeof selectCalendarRound === "function" && typeof currentSelectedCalendarRound !== "undefined") {
+        selectCalendarRound(currentSelectedCalendarRound, typeof currentSelectedCalendarSession !== "undefined" ? currentSelectedCalendarSession : "race");
+    }
 }
 
 function applyTranslations(lang) {
@@ -3481,12 +3526,12 @@ function refreshAllCalendarCards() {
 
     SEASON_RACE_ORDER.forEach((key, idx) => {
         const rData = raceResults[key] || seasonRacesMeta[key];
-        let card = document.querySelector(`.calendar-card[data-race="${key}"]`);
+        let card = document.querySelector(`#calendarGridView .calendar-card[data-race="${key}"]`) || document.querySelector(`.calendar-grid .calendar-card[data-race="${key}"]`);
         if (!card) {
             const meta = seasonRacesMeta[key];
             if (meta && meta.round) {
                 const roundNum = meta.round.replace(/ROUND\s*/i, "").trim();
-                const cards = document.querySelectorAll(".calendar-card");
+                const cards = document.querySelectorAll("#calendarGridView .calendar-card, .calendar-grid .calendar-card");
                 cards.forEach(c => {
                     const numEl = c.querySelector(".calendar-number");
                     if (numEl && numEl.textContent.trim() === roundNum) {
@@ -3527,7 +3572,15 @@ function refreshAllCalendarCards() {
             hint.textContent = (translations[curLang]?.calendar?.viewResults) || (isEn ? "RESULTS →" : "RESULTADOS →");
             const footer = card.querySelector(".calendar-card-footer") || card;
             footer.appendChild(hint);
-            card.onclick = () => openRace(key);
+            if (card.classList.contains("calendar-round-item")) {
+                card.onclick = (e) => {
+                    e.preventDefault();
+                    if (typeof selectCalendarRound === "function") selectCalendarRound(key);
+                };
+                card.ondblclick = () => openRace(key);
+            } else {
+                card.onclick = () => openRace(key);
+            }
         } else if (isNext) {
             card.classList.add("next", "race-link");
             if (statusEl) {
@@ -3539,7 +3592,15 @@ function refreshAllCalendarCards() {
             note.textContent = isEn ? "THIS WEEKEND" : "ESTE FIN DE SEMANA";
             const footer = card.querySelector(".calendar-card-footer") || card;
             footer.appendChild(note);
-            card.onclick = () => openRace(key);
+            if (card.classList.contains("calendar-round-item")) {
+                card.onclick = (e) => {
+                    e.preventDefault();
+                    if (typeof selectCalendarRound === "function") selectCalendarRound(key);
+                };
+                card.ondblclick = () => openRace(key);
+            } else {
+                card.onclick = () => openRace(key);
+            }
         } else {
             card.classList.add("upcoming", "race-link");
             const isFinal = (key === "brazil" || idx === 14);
@@ -3550,7 +3611,15 @@ function refreshAllCalendarCards() {
                     statusEl.textContent = isEn ? "UPCOMING" : "PRÓXIMAMENTE";
                 }
             }
-            card.onclick = () => openRace(key);
+            if (card.classList.contains("calendar-round-item")) {
+                card.onclick = (e) => {
+                    e.preventDefault();
+                    if (typeof selectCalendarRound === "function") selectCalendarRound(key);
+                };
+                card.ondblclick = () => openRace(key);
+            } else {
+                card.onclick = () => openRace(key);
+            }
         }
 
         // Replay button on card if replayUrl exists
@@ -3577,7 +3646,1140 @@ function refreshAllCalendarCards() {
             replayBtn.remove();
         }
     });
+
+    if (typeof selectCalendarRound === "function") {
+        const activeKey = currentSelectedCalendarRound || nextKey || "fuji";
+        selectCalendarRound(activeKey, currentSelectedCalendarSession || "race");
+    }
 }
+
+/* =========================================================
+   FFC CHAMPIONSHIP CALENDAR & RESULTS (MASTER-DETAIL DASHBOARD)
+========================================================= */
+
+let currentSelectedCalendarRound = "fuji";
+let currentSelectedCalendarSession = "race";
+
+function getRaceFlagEmoji(key) {
+    const flags = {
+        barcelona_test: "🇪🇸",
+        australia: "🇦🇺",
+        malaysia: "🇲🇾",
+        bahrain: "🇧🇭",
+        turkey: "🇹🇷",
+        spain: "🇪🇸",
+        italy: "🇮🇹",
+        austria: "🇦🇹",
+        silverstone: "🇬🇧",
+        hockenheim: "🇩🇪",
+        nurburgring: "🇪🇺",
+        hungary: "🇭🇺",
+        belgium: "🇧🇪",
+        fuji: "🇯🇵",
+        singapore: "🇸🇬",
+        cota: "🇺🇸",
+        usa: "🇺🇸",
+        brazil: "🇧🇷"
+    };
+    return flags[key] || "🏁";
+}
+
+function getRaceFlagHtml(key, size = 20) {
+    const emoji = getRaceFlagEmoji(key);
+    return (typeof getFlagHtml === "function") ? getFlagHtml(emoji, size) : `<span class="round-flag">${emoji}</span>`;
+}
+window.getRaceFlagHtml = getRaceFlagHtml;
+
+function getCircuitTechnicalSpecs(key) {
+    const specs = {
+        barcelona_test: { circuit: "Circuit de Barcelona-Catalunya", length: "4.675 km", laps: 66, drs: "2 Zonas", lapRecord: "1:18.149" },
+        australia: { circuit: "Albert Park Circuit", length: "5.278 km", laps: 58, drs: "4 Zonas", lapRecord: "1:19.813" },
+        malaysia: { circuit: "Sepang International Circuit", length: "5.543 km", laps: 56, drs: "2 Zonas", lapRecord: "1:34.080" },
+        bahrain: { circuit: "Bahrain International Circuit", length: "5.412 km", laps: 57, drs: "3 Zonas", lapRecord: "1:31.447" },
+        turkey: { circuit: "Istanbul Park", length: "5.338 km", laps: 58, drs: "2 Zonas", lapRecord: "1:24.770" },
+        spain: { circuit: "Circuit de Barcelona-Catalunya", length: "4.675 km", laps: 66, drs: "2 Zonas", lapRecord: "1:18.149" },
+        italy: { circuit: "Autodromo Nazionale Monza", length: "5.793 km", laps: 53, drs: "2 Zonas", lapRecord: "1:21.046" },
+        austria: { circuit: "Red Bull Ring", length: "4.318 km", laps: 71, drs: "3 Zonas", lapRecord: "1:05.619" },
+        silverstone: { circuit: "Silverstone Circuit", length: "5.891 km", laps: 52, drs: "2 Zonas", lapRecord: "1:27.097" },
+        hockenheim: { circuit: "Hockenheimring", length: "4.574 km", laps: 67, drs: "2 Zonas", lapRecord: "1:13.780" },
+        nurburgring: { circuit: "Nürburgring GP-Strecke", length: "5.148 km", laps: 60, drs: "2 Zonas", lapRecord: "1:28.139" },
+        hungary: { circuit: "Hungaroring", length: "4.381 km", laps: 70, drs: "2 Zonas", lapRecord: "1:16.627" },
+        belgium: { circuit: "Circuit de Spa-Francorchamps", length: "7.004 km", laps: 44, drs: "2 Zonas", lapRecord: "1:46.286" },
+        fuji: { circuit: "Fuji International Speedway", length: "4.563 km", laps: 27, drs: "1 Gran Recta (1.475m)", lapRecord: "1:18.426" },
+        singapore: { circuit: "Marina Bay Street Circuit", length: "4.940 km", laps: 62, drs: "3 Zonas", lapRecord: "1:35.867" },
+        cota: { circuit: "Circuit of the Americas", length: "5.513 km", laps: 56, drs: "2 Zonas", lapRecord: "1:36.169" },
+        usa: { circuit: "Circuit of the Americas", length: "5.513 km", laps: 56, drs: "2 Zonas", lapRecord: "1:36.169" },
+        brazil: { circuit: "Autódromo José Carlos Pace", length: "4.309 km", laps: 71, drs: "2 Zonas", lapRecord: "1:10.540" }
+    };
+    return specs[key] || { circuit: "Gran Premio FFC", length: "5.000 km", laps: 50, drs: "2 Zonas", lapRecord: "—" };
+}
+
+function getTeamHexColor(team) {
+    const norm = (team || "").toLowerCase();
+    if (norm.includes("red bull")) return "#2563eb";
+    if (norm.includes("ferrari")) return "#ef4444";
+    if (norm.includes("mercedes")) return "#06b6d4";
+    if (norm.includes("mclaren")) return "#f97316";
+    if (norm.includes("toro rosso")) return "#3b82f6";
+    if (norm.includes("sauber")) return "#10b981";
+    if (norm.includes("williams")) return "#38bdf8";
+    if (norm.includes("lotus")) return "#eab308";
+    if (norm.includes("virgin")) return "#dc2626";
+    if (norm.includes("renault")) return "#facc15";
+    if (norm.includes("force india")) return "#f97316";
+    if (norm.includes("hrt")) return "#a855f7";
+    return "#38bdf8";
+}
+
+function selectCalendarRound(raceKey, sessionType = "race") {
+    if (!raceKey) return;
+    if (raceKey === "singapore") raceKey = "fuji";
+
+    currentSelectedCalendarRound = raceKey;
+    currentSelectedCalendarSession = sessionType || "race";
+
+    const isEn = typeof currentLanguage !== "undefined" && currentLanguage === "en";
+
+    // 1. Highlight in sidebar
+    const allRoundItems = document.querySelectorAll(".calendar-round-item");
+    allRoundItems.forEach(item => {
+        const itemRace = item.dataset.race;
+        const isActive = (itemRace === raceKey || (raceKey === "fuji" && itemRace === "singapore"));
+        item.classList.toggle("is-active-round", isActive);
+    });
+
+    const pane = document.getElementById("calendarDetailPane");
+    if (!pane) return;
+
+    // 2. Preseason test check
+    if (raceKey === "barcelona_test") {
+        pane.innerHTML = `
+            <div class="calendar-detail-header">
+                <div class="detail-header-left">
+                    <div class="detail-title-badge">
+                        <span class="detail-title-flag">🇪🇸</span>
+                        <span class="detail-title-text">${isEn ? "PRE-SEASON TEST · BARCELONA" : "TEST DE PRETEMPORADA · BARCELONA"}</span>
+                    </div>
+                </div>
+                <div class="detail-header-right">
+                    <span class="detail-date-display">5–7 JUN · MONTMELÓ</span>
+                </div>
+            </div>
+
+            <div class="calendar-upcoming-detail-box">
+                <div class="upcoming-info-cards-grid">
+                    <div class="upcoming-info-card">
+                        <div class="upcoming-info-card-header">
+                            <span class="upcoming-info-card-title">📍 CIRCUITO</span>
+                            <span>🏁</span>
+                        </div>
+                        <div class="upcoming-info-card-val">Circuit de Barcelona-Catalunya</div>
+                        <div class="upcoming-info-card-desc">Sede oficial de pruebas de invierno</div>
+                    </div>
+                    <div class="upcoming-info-card">
+                        <div class="upcoming-info-card-header">
+                            <span class="upcoming-info-card-title">📏 LONGITUD</span>
+                            <span>🔄</span>
+                        </div>
+                        <div class="upcoming-info-card-val">4.675 km · 16 Curvas</div>
+                        <div class="upcoming-info-card-desc">Trazado completo FFC Temporada 1</div>
+                    </div>
+                    <div class="upcoming-info-card">
+                        <div class="upcoming-info-card-header">
+                            <span class="upcoming-info-card-title">🏎️ EQUIPOS EN PISTA</span>
+                            <span>👥</span>
+                        </div>
+                        <div class="upcoming-info-card-val">10 Escuderías · 20 Pilotos</div>
+                        <div class="upcoming-info-card-desc">Parrilla al completo en rodaje</div>
+                    </div>
+                    <div class="upcoming-info-card">
+                        <div class="upcoming-info-card-header">
+                            <span class="upcoming-info-card-title">⏱️ MEJOR TIEMPO TEST</span>
+                            <span>⚡</span>
+                        </div>
+                        <div class="upcoming-info-card-val">1:17.482</div>
+                        <div class="upcoming-info-card-desc">Dieguiosk · HRT F1 Team (Día 3)</div>
+                    </div>
+                </div>
+
+                <div class="special-events-hero" style="margin-top: 6px;">
+                    <h3>📋 ${isEn ? "OFFICIAL PRE-SEASON SUMMARY" : "RESUMEN DE PRUEBAS DE PRETEMPORADA"}</h3>
+                    <p>
+                        ${isEn 
+                            ? "Over three intensive test days, drivers and engineers dialed in aerodynamic setups, tire degradation models, and reliability before the Australian Grand Prix opener."
+                            : "Tres intensas jornadas de rodaje en pista donde los equipos y pilotos de la FFC calibraron sus reglajes base, consumo de neumáticos Pirelli blandos, medios y duros, y simulaciones completas de carrera antes del GP inaugural de Australia."}
+                    </p>
+                </div>
+            </div>
+        `;
+        return;
+    }
+
+    // 3. Regular Championship race
+    const race = (typeof raceResults !== "undefined" && raceResults[raceKey]) 
+        || (typeof defaultRaceResults !== "undefined" && defaultRaceResults[raceKey]) 
+        || (typeof seasonRacesMeta !== "undefined" && seasonRacesMeta[raceKey]) 
+        || {};
+
+    const meta = (typeof seasonRacesMeta !== "undefined" && seasonRacesMeta[raceKey]) || {};
+    const specs = getCircuitTechnicalSpecs(raceKey);
+    const flagEmoji = getRaceFlagEmoji(raceKey);
+    const isCompleted = isRaceFinished(race);
+    const nextKey = (typeof determineNextUpcomingRaceKey === "function") ? determineNextUpcomingRaceKey(raceResults) : "fuji";
+    const isNext = (!isCompleted && raceKey === nextKey);
+
+    const roundTitle = race.title || meta.title || raceKey.toUpperCase();
+    const roundLocation = race.location || meta.location || specs.circuit;
+    const roundDate = race.date || meta.date || "TBA";
+    const roundNum = (meta.round || race.round || "").replace(/ROUND\s*/i, "").trim();
+
+    // COMPLETED RACE VIEW
+    if (isCompleted) {
+        const replayUrl = (race.replayUrl && race.replayUrl.trim() !== "") ? race.replayUrl.trim() : (meta.replayUrl || "");
+        const replayBtnHtml = replayUrl ? `
+            <a href="${escapeHtml(replayUrl)}" target="_blank" rel="noopener noreferrer" class="detail-action-btn btn-highlights" title="${isEn ? "Watch race replay" : "Ver repetición oficial"}">
+                <svg viewBox="0 0 24 24" width="13" height="13" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+                <span>${isEn ? "REPLAY" : "VER REPETICIÓN"}</span>
+            </a>
+        ` : "";
+
+        let contentHtml = "";
+
+        if (sessionType === "qualy") {
+            const poleDriver = race.pole ? race.pole.split("·")[0]?.trim() : (race.winner || "—");
+            const poleTime = race.pole ? (race.pole.split("·")[1]?.trim() || "1:18.000") : "—";
+            const poleTeam = (race.drivers && race.drivers[0]) ? race.drivers[0].team : "—";
+
+            contentHtml = `
+                <div class="qualy-preview-pane">
+                    <div class="qualy-pole-box">
+                        <div class="qualy-pole-left">
+                            <span class="qualy-pole-icon">🟡</span>
+                            <div>
+                                <div class="qualy-pole-title">POLE POSITION</div>
+                                <div class="qualy-pole-driver">${escapeHtml(poleDriver)} <span style="font-size:14px; color:#94a3b8; font-weight:600;">(${escapeHtml(poleTeam)})</span></div>
+                            </div>
+                        </div>
+                        <div class="qualy-pole-time">${escapeHtml(poleTime)}</div>
+                    </div>
+
+                    <div style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.06); border-radius: 12px; padding: 18px 20px;">
+                        <h4 style="font-family:'Barlow Condensed', sans-serif; font-size:16px; font-weight:800; color:#cbd5e1; margin:0 0 12px; text-transform:uppercase; letter-spacing:0.5px;">
+                            ${isEn ? "STARTING GRID & SESSION REPORT" : "INFORME DE CLASIFICACIÓN"}
+                        </h4>
+                        <div style="font-size: 13px; color: #94a3b8; line-height: 1.6;">
+                            ${isEn 
+                                ? `Official Qualifying session determined the starting positions for the ${escapeHtml(roundTitle)} Grand Prix. Pole time set at ${escapeHtml(poleTime)} by ${escapeHtml(poleDriver)}.`
+                                : `Sesión oficial de clasificación que definió el orden de salida del Gran Premio de ${escapeHtml(roundTitle)}. Tiempo de pole position marcado en ${escapeHtml(poleTime)} por ${escapeHtml(poleDriver)}.`}
+                        </div>
+                        <div style="margin-top: 16px;">
+                            <button type="button" class="btn btn-secondary btn-sm" onclick="openRace('${raceKey}')">
+                                ${isEn ? "View Complete Race & Qualy Document ↗" : "Ver Documento Completo de Clasificación y Carrera ↗"}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+        } else {
+            const driversList = (Array.isArray(race.drivers) && race.drivers.length > 0) ? race.drivers : [];
+
+            let rowsHtml = "";
+            let classifiedCount = 0;
+
+            driversList.forEach((d, idx) => {
+                const pos = d.pos || (idx + 1);
+                const isFinished = (d.status === "FINISHED");
+                if (isFinished) classifiedCount++;
+
+                let posClass = "pos-other";
+                if (pos === 1) posClass = "pos-p1";
+                else if (pos === 2) posClass = "pos-p2";
+                else if (pos === 3) posClass = "pos-p3";
+
+                let deltaHtml = `<span class="grid-delta-cell delta-same">=</span>`;
+                if (typeof d.grid === "number") {
+                    const diff = d.grid - pos;
+                    if (diff > 0) deltaHtml = `<span class="grid-delta-cell delta-up">▲+${diff}</span>`;
+                    else if (diff < 0) deltaHtml = `<span class="grid-delta-cell delta-down">▼${diff}</span>`;
+                }
+
+                const driverFlag = (typeof getOfficialDriverFlag === "function") ? getOfficialDriverFlag(d.driver) : "🏁";
+                const teamHex = getTeamHexColor(d.team);
+
+                const isWinner = (race.winner && race.winner.toLowerCase().includes(d.driver.toLowerCase()));
+                const isPole = (race.pole && race.pole.toLowerCase().includes(d.driver.toLowerCase()));
+                const isFL = (race.fastest && race.fastest.toLowerCase().includes(d.driver.toLowerCase()));
+                const isDOTD = (race.driverDay && race.driverDay.toLowerCase().includes(d.driver.toLowerCase()));
+
+                let badgeHtml = "";
+                if (isFL) badgeHtml += `<span class="driver-badge-fl" title="Vuelta Rápida">🟣 FL</span>`;
+                if (isPole) badgeHtml += `<span class="driver-badge-pole" title="Pole Position">🟡 POLE</span>`;
+                if (isDOTD) badgeHtml += `<span class="driver-badge-dotd" title="Piloto del Día">⭐ DOTD</span>`;
+
+                let timeHtml = "";
+                if (d.status === "DNF") {
+                    timeHtml = `<span class="time-cell dnf">DNF</span>`;
+                } else if (d.status === "DNS") {
+                    timeHtml = `<span class="time-cell dns">DNS</span>`;
+                } else if (d.status === "DSQ") {
+                    timeHtml = `<span class="time-cell dnf">DSQ</span>`;
+                } else if (pos === 1) {
+                    timeHtml = `<span class="time-cell" style="color:var(--gold); font-weight:800;">${escapeHtml(d.time || (isEn ? "WINNER" : "GANADOR"))}</span>`;
+                } else {
+                    timeHtml = `<span class="time-cell">${escapeHtml(d.time || (d.gap ? "+" + d.gap : "+INTERVAL"))}</span>`;
+                }
+
+                let bestLapStr = "—";
+                if (d.bestLap) {
+                    bestLapStr = d.bestLap;
+                } else if (isFL && race.fastest) {
+                    const parts = race.fastest.split("·");
+                    bestLapStr = parts[1] ? parts[1].trim() : parts[0].trim();
+                }
+
+                let ptsVal = (pos >= 1 && pos <= 10) ? [0, 25, 18, 15, 12, 10, 8, 6, 4, 2, 1][pos] : 0;
+                if (isFL && pos <= 10) ptsVal += 1;
+                if (!isFinished) ptsVal = (pos <= 10 && d.status === "DNF") ? Math.floor(ptsVal * 0.5) : 0;
+                if (typeof d.pts === "number") ptsVal = d.pts;
+
+                rowsHtml += `
+                    <tr>
+                        <td style="width: 44px; text-align: center;">
+                            <span class="pos-badge-box ${posClass}">${pos}</span>
+                        </td>
+                        <td style="width: 50px;">
+                            ${deltaHtml}
+                        </td>
+                        <td>
+                            <div class="driver-name-cell" style="--team-border-col: ${teamHex};">
+                                <span class="driver-meta-flag">${getDriverFlagHtml(d.driver, 18)}</span>
+                                <span class="driver-name-text driver-clickable" onclick="if(typeof openDriverStatsModal === 'function') openDriverStatsModal('${escapeHtml(d.driver)}')" title="${isEn ? `View stats for ${escapeHtml(d.driver)}` : `Ver estadísticas de ${escapeHtml(d.driver)}`}">
+                                    ${escapeHtml(d.driver)}
+                                </span>
+                                ${badgeHtml}
+                            </div>
+                        </td>
+                        <td>
+                            <div class="team-cell-wrap team-clickable" onclick="if(typeof openTeamModal === 'function') openTeamModal('${escapeHtml(d.team)}')" title="${isEn ? `View team ${escapeHtml(d.team)}` : `Ver escudería ${escapeHtml(d.team)}`}">
+                                <span class="team-badge-bullet" style="background: ${teamHex};"></span>
+                                <span>${escapeHtml(d.team)}</span>
+                            </div>
+                        </td>
+                        <td>${timeHtml}</td>
+                        <td><span class="best-lap-cell">${escapeHtml(bestLapStr)}</span></td>
+                        <td class="pts-cell">${ptsVal}</td>
+                    </tr>
+                `;
+            });
+
+            contentHtml = `
+                <div class="calendar-table-scroll">
+                    <table class="calendar-results-table">
+                        <thead>
+                            <tr>
+                                <th style="width: 44px; text-align: center;">POS</th>
+                                <th style="width: 50px;">+/-</th>
+                                <th>${isEn ? "DRIVER" : "PILOTO"}</th>
+                                <th>${isEn ? "TEAM" : "ESCUDERÍA"}</th>
+                                <th>${isEn ? "TIME / GAP" : "TIEMPO / DIF"}</th>
+                                <th>${isEn ? "BEST LAP" : "V. RÁPIDA"}</th>
+                                <th class="th-pts">PTS</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${rowsHtml}
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="calendar-race-summary-bar">
+                    <div class="summary-stat-chip">
+                        <span class="summary-chip-label">🏆 ${isEn ? "RACE WINNER" : "GANADOR DE CARRERA"}</span>
+                        <span class="summary-chip-val">${escapeHtml(race.winner || "—")}</span>
+                    </div>
+                    <div class="summary-stat-chip">
+                        <span class="summary-chip-label">⚡ POLE POSITION</span>
+                        <span class="summary-chip-val">${escapeHtml(race.pole || "—")}</span>
+                    </div>
+                    <div class="summary-stat-chip">
+                        <span class="summary-chip-label">⏱️ ${isEn ? "FASTEST LAP" : "VUELTA RÁPIDA"}</span>
+                        <span class="summary-chip-val">${escapeHtml(race.fastest || "—")}</span>
+                    </div>
+                    <div class="summary-stat-chip">
+                        <span class="summary-chip-label">⭐ ${isEn ? "DRIVER OF THE DAY" : "PILOTO DEL DÍA"}</span>
+                        <span class="summary-chip-val">${escapeHtml(race.driverDay || "—")}</span>
+                    </div>
+                    <div class="summary-stat-chip">
+                        <span class="summary-chip-label">🏁 ${isEn ? "CLASSIFIED" : "CLASIFICADOS"}</span>
+                        <span class="summary-chip-val">${classifiedCount} / ${driversList.length} ${isEn ? "Drivers" : "Pilotos"}</span>
+                    </div>
+                </div>
+            `;
+        }
+
+        pane.innerHTML = `
+            <div class="calendar-detail-header">
+                <div class="detail-header-left">
+                    <div class="detail-title-badge">
+                        <span class="detail-title-flag">${getRaceFlagHtml(raceKey, 26)}</span>
+                        <div>
+                            <span class="detail-title-text">${escapeHtml(roundTitle)}</span>
+                            <div style="font-size: 12px; color: #94a3b8; font-weight: 700; font-family: 'Barlow Condensed', sans-serif; letter-spacing: 0.5px;">
+                                RONDA ${roundNum} · ${escapeHtml(roundLocation)}
+                            </div>
+                        </div>
+                    </div>
+
+                    ${replayBtnHtml}
+
+                    <button type="button" class="detail-action-btn" onclick="openRace('${raceKey}')" title="${isEn ? "Open full race modal" : "Abrir modal detallado"}">
+                        <svg viewBox="0 0 24 24" width="13" height="13" fill="currentColor"><path d="M19 19H5V5h7V3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7h-2v7zM14 3v2h3.59l-9.83 9.83 1.41 1.41L19 6.41V10h2V3h-7z"/></svg>
+                        <span>${isEn ? "FULL MODAL" : "MODAL COMPLETO"}</span>
+                    </button>
+                </div>
+
+                <div class="detail-header-right">
+                    <div class="detail-seg-control" role="group" aria-label="Session selector">
+                        <button type="button" class="detail-seg-btn ${sessionType === 'race' ? 'active' : ''}" onclick="selectCalendarRound('${raceKey}', 'race')">
+                            ${isEn ? "RACE" : "CARRERA"}
+                        </button>
+                        <button type="button" class="detail-seg-btn ${sessionType === 'qualy' ? 'active' : ''}" onclick="selectCalendarRound('${raceKey}', 'qualy')">
+                            ${isEn ? "QUALIFYING" : "CLASIFICACIÓN"}
+                        </button>
+                    </div>
+
+                    <span class="detail-date-display">📅 ${escapeHtml(roundDate)}</span>
+                </div>
+            </div>
+
+            ${contentHtml}
+        `;
+        return;
+    }
+
+    // UPCOMING / NEXT GRAND PRIX VIEW
+    pane.innerHTML = `
+        <div class="calendar-detail-header">
+            <div class="detail-header-left">
+                <div class="detail-title-badge">
+                    <span class="detail-title-flag">${getRaceFlagHtml(raceKey, 26)}</span>
+                    <div>
+                        <span class="detail-title-text">${escapeHtml(roundTitle)} GP</span>
+                        <div style="font-size: 12px; color: ${isNext ? '#f87171' : '#94a3b8'}; font-weight: 800; font-family: 'Barlow Condensed', sans-serif; letter-spacing: 0.5px; text-transform: uppercase;">
+                            ${isNext ? (isEn ? "NEXT RACE · THIS WEEKEND" : "PRÓXIMO GRAN PREMIO · ESTE FIN DE SEMANA") : (isEn ? "UPCOMING GRAND PRIX" : "PRÓXIMAMENTE EN CALENDARIO")}
+                        </div>
+                    </div>
+                </div>
+
+                <button type="button" class="detail-action-btn" onclick="openRace('${raceKey}')">
+                    📋 ${isEn ? "RACE PREVIEW" : "PREVIA OFICIAL"}
+                </button>
+            </div>
+
+            <div class="detail-header-right">
+                <span class="detail-date-display">📅 ${escapeHtml(roundDate)}</span>
+            </div>
+        </div>
+
+        <div class="calendar-upcoming-detail-box">
+            <div class="upcoming-hero-banner">
+                <div class="upcoming-hero-left">
+                    <div style="display:flex; align-items:center; gap:8px; margin-bottom:8px;">
+                        <span class="round-item-pill ${isNext ? 'pill-next' : 'pill-upcoming'}">${roundNum ? roundNum : '13'}</span>
+                        <span style="font-family:'Barlow Condensed', sans-serif; font-size:12.5px; font-weight:800; letter-spacing:1px; color:${isNext ? '#f87171' : '#94a3b8'}; text-transform:uppercase;">
+                            ${isNext ? (isEn ? "OFFICIAL COUNTDOWN" : "CUENTA ATRÁS OFICIAL") : (isEn ? "SEASON SCHEDULE" : "CRONOGRAMA OFICIAL")}
+                        </span>
+                    </div>
+                    <h3>${escapeHtml(roundTitle)}</h3>
+                    <p>📍 ${escapeHtml(roundLocation)} · 🏁 ${specs.circuit}</p>
+                </div>
+
+                <div class="upcoming-countdown-row">
+                    <div class="upcoming-cd-box">
+                        <span class="upcoming-cd-num" id="calDetailCdDays">--</span>
+                        <span class="upcoming-cd-lbl">${isEn ? "DAYS" : "DÍAS"}</span>
+                    </div>
+                    <div class="upcoming-cd-box">
+                        <span class="upcoming-cd-num" id="calDetailCdHours">--</span>
+                        <span class="upcoming-cd-lbl">${isEn ? "HOURS" : "HORAS"}</span>
+                    </div>
+                    <div class="upcoming-cd-box">
+                        <span class="upcoming-cd-num" id="calDetailCdMins">--</span>
+                        <span class="upcoming-cd-lbl">${isEn ? "MINS" : "MIN"}</span>
+                    </div>
+                    <div class="upcoming-cd-box">
+                        <span class="upcoming-cd-num" id="calDetailCdSecs">--</span>
+                        <span class="upcoming-cd-lbl">${isEn ? "SECS" : "SEG"}</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TECHNICAL & TRACK SPECIFICATIONS -->
+            <div class="upcoming-info-cards-grid">
+                <div class="upcoming-info-card">
+                    <div class="upcoming-info-card-header">
+                        <span class="upcoming-info-card-title">📍 CIRCUITO</span>
+                        <span>🏁</span>
+                    </div>
+                    <div class="upcoming-info-card-val">${specs.circuit}</div>
+                    <div class="upcoming-info-card-desc">Trazado homologado por la FFC</div>
+                </div>
+                <div class="upcoming-info-card">
+                    <div class="upcoming-info-card-header">
+                        <span class="upcoming-info-card-title">📏 LONGITUD &amp; VUELTAS</span>
+                        <span>🔄</span>
+                    </div>
+                    <div class="upcoming-info-card-val">${specs.length} · ${specs.laps} Vueltas</div>
+                    <div class="upcoming-info-card-desc">Distancia total de Gran Premio</div>
+                </div>
+                <div class="upcoming-info-card">
+                    <div class="upcoming-info-card-header">
+                        <span class="upcoming-info-card-title">⚡ ZONA DRS</span>
+                        <span>🚀</span>
+                    </div>
+                    <div class="upcoming-info-card-val">${specs.drs}</div>
+                    <div class="upcoming-info-card-desc">Punto de adelantamiento y rebufo</div>
+                </div>
+                <div class="upcoming-info-card">
+                    <div class="upcoming-info-card-header">
+                        <span class="upcoming-info-card-title">⏱️ RÉCORD DE PISTA</span>
+                        <span>⚡</span>
+                    </div>
+                    <div class="upcoming-info-card-val">${specs.lapRecord}</div>
+                    <div class="upcoming-info-card-desc">Tiempo de vuelta de referencia</div>
+                </div>
+            </div>
+
+            <!-- WEEKEND SCHEDULE STRIP -->
+            <div class="upcoming-schedule-strip">
+                <div class="schedule-strip-item">
+                    <span style="font-size: 20px;">⏱️</span>
+                    <div>
+                        <div class="schedule-strip-time">16:30 CEST</div>
+                        <div class="schedule-strip-session">CLASIFICACIÓN OFICIAL (Q1 - Q3)</div>
+                    </div>
+                </div>
+                <div class="schedule-strip-item">
+                    <span style="font-size: 20px;">🚦</span>
+                    <div>
+                        <div class="schedule-strip-time">17:00 CEST</div>
+                        <div class="schedule-strip-session">CARRERA PRINCIPAL (100% DISTANCIA)</div>
+                    </div>
+                </div>
+                <div class="schedule-strip-item">
+                    <button type="button" class="btn btn-secondary btn-sm" onclick="const lc = document.getElementById('nextRaceLiveChatView') || document.getElementById('liveChatGpName'); if(lc) lc.scrollIntoView({behavior:'smooth'});">
+                        💬 Chat en Vivo de Carrera
+                    </button>
+                </div>
+            </div>
+        </div>
+    `;
+
+    if (typeof updateCountdown === "function") {
+        updateCountdown();
+    }
+}
+
+function renderCalendarSpecialEvents() {
+    const pane = document.getElementById("calendarDetailPane");
+    if (!pane) return;
+
+    const isEn = typeof currentLanguage !== "undefined" && currentLanguage === "en";
+
+    pane.innerHTML = `
+        <div class="special-events-pane">
+            <div class="special-events-hero">
+                <div style="display:flex; align-items:center; gap:8px;">
+                    <span style="font-size: 24px;">🏆</span>
+                    <span style="font-family:'Barlow Condensed', sans-serif; font-size:12px; font-weight:800; letter-spacing:1.5px; color:#fde047; text-transform:uppercase;">FFC SPECIALS &amp; EXHIBITIONS</span>
+                </div>
+                <h3>${isEn ? "SPECIAL EVENTS & TOURNAMENTS" : "EVENTOS ESPECIALES Y EXHIBICIÓN"}</h3>
+                <p>
+                    ${isEn 
+                        ? "Special non-championship invitational events featuring reverse grids, multi-class endurance races, and the season-ending FFC All-Star Cup."
+                        : "Competiciones especiales no puntuables diseñadas para el espectáculo, carreras de resistencia multiclase y la prestigiosa Copa All-Star de fin de temporada tras el cierre en Brasil."}
+                </p>
+            </div>
+
+            <div class="special-events-grid">
+                <div class="special-event-card">
+                    <span class="special-event-badge">🌟 ${isEn ? "SEASON FINALE" : "FIN DE TEMPORADA"}</span>
+                    <h4 class="special-event-title">TORNEO ALL-STAR FFC</h4>
+                    <p class="special-event-desc">
+                        ${isEn ? "The top 10 championship drivers face off in identical machinery without driving assists." : "Los 10 mejores pilotos del campeonato se enfrentan en monoplazas idénticos sin ayudas para coronar al campeón definitivo de la temporada."}
+                    </p>
+                </div>
+
+                <div class="special-event-card">
+                    <span class="special-event-badge">🤝 ${isEn ? "COMMUNITY RACE" : "CARRERA BENÉFICA"}</span>
+                    <h4 class="special-event-title">ENDURANCE SOLIDARIO</h4>
+                    <p class="special-event-desc">
+                        ${isEn ? "2-hour team relay race with community guest drivers and simracing streamers." : "Carrera de resistencia por relevos de 2 horas con parejas de pilotos de la liga e invitados especiales de la comunidad."}
+                    </p>
+                </div>
+
+                <div class="special-event-card">
+                    <span class="special-event-badge">⏱️ ${isEn ? "HOTLAP CHALLENGE" : "RETO SEMANAL"}</span>
+                    <h4 class="special-event-title">CONTRARRELOJ FFC</h4>
+                    <p class="special-event-desc">
+                        ${isEn ? "Weekly leaderboard time-trial challenge with custom driver rewards." : "Compite por marcar la vuelta más rápida de la semana en el circuito seleccionado y escala en la clasificación oficial."}
+                    </p>
+                </div>
+            </div>
+        </div>
+    `;
+}
+
+function setCalendarFilterTab(filter) {
+    document.querySelectorAll(".calendar-tab-btn").forEach(btn => {
+        btn.classList.toggle("active", btn.dataset.filter === filter);
+    });
+
+    const items = document.querySelectorAll(".calendar-round-item");
+    if (filter === "championship") {
+        items.forEach(it => {
+            const cat = it.dataset.category || "championship";
+            it.style.display = (cat === "championship") ? "" : "none";
+        });
+        const currentActive = document.querySelector(`.calendar-round-item.is-active-round`);
+        if (!currentActive || currentActive.style.display === "none") {
+            const nextKey = (typeof determineNextUpcomingRaceKey === "function") ? determineNextUpcomingRaceKey(raceResults) : "fuji";
+            selectCalendarRound(nextKey);
+        } else {
+            selectCalendarRound(currentActive.dataset.race);
+        }
+    } else if (filter === "training") {
+        items.forEach(it => {
+            const cat = it.dataset.category || "championship";
+            it.style.display = (cat === "training") ? "" : "none";
+        });
+        selectCalendarRound("barcelona_test");
+    } else if (filter === "special") {
+        items.forEach(it => {
+            it.style.display = "none";
+        });
+        renderCalendarSpecialEvents();
+    }
+}
+
+function initCalendarMasterDetail() {
+    const tabChampionship = document.getElementById("tabChampionship");
+    const tabTraining = document.getElementById("tabTraining");
+    const tabSpecial = document.getElementById("tabSpecial");
+
+    if (tabChampionship) tabChampionship.onclick = () => setCalendarFilterTab("championship");
+    if (tabTraining) tabTraining.onclick = () => setCalendarFilterTab("training");
+    if (tabSpecial) tabSpecial.onclick = () => setCalendarFilterTab("special");
+
+    const roundItems = document.querySelectorAll(".calendar-round-item");
+    roundItems.forEach(item => {
+        const raceKey = item.dataset.race;
+        if (!raceKey) return;
+        item.addEventListener("click", (e) => {
+            e.preventDefault();
+            selectCalendarRound(raceKey);
+        });
+    });
+
+    const nextKey = (typeof determineNextUpcomingRaceKey === "function") ? determineNextUpcomingRaceKey(raceResults) : "fuji";
+    selectCalendarRound(nextKey);
+}
+
+window.selectCalendarRound = selectCalendarRound;
+window.setCalendarFilterTab = setCalendarFilterTab;
+window.initCalendarMasterDetail = initCalendarMasterDetail;
+window.renderCalendarSpecialEvents = renderCalendarSpecialEvents;
+
+/* Calendar Views Management (List & Details, Grid, Table) */
+function setCalendarView(viewMode) {
+    if (!["list", "grid", "table", "detail"].includes(viewMode)) {
+        viewMode = "list";
+    }
+
+    // "list" mode is the merged master-detail layout (sidebar list with red items + detail pane)
+    const detailView = document.getElementById("calendarDetailView");
+    const gridView = document.getElementById("calendarGridView");
+    const tableView = document.getElementById("calendarListView");
+
+    const btnList = document.getElementById("btnCalViewList");
+    const btnGrid = document.getElementById("btnCalViewGrid");
+    const btnTable = document.getElementById("btnCalViewTable");
+    const btnDetail = document.getElementById("btnCalViewDetail");
+
+    [btnList, btnGrid, btnTable, btnDetail].forEach(btn => {
+        if (btn) btn.classList.remove("active");
+    });
+
+    if (viewMode === "list" || viewMode === "detail") {
+        if (detailView) detailView.style.display = "grid";
+        if (gridView) gridView.style.display = "none";
+        if (tableView) tableView.style.display = "none";
+        if (btnList) btnList.classList.add("active");
+        if (btnDetail) btnDetail.classList.add("active");
+
+        const curRound = currentSelectedCalendarRound || "fuji";
+        if (typeof selectCalendarRound === "function") {
+            selectCalendarRound(curRound);
+        }
+    } else if (viewMode === "grid") {
+        if (detailView) detailView.style.display = "none";
+        if (gridView) gridView.style.display = "block";
+        if (tableView) tableView.style.display = "none";
+        if (btnGrid) btnGrid.classList.add("active");
+    } else if (viewMode === "table") {
+        if (detailView) detailView.style.display = "none";
+        if (gridView) gridView.style.display = "none";
+        if (tableView) tableView.style.display = "flex";
+        if (btnTable) btnTable.classList.add("active");
+    }
+
+    try {
+        localStorage.setItem("ffc_calendar_view", viewMode);
+    } catch (e) {}
+}
+window.setCalendarView = setCalendarView;
+
+function initCalendarViewToggle() {
+    const btnList = document.getElementById("btnCalViewList");
+    const btnGrid = document.getElementById("btnCalViewGrid");
+    const btnTable = document.getElementById("btnCalViewTable");
+    const btnDetail = document.getElementById("btnCalViewDetail");
+
+    if (btnList) btnList.addEventListener("click", () => setCalendarView("list"));
+    if (btnGrid) btnGrid.addEventListener("click", () => setCalendarView("grid"));
+    if (btnTable) btnTable.addEventListener("click", () => setCalendarView("table"));
+    if (btnDetail) btnDetail.addEventListener("click", () => setCalendarView("list"));
+
+    // Category filter pills in table view
+    const filterPills = document.querySelectorAll("#calListFilterPills .cal-filter-pill");
+    const listRows = document.querySelectorAll("#calendarListView .cal-list-row");
+
+    filterPills.forEach(pill => {
+        pill.addEventListener("click", () => {
+            filterPills.forEach(p => p.classList.remove("active"));
+            pill.classList.add("active");
+            const filter = pill.dataset.filter || "all";
+
+            listRows.forEach(row => {
+                const cat = row.dataset.category || "championship";
+                if (filter === "all" || cat === filter) {
+                    row.style.display = "grid";
+                } else {
+                    row.style.display = "none";
+                }
+            });
+        });
+    });
+
+    // Wire clicks on list rows to open race
+    listRows.forEach(row => {
+        row.addEventListener("click", (e) => {
+            if (e.target.closest("button") || e.target.closest("a")) return;
+            const raceKey = row.dataset.race;
+            if (raceKey && typeof openRace === "function") {
+                openRace(raceKey);
+            }
+        });
+    });
+
+    // Wire clicks on grid cards to open race
+    const gridCards = document.querySelectorAll("#calendarGridView .calendar-card");
+    gridCards.forEach(card => {
+        card.addEventListener("click", (e) => {
+            if (e.target.closest("button") || e.target.closest("a")) return;
+            const raceKey = card.dataset.race;
+            if (raceKey && typeof openRace === "function") {
+                openRace(raceKey);
+            }
+        });
+    });
+
+    // Wire clicks on master-detail round items
+    const roundItems = document.querySelectorAll(".calendar-round-item");
+    roundItems.forEach(item => {
+        const raceKey = item.dataset.race;
+        if (!raceKey) return;
+        item.addEventListener("click", (e) => {
+            e.preventDefault();
+            if (typeof selectCalendarRound === "function") {
+                selectCalendarRound(raceKey);
+            }
+        });
+    });
+
+    // Restore saved view or default to list (merged master-detail)
+    let savedView = "list";
+    try {
+        savedView = localStorage.getItem("ffc_calendar_view") || "list";
+    } catch (e) {}
+    setCalendarView(savedView);
+}
+window.initCalendarViewToggle = initCalendarViewToggle;
+
+/* Home Top 3 Podium Sync */
+function renderHomeTop3Podium() {
+    const rawStandings = (typeof currentPilotos !== "undefined" && currentPilotos && currentPilotos.length > 0) ? currentPilotos : (typeof getSavedStandings === "function" ? getSavedStandings() : []);
+    const sorted = (typeof sortDriversStandings === "function") ? sortDriversStandings(rawStandings) : rawStandings;
+
+    if (sorted.length >= 3) {
+        const p1 = sorted[0];
+        const p2 = sorted[1];
+        const p3 = sorted[2];
+
+        const elP1Name = document.getElementById("homeTop3P1Name");
+        const elP1Pts = document.getElementById("homeTop3P1Pts");
+        const elP2Name = document.getElementById("homeTop3P2Name");
+        const elP2Pts = document.getElementById("homeTop3P2Pts");
+        const elP3Name = document.getElementById("homeTop3P3Name");
+        const elP3Pts = document.getElementById("homeTop3P3Pts");
+
+        if (elP1Name) elP1Name.textContent = p1.driver;
+        if (elP1Pts) elP1Pts.textContent = p1.pts;
+        if (elP2Name) elP2Name.textContent = p2.driver;
+        if (elP2Pts) elP2Pts.textContent = p2.pts;
+        if (elP3Name) elP3Name.textContent = p3.driver;
+        if (elP3Pts) elP3Pts.textContent = p3.pts;
+
+        const elP2Gap = document.getElementById("homeTop3P2Gap");
+        const elP3Gap = document.getElementById("homeTop3P3Gap");
+        const p1PtsNum = Number(p1.pts) || 0;
+        const p2PtsNum = Number(p2.pts) || 0;
+        const p3PtsNum = Number(p3.pts) || 0;
+
+        if (elP2Gap) {
+            const gap = p1PtsNum - p2PtsNum;
+            elP2Gap.textContent = `-${gap} PTS del líder`;
+        }
+        if (elP3Gap) {
+            const gap = p1PtsNum - p3PtsNum;
+            elP3Gap.textContent = `-${gap} PTS del líder`;
+        }
+
+        // Render Top 3 Championship Battle Chart
+        renderTop3BattleChart([p1, p2, p3]);
+    }
+}
+window.renderHomeTop3Podium = renderHomeTop3Podium;
+
+function renderTop3BattleChart(top3Drivers) {
+    const container = document.getElementById("homeTop3BattleSvgContainer");
+    const roundLabel = document.getElementById("homeBattleCurrentRound");
+    if (!container) return;
+
+    const gps = (typeof FFC_SEASON_GPS !== "undefined") ? FFC_SEASON_GPS : [];
+    if (gps.length === 0) return;
+
+    // Find how many races are completed
+    let completedCount = 0;
+    gps.forEach(gp => {
+        const r = (typeof raceResults !== "undefined") ? raceResults[gp.raceKey] : null;
+        if (r && (r.status === "COMPLETED" || (r.winner && r.winner !== "TBA"))) {
+            completedCount++;
+        }
+    });
+    if (roundLabel) {
+        roundLabel.textContent = `RONDA ${completedCount} / ${gps.length}`;
+    }
+
+    // Colors for top 3
+    const colors = ["#d6b45c", "#38bdf8", "#f43f5e"]; // Gold (P1), Sky (P2), Rose (P3)
+
+    // Calculate cumulative points round by round for top 3 drivers
+    const driversData = top3Drivers.map((driverObj, idx) => {
+        const dName = driverObj.driver;
+        const normKey = (typeof normalizeDriverKey === "function") ? normalizeDriverKey(dName) : dName.toLowerCase().trim();
+        const team = driverObj.team || (typeof getDriverTeam === "function" ? getDriverTeam(dName) : "Team");
+        const teamHex = (typeof getTeamHexColor === "function") ? getTeamHexColor(team) : colors[idx];
+
+        let cumPts = 0;
+        const pointsByRound = [0]; // Round 0 start at 0
+
+        gps.forEach(gp => {
+            const r = (typeof raceResults !== "undefined") ? raceResults[gp.raceKey] : null;
+            const isCompleted = r && (r.status === "COMPLETED" || (r.winner && r.winner !== "TBA"));
+            if (isCompleted && r && Array.isArray(r.drivers)) {
+                const entry = r.drivers.find(d => d && d.driver && (typeof normalizeDriverKey === "function" ? normalizeDriverKey(d.driver) === normKey : d.driver.toLowerCase() === normKey));
+                if (entry && entry.status !== "DNF" && entry.status !== "DSQ") {
+                    const pos = Number(entry.pos) || 0;
+                    const basePts = (typeof F1_POINTS_MAP !== "undefined" ? F1_POINTS_MAP[pos] : 0) || 0;
+                    let isFL = false;
+                    if (r.fastest && r.fastest !== "TBA") {
+                        const flName = r.fastest.split("·")[0].trim();
+                        if (flName && (typeof normalizeDriverKey === "function" ? normalizeDriverKey(flName) === normKey : flName.toLowerCase() === normKey)) {
+                            isFL = true;
+                        }
+                    }
+                    cumPts += basePts + (isFL ? (typeof F1_FASTEST_LAP_PTS !== "undefined" ? F1_FASTEST_LAP_PTS : 1) : 0);
+                }
+            }
+            pointsByRound.push(cumPts);
+        });
+
+        return {
+            driver: dName,
+            color: teamHex || colors[idx],
+            points: pointsByRound
+        };
+    });
+
+    // SVG Dimensions
+    const width = container.clientWidth || 600;
+    const height = 330;
+    const padding = { top: 40, right: 25, bottom: 35, left: 45 };
+    const chartW = width - padding.left - padding.right;
+    const chartH = height - padding.top - padding.bottom;
+
+    // Find max points for Y scale
+    let maxPts = 20;
+    driversData.forEach(d => {
+        d.points.forEach(p => {
+            if (p > maxPts) maxPts = p;
+        });
+    });
+    maxPts = Math.ceil(maxPts / 25) * 25; // Round up to nearest 25
+
+    const stepX = chartW / Math.max(1, gps.length);
+
+    let svgHtml = `<svg viewBox="0 0 ${width} ${height}" width="100%" height="100%" style="overflow: visible;">`;
+
+    // Horizontal Grid lines (4 steps)
+    for (let i = 0; i <= 4; i++) {
+        const val = Math.round((maxPts / 4) * (4 - i));
+        const y = padding.top + (chartH / 4) * i;
+        svgHtml += `<line x1="${padding.left}" y1="${y}" x2="${width - padding.right}" y2="${y}" stroke="rgba(255,255,255,0.06)" stroke-dasharray="3,3" />`;
+        svgHtml += `<text x="${padding.left - 8}" y="${y + 4}" fill="#64748b" font-size="10" font-family="'Barlow Condensed', sans-serif" text-anchor="end">${val}</text>`;
+    }
+
+    // X axis labels (Rounds 1, 3, 5, 7, 9, 11, 13, 15)
+    gps.forEach((gp, idx) => {
+        const rNum = idx + 1;
+        if (rNum === 1 || rNum % 2 === 1 || rNum === gps.length) {
+            const x = padding.left + stepX * idx + stepX / 2;
+            svgHtml += `<text x="${x}" y="${height - 10}" fill="#64748b" font-size="10" font-family="'Barlow Condensed', sans-serif" text-anchor="middle">R${rNum}</text>`;
+        }
+    });
+
+    // Draw gradient area fills and lines for each driver
+    driversData.forEach((d, dIndex) => {
+        let ptsCoords = [];
+        d.points.forEach((pts, idx) => {
+            const x = padding.left + stepX * (idx - 1) + stepX / 2;
+            const y = padding.top + chartH - (pts / maxPts) * chartH;
+            if (idx === 0) {
+                ptsCoords.push({ x: padding.left, y: padding.top + chartH });
+            } else {
+                ptsCoords.push({ x, y });
+            }
+        });
+
+        // Build SVG path string only up to completedCount
+        let pathD = `M ${ptsCoords[0].x} ${ptsCoords[0].y}`;
+        let lastValidIdx = 0;
+        for (let i = 1; i <= completedCount && i < ptsCoords.length; i++) {
+            pathD += ` L ${ptsCoords[i].x} ${ptsCoords[i].y}`;
+            lastValidIdx = i;
+        }
+
+        // Area fill gradient
+        const gradId = `battleAreaGrad_${dIndex}`;
+        svgHtml += `<defs>`;
+        svgHtml += `<linearGradient id="${gradId}" x1="0" y1="0" x2="0" y2="1">`;
+        svgHtml += `<stop offset="0%" stop-color="${d.color}" stop-opacity="0.35" />`;
+        svgHtml += `<stop offset="100%" stop-color="${d.color}" stop-opacity="0.0" />`;
+        svgHtml += `</linearGradient>`;
+        svgHtml += `</defs>`;
+
+        let areaD = `${pathD} L ${ptsCoords[lastValidIdx].x} ${padding.top + chartH} L ${padding.left} ${padding.top + chartH} Z`;
+        svgHtml += `<path d="${areaD}" fill="url(#${gradId})" />`;
+
+        // Draw shadow/glow line
+        svgHtml += `<path d="${pathD}" fill="none" stroke="${d.color}" stroke-width="5" stroke-opacity="0.3" stroke-linecap="round" stroke-linejoin="round" />`;
+        // Draw main crisp line
+        svgHtml += `<path d="${pathD}" fill="none" stroke="${d.color}" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" />`;
+
+        // Draw data points for completed rounds
+        for (let i = 1; i <= completedCount && i < ptsCoords.length; i++) {
+            const pt = ptsCoords[i];
+            const isLast = (i === completedCount);
+            const rRadius = isLast ? 6 : 4;
+            svgHtml += `<circle cx="${pt.x}" cy="${pt.y}" r="${rRadius}" fill="#080c12" stroke="${d.color}" stroke-width="2.5" />`;
+        }
+
+        // Final points badge for current round (staggered to prevent overlap)
+        if (completedCount > 0 && completedCount < ptsCoords.length) {
+            const lastPt = ptsCoords[completedCount];
+            const finalPts = d.points[completedCount];
+            const badgeYOffset = (dIndex === 0) ? -26 : (dIndex === 1 ? 20 : -26);
+            svgHtml += `<g transform="translate(${lastPt.x}, ${lastPt.y + badgeYOffset})">`;
+            svgHtml += `<rect x="-18" y="-10" width="36" height="18" rx="4" fill="#080c12" stroke="${d.color}" stroke-width="1.8" />`;
+            svgHtml += `<text x="0" y="3" fill="#ffffff" font-size="10" font-family="'Barlow Condensed', sans-serif" font-weight="800" text-anchor="middle">${finalPts}</text>`;
+            svgHtml += `</g>`;
+        }
+    });
+
+    // Centered Legend at top
+    const totalLegendWidth = driversData.length * 90;
+    let startLegendX = (width - totalLegendWidth) / 2;
+    driversData.forEach((d, idx) => {
+        const shortName = d.driver.length > 12 ? d.driver.substring(0, 10) + ".." : d.driver;
+        const curX = startLegendX + idx * 90;
+        svgHtml += `<g transform="translate(${curX}, ${padding.top - 24})">`;
+        svgHtml += `<rect x="0" y="-7" width="10" height="10" rx="2" fill="${d.color}" />`;
+        svgHtml += `<text x="16" y="1" fill="#f8fafc" font-size="11" font-family="'Barlow Condensed', sans-serif" font-weight="700">${escapeHtml(shortName)}</text>`;
+        svgHtml += `</g>`;
+    });
+
+    svgHtml += `</svg>`;
+    container.innerHTML = svgHtml;
+}
+window.renderTop3BattleChart = renderTop3BattleChart;
+
+/* Main Page Tabs Navigation */
+function switchMainTab(tabName, shouldScroll = true) {
+    if (!tabName) tabName = "home";
+    tabName = tabName.replace(/^#/, "");
+    if (!["home", "standings", "calendar", "news", "info"].includes(tabName)) {
+        tabName = "home";
+    }
+
+    const homeEl = document.getElementById("home");
+    const statsEl = document.querySelector(".stats-section");
+    const homeTop3El = document.getElementById("homeTop3PodiumSection");
+    const unifiedWrap = document.querySelector(".unified-sections-wrapper");
+    const standingsEl = document.getElementById("standings");
+    const calendarEl = document.getElementById("calendar");
+    const newsEl = document.getElementById("news");
+    const infoEl = document.getElementById("info");
+
+    // Close mobile nav drawer if open
+    const navLinksEl = document.querySelector(".nav-links");
+    if (navLinksEl) {
+        navLinksEl.classList.remove("mobile-open");
+        navLinksEl.classList.remove("active");
+    }
+
+    // Update active nav link
+    document.querySelectorAll(".nav-links .nav-item").forEach(a => {
+        a.classList.remove("active");
+    });
+
+    if (tabName === "home") {
+        if (homeEl) homeEl.style.display = "";
+        if (statsEl) statsEl.style.display = "";
+        if (homeTop3El) homeTop3El.style.display = "block";
+        if (unifiedWrap) unifiedWrap.style.display = "block";
+        if (standingsEl) standingsEl.style.display = "none";
+        if (calendarEl) calendarEl.style.display = "none";
+        if (newsEl) newsEl.style.display = "none";
+        if (infoEl) infoEl.style.display = "block"; // Info visible on initial panel as requested!
+        const navH = document.getElementById("navHome");
+        if (navH) navH.classList.add("active");
+    } else if (tabName === "info") {
+        if (homeEl) homeEl.style.display = "none";
+        if (statsEl) statsEl.style.display = "none";
+        if (homeTop3El) homeTop3El.style.display = "none";
+        if (unifiedWrap) unifiedWrap.style.display = "block";
+        if (standingsEl) standingsEl.style.display = "none";
+        if (calendarEl) calendarEl.style.display = "none";
+        if (newsEl) newsEl.style.display = "none";
+        if (infoEl) infoEl.style.display = "block";
+        const navI = document.getElementById("navInfo");
+        if (navI) navI.classList.add("active");
+    } else {
+        if (homeEl) homeEl.style.display = "none";
+        if (statsEl) statsEl.style.display = "none";
+        if (homeTop3El) homeTop3El.style.display = "none";
+        if (unifiedWrap) unifiedWrap.style.display = "block";
+
+        if (standingsEl) {
+            standingsEl.style.display = (tabName === "standings") ? "block" : "none";
+            if (tabName === "standings" && typeof setStandingsSubView === "function") {
+                const savedStandingsView = localStorage.getItem("ffc_standings_view") || "pilotos";
+                setStandingsSubView(savedStandingsView);
+            }
+        }
+        if (calendarEl) {
+            calendarEl.style.display = (tabName === "calendar") ? "block" : "none";
+            if (tabName === "calendar" && typeof setCalendarView === "function") {
+                const savedCalView = localStorage.getItem("ffc_calendar_view") || "list";
+                setCalendarView(savedCalView);
+            }
+            if (typeof enhanceAllFlagsInDom === "function") {
+                setTimeout(enhanceAllFlagsInDom, 50);
+            }
+        }
+        if (newsEl) newsEl.style.display = (tabName === "news") ? "block" : "none";
+        if (infoEl) infoEl.style.display = "none";
+
+        if (tabName === "standings") {
+            const navS = document.getElementById("navStandings");
+            if (navS) navS.classList.add("active");
+        } else if (tabName === "calendar") {
+            const navC = document.getElementById("navCalendar");
+            if (navC) navC.classList.add("active");
+        } else if (tabName === "news") {
+            const navN = document.getElementById("navNews");
+            if (navN) navN.classList.add("active");
+        }
+    }
+
+    if (shouldScroll) {
+        window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    try {
+        if (window.location.hash !== "#" + tabName) {
+            window.history.pushState(null, "", "#" + tabName);
+        }
+    } catch (e) {}
+
+    setTimeout(() => {
+        try { window.dispatchEvent(new Event('resize')); } catch (e) {}
+    }, 100);
+}
+window.switchMainTab = switchMainTab;
+
+function initTabNavigation() {
+    // Intercept clicks on links pointing to tabs
+    document.addEventListener("click", (e) => {
+        const link = e.target.closest("a");
+        if (!link) return;
+
+        // Special modal links handled separately
+        if (link.classList.contains("nav-photos-link") || 
+            link.classList.contains("nav-compare-link") || 
+            link.classList.contains("nav-fantasy-link")) {
+            return;
+        }
+
+        const href = link.getAttribute("href");
+        if (!href || !href.startsWith("#")) return;
+
+        const targetTab = href.substring(1);
+        if (["home", "standings", "calendar", "news", "info"].includes(targetTab)) {
+            e.preventDefault();
+            switchMainTab(targetTab, true);
+        }
+    });
+
+    window.addEventListener("hashchange", () => {
+        const hash = window.location.hash.replace(/^#/, "");
+        if (["home", "standings", "calendar", "news", "info"].includes(hash)) {
+            switchMainTab(hash, true);
+        }
+    });
+
+    // Check initial hash on load
+    const initialHash = window.location.hash.replace(/^#/, "");
+    if (["standings", "calendar", "news", "info"].includes(initialHash)) {
+        switchMainTab(initialHash, false);
+    } else {
+        switchMainTab("home", false);
+    }
+}
+window.initTabNavigation = initTabNavigation;
+
+
 
 function findRaceKeyFromNextRace(raceObj) {
     if (!raceObj) return null;
@@ -3817,7 +5019,7 @@ function openRace(raceKey, highlightDriver = null) {
     if (!race || !raceOverlay) return;
 
     resultRound.textContent = race.round;
-    resultTitle.textContent = race.title;
+    resultTitle.innerHTML = `${getRaceFlagHtml(raceKey, 24)} <span>${escapeHtml(race.title)}</span>`;
     resultLocation.textContent = race.location;
     resultDate.textContent = race.date;
 
@@ -3884,7 +5086,7 @@ function openRace(raceKey, highlightDriver = null) {
 
             row.innerHTML = `
                 <td class="result-position">${driver.pos}</td>
-                <td><span class="driver-clickable" data-driver="${escapeHtml(driver.driver)}" title="${driverTitle}">${escapeHtml(driver.driver)}</span></td>
+                <td>${getDriverFlagHtml(driver.driver, 16)} <span class="driver-clickable" data-driver="${escapeHtml(driver.driver)}" title="${driverTitle}">${escapeHtml(driver.driver)}</span></td>
                 <td class="${getTeamClass(driver.team)}">${escapeHtml(driver.team)}</td>
                 <td class="${statusClass}">${displayStatus}</td>
             `;
@@ -3924,6 +5126,10 @@ function navigateToRace(raceKey, driverName = null) {
         closeDriverStatsModal();
     }
 
+    if (typeof selectCalendarRound === "function") {
+        selectCalendarRound(raceKey);
+    }
+
     // 2. Locate and highlight corresponding calendar card
     const targetCard = document.querySelector(`.calendar-card[data-race="${raceKey}"]`);
     if (targetCard) {
@@ -3942,6 +5148,9 @@ function navigateToRace(raceKey, driverName = null) {
     // 3. Open the race results modal
     openRace(raceKey, driverName);
 }
+window.openRace = openRace;
+window.closeRaceModal = closeRaceModal;
+window.navigateToRace = navigateToRace;
 
 
 /* Calendar cards */
@@ -3949,6 +5158,13 @@ function navigateToRace(raceKey, driverName = null) {
 document.querySelectorAll(".calendar-card[data-race], .race-link").forEach((card) => {
 
     card.addEventListener("click", () => {
+        if (card.classList.contains("calendar-round-item")) {
+            const raceKey = card.dataset.race;
+            if (raceKey && typeof selectCalendarRound === "function") {
+                selectCalendarRound(raceKey);
+            }
+            return;
+        }
 
         const raceKey = card.dataset.race;
         if (raceKey) {
@@ -5027,6 +6243,45 @@ const OFFICIAL_COUNTRY_FLAGS = [
 function getCountryCodeFromEmoji(emoji) {
     if (!emoji || emoji === "🏁" || emoji === "🏭") return null;
     
+    const cleanStr = String(emoji).trim().toLowerCase();
+    const directCodes = {
+        "es": "es", "esp": "es", "spain": "es", "españa": "es",
+        "au": "au", "aus": "au", "australia": "au",
+        "my": "my", "mas": "my", "malaysia": "my", "malasia": "my",
+        "bh": "bh", "bhr": "bh", "bahrain": "bh", "barein": "bh", "baréin": "bh",
+        "tr": "tr", "tur": "tr", "turkey": "tr", "turquía": "tr", "turquia": "tr",
+        "it": "it", "ita": "it", "italy": "it", "italia": "it",
+        "at": "at", "aut": "at", "austria": "at",
+        "gb": "gb", "gbr": "gb", "uk": "gb", "great britain": "gb", "reino unido": "gb",
+        "gb-sct": "gb-sct", "sct": "gb-sct", "scotland": "gb-sct", "escocia": "gb-sct",
+        "gb-eng": "gb-eng", "eng": "gb-eng", "england": "gb-eng", "inglaterra": "gb-eng",
+        "gb-wls": "gb-wls", "wls": "gb-wls", "wales": "gb-wls", "gales": "gb-wls",
+        "de": "de", "ger": "de", "germany": "de", "alemania": "de",
+        "eu": "eu", "eur": "eu", "europe": "eu", "europa": "eu",
+        "hu": "hu", "hun": "hu", "hungary": "hu", "hungria": "hu", "hungría": "hu",
+        "be": "be", "bel": "be", "belgium": "be", "belgica": "be", "bélgica": "be",
+        "jp": "jp", "jpn": "jp", "japan": "jp", "japón": "jp", "japon": "jp",
+        "us": "us", "usa": "us", "united states": "us", "estados unidos": "us", "eeuu": "us",
+        "br": "br", "bra": "br", "brazil": "br", "brasil": "br",
+        "al": "al", "alb": "al", "albania": "al",
+        "ma": "ma", "mar": "ma", "morocco": "ma", "marruecos": "ma",
+        "ar": "ar", "arg": "ar", "argentina": "ar",
+        "ch": "ch", "sui": "ch", "switzerland": "ch", "suiza": "ch",
+        "co": "co", "col": "co", "colombia": "co",
+        "bg": "bg", "bul": "bg", "bulgaria": "bg",
+        "cz": "cz", "cze": "cz", "czechia": "cz", "czech republic": "cz", "republica checa": "cz",
+        "ng": "ng", "nga": "ng", "nigeria": "ng",
+        "ru": "ru", "rus": "ru", "russia": "ru", "rusia": "ru",
+        "fr": "fr", "fra": "fr", "france": "fr", "francia": "fr",
+        "sg": "sg", "sin": "sg", "singapore": "sg", "singapur": "sg",
+        "mx": "mx", "mex": "mx", "mexico": "mx", "méxico": "mx",
+        "cl": "cl", "chi": "cl", "chile": "cl",
+        "pt": "pt", "por": "pt", "portugal": "pt",
+        "nl": "nl", "ned": "nl", "netherlands": "nl", "paises bajos": "nl",
+        "mc": "mc", "mon": "mc", "monaco": "mc", "mónaco": "mc"
+    };
+    if (directCodes[cleanStr]) return directCodes[cleanStr];
+
     let cleanEmoji = String(emoji).trim();
     if (cleanEmoji.includes("🏴󠁧󠁢󠁳󠁣󠁴󠁿")) return "gb-sct";
     if (cleanEmoji.includes("🏴󠁧󠁢󠁥󠁮󠁧󠁿")) return "gb-eng";
@@ -5665,27 +6920,151 @@ function renderFfcMatrixTable(filterText = "") {
     });
 }
 
-function initStandingsViewTabs() {
-    const tabMatrix = document.getElementById("tabStandingsMatrix");
-    const tabCards = document.getElementById("tabStandingsCards");
-    const viewMatrix = document.getElementById("standingsMatrixView");
+function setStandingsSubView(subView) {
+    if (!subView) subView = "pilotos";
+    subView = String(subView).toLowerCase().trim();
+
+    // Normalize view keys
+    if (subView === "drivers" || subView === "piloto" || subView === "cards") subView = "pilotos";
+    if (subView === "constructors" || subView === "constructor" || subView === "equipos" || subView === "teams") subView = "constructores";
+    if (subView === "matrix" || subView === "table" || subView === "super_table") subView = "tabla";
+
+    const tabPilotos = document.getElementById("tabStandingsPilotos") || document.getElementById("tabStandingsCards");
+    const tabConstructores = document.getElementById("tabStandingsConstructores");
+    const tabTabla = document.getElementById("tabStandingsTabla") || document.getElementById("tabStandingsMatrix");
+
     const viewCards = document.getElementById("standingsCardsView");
+    const viewMatrix = document.getElementById("standingsMatrixView");
+    const driverBlock = document.getElementById("driverStandingsBlock");
+    const teamBlock = document.getElementById("teamStandingsBlock");
 
-    if (tabMatrix && tabCards && viewMatrix && viewCards) {
-        tabMatrix.addEventListener("click", () => {
-            tabMatrix.classList.add("active");
-            tabCards.classList.remove("active");
-            viewMatrix.style.display = "block";
-            viewCards.style.display = "none";
-            renderFfcMatrixTable();
-        });
+    // Also update any active states on navbar dropdown items
+    document.querySelectorAll(".nav-dropdown-option").forEach(btn => {
+        btn.classList.remove("active");
+    });
 
-        tabCards.addEventListener("click", () => {
-            tabCards.classList.add("active");
-            tabMatrix.classList.remove("active");
-            viewMatrix.style.display = "none";
-            viewCards.style.display = "block";
-        });
+    if (tabPilotos) tabPilotos.classList.remove("active");
+    if (tabConstructores) tabConstructores.classList.remove("active");
+    if (tabTabla) tabTabla.classList.remove("active");
+
+    if (subView === "pilotos") {
+        if (tabPilotos) tabPilotos.classList.add("active");
+        if (viewCards) viewCards.style.display = "block";
+        if (viewMatrix) viewMatrix.style.display = "none";
+        if (driverBlock) driverBlock.style.display = "block";
+        if (teamBlock) teamBlock.style.display = "none";
+
+        const navPilotos = document.querySelector(".nav-dropdown-option[onclick*=\"'pilotos'\"]");
+        if (navPilotos) navPilotos.classList.add("active");
+    } else if (subView === "constructores") {
+        if (tabConstructores) tabConstructores.classList.add("active");
+        if (viewCards) viewCards.style.display = "block";
+        if (viewMatrix) viewMatrix.style.display = "none";
+        if (driverBlock) driverBlock.style.display = "none";
+        if (teamBlock) teamBlock.style.display = "block";
+
+        const navConst = document.querySelector(".nav-dropdown-option[onclick*=\"'constructores'\"]");
+        if (navConst) navConst.classList.add("active");
+    } else if (subView === "tabla") {
+        if (tabTabla) tabTabla.classList.add("active");
+        if (viewCards) viewCards.style.display = "none";
+        if (viewMatrix) viewMatrix.style.display = "block";
+        renderFfcMatrixTable();
+
+        const navTabla = document.querySelector(".nav-dropdown-option[onclick*=\"'tabla'\"]");
+        if (navTabla) navTabla.classList.add("active");
+    } else if (subView === "all" || subView === "ambos") {
+        if (tabPilotos) tabPilotos.classList.add("active");
+        if (tabConstructores) tabConstructores.classList.add("active");
+        if (viewCards) viewCards.style.display = "block";
+        if (viewMatrix) viewMatrix.style.display = "none";
+        if (driverBlock) driverBlock.style.display = "block";
+        if (teamBlock) teamBlock.style.display = "block";
+    }
+
+    try {
+        localStorage.setItem("ffc_standings_view", subView);
+    } catch (e) {}
+
+    // Enhance all flags in DOM
+    if (typeof enhanceAllFlagsInDom === "function") {
+        setTimeout(enhanceAllFlagsInDom, 50);
+    }
+}
+window.setStandingsSubView = setStandingsSubView;
+
+function openStandingsWithView(subView) {
+    if (typeof switchMainTab === "function") {
+        switchMainTab("standings", true);
+    }
+    setStandingsSubView(subView);
+    const selector = document.getElementById("standingsViewSelector") || document.getElementById("standings");
+    if (selector) {
+        selector.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+}
+window.openStandingsWithView = openStandingsWithView;
+
+function enhanceAllFlagsInDom() {
+    // 1. Sidebar round flags
+    document.querySelectorAll(".calendar-round-item").forEach(item => {
+        const raceKey = item.getAttribute("data-race");
+        const flagEl = item.querySelector(".round-flag");
+        if (raceKey && flagEl && !flagEl.querySelector("img")) {
+            flagEl.innerHTML = getRaceFlagHtml(raceKey, 20);
+        }
+    });
+
+    // 2. Calendar grid cards
+    document.querySelectorAll(".calendar-card.race-link").forEach(card => {
+        const raceKey = card.getAttribute("data-race");
+        const badge = card.querySelector(".calendar-flag-badge");
+        if (raceKey && badge && !badge.querySelector("img")) {
+            badge.innerHTML = getRaceFlagHtml(raceKey, 22);
+        }
+    });
+
+    // 3. Calendar list rows
+    document.querySelectorAll(".cal-list-row.race-link").forEach(row => {
+        const raceKey = row.getAttribute("data-race");
+        const flagBox = row.querySelector(".cal-flag-emoji");
+        if (raceKey && flagBox && !flagBox.querySelector("img")) {
+            flagBox.innerHTML = getRaceFlagHtml(raceKey, 24);
+        }
+    });
+
+    // 4. Standings static drivers flags if not yet rendered
+    document.querySelectorAll("#driverRankingBoard .ranking-row, #driverLeaderRow, #driverP2Col, #driverP3Col").forEach(el => {
+        const dName = el.getAttribute("data-driver");
+        const nameSpan = el.querySelector(".ranking-leader-name, .ranking-podium-name, .ranking-row-name");
+        if (dName && nameSpan && !nameSpan.querySelector(".driver-flag-img")) {
+            const flagHtml = getDriverFlagHtml(dName, 18);
+            if (flagHtml && flagHtml.includes("<img")) {
+                const existingFlag = nameSpan.querySelector(".driver-flag-emoji");
+                if (existingFlag) {
+                    existingFlag.outerHTML = flagHtml;
+                } else {
+                    nameSpan.insertAdjacentHTML("afterbegin", flagHtml);
+                }
+            }
+        }
+    });
+}
+window.enhanceAllFlagsInDom = enhanceAllFlagsInDom;
+
+function initStandingsViewTabs() {
+    const tabPilotos = document.getElementById("tabStandingsPilotos") || document.getElementById("tabStandingsCards");
+    const tabConstructores = document.getElementById("tabStandingsConstructores");
+    const tabTabla = document.getElementById("tabStandingsTabla") || document.getElementById("tabStandingsMatrix");
+
+    if (tabPilotos) {
+        tabPilotos.addEventListener("click", () => setStandingsSubView("pilotos"));
+    }
+    if (tabConstructores) {
+        tabConstructores.addEventListener("click", () => setStandingsSubView("constructores"));
+    }
+    if (tabTabla) {
+        tabTabla.addEventListener("click", () => setStandingsSubView("tabla"));
     }
 
     const searchInput = document.getElementById("matrixSearchInput");
@@ -5694,6 +7073,12 @@ function initStandingsViewTabs() {
             renderFfcMatrixTable(e.target.value);
         });
     }
+
+    let saved = "pilotos";
+    try {
+        saved = localStorage.getItem("ffc_standings_view") || "pilotos";
+    } catch (e) {}
+    setStandingsSubView(saved);
 }
 
 // ==============================================
@@ -8682,6 +10067,18 @@ function initializeSavedData() {
     renderStandingsOnPage(getSavedStandings());
     renderSettingsOnPage(getSavedSettings());
     initRaceResults();
+    if (typeof initCalendarMasterDetail === "function") {
+        initCalendarMasterDetail();
+    }
+    if (typeof initCalendarViewToggle === "function") {
+        initCalendarViewToggle();
+    }
+    if (typeof renderHomeTop3Podium === "function") {
+        renderHomeTop3Podium();
+    }
+    if (typeof initTabNavigation === "function") {
+        initTabNavigation();
+    }
 
     // Start real-time Firestore synchronization
     initFirestoreListeners();
@@ -8694,6 +10091,7 @@ function initializeSavedData() {
     initStandingsViewTabs();
     initDriverStatsModal();
     renderFfcMatrixTable();
+    enhanceAllFlagsInDom();
 
     const initialLang = (() => {
         try {
@@ -10943,6 +12341,8 @@ function closeUserAuthModal() {
     if (userRegisterForm) userRegisterForm.reset();
     if (userResetForm) userResetForm.reset();
 }
+window.openUserAuthModal = openUserAuthModal;
+window.closeUserAuthModal = closeUserAuthModal;
 
 // Update UI on Auth State Change
 function renderUserAuthState(user) {
@@ -13665,23 +15065,27 @@ function closeFantasyPortal(targetAnchor = null) {
         navLinks.classList.remove("mobile-open");
     }
 
-    if (targetAnchor && targetAnchor !== "#fantasy") {
-        try {
-            window.location.hash = targetAnchor;
-            const targetEl = document.querySelector(targetAnchor);
-            if (targetEl) {
-                targetEl.scrollIntoView({ behavior: "smooth" });
-            }
-        } catch (e) {}
+    if (typeof switchMainTab === "function") {
+        switchMainTab(targetAnchor ? targetAnchor.replace(/^#/, "") : "home", true);
     } else {
-        try {
-            window.history.pushState(null, "", window.location.pathname);
-        } catch (e) {
+        if (targetAnchor && targetAnchor !== "#fantasy") {
             try {
-                window.location.hash = "";
-            } catch (err) {}
+                window.location.hash = targetAnchor;
+                const targetEl = document.querySelector(targetAnchor);
+                if (targetEl) {
+                    targetEl.scrollIntoView({ behavior: "smooth" });
+                }
+            } catch (e) {}
+        } else {
+            try {
+                window.history.pushState(null, "", window.location.pathname);
+            } catch (e) {
+                try {
+                    window.location.hash = "";
+                } catch (err) {}
+            }
+            window.scrollTo({ top: 0, behavior: "smooth" });
         }
-        window.scrollTo({ top: 0, behavior: "smooth" });
     }
 }
 window.closeFantasyPortal = closeFantasyPortal;

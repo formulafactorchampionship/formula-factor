@@ -225,6 +225,152 @@ button {
     50% { opacity: 1; transform: scale(1.15); }
 }
 
+/* Navbar Standings Dropdown (Pilotos, Constructores, La Tabla) */
+.nav-dropdown-wrap {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+}
+
+.nav-item-has-dropdown {
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 6px !important;
+}
+
+.nav-dropdown-chevron {
+    width: 8px;
+    height: 5px;
+    color: currentColor;
+    opacity: 0.7;
+    transition: transform 0.2s ease, opacity 0.2s ease;
+    flex-shrink: 0;
+}
+
+.nav-dropdown-wrap:hover .nav-dropdown-chevron,
+.nav-dropdown-wrap.is-open .nav-dropdown-chevron {
+    transform: rotate(180deg);
+    opacity: 1;
+    color: var(--gold, #d6b45c);
+}
+
+.nav-dropdown-menu {
+    position: absolute;
+    top: calc(100% + 8px);
+    left: 50%;
+    transform: translateX(-50%) translateY(-6px);
+    background: rgba(10, 15, 25, 0.98);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-top: 2px solid #ef4444; /* Racing red accent line */
+    border-radius: 12px;
+    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.8), 0 0 24px rgba(239, 68, 68, 0.25);
+    padding: 6px;
+    min-width: 220px;
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transition: opacity 0.2s cubic-bezier(0.16, 1, 0.3, 1), transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.2s ease;
+    z-index: 1000;
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+}
+
+.nav-dropdown-wrap:hover .nav-dropdown-menu,
+.nav-dropdown-wrap:focus-within .nav-dropdown-menu,
+.nav-dropdown-wrap.is-open .nav-dropdown-menu {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+    transform: translateX(-50%) translateY(0);
+}
+
+.nav-dropdown-option {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 9px 12px;
+    border-radius: 8px;
+    color: #e2e8f0;
+    text-decoration: none;
+    transition: all 0.16s ease;
+    cursor: pointer;
+    background: transparent;
+    border: 1px solid transparent;
+    text-align: left;
+    width: 100%;
+    font-family: inherit;
+}
+
+.nav-dropdown-option:hover {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(255, 255, 255, 0.12);
+    color: #ffffff;
+    transform: translateX(3px);
+}
+
+.nav-dropdown-option.active {
+    background: rgba(239, 68, 68, 0.18);
+    border-color: rgba(239, 68, 68, 0.4);
+    color: #ffffff;
+}
+
+.nav-dropdown-option .option-icon {
+    font-size: 18px;
+    flex-shrink: 0;
+    line-height: 1;
+}
+
+.nav-dropdown-option .option-content {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.nav-dropdown-option .option-title {
+    font-family: "Barlow Condensed", sans-serif;
+    font-size: 14px;
+    font-weight: 800;
+    letter-spacing: 0.8px;
+    color: #ffffff;
+    text-transform: uppercase;
+}
+
+.nav-dropdown-option .option-desc {
+    font-size: 11px;
+    color: #94a3b8;
+    letter-spacing: 0.2px;
+    white-space: nowrap;
+}
+
+/* Sharp Flag Images */
+.round-flag-img,
+.grid-flag-img,
+.cal-flag-img {
+    width: 22px;
+    height: 15px;
+    object-fit: cover;
+    border-radius: 2px;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.45);
+    display: inline-block;
+    vertical-align: middle;
+}
+
+.cal-flag-img {
+    width: 28px;
+    height: 19px;
+    border-radius: 3px;
+}
+
+.detail-title-flag .driver-flag-img {
+    width: 32px;
+    height: 22px;
+    border-radius: 3px;
+    margin-right: 8px;
+}
+
 .nav-actions {
     display: flex;
     align-items: center;
@@ -4298,6 +4444,1594 @@ button {
     cursor: pointer;
 }
 
+/* =========================================================
+   FFC CHAMPIONSHIP CALENDAR & RESULTS (MASTER-DETAIL DASHBOARD)
+   Inspired by high-performance simracing league schedule view
+========================================================= */
+
+.calendar-top-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 20px;
+    margin-bottom: 24px;
+}
+
+.calendar-top-title-wrap {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.calendar-top-kicker {
+    font-family: "Barlow Condensed", sans-serif;
+    font-size: 13.5px;
+    font-weight: 800;
+    letter-spacing: 1.6px;
+    text-transform: uppercase;
+    color: #f472b6;
+    display: block;
+}
+
+.calendar-top-heading {
+    font-family: "Barlow Condensed", sans-serif;
+    font-size: clamp(30px, 4.2vw, 44px);
+    font-weight: 900;
+    text-transform: uppercase;
+    color: #ffffff;
+    letter-spacing: 0.5px;
+    line-height: 1;
+    margin: 0;
+}
+
+.calendar-filter-tabs {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: #090e18;
+    padding: 4px;
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.calendar-tab-btn {
+    padding: 8px 16px;
+    border-radius: 8px;
+    border: none;
+    background: transparent;
+    color: #94a3b8;
+    font-size: 13px;
+    font-weight: 700;
+    font-family: "Barlow Condensed", sans-serif;
+    letter-spacing: 0.4px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.calendar-tab-btn:hover {
+    color: #ffffff;
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.calendar-tab-btn.active {
+    background: #fce7f3;
+    color: #1e1b4b;
+    font-weight: 800;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+}
+
+.calendar-tab-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1px 7px;
+    border-radius: 9999px;
+    font-size: 11px;
+    font-weight: 800;
+    background: rgba(255, 255, 255, 0.08);
+    color: #94a3b8;
+}
+
+.calendar-tab-btn.active .calendar-tab-badge {
+    background: rgba(30, 27, 75, 0.15);
+    color: #1e1b4b;
+}
+
+/* Master-Detail Split Grid */
+.calendar-layout-master-detail {
+    display: grid;
+    grid-template-columns: 270px 1fr;
+    gap: 20px;
+    align-items: stretch;
+}
+
+/* Left Sidebar: Rounds List */
+.calendar-rounds-sidebar {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    background: #060a12;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 14px;
+    padding: 10px 8px;
+    max-height: 860px;
+}
+
+.calendar-rounds-sidebar-header {
+    padding: 2px 6px 6px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    margin-bottom: 2px;
+}
+
+.calendar-rounds-label {
+    font-family: "Barlow Condensed", sans-serif;
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 1.5px;
+    color: #64748b;
+    text-transform: uppercase;
+}
+
+.calendar-rounds-list {
+    display: flex;
+    flex-direction: column;
+    gap: 4px; /* Ultra-compact 4px gap so all rounds fit smoothly */
+    max-height: 800px;
+    overflow-y: auto;
+    padding-right: 4px;
+}
+
+.calendar-rounds-list::-webkit-scrollbar {
+    width: 4px;
+}
+.calendar-rounds-list::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.02);
+    border-radius: 10px;
+}
+.calendar-rounds-list::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.16);
+    border-radius: 10px;
+}
+
+/* Compact Round Items */
+.calendar-round-item {
+    min-height: unset !important;
+    height: auto !important;
+    padding: 6px 10px !important; /* Compact padding for high information density */
+    background: #080d16;
+    border: 1px solid rgba(255, 255, 255, 0.07);
+    border-left: 3.5px solid #e11d48; /* Red racing accent indicator */
+    border-radius: 8px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 9px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+    position: relative;
+    user-select: none;
+}
+
+.calendar-round-item:hover {
+    transform: translateX(3px);
+    background: #0e1524;
+    border-color: rgba(255, 255, 255, 0.2);
+    border-left-color: #f43f5e;
+}
+
+.calendar-round-item.is-active-round {
+    border: 1.5px solid #f43f5e;
+    border-left: 4px solid #ef4444;
+    box-shadow: 0 0 16px rgba(239, 68, 68, 0.28), inset 0 0 10px rgba(239, 68, 68, 0.06);
+    background: rgba(239, 68, 68, 0.08);
+}
+
+.calendar-round-item.is-active-round .round-item-pill {
+    border-color: #ef4444;
+    color: #ff6b8b;
+    box-shadow: 0 0 8px rgba(239, 68, 68, 0.4);
+}
+
+.calendar-round-item.next {
+    border-left-color: #ef4444;
+}
+
+.calendar-round-item.upcoming {
+    border-left-color: #64748b;
+}
+
+.round-item-number-wrap {
+    flex-shrink: 0;
+}
+
+.round-item-pill {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 28px;
+    height: 22px;
+    padding: 0 5px;
+    border-radius: 6px;
+    font-family: "Barlow Condensed", sans-serif;
+    font-size: 13px;
+    font-weight: 800;
+    letter-spacing: 0.4px;
+    line-height: 1;
+    border: 1px solid rgba(52, 211, 153, 0.4);
+    color: #34d399;
+    background: rgba(0, 0, 0, 0.3);
+}
+
+.round-item-pill.pill-next {
+    border-color: rgba(239, 68, 68, 0.7);
+    color: #ef4444;
+    background: rgba(239, 68, 68, 0.14);
+}
+
+.round-item-pill.pill-upcoming {
+    border-color: rgba(255, 255, 255, 0.12);
+    color: #94a3b8;
+    background: rgba(255, 255, 255, 0.04);
+}
+
+.round-item-info {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+    flex: 1;
+    min-width: 0;
+}
+
+.round-item-title-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.round-flag {
+    font-size: 17px;
+    line-height: 1;
+    flex-shrink: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.round-name {
+    font-family: "Barlow Condensed", sans-serif;
+    font-size: 13.5px;
+    font-weight: 800;
+    text-transform: uppercase;
+    color: #ffffff;
+    letter-spacing: 0.4px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    line-height: 1.15;
+}
+
+.round-item-sub {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 11px;
+    font-weight: 700;
+    color: #34d399;
+    letter-spacing: 0.3px;
+    font-family: "Barlow Condensed", sans-serif;
+    line-height: 1.1;
+}
+
+.round-item-sub .round-check {
+    font-weight: 900;
+    font-size: 10px;
+}
+
+.calendar-round-item.next .round-item-sub {
+    color: #f87171;
+}
+
+.calendar-round-item.next .round-next-pulse {
+    font-size: 7px;
+    animation: pulseRedDot 1.5s infinite;
+}
+
+@keyframes pulseRedDot {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.4; transform: scale(0.85); }
+}
+
+.calendar-round-item.upcoming .round-item-sub {
+    color: #64748b;
+}
+
+/* Right Column: Detail Pane */
+.calendar-detail-pane {
+    background: #070b13;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 16px;
+    padding: 22px 24px;
+    min-height: 640px;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 12px 36px rgba(0, 0, 0, 0.45);
+}
+
+.calendar-detail-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 14px;
+    padding-bottom: 18px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+    margin-bottom: 18px;
+}
+
+.detail-header-left {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    flex-wrap: wrap;
+}
+
+.detail-title-badge {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.detail-title-flag {
+    font-size: 26px;
+    line-height: 1;
+}
+
+.detail-title-text {
+    font-family: "Barlow Condensed", sans-serif;
+    font-size: 27px;
+    font-weight: 900;
+    color: #ffffff;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.detail-action-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 13px;
+    border-radius: 8px;
+    font-family: "Barlow Condensed", sans-serif;
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: 0.6px;
+    text-transform: uppercase;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    color: #ffffff;
+    text-decoration: none;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.detail-action-btn:hover {
+    background: rgba(255, 255, 255, 0.12);
+    transform: translateY(-1px);
+}
+
+.detail-action-btn.btn-highlights:hover {
+    background: #e10600;
+    border-color: #ff2b25;
+    box-shadow: 0 0 12px rgba(225, 6, 0, 0.4);
+}
+
+.detail-header-right {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.detail-seg-control {
+    display: inline-flex;
+    background: rgba(255, 255, 255, 0.04);
+    padding: 3px;
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    gap: 2px;
+}
+
+.detail-seg-btn {
+    padding: 4px 11px;
+    font-size: 11.5px;
+    font-weight: 700;
+    font-family: "Barlow Condensed", sans-serif;
+    letter-spacing: 0.3px;
+    border-radius: 6px;
+    border: none;
+    color: #94a3b8;
+    background: transparent;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.detail-seg-btn:hover {
+    color: #ffffff;
+}
+
+.detail-seg-btn.active {
+    background: #fce7f3;
+    color: #1e1b4b;
+    font-weight: 800;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+}
+
+.detail-date-display {
+    font-family: "Barlow Condensed", sans-serif;
+    font-size: 14.5px;
+    font-weight: 800;
+    color: #cbd5e1;
+    letter-spacing: 0.4px;
+}
+
+/* Results Table */
+.calendar-table-scroll {
+    overflow-x: auto;
+    width: 100%;
+    border-radius: 10px;
+    margin-bottom: 16px;
+}
+
+.calendar-results-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0 4px;
+}
+
+.calendar-results-table th {
+    font-family: "Barlow Condensed", sans-serif;
+    font-size: 11.5px;
+    font-weight: 800;
+    letter-spacing: 0.9px;
+    text-transform: uppercase;
+    color: #64748b;
+    padding: 8px 12px;
+    text-align: left;
+    white-space: nowrap;
+}
+
+.calendar-results-table th.th-pts {
+    text-align: right;
+    padding-right: 16px;
+}
+
+.calendar-results-table tbody tr {
+    background: rgba(255, 255, 255, 0.02);
+    transition: background 0.15s ease;
+}
+
+.calendar-results-table tbody tr:hover {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.calendar-results-table td {
+    padding: 9px 12px;
+    vertical-align: middle;
+    border: none;
+}
+
+.pos-badge-box {
+    width: 28px;
+    height: 28px;
+    border-radius: 6px;
+    font-family: "Barlow Condensed", sans-serif;
+    font-weight: 900;
+    font-size: 16px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+}
+
+.pos-p1 {
+    background: #f59e0b;
+    color: #020617;
+    box-shadow: 0 0 10px rgba(245, 158, 11, 0.35);
+}
+
+.pos-p2 {
+    background: #cbd5e1;
+    color: #020617;
+}
+
+.pos-p3 {
+    background: #ea580c;
+    color: #ffffff;
+}
+
+.pos-other {
+    background: #1e293b;
+    color: #94a3b8;
+    font-weight: 800;
+}
+
+.grid-delta-cell {
+    font-family: "JetBrains Mono", monospace;
+    font-size: 12.5px;
+    font-weight: 600;
+    color: #94a3b8;
+    white-space: nowrap;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.delta-up {
+    color: #34d399;
+    font-size: 11px;
+    font-weight: 800;
+}
+
+.delta-down {
+    color: #f87171;
+    font-size: 11px;
+    font-weight: 800;
+}
+
+.delta-same {
+    color: #64748b;
+    font-size: 11px;
+}
+
+.driver-name-cell {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    border-left: 3.5px solid var(--team-border-col, #38bdf8);
+    padding-left: 10px;
+    flex-wrap: wrap;
+}
+
+.driver-name-text {
+    font-family: "Barlow Condensed", sans-serif;
+    font-size: 15px;
+    font-weight: 800;
+    color: #f8fafc;
+    letter-spacing: 0.4px;
+}
+
+.driver-meta-flag {
+    font-size: 14px;
+    line-height: 1;
+}
+
+.driver-tag-t1 {
+    font-size: 10px;
+    font-weight: 700;
+    background: rgba(255, 255, 255, 0.08);
+    color: #94a3b8;
+    padding: 2px 5px;
+    border-radius: 4px;
+    font-family: "Barlow Condensed", sans-serif;
+}
+
+.driver-badge-dotd {
+    background: rgba(168, 85, 247, 0.25);
+    color: #d8b4fe;
+    border: 1px solid rgba(168, 85, 247, 0.5);
+    font-size: 9.5px;
+    font-weight: 800;
+    padding: 1px 5px;
+    border-radius: 4px;
+    font-family: "Barlow Condensed", sans-serif;
+}
+
+.driver-badge-fl {
+    background: rgba(168, 85, 247, 0.25);
+    color: #d8b4fe;
+    border: 1px solid rgba(168, 85, 247, 0.5);
+    font-size: 9.5px;
+    font-weight: 800;
+    padding: 1px 5px;
+    border-radius: 4px;
+    font-family: "Barlow Condensed", sans-serif;
+}
+
+.driver-badge-pole {
+    background: rgba(234, 179, 8, 0.25);
+    color: #fde047;
+    border: 1px solid rgba(234, 179, 8, 0.5);
+    font-size: 9.5px;
+    font-weight: 800;
+    padding: 1px 5px;
+    border-radius: 4px;
+    font-family: "Barlow Condensed", sans-serif;
+}
+
+.team-cell-wrap {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    color: #cbd5e1;
+    white-space: nowrap;
+}
+
+.team-badge-bullet {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--team-border-col, #38bdf8);
+    display: inline-block;
+    flex-shrink: 0;
+}
+
+.time-cell {
+    font-family: "JetBrains Mono", monospace;
+    font-size: 12.5px;
+    color: #f8fafc;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.time-cell.dnf {
+    color: #f87171;
+    font-weight: 700;
+}
+
+.time-cell.dns {
+    color: #64748b;
+}
+
+.best-lap-cell {
+    font-family: "JetBrains Mono", monospace;
+    font-size: 12.5px;
+    color: #c084fc;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.tyre-stints-preview {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.tyre-stint-seg {
+    display: inline-block;
+    width: 16px;
+    height: 5px;
+    border-radius: 9999px;
+}
+
+.tyre-stint-seg.soft {
+    background: #f43f5e;
+}
+
+.tyre-stint-seg.medium {
+    background: #eab308;
+}
+
+.tyre-stint-seg.hard {
+    background: #e2e8f0;
+}
+
+.pts-cell {
+    font-family: "Barlow Condensed", sans-serif;
+    font-size: 17px;
+    font-weight: 900;
+    color: #ffffff;
+    text-align: right;
+    padding-right: 16px;
+}
+
+/* Quick Summary Bar */
+.calendar-race-summary-bar {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 12px;
+    margin-top: auto;
+    padding-top: 16px;
+    border-top: 1px solid rgba(255, 255, 255, 0.07);
+}
+
+.summary-stat-chip {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 8px;
+    padding: 8px 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.summary-chip-label {
+    font-family: "Barlow Condensed", sans-serif;
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 0.6px;
+    text-transform: uppercase;
+    color: #64748b;
+}
+
+.summary-chip-val {
+    font-family: "Barlow Condensed", sans-serif;
+    font-size: 14px;
+    font-weight: 800;
+    color: #f1f5f9;
+    letter-spacing: 0.3px;
+}
+
+/* Upcoming / Next Race Inside Detail Pane */
+.calendar-upcoming-detail-box {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    padding: 10px 0;
+}
+
+.upcoming-hero-banner {
+    background: linear-gradient(135deg, rgba(239, 68, 68, 0.1) 0%, rgba(15, 23, 42, 0.6) 100%);
+    border: 1px solid rgba(239, 68, 68, 0.25);
+    border-radius: 14px;
+    padding: 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+
+.upcoming-hero-left h3 {
+    font-family: "Barlow Condensed", sans-serif;
+    font-size: 32px;
+    font-weight: 900;
+    color: #ffffff;
+    margin: 0;
+    text-transform: uppercase;
+}
+
+.upcoming-hero-left p {
+    color: #94a3b8;
+    font-size: 13px;
+    margin: 4px 0 0;
+    font-weight: 600;
+}
+
+.upcoming-countdown-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.upcoming-cd-box {
+    background: rgba(0, 0, 0, 0.5);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    padding: 8px 12px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-width: 52px;
+}
+
+.upcoming-cd-num {
+    font-family: "Barlow Condensed", sans-serif;
+    font-size: 24px;
+    font-weight: 900;
+    color: #f8fafc;
+    line-height: 1;
+}
+
+.upcoming-cd-lbl {
+    font-size: 9.5px;
+    font-weight: 800;
+    color: #64748b;
+    letter-spacing: 0.6px;
+    text-transform: uppercase;
+    margin-top: 2px;
+}
+
+.upcoming-info-cards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 14px;
+}
+
+.upcoming-info-card {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.07);
+    border-radius: 12px;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.upcoming-info-card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.upcoming-info-card-title {
+    font-family: "Barlow Condensed", sans-serif;
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+    color: #94a3b8;
+}
+
+.upcoming-info-card-val {
+    font-family: "Barlow Condensed", sans-serif;
+    font-size: 22px;
+    font-weight: 900;
+    color: #f1f5f9;
+}
+
+.upcoming-info-card-desc {
+    font-size: 12px;
+    color: #64748b;
+    line-height: 1.4;
+}
+
+.upcoming-schedule-strip {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.07);
+    border-radius: 12px;
+    padding: 16px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 14px;
+}
+
+.schedule-strip-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.schedule-strip-time {
+    font-family: "JetBrains Mono", monospace;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--gold);
+}
+
+.schedule-strip-session {
+    font-family: "Barlow Condensed", sans-serif;
+    font-size: 14px;
+    font-weight: 800;
+    text-transform: uppercase;
+    color: #ffffff;
+}
+
+/* Responsive Breakpoints */
+@media (max-width: 992px) {
+    .calendar-layout-master-detail {
+        grid-template-columns: 1fr;
+    }
+
+    .calendar-rounds-sidebar {
+        max-height: none;
+    }
+
+    .calendar-rounds-list {
+        display: flex;
+        flex-direction: row;
+        overflow-x: auto;
+        max-height: none;
+        padding-bottom: 8px;
+        gap: 10px;
+    }
+
+    .calendar-round-item {
+        min-width: 240px;
+        flex-shrink: 0;
+    }
+}
+
+/* Special Events & Exhibition Pane */
+.special-events-pane {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    padding: 8px 0;
+}
+
+.special-events-hero {
+    background: linear-gradient(135deg, rgba(234, 179, 8, 0.12) 0%, rgba(15, 23, 42, 0.6) 100%);
+    border: 1px solid rgba(234, 179, 8, 0.3);
+    border-radius: 14px;
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.special-events-hero h3 {
+    font-family: "Barlow Condensed", sans-serif;
+    font-size: 28px;
+    font-weight: 900;
+    color: #fde047;
+    margin: 0;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+}
+
+.special-events-hero p {
+    color: #cbd5e1;
+    font-size: 13.5px;
+    line-height: 1.5;
+    margin: 0;
+    max-width: 720px;
+}
+
+.special-events-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 16px;
+}
+
+.special-event-card {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 12px;
+    padding: 18px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    transition: all 0.2s ease;
+}
+
+.special-event-card:hover {
+    border-color: rgba(234, 179, 8, 0.4);
+    background: rgba(255, 255, 255, 0.05);
+    transform: translateY(-2px);
+}
+
+.special-event-badge {
+    align-self: flex-start;
+    padding: 2px 8px;
+    border-radius: 6px;
+    font-family: "Barlow Condensed", sans-serif;
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 0.6px;
+    text-transform: uppercase;
+    background: rgba(234, 179, 8, 0.15);
+    color: #fde047;
+    border: 1px solid rgba(234, 179, 8, 0.3);
+}
+
+.special-event-title {
+    font-family: "Barlow Condensed", sans-serif;
+    font-size: 18px;
+    font-weight: 800;
+    color: #ffffff;
+    margin: 0;
+    text-transform: uppercase;
+}
+
+.special-event-desc {
+    color: #94a3b8;
+    font-size: 12.5px;
+    line-height: 1.45;
+    margin: 0;
+}
+
+/* Qualifying Preview in Detail Pane */
+.qualy-preview-pane {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+}
+
+.qualy-pole-box {
+    background: linear-gradient(135deg, rgba(234, 179, 8, 0.12) 0%, rgba(30, 41, 59, 0.4) 100%);
+    border: 1.5px solid rgba(234, 179, 8, 0.35);
+    border-radius: 12px;
+    padding: 18px 22px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 14px;
+}
+
+.qualy-pole-left {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+.qualy-pole-icon {
+    font-size: 28px;
+    line-height: 1;
+}
+
+.qualy-pole-title {
+    font-family: "Barlow Condensed", sans-serif;
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: 1px;
+    color: #fde047;
+    text-transform: uppercase;
+}
+
+.qualy-pole-driver {
+    font-family: "Barlow Condensed", sans-serif;
+    font-size: 22px;
+    font-weight: 900;
+    color: #ffffff;
+    text-transform: uppercase;
+}
+
+.qualy-pole-time {
+    font-family: "JetBrains Mono", monospace;
+    font-size: 18px;
+    font-weight: 800;
+    color: var(--gold);
+    background: rgba(0, 0, 0, 0.4);
+    padding: 6px 14px;
+    border-radius: 8px;
+    border: 1px solid rgba(234, 179, 8, 0.25);
+}
+
+.calendar-results-table .driver-clickable:hover {
+    color: var(--gold);
+    cursor: pointer;
+    text-decoration: underline;
+}
+
+.calendar-results-table .team-clickable:hover {
+    cursor: pointer;
+    opacity: 0.85;
+}
+
+/* =========================================================
+   TAB PAGE TOP BAR & BREADCRUMBS
+========================================================= */
+.tab-page-top-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 0 20px;
+    margin-bottom: 12px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.tab-back-home-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    color: #e2e8f0;
+    padding: 8px 18px;
+    border-radius: 8px;
+    font-family: "Barlow Condensed", sans-serif;
+    font-size: 13px;
+    font-weight: 800;
+    letter-spacing: 0.6px;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.tab-back-home-btn:hover {
+    background: rgba(255, 255, 255, 0.12);
+    border-color: var(--gold, #d6b45c);
+    color: #ffffff;
+    transform: translateX(-3px);
+}
+
+.tab-page-breadcrumbs {
+    font-family: "Barlow Condensed", sans-serif;
+    font-size: 13.5px;
+    font-weight: 700;
+    color: #94a3b8;
+    letter-spacing: 0.6px;
+    text-transform: uppercase;
+}
+
+.tab-page-breadcrumbs strong {
+    color: var(--gold, #d6b45c);
+}
+
+/* =========================================================
+   HOME TOP 3 PODIUM WIDGET (PANTALLA PRINCIPAL)
+========================================================= */
+.home-top3-section {
+    padding: 50px 0 40px;
+    border-top: 1px solid rgba(255, 255, 255, 0.06);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    background: linear-gradient(180deg, rgba(8, 12, 20, 0.5) 0%, rgba(4, 7, 12, 0.85) 100%);
+    position: relative;
+    z-index: 2;
+}
+
+.home-top3-podium {
+    display: grid;
+    grid-template-columns: 1fr 1.18fr 1fr;
+    gap: 24px;
+    align-items: flex-end;
+    margin: 32px auto 28px;
+    max-width: 1040px;
+}
+
+.home-podium-card {
+    background: #080d16;
+    border: 1px solid rgba(255, 255, 255, 0.09);
+    border-radius: 18px;
+    padding: 26px 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    position: relative;
+    cursor: pointer;
+    transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+}
+
+.home-podium-card:hover {
+    transform: translateY(-6px);
+    border-color: rgba(255, 255, 255, 0.28);
+    box-shadow: 0 16px 36px rgba(0, 0, 0, 0.6);
+}
+
+.home-podium-card.podium-p1 {
+    background: linear-gradient(180deg, rgba(245, 158, 11, 0.12) 0%, #0c1220 100%);
+    border: 1.5px solid rgba(245, 158, 11, 0.5);
+    box-shadow: 0 0 36px rgba(245, 158, 11, 0.18);
+    padding: 36px 24px 30px;
+    transform: translateY(-10px);
+}
+
+.home-podium-card.podium-p1:hover {
+    transform: translateY(-16px);
+    box-shadow: 0 0 50px rgba(245, 158, 11, 0.35);
+    border-color: #f59e0b;
+}
+
+.home-podium-card.podium-p2 {
+    border-top: 3.5px solid #cbd5e1;
+}
+
+.home-podium-card.podium-p3 {
+    border-top: 3.5px solid #ea580c;
+}
+
+.podium-badge-step {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: "Barlow Condensed", sans-serif;
+    font-weight: 900;
+    font-size: 24px;
+    margin-bottom: 14px;
+    line-height: 1;
+}
+
+.podium-p1 .podium-badge-step {
+    width: 60px;
+    height: 60px;
+    font-size: 32px;
+    background: linear-gradient(135deg, #f59e0b, #fbbf24);
+    color: #020617;
+    box-shadow: 0 0 24px rgba(245, 158, 11, 0.55);
+}
+
+.podium-p2 .podium-badge-step {
+    background: #cbd5e1;
+    color: #020617;
+    box-shadow: 0 0 16px rgba(203, 213, 225, 0.3);
+}
+
+.podium-p3 .podium-badge-step {
+    background: #ea580c;
+    color: #ffffff;
+    box-shadow: 0 0 16px rgba(234, 88, 12, 0.3);
+}
+
+.podium-crown-icon {
+    position: absolute;
+    top: -18px;
+    font-size: 28px;
+    filter: drop-shadow(0 2px 8px rgba(245, 158, 11, 0.7));
+    animation: floatingCrown 2.5s ease-in-out infinite alternate;
+}
+
+@keyframes floatingCrown {
+    0% { transform: translateY(0); }
+    100% { transform: translateY(-5px); }
+}
+
+.podium-driver-name {
+    font-family: "Barlow Condensed", sans-serif;
+    font-size: 25px;
+    font-weight: 900;
+    color: #ffffff;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 8px;
+}
+
+.podium-p1 .podium-driver-name {
+    font-size: 32px;
+}
+
+.podium-driver-meta {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+}
+
+.podium-driver-flag {
+    font-size: 22px;
+    line-height: 1;
+}
+
+.podium-pts-box {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 5px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    padding: 6px 18px;
+    border-radius: 9999px;
+}
+
+.podium-p1 .podium-pts-box {
+    background: rgba(245, 158, 11, 0.18);
+    border-color: rgba(245, 158, 11, 0.4);
+}
+
+.podium-pts-val {
+    font-family: "Barlow Condensed", sans-serif;
+    font-size: 28px;
+    font-weight: 900;
+    color: #ffffff;
+    line-height: 1;
+}
+
+.podium-p1 .podium-pts-val {
+    color: #fde047;
+    font-size: 34px;
+}
+
+.podium-pts-lbl {
+    font-family: "Barlow Condensed", sans-serif;
+    font-size: 13px;
+    font-weight: 800;
+    color: #94a3b8;
+    letter-spacing: 0.8px;
+}
+
+.home-top3-actions {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    flex-wrap: wrap;
+    margin-top: 24px;
+}
+
+/* =========================================================
+   CALENDAR VIEW SWITCHER & LIST VIEW
+========================================================= */
+.calendar-controls-wrap {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+    width: 100%;
+}
+
+.calendar-view-mode-group {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    background: #090e18;
+    padding: 4px;
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.09);
+}
+
+.cal-view-btn {
+    padding: 8px 15px;
+    border-radius: 8px;
+    border: none;
+    background: transparent;
+    color: #94a3b8;
+    font-family: "Barlow Condensed", sans-serif;
+    font-size: 13px;
+    font-weight: 800;
+    letter-spacing: 0.5px;
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.cal-view-btn:hover {
+    color: #ffffff;
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.cal-view-btn.active {
+    background: var(--gold, #d6b45c);
+    color: #020617;
+    box-shadow: 0 2px 10px rgba(214, 180, 92, 0.35);
+}
+
+/* Calendar List View */
+.calendar-list-view {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    width: 100%;
+}
+
+.calendar-list-row {
+    background: #080d16;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 14px;
+    padding: 16px 20px;
+    display: grid;
+    grid-template-columns: 56px 64px 1fr 140px 240px 180px;
+    align-items: center;
+    gap: 18px;
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    cursor: pointer;
+}
+
+.calendar-list-row:hover {
+    background: #0e1524;
+    border-color: rgba(255, 255, 255, 0.22);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+}
+
+.calendar-list-row.is-next-race {
+    background: linear-gradient(90deg, rgba(239, 68, 68, 0.08) 0%, #0a101d 100%);
+    border: 1.5px solid rgba(239, 68, 68, 0.45);
+    box-shadow: 0 0 24px rgba(239, 68, 68, 0.15);
+}
+
+.calendar-list-row.is-next-race:hover {
+    border-color: #ef4444;
+    box-shadow: 0 0 32px rgba(239, 68, 68, 0.25);
+}
+
+.list-round-pill {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    border-radius: 10px;
+    font-family: "Barlow Condensed", sans-serif;
+    font-size: 20px;
+    font-weight: 900;
+    line-height: 1;
+    border: 1px solid rgba(52, 211, 153, 0.4);
+    color: #34d399;
+    background: rgba(52, 211, 153, 0.06);
+}
+
+.list-round-pill.pill-next {
+    border-color: #ef4444;
+    color: #ffffff;
+    background: #ef4444;
+    box-shadow: 0 0 16px rgba(239, 68, 68, 0.4);
+}
+
+.list-round-pill.pill-upcoming {
+    border-color: rgba(255, 255, 255, 0.12);
+    color: #64748b;
+    background: rgba(255, 255, 255, 0.02);
+}
+
+.list-flag-badge {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 8px;
+    padding: 6px 8px;
+    min-width: 52px;
+}
+
+.list-flag-emoji {
+    font-size: 28px;
+    line-height: 1;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.5));
+}
+
+.list-country-code {
+    font-family: "Barlow Condensed", sans-serif;
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 1px;
+    color: #cbd5e1;
+    margin-top: 2px;
+}
+
+.list-gp-name {
+    font-family: "Barlow Condensed", sans-serif;
+    font-size: 20px;
+    font-weight: 900;
+    color: #ffffff;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    display: block;
+    line-height: 1.15;
+}
+
+.list-circuit-sub {
+    font-size: 12.5px;
+    color: #94a3b8;
+    margin-top: 3px;
+    display: block;
+}
+
+.list-date-main {
+    font-family: "Barlow Condensed", sans-serif;
+    font-size: 17px;
+    font-weight: 800;
+    color: #f1f5f9;
+    display: block;
+}
+
+.list-time-sub {
+    font-family: "JetBrains Mono", monospace;
+    font-size: 11.5px;
+    color: var(--gold, #d6b45c);
+    display: block;
+}
+
+.list-status-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-family: "Barlow Condensed", sans-serif;
+    font-size: 11.5px;
+    font-weight: 800;
+    letter-spacing: 0.6px;
+    text-transform: uppercase;
+}
+
+.list-status-pill.completed {
+    background: rgba(52, 211, 153, 0.12);
+    color: #34d399;
+    border: 1px solid rgba(52, 211, 153, 0.3);
+}
+
+.list-status-pill.next {
+    background: rgba(239, 68, 68, 0.18);
+    color: #fca5a5;
+    border: 1px solid rgba(239, 68, 68, 0.45);
+}
+
+.list-status-pill.upcoming {
+    background: rgba(255, 255, 255, 0.05);
+    color: #64748b;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.list-winner-text {
+    font-size: 13px;
+    color: #cbd5e1;
+    margin-top: 4px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.list-winner-text strong {
+    color: #fde047;
+}
+
+.list-actions-wrap {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 8px;
+}
+
+.btn-list-action {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 7px 14px;
+    border-radius: 8px;
+    font-family: "Barlow Condensed", sans-serif;
+    font-size: 12.5px;
+    font-weight: 800;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    color: #ffffff;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-decoration: none;
+    white-space: nowrap;
+}
+
+.btn-list-action:hover {
+    background: var(--gold, #d6b45c);
+    color: #020617;
+    border-color: var(--gold, #d6b45c);
+    transform: translateY(-1px);
+}
+
+.btn-list-action.btn-replay:hover {
+    background: #e10600;
+    color: #ffffff;
+    border-color: #ff2b25;
+}
+
+.btn-list-action.btn-live-chat {
+    background: rgba(239, 68, 68, 0.15);
+    border-color: rgba(239, 68, 68, 0.4);
+    color: #fca5a5;
+}
+
+.btn-list-action.btn-live-chat:hover {
+    background: #ef4444;
+    color: #ffffff;
+}
+
+/* Responsive list table */
+@media (max-width: 992px) {
+    .calendar-list-row {
+        grid-template-columns: 48px 56px 1fr 140px;
+        gap: 12px;
+    }
+    .list-actions-wrap {
+        grid-column: 1 / -1;
+        justify-content: flex-start;
+        margin-top: 6px;
+    }
+    .home-top3-podium {
+        grid-template-columns: 1fr;
+    }
+    .home-podium-card.podium-p1 {
+        order: -1;
+        transform: none;
+    }
+}
 
 /* =========================
    RACES
@@ -15468,7 +17202,7 @@ input:focus, select:focus, textarea:focus {
     box-shadow: 0 0 0 2px rgba(214, 180, 92, 0.2) !important;
 }
 
-/* Global anti-vibe-coded crisp styling */
+
 .card, .stat-card, .calendar-card, .news-card {
     background: linear-gradient(180deg, rgba(13, 18, 28, 0.95) 0%, rgba(8, 12, 18, 0.98) 100%);
     border: 1px solid rgba(255, 255, 255, 0.07);
@@ -16977,6 +18711,683 @@ input:focus, select:focus, textarea:focus {
     color: #94a3b8;
     margin: 0;
 }
+
+/* =========================================================
+   HOME: TOP 3 PODIUM SECTION (PANTALLA PRINCIPAL)
+========================================================= */
+.home-top3-section {
+    position: relative;
+    max-width: 1240px;
+    margin: 0 auto 50px auto;
+    padding: 30px 24px 40px 24px;
+    z-index: 2;
+}
+
+.home-top3-heading {
+    text-align: center;
+    margin-bottom: 32px;
+}
+
+.home-top3-heading .section-kicker {
+    display: inline-block;
+    font-family: "Barlow Condensed", sans-serif;
+    font-size: 13px;
+    font-weight: 800;
+    letter-spacing: 2px;
+    color: #d6b45c;
+    text-transform: uppercase;
+    margin-bottom: 4px;
+}
+
+.home-top3-heading h2 {
+    font-family: "Barlow Condensed", sans-serif;
+    font-size: 38px;
+    font-weight: 900;
+    letter-spacing: 0.5px;
+    color: #ffffff;
+    line-height: 1.1;
+    margin: 0 0 8px 0;
+}
+
+.home-top3-heading p {
+    font-size: 14px;
+    color: #94a3b8;
+    margin: 0;
+}
+
+.home-top3-container {
+    display: grid;
+    grid-template-columns: 1fr 1.15fr 1fr;
+    gap: 20px;
+    align-items: flex-end;
+    margin-bottom: 36px;
+}
+
+.home-top3-card {
+    position: relative;
+    background: linear-gradient(145deg, #0b1120 0%, #060912 100%);
+    border: 1px solid rgba(255, 255, 255, 0.09);
+    border-radius: 16px;
+    padding: 24px 20px 20px 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.45);
+    transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.25s ease, box-shadow 0.25s ease;
+    cursor: pointer;
+}
+
+.home-top3-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 16px 36px rgba(0, 0, 0, 0.6);
+}
+
+.home-top3-card.podium-p2 {
+    border-color: rgba(148, 163, 184, 0.35);
+}
+.home-top3-card.podium-p2:hover {
+    border-color: rgba(203, 213, 225, 0.7);
+    box-shadow: 0 16px 36px rgba(0, 0, 0, 0.6), 0 0 20px rgba(148, 163, 184, 0.15);
+}
+
+.home-top3-card.podium-p1 {
+    background: linear-gradient(145deg, #131a2e 0%, #080d19 100%);
+    border: 1.5px solid rgba(214, 180, 92, 0.55);
+    box-shadow: 0 14px 40px rgba(0, 0, 0, 0.6), 0 0 30px rgba(214, 180, 92, 0.12);
+    padding: 32px 24px 26px 24px;
+    z-index: 2;
+}
+.home-top3-card.podium-p1:hover {
+    border-color: rgba(214, 180, 92, 0.9);
+    box-shadow: 0 20px 48px rgba(0, 0, 0, 0.7), 0 0 36px rgba(214, 180, 92, 0.25);
+}
+
+.home-top3-card.podium-p3 {
+    border-color: rgba(180, 83, 9, 0.35);
+}
+.home-top3-card.podium-p3:hover {
+    border-color: rgba(217, 119, 6, 0.7);
+    box-shadow: 0 16px 36px rgba(0, 0, 0, 0.6), 0 0 20px rgba(217, 119, 6, 0.15);
+}
+
+.podium-crown-badge {
+    position: absolute;
+    top: -14px;
+    background: linear-gradient(135deg, #d6b45c 0%, #b8933b 100%);
+    color: #060910;
+    font-family: "Barlow Condensed", sans-serif;
+    font-size: 11.5px;
+    font-weight: 900;
+    letter-spacing: 1px;
+    padding: 3px 14px;
+    border-radius: 9999px;
+    box-shadow: 0 4px 14px rgba(214, 180, 92, 0.4);
+    text-transform: uppercase;
+}
+
+.podium-rank-pill {
+    font-family: "Barlow Condensed", sans-serif;
+    font-size: 13px;
+    font-weight: 800;
+    letter-spacing: 0.5px;
+    padding: 3px 12px;
+    border-radius: 9999px;
+    background: rgba(255, 255, 255, 0.06);
+    color: #94a3b8;
+    margin-bottom: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+}
+.podium-rank-pill.pill-gold {
+    background: rgba(214, 180, 92, 0.15);
+    color: #f1c40f;
+    border-color: rgba(214, 180, 92, 0.35);
+}
+
+.podium-avatar {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.05);
+    border: 2px solid rgba(255, 255, 255, 0.15);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 12px;
+}
+.podium-avatar.avatar-p1 {
+    width: 74px;
+    height: 74px;
+    background: radial-gradient(circle, rgba(214, 180, 92, 0.25) 0%, rgba(19, 26, 46, 0.8) 100%);
+    border-color: rgba(214, 180, 92, 0.7);
+    box-shadow: 0 0 20px rgba(214, 180, 92, 0.2);
+}
+.avatar-letter {
+    font-family: "Barlow Condensed", sans-serif;
+    font-size: 28px;
+    font-weight: 900;
+    color: #ffffff;
+}
+.avatar-p1 .avatar-letter {
+    font-size: 36px;
+    color: #f1c40f;
+}
+
+.podium-driver-name {
+    font-family: "Barlow Condensed", sans-serif;
+    font-size: 24px;
+    font-weight: 900;
+    letter-spacing: 0.5px;
+    color: #ffffff;
+    margin: 0 0 6px 0;
+    line-height: 1.1;
+}
+.podium-driver-name.name-p1 {
+    font-size: 30px;
+    color: #ffffff;
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+}
+
+.podium-team-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 3px 10px;
+    border-radius: 9999px;
+    font-size: 12px;
+    font-weight: 700;
+    margin-bottom: 16px;
+}
+
+.podium-pts-box {
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 10px;
+    padding: 8px 18px;
+    display: flex;
+    align-items: baseline;
+    gap: 6px;
+    margin-bottom: 8px;
+}
+.podium-pts-box.box-gold {
+    background: rgba(214, 180, 92, 0.1);
+    border-color: rgba(214, 180, 92, 0.3);
+}
+
+.podium-pts-val {
+    font-family: "Barlow Condensed", sans-serif;
+    font-size: 30px;
+    font-weight: 900;
+    line-height: 1;
+    color: #ffffff;
+}
+.podium-pts-val.gold-val {
+    color: #f1c40f;
+    font-size: 36px;
+}
+
+.podium-pts-lbl {
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 0.5px;
+    color: #94a3b8;
+}
+
+.podium-gap-lbl {
+    font-size: 12px;
+    font-weight: 700;
+    color: #94a3b8;
+}
+.podium-gap-lbl.gold-glow-text {
+    color: #d6b45c;
+    font-weight: 800;
+}
+
+.home-top3-actions {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    flex-wrap: wrap;
+}
+
+.home-top3-btn-full {
+    padding: 12px 24px;
+    font-size: 13.5px;
+    font-weight: 800;
+    letter-spacing: 0.5px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.home-top3-btn-cal {
+    padding: 12px 22px;
+    font-size: 13.5px;
+    font-weight: 800;
+    letter-spacing: 0.5px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    color: #ffffff;
+    border-radius: 8px;
+    text-decoration: none;
+    transition: all 0.2s ease;
+}
+.home-top3-btn-cal:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: rgba(214, 180, 92, 0.4);
+    transform: translateY(-2px);
+}
+
+/* =========================================================
+   CALENDAR VIEW SELECTOR TABS & TOOLBAR
+========================================================= */
+.calendar-view-selector-tabs {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(6, 10, 18, 0.85);
+    border: 1px solid rgba(255, 255, 255, 0.09);
+    padding: 4px;
+    border-radius: 10px;
+}
+
+.calendar-view-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 7px 14px;
+    border-radius: 7px;
+    background: transparent;
+    border: 1px solid transparent;
+    color: #94a3b8;
+    font-family: "Barlow Condensed", sans-serif;
+    font-size: 13px;
+    font-weight: 800;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    white-space: nowrap;
+}
+
+.calendar-view-btn:hover {
+    color: #ffffff;
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.calendar-view-btn.active {
+    background: rgba(214, 180, 92, 0.18);
+    border-color: rgba(214, 180, 92, 0.4);
+    color: #ffffff;
+    box-shadow: 0 2px 10px rgba(214, 180, 92, 0.15);
+}
+
+.calendar-view-btn .view-btn-icon {
+    font-size: 14px;
+}
+
+/* =========================================================
+   CALENDAR LIST VIEW (FULL 16 RACES)
+========================================================= */
+.calendar-list-container {
+    width: 100%;
+    margin-top: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.calendar-list-toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+    margin-bottom: 8px;
+}
+
+.calendar-list-filter-pills {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.cal-filter-pill {
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    color: #94a3b8;
+    font-family: "Barlow Condensed", sans-serif;
+    font-size: 12.5px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    padding: 5px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+.cal-filter-pill:hover {
+    color: #ffffff;
+    background: rgba(255, 255, 255, 0.08);
+}
+.cal-filter-pill.active {
+    background: rgba(214, 180, 92, 0.14);
+    border-color: rgba(214, 180, 92, 0.35);
+    color: #ffffff;
+    font-weight: 800;
+}
+
+.calendar-list-summary-stats {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.cal-stat-chip {
+    font-size: 11px;
+    font-weight: 700;
+    color: #94a3b8;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    padding: 3px 8px;
+    border-radius: 4px;
+}
+.cal-stat-chip.next-chip {
+    color: #ff5252;
+    border-color: rgba(239, 68, 68, 0.35);
+    background: rgba(239, 68, 68, 0.08);
+}
+
+.calendar-list-table {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    width: 100%;
+}
+
+/* Individual Race Row in List */
+.cal-list-row {
+    display: grid;
+    grid-template-columns: 80px 330px 140px 1fr 130px;
+    align-items: center;
+    gap: 16px;
+    padding: 12px 18px;
+    background: linear-gradient(90deg, rgba(11, 16, 28, 0.85) 0%, rgba(7, 11, 20, 0.85) 100%);
+    border: 1px solid rgba(255, 255, 255, 0.07);
+    border-radius: 10px;
+    transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
+    cursor: pointer;
+    text-decoration: none;
+    box-shadow: 0 3px 12px rgba(0, 0, 0, 0.3);
+}
+
+.cal-list-row:hover {
+    transform: translateY(-2px);
+    border-color: rgba(214, 180, 92, 0.4);
+    background: linear-gradient(90deg, rgba(18, 25, 42, 0.95) 0%, rgba(11, 16, 28, 0.95) 100%);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45), 0 0 16px rgba(214, 180, 92, 0.08);
+}
+
+.cal-list-row.is-next-race {
+    border-color: rgba(239, 68, 68, 0.5);
+    background: linear-gradient(90deg, rgba(32, 12, 16, 0.85) 0%, rgba(14, 10, 16, 0.85) 100%);
+    box-shadow: 0 0 20px rgba(239, 68, 68, 0.15);
+}
+.cal-list-row.is-next-race:hover {
+    border-color: rgba(239, 68, 68, 0.8);
+    box-shadow: 0 0 26px rgba(239, 68, 68, 0.25);
+}
+
+/* Row Column 1: Round Pill */
+.cal-row-round {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.cal-round-badge {
+    font-family: "Barlow Condensed", sans-serif;
+    font-size: 13.5px;
+    font-weight: 800;
+    letter-spacing: 0.5px;
+    color: #d6b45c;
+    background: rgba(214, 180, 92, 0.1);
+    border: 1px solid rgba(214, 180, 92, 0.25);
+    padding: 3px 9px;
+    border-radius: 6px;
+    line-height: 1;
+}
+
+.cal-round-badge.badge-test {
+    color: #38bdf8;
+    background: rgba(56, 189, 248, 0.1);
+    border-color: rgba(56, 189, 248, 0.25);
+}
+
+.cal-round-badge.badge-next {
+    color: #ff5252;
+    background: rgba(239, 68, 68, 0.15);
+    border-color: rgba(239, 68, 68, 0.4);
+}
+
+/* Row Column 2: Flag & Identity ("que se vean bien las banderas") */
+.cal-row-identity {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    min-width: 0;
+}
+
+.cal-flag-box {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    border-radius: 8px;
+    padding: 3px 7px;
+    flex-shrink: 0;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.35);
+}
+
+.cal-flag-emoji {
+    font-size: 26px;
+    line-height: 1;
+    filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.5));
+}
+
+.cal-flag-iso {
+    font-family: "Barlow Condensed", sans-serif;
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 0.5px;
+    color: #94a3b8;
+}
+
+.cal-row-titles {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+}
+
+.cal-row-gp-title {
+    font-family: "Barlow Condensed", sans-serif;
+    font-size: 17px;
+    font-weight: 800;
+    letter-spacing: 0.5px;
+    color: #ffffff;
+    line-height: 1.15;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.cal-row-circuit {
+    font-size: 12px;
+    color: #828e9e;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Row Column 3: Date */
+.cal-row-date {
+    display: flex;
+    flex-direction: column;
+}
+
+.cal-date-main {
+    font-family: "Barlow Condensed", sans-serif;
+    font-size: 14.5px;
+    font-weight: 800;
+    color: #e2e8f0;
+    letter-spacing: 0.5px;
+    line-height: 1.1;
+}
+
+.cal-date-sub {
+    font-size: 11px;
+    color: #828e9e;
+}
+
+/* Row Column 4: Status / Winner */
+.cal-row-status-winner {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.cal-status-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 3px 9px;
+    border-radius: 9999px;
+    font-family: "Barlow Condensed", sans-serif;
+    font-size: 11.5px;
+    font-weight: 800;
+    letter-spacing: 0.6px;
+    text-transform: uppercase;
+}
+
+.cal-status-badge.status-completed {
+    background: rgba(16, 185, 129, 0.12);
+    border: 1px solid rgba(16, 185, 129, 0.35);
+    color: #10b981;
+}
+
+.cal-status-badge.status-next {
+    background: rgba(239, 68, 68, 0.2);
+    border: 1px solid rgba(239, 68, 68, 0.55);
+    color: #ff5252;
+}
+
+.cal-status-badge.status-upcoming {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.09);
+    color: #828e9e;
+}
+
+.cal-winner-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 2px 9px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 700;
+    color: #f1f5f9;
+}
+
+.cal-replay-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 22px;
+    height: 18px;
+    background: #e10600;
+    color: #ffffff !important;
+    border-radius: 3px;
+    font-size: 9px;
+    box-shadow: 0 2px 6px rgba(225, 6, 0, 0.4);
+    transition: transform 0.2s ease;
+}
+.cal-replay-link:hover {
+    transform: scale(1.1);
+}
+
+/* Row Column 5: Action Button */
+.cal-row-action {
+    display: flex;
+    justify-content: flex-end;
+}
+
+.cal-action-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-family: "Barlow Condensed", sans-serif;
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: 0.6px;
+    text-transform: uppercase;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    color: #ffffff;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+}
+
+.cal-action-btn:hover {
+    background: rgba(214, 180, 92, 0.2);
+    border-color: rgba(214, 180, 92, 0.4);
+    color: #ffffff;
+}
+
+/* Prominent Flags in Grid Card Headers */
+.calendar-card-header .calendar-flag-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    line-height: 1;
+    margin-left: 8px;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.5));
+}
+
+/* Responsive adjustments */
+@media (max-width: 960px) {
+    .home-top3-container {
+        grid-template-columns: 1fr;
+        gap: 16px;
+    }
+    .home-top3-card.podium-p1 {
+        order: -1;
+    }
+    .cal-list-row {
+        grid-template-columns: 60px 1fr 100px;
+        gap: 12px;
+        padding: 12px 14px;
+    }
+    .cal-row-status-winner {
+        grid-column: 2 / span 2;
+    }
+    .cal-row-action {
+        grid-column: 2 / span 2;
+        justify-content: flex-start;
+    }
+}
+
 
 
 

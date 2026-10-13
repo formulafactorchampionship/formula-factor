@@ -61,6 +61,85 @@
 
 <body>
 
+<!-- MAINTENANCE OVERLAY FOR NON-ADMINS -->
+<div id="maintenanceOverlay" style="position: fixed; inset: 0; background: #070a10; z-index: 999999; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 24px; text-align: center; font-family: 'Barlow Condensed', sans-serif;">
+    <div style="max-width: 520px; background: linear-gradient(135deg, rgba(13, 18, 28, 0.95) 0%, rgba(8, 12, 18, 0.98) 100%); border: 1px solid rgba(214, 180, 92, 0.3); border-radius: 16px; padding: 40px; box-shadow: 0 25px 60px rgba(0,0,0,0.8), 0 0 30px rgba(214, 180, 92, 0.1);">
+        <div style="font-size: 48px; margin-bottom: 16px;">🛠️</div>
+        <h1 style="font-size: 32px; font-weight: 800; color: #f8fafc; letter-spacing: 1px; margin-bottom: 12px; text-transform: uppercase;">WEB EN MANTENIMIENTO</h1>
+        <p style="font-family: 'Inter', sans-serif; font-size: 14px; color: #94a3b8; line-height: 1.6; margin-bottom: 24px;">
+            El portal oficial de <strong>Formula Factor Championship</strong> se encuentra temporalmente en tareas de mantenimiento y actualización de la temporada. Vuelve pronto para seguir toda la emoción de la parrilla.
+        </p>
+        <div style="display: flex; gap: 12px; justify-content: center;">
+            <a href="https://discord.gg/NXFPWd6eg" target="_blank" rel="noopener noreferrer" style="background: #5865F2; color: #fff; text-decoration: none; padding: 10px 20px; border-radius: 6px; font-weight: 700; font-size: 14px; letter-spacing: 0.5px; display: inline-flex; align-items: center; gap: 6px;">
+                <span>💬</span> Discord Oficial FFC
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- DISCREET ADMIN LOGIN CORNER TRIGGER -->
+<div id="adminCornerTrigger" style="position: fixed; bottom: 12px; left: 12px; z-index: 1000000;">
+    <button type="button" id="adminCornerLoginBtn" title="Acceso Administrador" style="background: rgba(13, 18, 28, 0.8); border: 1px solid rgba(255, 255, 255, 0.1); color: #64748b; padding: 6px 12px; border-radius: 6px; font-size: 11px; font-family: 'Barlow Condensed', sans-serif; font-weight: 700; letter-spacing: 0.5px; cursor: pointer; transition: all 0.2s;" onclick="if(window.openAdminLoginPrompt){window.openAdminLoginPrompt();}">
+        🔐 Admin
+    </button>
+</div>
+
+<script>
+    function checkMaintenanceMode() {
+        let isAdmin = false;
+        if (typeof isUserAdmin === "function" && isUserAdmin()) {
+            isAdmin = true;
+        } else {
+            const u = (typeof activeUserAuth !== "undefined" && activeUserAuth) ? activeUserAuth : ((typeof LocalAuthStore !== "undefined" && LocalAuthStore.getCurrentUser) ? LocalAuthStore.getCurrentUser() : null);
+            if (u && u.email) {
+                const cleanEmail = u.email.trim().toLowerCase();
+                const ADMIN_EMAILS = [
+                    "enzo.castillo.lomb@gmail.com",
+                    "formulafactorchampionship@gmail.com"
+                ];
+                if (ADMIN_EMAILS.includes(cleanEmail)) {
+                    isAdmin = true;
+                }
+            }
+        }
+        const adminOverride = localStorage.getItem("ffc_admin_override") === "true";
+        const overlay = document.getElementById("maintenanceOverlay");
+        const trigger = document.getElementById("adminCornerTrigger");
+
+        if (isAdmin || adminOverride) {
+            if (overlay) overlay.style.display = "none";
+            if (trigger) trigger.style.display = "none";
+        } else {
+            if (overlay) overlay.style.display = "flex";
+            if (trigger) trigger.style.display = "block";
+        }
+    }
+
+    window.openAdminLoginPrompt = function() {
+        const emailInput = prompt("Introduce el correo de Administrador para acceder:");
+        if (!emailInput) return;
+        const clean = emailInput.trim().toLowerCase();
+        const ADMIN_EMAILS = [
+            "enzo.castillo.lomb@gmail.com",
+            "formulafactorchampionship@gmail.com"
+        ];
+        if (ADMIN_EMAILS.includes(clean)) {
+            localStorage.setItem("ffc_admin_override", "true");
+            alert("✓ Acceso de Administrador concedido. ¡Bienvenido!");
+            checkMaintenanceMode();
+            window.location.reload();
+        } else {
+            alert("❌ Correo no autorizado como administrador.");
+        }
+    };
+
+    document.addEventListener("DOMContentLoaded", () => {
+        checkMaintenanceMode();
+        setTimeout(checkMaintenanceMode, 300);
+        setInterval(checkMaintenanceMode, 500);
+    });
+</script>
+
 <header class="navbar">
     <div class="nav-inner">
 
@@ -78,20 +157,43 @@
 
         <nav class="nav-links">
             <a href="#home" id="navHome" class="nav-item">INICIO</a>
-            <a href="#standings" id="navStandings" class="nav-item">CLASIFICACIÓN</a>
+            <div class="nav-dropdown-wrap" id="navStandingsDropdownWrap">
+                <a href="#standings" id="navStandings" class="nav-item nav-item-has-dropdown" aria-haspopup="true" aria-expanded="false">
+                    <span>CLASIFICACIÓN</span>
+                    <svg class="nav-dropdown-chevron" viewBox="0 0 10 6" width="8" height="5" aria-hidden="true">
+                        <path d="M1 1L5 5L9 1" stroke="currentColor" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </a>
+                <div class="nav-dropdown-menu" id="navStandingsDropdownMenu" role="menu">
+                    <button type="button" class="nav-dropdown-option" role="menuitem" onclick="if(window.openStandingsWithView){window.openStandingsWithView('pilotos');}return false;">
+                        <span class="option-bullet"></span>
+                        <div class="option-content">
+                            <span class="option-title">Pilotos</span>
+                            <span class="option-desc">Mundial de Pilotos &amp; Podio</span>
+                        </div>
+                    </button>
+                    <button type="button" class="nav-dropdown-option" role="menuitem" onclick="if(window.openStandingsWithView){window.openStandingsWithView('constructores');}return false;">
+                        <span class="option-bullet"></span>
+                        <div class="option-content">
+                            <span class="option-title">Constructores</span>
+                            <span class="option-desc">Mundial de Escuderías &amp; Equipos</span>
+                        </div>
+                    </button>
+                    <button type="button" class="nav-dropdown-option" role="menuitem" onclick="if(window.openStandingsWithView){window.openStandingsWithView('tabla');}return false;">
+                        <span class="option-bullet"></span>
+                        <div class="option-content">
+                            <span class="option-title">La Tabla</span>
+                            <span class="option-desc">Matriz Oficial &amp; R1–R15</span>
+                        </div>
+                    </button>
+                </div>
+            </div>
             <a href="#calendar" id="navCalendar" class="nav-item">CALENDARIO</a>
-            <a href="#photos" id="navPhotos" class="nav-item nav-photos-link" onclick="if(window.openGlobalPhotoGallery){window.openGlobalPhotoGallery();return false;}">📸 FOTOS</a>
             <a href="#news" id="navNews" class="nav-item">NOTICIAS</a>
-            <a href="#info" id="navInfo" class="nav-item">INFORMACIÓN</a>
-            <a href="#compare" class="nav-item nav-compare-link" id="navCompare" title="Comparador de Pilotos (Cara a Cara)" onclick="if(window.openDriverComparison){window.openDriverComparison();return false;}">
-                <span id="navCompareText">COMPARADOR</span>
-            </a>
             <a href="#fantasy" class="nav-item nav-fantasy-link" id="navFantasy" title="FFC Fantasy League" onclick="if(window.openFantasyPortal){window.openFantasyPortal();return false;}">
                 <span class="fantasy-nav-dot" aria-hidden="true"></span>
                 <span id="navFantasyText">FANTASY</span>
             </a>
-
-
         </nav>
 
         <div class="nav-actions">
@@ -337,31 +439,14 @@
     <!-- STANDARD HERO CONTENT -->
     <div class="hero-content" id="heroContentStandard">
 
-        <div class="hero-header-row">
-            <div class="eyebrow" id="heroEyebrow">
-                TEMPORADA 1 FORMULA FACTOR CHAMPIONSHIP
-            </div>
-        </div>
+
 
         <h1 id="heroTitle">
-            CORRE RUEDA A RUEDA<br>
-            EN LA PARRILLA <span class="gold-text-glow">FFC</span>
+            FORMULA FACTOR<br>
+            <span class="gold-text-glow">CHAMPIONSHIP</span>
         </h1>
 
-        <div class="hero-grid-tags">
-            <span class="grid-tag">
-                <span class="grid-tag-icon">🏁</span>
-                <span id="heroTagGpsText">15 GRANDES PREMIOS</span>
-            </span>
-            <span class="grid-tag">
-                <span class="grid-tag-icon">🏎️</span>
-                <span id="heroTagDriversText">44 PILOTOS INSCRITOS</span>
-            </span>
-            <span class="grid-tag">
-                <span class="grid-tag-icon">🏆</span>
-                <span id="heroTagChampionText">1 CAMPEÓN FFC</span>
-            </span>
-        </div>
+
 
         <p class="hero-description" id="heroDescription">
             Una liga de sim racing competitiva, limpia y abierta
@@ -379,7 +464,7 @@
             </a>
 
             <a href="#fantasy" class="btn btn-fantasy-hero" id="heroBtnFantasy" onclick="if(window.openFantasyPortal){window.openFantasyPortal();return false;}">
-                <span>🏆</span> FANTASY LEAGUE
+                FANTASY LEAGUE
             </a>
 
         </div>
@@ -689,6 +774,90 @@
 </section>
 
 
+<!-- =========================================================
+     HOME: TOP 3 PODIUM (PANTALLA PRINCIPAL)
+========================================================= -->
+<section class="section home-top3-section" id="homeTop3PodiumSection">
+    <div class="section-heading home-top3-heading">
+        <div>
+            <span class="section-kicker" id="homeTop3Kicker">CAMPEONATO FFC 2026</span>
+            <h2 id="homeTop3Heading">TOP 3 DEL MUNDIAL</h2>
+        </div>
+    </div>
+
+    <div class="home-top3-container" id="homeTop3Container">
+        <!-- P2: Muntii -->
+        <div class="home-top3-card podium-p2 driver-card-clickable" data-driver="Muntii" title="Ver estadísticas de Muntii" onclick="if(window.openDriverComparison){window.openDriverComparison('Muntii');}">
+            <div class="podium-rank-pill">P2</div>
+            <div class="podium-avatar">
+                <span class="avatar-letter">M</span>
+            </div>
+            <h3 class="podium-driver-name" id="homeTop3P2Name">Muntii</h3>
+            <div class="podium-team-pill team-redbull"><span class="team-dot"></span>Red Bull</div>
+            <div class="podium-pts-box">
+                <strong class="podium-pts-val" id="homeTop3P2Pts">125</strong>
+                <span class="podium-pts-lbl">PTS</span>
+            </div>
+            <span class="podium-gap-lbl" id="homeTop3P2Gap">-28 PTS del líder</span>
+        </div>
+
+        <!-- P1: Dieguiosk (Hero) -->
+        <div class="home-top3-card podium-p1 driver-card-clickable" data-driver="Dieguiosk" title="Ver estadísticas de Dieguiosk" onclick="if(window.openDriverComparison){window.openDriverComparison('Dieguiosk');}">
+            <div class="podium-crown-badge">LÍDER DEL MUNDIAL</div>
+            <div class="podium-rank-pill pill-gold">P1</div>
+            <div class="podium-avatar avatar-p1">
+                <span class="avatar-letter">D</span>
+            </div>
+            <h3 class="podium-driver-name name-p1" id="homeTop3P1Name">Dieguiosk</h3>
+            <div class="podium-team-pill team-hrt"><span class="team-dot"></span>HRT</div>
+            <div class="podium-pts-box box-gold">
+                <strong class="podium-pts-val gold-val" id="homeTop3P1Pts">153</strong>
+                <span class="podium-pts-lbl">PTS</span>
+            </div>
+            <span class="podium-gap-lbl gold-glow-text" id="homeTop3P1Gap">Líder &bull; 5 Victorias</span>
+        </div>
+
+        <!-- P3: Novitaa -->
+        <div class="home-top3-card podium-p3 driver-card-clickable" data-driver="Novitaa" title="Ver estadísticas de Novitaa" onclick="if(window.openDriverComparison){window.openDriverComparison('Novitaa');}">
+            <div class="podium-rank-pill">P3</div>
+            <div class="podium-avatar">
+                <span class="avatar-letter">N</span>
+            </div>
+            <h3 class="podium-driver-name" id="homeTop3P3Name">Novitaa</h3>
+            <div class="podium-team-pill team-redbull"><span class="team-dot"></span>Red Bull</div>
+            <div class="podium-pts-box">
+                <strong class="podium-pts-val" id="homeTop3P3Pts">88</strong>
+                <span class="podium-pts-lbl">PTS</span>
+            </div>
+            <span class="podium-gap-lbl" id="homeTop3P3Gap">-65 PTS del líder</span>
+        </div>
+    </div>
+
+    <!-- CLEAN MODERN BATTLE CHART (TOP 3) -->
+    <div class="home-top3-battle-wrapper" id="homeTop3BattleWrapper" style="margin: 28px auto 0 auto; max-width: 920px; background: rgba(10, 15, 25, 0.7); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 12px; padding: 18px 24px; backdrop-filter: blur(12px);">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+            <div style="display: flex; align-items: center; gap: 8px;">
+                <span style="display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: var(--gold); box-shadow: 0 0 10px var(--gold);"></span>
+                <span style="font-family: 'Barlow Condensed', sans-serif; font-size: 17px; font-weight: 800; letter-spacing: 1.2px; color: #f8fafc; text-transform: uppercase;">BATALLA POR EL CAMPEONATO</span>
+            </div>
+            <span style="font-size: 11px; font-family: 'Barlow Condensed', sans-serif; color: #94a3b8; font-weight: 600;" id="homeBattleCurrentRound">RONDA 12 / 15</span>
+        </div>
+        <div id="homeTop3BattleSvgContainer" style="width: 100%; height: 340px; position: relative;">
+            <!-- Dynamically rendered clean SVG chart -->
+        </div>
+    </div>
+
+    <div class="home-top3-actions">
+        <a href="#standings" class="btn btn-primary home-top3-btn-full" id="homeBtnGoFullStandings">
+            VER CLASIFICACIÓN COMPLETA (44 PILOTOS &amp; CONSTRUCTORES) ➔
+        </a>
+        <a href="#calendar" class="btn btn-secondary home-top3-btn-cal" id="homeBtnGoFullCalendar">
+            VER CALENDARIO DE CARRERAS (15 RONDAS) ➔
+        </a>
+    </div>
+</section>
+
+
 <!-- =========================
      STANDINGS
 ========================= -->
@@ -716,14 +885,17 @@
     </div>
 
     <div class="standings-view-selector" id="standingsViewSelector">
-        <button type="button" class="standings-view-tab active" id="tabStandingsCards" data-view="cards">
-            <span id="tabLabelCards">VISTA RESUMEN &amp; PODIO</span>
+        <button type="button" class="standings-view-tab active" id="tabStandingsPilotos" data-view="pilotos" onclick="if(window.setStandingsSubView){window.setStandingsSubView('pilotos');}">
+            <span id="tabLabelPilotos">PILOTOS</span>
         </button>
-        <button type="button" class="standings-view-tab" id="tabStandingsMatrix" data-view="matrix">
-            <span id="tabLabelMatrix">TABLA OFICIAL FFC 2010 SEASON</span>
+        <button type="button" class="standings-view-tab" id="tabStandingsConstructores" data-view="constructores" onclick="if(window.setStandingsSubView){window.setStandingsSubView('constructores');}">
+            <span id="tabLabelConstructores">CONSTRUCTORES</span>
+        </button>
+        <button type="button" class="standings-view-tab" id="tabStandingsTabla" data-view="tabla" onclick="if(window.setStandingsSubView){window.setStandingsSubView('tabla');}">
+            <span id="tabLabelTabla">LA TABLA (OFICIAL)</span>
         </button>
         <button type="button" class="standings-view-tab standings-compare-btn" id="btnStandingsCompare" data-view="compare" onclick="if(window.openDriverComparison){window.openDriverComparison();return false;}">
-            <span id="tabLabelCompare">COMPARADOR CARA A CARA</span>
+            <span id="tabLabelCompare">COMPARADOR</span>
         </button>
     </div>
 
@@ -787,7 +959,7 @@
     <!-- Cards & Podium View (Primary View) -->
     <div class="standings-cards-container" id="standingsCardsView">
 
-    <div class="standings-block">
+    <div class="standings-block" id="driverStandingsBlock">
 
         <div class="table-title">
 
@@ -807,7 +979,7 @@
                 <div class="ranking-leader-left">
                     <span class="ranking-leader-pos">1.</span>
                     <div class="ranking-leader-info">
-                        <span class="ranking-leader-name driver-clickable" data-driver="Dieguiosk">Dieguiosk</span>
+                        <span class="ranking-leader-name driver-clickable" data-driver="Dieguiosk"><img src="https://flagcdn.com/w40/al.png" class="driver-flag-img inline-block align-middle" alt="al">Dieguiosk</span>
                         <div class="ranking-leader-meta">
                             <span class="ranking-team-pill team-hrt"><span class="team-dot"></span>HRT</span>
                         </div>
@@ -833,7 +1005,7 @@
                     <div class="ranking-podium-left">
                         <span class="ranking-podium-pos">2.</span>
                         <div class="ranking-podium-info">
-                            <span class="ranking-podium-name driver-clickable" data-driver="Muntii">Muntii</span>
+                            <span class="ranking-podium-name driver-clickable" data-driver="Muntii"><img src="https://flagcdn.com/w40/es.png" class="driver-flag-img inline-block align-middle" alt="es">Muntii</span>
                             <div class="ranking-podium-meta">
                                 <span class="ranking-team-pill team-redbull"><span class="team-dot"></span>Red Bull</span>
                             </div>
@@ -850,7 +1022,7 @@
                     <div class="ranking-podium-left">
                         <span class="ranking-podium-pos">3.</span>
                         <div class="ranking-podium-info">
-                            <span class="ranking-podium-name driver-clickable" data-driver="Novitaa">Novitaa</span>
+                            <span class="ranking-podium-name driver-clickable" data-driver="Novitaa"><img src="https://flagcdn.com/w40/es.png" class="driver-flag-img inline-block align-middle" alt="es">Novitaa</span>
                             <div class="ranking-podium-meta">
                                 <span class="ranking-team-pill team-redbull"><span class="team-dot"></span>Red Bull</span>
                             </div>
@@ -931,7 +1103,7 @@
     </div>
 
 
-    <div class="standings-block team-standings">
+    <div class="standings-block team-standings" id="teamStandingsBlock">
 
         <div class="table-title">
 
@@ -1014,304 +1186,1103 @@
 
 <section class="section calendar-section" id="calendar">
 
-    <div class="section-heading">
-
-        <div>
-            <span class="section-kicker" id="calendarKicker">TEMPORADA 1</span>
-            <h2 id="calendarHeading">CALENDARIO</h2>
+    <!-- TOP SECTION HEADER (SCHEDULE & RESULTS) -->
+    <div class="calendar-top-header">
+        <div class="calendar-top-title-wrap">
+            <span class="calendar-top-kicker" id="calendarKicker">SCHEDULE &amp; RESULTS</span>
+            <h2 class="calendar-top-heading" id="calendarHeading">SEASON RACES 2026</h2>
         </div>
 
-        <p id="calendarSub">
-            Calendario de la temporada 2026
-        </p>
-
+        <!-- VIEW SELECTOR TABS -->
+        <div class="calendar-view-selector-tabs" id="calendarViewSelectorTabs" role="tablist" aria-label="Selector de Vista del Calendario">
+            <button type="button" class="calendar-view-btn active" id="btnCalViewList" data-cal-view="list">
+                <span>LISTA &amp; DETALLES</span>
+            </button>
+            <button type="button" class="calendar-view-btn" id="btnCalViewGrid" data-cal-view="grid">
+                <span>CUADRÍCULA ORIGINAL</span>
+            </button>
+            <button type="button" class="calendar-view-btn" id="btnCalViewTable" data-cal-view="table">
+                <span>TABLA RESUMEN</span>
+            </button>
+        </div>
     </div>
 
-    <div class="calendar-grid">
+    <!-- =========================================================
+         VIEW 1: VISTA LISTA (COMPACT & COMPLETE SCHEDULE)
+    ========================================================= -->
+    <div class="calendar-list-container" id="calendarListView" style="display: none;">
+        <div class="calendar-list-toolbar">
+            <div class="calendar-list-filter-pills" id="calListFilterPills" role="tablist">
+                <button type="button" class="cal-filter-pill active" data-filter="all">Todas (16)</button>
+                <button type="button" class="cal-filter-pill" data-filter="championship">Campeonato (15)</button>
+                <button type="button" class="cal-filter-pill" data-filter="training">Test Pretemporada (1)</button>
+            </div>
+            <div class="calendar-list-summary-stats">
+                <span class="cal-stat-chip">12 Finalizadas</span>
+                <span class="cal-stat-chip next-chip">1 Próxima (Fuji)</span>
+                <span class="cal-stat-chip">2 Por Disputar</span>
+            </div>
+        </div>
 
-        <article class="calendar-card test-card">
-            <div class="calendar-card-header">
-                <div class="calendar-number">T</div>
-                <div class="calendar-status">TEST DAYS</div>
-            </div>
-            <div class="calendar-card-body">
-                <h3>BARCELONA</h3>
-                <p>SPAIN</p>
-            </div>
-            <div class="calendar-card-footer">
-                <div class="calendar-datetime">
-                    <div class="calendar-date">5–7 JUN</div>
+        <div class="calendar-list-table" id="calendarListTable">
+            <!-- Row: Barcelona Test -->
+            <article class="cal-list-row race-link" data-race="barcelona_test" data-category="training">
+                <div class="cal-row-round">
+                    <span class="cal-round-badge badge-test">TEST</span>
                 </div>
-            </div>
-        </article>
+                <div class="cal-row-identity">
+                    <div class="cal-flag-box">
+                        <span class="cal-flag-emoji">🇪🇸</span>
+                        <span class="cal-flag-iso">ESP</span>
+                    </div>
+                    <div class="cal-row-titles">
+                        <span class="cal-row-gp-title">BARCELONA PRE-SEASON TEST</span>
+                        <span class="cal-row-circuit">Circuit de Barcelona-Catalunya &bull; Montmeló</span>
+                    </div>
+                </div>
+                <div class="cal-row-date">
+                    <span class="cal-date-main">5–7 JUN</span>
+                    <span class="cal-date-sub">Pretemporada</span>
+                </div>
+                <div class="cal-row-status-winner">
+                    <span class="cal-status-badge status-completed">✓ Completado</span>
+                    <span class="cal-winner-pill">🛠️ Setup &amp; Shakedown</span>
+                </div>
+                <div class="cal-row-action">
+                    <button type="button" class="cal-action-btn" onclick="openRace('barcelona_test')">Detalles ➔</button>
+                </div>
+            </article>
 
-        <article class="calendar-card completed race-link" data-race="australia">
-            <div class="calendar-card-header">
-                <div class="calendar-number">01</div>
-                <div class="calendar-status">COMPLETED</div>
-            </div>
-            <div class="calendar-card-body">
-                <h3>AUSTRALIA</h3>
-                <p>AUSTRALIA</p>
-            </div>
-            <div class="calendar-card-footer">
-                <div class="calendar-datetime">
-                    <div class="calendar-date">14 JUN</div>
-                    <span class="calendar-time">17:00 CEST</span>
+            <!-- Row 01: Australia -->
+            <article class="cal-list-row race-link" data-race="australia" data-category="championship">
+                <div class="cal-row-round">
+                    <span class="cal-round-badge">R01</span>
                 </div>
-                <span class="click-hint">RESULTS →</span>
-            </div>
-        </article>
+                <div class="cal-row-identity">
+                    <div class="cal-flag-box">
+                        <span class="cal-flag-emoji">🇦🇺</span>
+                        <span class="cal-flag-iso">AUS</span>
+                    </div>
+                    <div class="cal-row-titles">
+                        <span class="cal-row-gp-title">GRAN PREMIO DE AUSTRALIA</span>
+                        <span class="cal-row-circuit">Melbourne Grand Prix Circuit &bull; Albert Park</span>
+                    </div>
+                </div>
+                <div class="cal-row-date">
+                    <span class="cal-date-main">14 JUN</span>
+                    <span class="cal-date-sub">17:00 CEST</span>
+                </div>
+                <div class="cal-row-status-winner">
+                    <span class="cal-status-badge status-completed">✓ Finalizada</span>
+                    <span class="cal-winner-pill">🏆 Muntii <small>(Red Bull)</small></span>
+                    <a href="https://www.youtube.com/watch?v=AYdKou7kdS8" target="_blank" rel="noopener noreferrer" class="cal-replay-link" title="Ver repetición">▶</a>
+                </div>
+                <div class="cal-row-action">
+                    <button type="button" class="cal-action-btn" onclick="openRace('australia')">Resultados ➔</button>
+                </div>
+            </article>
 
-        <article class="calendar-card completed race-link" data-race="malaysia">
-            <div class="calendar-card-header">
-                <div class="calendar-number">02</div>
-                <div class="calendar-status">COMPLETED</div>
-            </div>
-            <div class="calendar-card-body">
-                <h3>MALAYSIA</h3>
-                <p>MALAYSIA</p>
-            </div>
-            <div class="calendar-card-footer">
-                <div class="calendar-datetime">
-                    <div class="calendar-date">28 JUN</div>
-                    <span class="calendar-time">17:00 CEST</span>
+            <!-- Row 02: Malaysia -->
+            <article class="cal-list-row race-link" data-race="malaysia" data-category="championship">
+                <div class="cal-row-round">
+                    <span class="cal-round-badge">R02</span>
                 </div>
-                <span class="click-hint">RESULTS →</span>
-            </div>
-        </article>
+                <div class="cal-row-identity">
+                    <div class="cal-flag-box">
+                        <span class="cal-flag-emoji">🇲🇾</span>
+                        <span class="cal-flag-iso">MAL</span>
+                    </div>
+                    <div class="cal-row-titles">
+                        <span class="cal-row-gp-title">GRAN PREMIO DE MALASIA</span>
+                        <span class="cal-row-circuit">Sepang International Circuit</span>
+                    </div>
+                </div>
+                <div class="cal-row-date">
+                    <span class="cal-date-main">28 JUN</span>
+                    <span class="cal-date-sub">17:00 CEST</span>
+                </div>
+                <div class="cal-row-status-winner">
+                    <span class="cal-status-badge status-completed">✓ Finalizada</span>
+                    <span class="cal-winner-pill">🏆 Muntii <small>(Red Bull)</small></span>
+                    <a href="https://www.youtube.com/watch?v=cYTpQzHtOrs" target="_blank" rel="noopener noreferrer" class="cal-replay-link" title="Ver repetición">▶</a>
+                </div>
+                <div class="cal-row-action">
+                    <button type="button" class="cal-action-btn" onclick="openRace('malaysia')">Resultados ➔</button>
+                </div>
+            </article>
 
-        <article class="calendar-card completed race-link" data-race="bahrain">
-            <div class="calendar-card-header">
-                <div class="calendar-number">03</div>
-                <div class="calendar-status">COMPLETED</div>
-            </div>
-            <div class="calendar-card-body">
-                <h3>BAHRAIN</h3>
-                <p>BAHRAIN</p>
-            </div>
-            <div class="calendar-card-footer">
-                <div class="calendar-datetime">
-                    <div class="calendar-date">12 JUL</div>
-                    <span class="calendar-time">17:00 CEST</span>
+            <!-- Row 03: Bahrain -->
+            <article class="cal-list-row race-link" data-race="bahrain" data-category="championship">
+                <div class="cal-row-round">
+                    <span class="cal-round-badge">R03</span>
                 </div>
-                <span class="click-hint">RESULTS →</span>
-            </div>
-        </article>
+                <div class="cal-row-identity">
+                    <div class="cal-flag-box">
+                        <span class="cal-flag-emoji">🇧🇭</span>
+                        <span class="cal-flag-iso">BAH</span>
+                    </div>
+                    <div class="cal-row-titles">
+                        <span class="cal-row-gp-title">GRAN PREMIO DE BARÉIN</span>
+                        <span class="cal-row-circuit">Bahrain International Circuit &bull; Sakhir</span>
+                    </div>
+                </div>
+                <div class="cal-row-date">
+                    <span class="cal-date-main">12 JUL</span>
+                    <span class="cal-date-sub">17:00 CEST</span>
+                </div>
+                <div class="cal-row-status-winner">
+                    <span class="cal-status-badge status-completed">✓ Finalizada</span>
+                    <span class="cal-winner-pill">🏆 Dieguiosk <small>(HRT)</small></span>
+                    <a href="https://www.youtube.com/watch?v=W5j-VQaJjhg" target="_blank" rel="noopener noreferrer" class="cal-replay-link" title="Ver repetición">▶</a>
+                </div>
+                <div class="cal-row-action">
+                    <button type="button" class="cal-action-btn" onclick="openRace('bahrain')">Resultados ➔</button>
+                </div>
+            </article>
 
-        <article class="calendar-card completed race-link" data-race="turkey">
-            <div class="calendar-card-header">
-                <div class="calendar-number">04</div>
-                <div class="calendar-status">COMPLETED</div>
-            </div>
-            <div class="calendar-card-body">
-                <h3>TURKEY</h3>
-                <p>TURKEY</p>
-            </div>
-            <div class="calendar-card-footer">
-                <div class="calendar-datetime">
-                    <div class="calendar-date">19 JUL</div>
-                    <span class="calendar-time">17:00 CEST</span>
+            <!-- Row 04: Turkey -->
+            <article class="cal-list-row race-link" data-race="turkey" data-category="championship">
+                <div class="cal-row-round">
+                    <span class="cal-round-badge">R04</span>
                 </div>
-                <span class="click-hint">RESULTS →</span>
-            </div>
-        </article>
+                <div class="cal-row-identity">
+                    <div class="cal-flag-box">
+                        <span class="cal-flag-emoji">🇹🇷</span>
+                        <span class="cal-flag-iso">TUR</span>
+                    </div>
+                    <div class="cal-row-titles">
+                        <span class="cal-row-gp-title">GRAN PREMIO DE TURQUÍA</span>
+                        <span class="cal-row-circuit">Intercity Istanbul Park</span>
+                    </div>
+                </div>
+                <div class="cal-row-date">
+                    <span class="cal-date-main">19 JUL</span>
+                    <span class="cal-date-sub">17:00 CEST</span>
+                </div>
+                <div class="cal-row-status-winner">
+                    <span class="cal-status-badge status-completed">✓ Finalizada</span>
+                    <span class="cal-winner-pill">🏆 Muntii <small>(Red Bull)</small></span>
+                    <a href="https://www.youtube.com/watch?v=Agsxp2u1KSc" target="_blank" rel="noopener noreferrer" class="cal-replay-link" title="Ver repetición">▶</a>
+                </div>
+                <div class="cal-row-action">
+                    <button type="button" class="cal-action-btn" onclick="openRace('turkey')">Resultados ➔</button>
+                </div>
+            </article>
 
-        <article class="calendar-card completed race-link" data-race="spain">
-            <div class="calendar-card-header">
-                <div class="calendar-number">05</div>
-                <div class="calendar-status">COMPLETED</div>
-            </div>
-            <div class="calendar-card-body">
-                <h3>BARCELONA</h3>
-                <p>SPAIN</p>
-            </div>
-            <div class="calendar-card-footer">
-                <div class="calendar-datetime">
-                    <div class="calendar-date">9 AUG</div>
-                    <span class="calendar-time">17:00 CEST</span>
+            <!-- Row 05: Spain -->
+            <article class="cal-list-row race-link" data-race="spain" data-category="championship">
+                <div class="cal-row-round">
+                    <span class="cal-round-badge">R05</span>
                 </div>
-                <span class="click-hint">RESULTS →</span>
-            </div>
-        </article>
+                <div class="cal-row-identity">
+                    <div class="cal-flag-box">
+                        <span class="cal-flag-emoji">🇪🇸</span>
+                        <span class="cal-flag-iso">ESP</span>
+                    </div>
+                    <div class="cal-row-titles">
+                        <span class="cal-row-gp-title">GRAN PREMIO DE ESPAÑA</span>
+                        <span class="cal-row-circuit">Circuit de Barcelona-Catalunya &bull; Montmeló</span>
+                    </div>
+                </div>
+                <div class="cal-row-date">
+                    <span class="cal-date-main">9 AUG</span>
+                    <span class="cal-date-sub">17:00 CEST</span>
+                </div>
+                <div class="cal-row-status-winner">
+                    <span class="cal-status-badge status-completed">✓ Finalizada</span>
+                    <span class="cal-winner-pill">🏆 Dieguiosk <small>(HRT)</small></span>
+                    <a href="https://www.youtube.com/watch?v=QtlnDNmD7S8" target="_blank" rel="noopener noreferrer" class="cal-replay-link" title="Ver repetición">▶</a>
+                </div>
+                <div class="cal-row-action">
+                    <button type="button" class="cal-action-btn" onclick="openRace('spain')">Resultados ➔</button>
+                </div>
+            </article>
 
-        <article class="calendar-card completed race-link" data-race="italy">
-            <div class="calendar-card-header">
-                <div class="calendar-number">06</div>
-                <div class="calendar-status">COMPLETED</div>
-            </div>
-            <div class="calendar-card-body">
-                <h3>MONZA</h3>
-                <p>ITALY</p>
-            </div>
-            <div class="calendar-card-footer">
-                <div class="calendar-datetime">
-                    <div class="calendar-date">17 AUG</div>
-                    <span class="calendar-time">17:00 CEST</span>
+            <!-- Row 06: Italy -->
+            <article class="cal-list-row race-link" data-race="italy" data-category="championship">
+                <div class="cal-row-round">
+                    <span class="cal-round-badge">R06</span>
                 </div>
-                <span class="click-hint">RESULTS →</span>
-            </div>
-        </article>
+                <div class="cal-row-identity">
+                    <div class="cal-flag-box">
+                        <span class="cal-flag-emoji">🇮🇹</span>
+                        <span class="cal-flag-iso">ITA</span>
+                    </div>
+                    <div class="cal-row-titles">
+                        <span class="cal-row-gp-title">GRAN PREMIO DE ITALIA</span>
+                        <span class="cal-row-circuit">Autodromo Nazionale Monza &bull; Templo de la Velocidad</span>
+                    </div>
+                </div>
+                <div class="cal-row-date">
+                    <span class="cal-date-main">17 AUG</span>
+                    <span class="cal-date-sub">17:00 CEST</span>
+                </div>
+                <div class="cal-row-status-winner">
+                    <span class="cal-status-badge status-completed">✓ Finalizada</span>
+                    <span class="cal-winner-pill">🏆 Novitaa <small>(Red Bull)</small></span>
+                    <a href="https://www.youtube.com/watch?v=vEV3irvtAiM" target="_blank" rel="noopener noreferrer" class="cal-replay-link" title="Ver repetición">▶</a>
+                </div>
+                <div class="cal-row-action">
+                    <button type="button" class="cal-action-btn" onclick="openRace('italy')">Resultados ➔</button>
+                </div>
+            </article>
 
-        <article class="calendar-card completed race-link" data-race="austria">
-            <div class="calendar-card-header">
-                <div class="calendar-number">07</div>
-                <div class="calendar-status">COMPLETED</div>
-            </div>
-            <div class="calendar-card-body">
-                <h3>AUSTRIA</h3>
-                <p>AUSTRIA</p>
-            </div>
-            <div class="calendar-card-footer">
-                <div class="calendar-datetime">
-                    <div class="calendar-date">23 AUG</div>
-                    <span class="calendar-time">17:00 CEST</span>
+            <!-- Row 07: Austria -->
+            <article class="cal-list-row race-link" data-race="austria" data-category="championship">
+                <div class="cal-row-round">
+                    <span class="cal-round-badge">R07</span>
                 </div>
-                <span class="click-hint">RESULTS →</span>
-            </div>
-        </article>
+                <div class="cal-row-identity">
+                    <div class="cal-flag-box">
+                        <span class="cal-flag-emoji">🇦🇹</span>
+                        <span class="cal-flag-iso">AUT</span>
+                    </div>
+                    <div class="cal-row-titles">
+                        <span class="cal-row-gp-title">GRAN PREMIO DE AUSTRIA</span>
+                        <span class="cal-row-circuit">Red Bull Ring &bull; Spielberg</span>
+                    </div>
+                </div>
+                <div class="cal-row-date">
+                    <span class="cal-date-main">23 AUG</span>
+                    <span class="cal-date-sub">17:00 CEST</span>
+                </div>
+                <div class="cal-row-status-winner">
+                    <span class="cal-status-badge status-completed">✓ Finalizada</span>
+                    <span class="cal-winner-pill">🏆 Dieguiosk <small>(HRT)</small></span>
+                    <a href="https://www.youtube.com/watch?v=XdL21LJPJTo" target="_blank" rel="noopener noreferrer" class="cal-replay-link" title="Ver repetición">▶</a>
+                </div>
+                <div class="cal-row-action">
+                    <button type="button" class="cal-action-btn" onclick="openRace('austria')">Resultados ➔</button>
+                </div>
+            </article>
 
-        <article class="calendar-card completed race-link" data-race="silverstone">
-            <div class="calendar-card-header">
-                <div class="calendar-number">08</div>
-                <div class="calendar-status">COMPLETED</div>
-            </div>
-            <div class="calendar-card-body">
-                <h3>SILVERSTONE</h3>
-                <p>UNITED KINGDOM</p>
-            </div>
-            <div class="calendar-card-footer">
-                <div class="calendar-datetime">
-                    <div class="calendar-date">7 SEP</div>
-                    <span class="calendar-time">17:00 CEST</span>
+            <!-- Row 08: Great Britain -->
+            <article class="cal-list-row race-link" data-race="silverstone" data-category="championship">
+                <div class="cal-row-round">
+                    <span class="cal-round-badge">R08</span>
                 </div>
-                <span class="click-hint">RESULTS →</span>
-            </div>
-        </article>
+                <div class="cal-row-identity">
+                    <div class="cal-flag-box">
+                        <span class="cal-flag-emoji">🇬🇧</span>
+                        <span class="cal-flag-iso">GBR</span>
+                    </div>
+                    <div class="cal-row-titles">
+                        <span class="cal-row-gp-title">GRAN PREMIO DE GRAN BRETAÑA</span>
+                        <span class="cal-row-circuit">Silverstone Circuit &bull; Cuna del Motorsport</span>
+                    </div>
+                </div>
+                <div class="cal-row-date">
+                    <span class="cal-date-main">7 SEP</span>
+                    <span class="cal-date-sub">17:00 CEST</span>
+                </div>
+                <div class="cal-row-status-winner">
+                    <span class="cal-status-badge status-completed">✓ Finalizada</span>
+                    <span class="cal-winner-pill">🏆 Muntii <small>(Red Bull)</small></span>
+                    <a href="https://www.youtube.com/watch?v=5l8w3KBOLgQ" target="_blank" rel="noopener noreferrer" class="cal-replay-link" title="Ver repetición">▶</a>
+                </div>
+                <div class="cal-row-action">
+                    <button type="button" class="cal-action-btn" onclick="openRace('silverstone')">Resultados ➔</button>
+                </div>
+            </article>
 
-        <article class="calendar-card completed race-link" data-race="hockenheim">
-            <div class="calendar-card-header">
-                <div class="calendar-number">09</div>
-                <div class="calendar-status">COMPLETED</div>
-            </div>
-            <div class="calendar-card-body">
-                <h3>HOCKENHEIM</h3>
-                <p>GERMANY</p>
-            </div>
-            <div class="calendar-card-footer">
-                <div class="calendar-datetime">
-                    <div class="calendar-date">13 SEP</div>
-                    <span class="calendar-time">17:00 CEST</span>
+            <!-- Row 09: Germany -->
+            <article class="cal-list-row race-link" data-race="hockenheim" data-category="championship">
+                <div class="cal-row-round">
+                    <span class="cal-round-badge">R09</span>
                 </div>
-                <span class="click-hint">RESULTS →</span>
-            </div>
-        </article>
+                <div class="cal-row-identity">
+                    <div class="cal-flag-box">
+                        <span class="cal-flag-emoji">🇩🇪</span>
+                        <span class="cal-flag-iso">GER</span>
+                    </div>
+                    <div class="cal-row-titles">
+                        <span class="cal-row-gp-title">GRAN PREMIO DE ALEMANIA</span>
+                        <span class="cal-row-circuit">Hockenheimring &bull; Baden-Württemberg</span>
+                    </div>
+                </div>
+                <div class="cal-row-date">
+                    <span class="cal-date-main">13 SEP</span>
+                    <span class="cal-date-sub">17:00 CEST</span>
+                </div>
+                <div class="cal-row-status-winner">
+                    <span class="cal-status-badge status-completed">✓ Finalizada</span>
+                    <span class="cal-winner-pill">🏆 BigTheo <small>(Ferrari)</small></span>
+                    <a href="https://www.youtube.com/watch?v=eU1ciNDcuKg" target="_blank" rel="noopener noreferrer" class="cal-replay-link" title="Ver repetición">▶</a>
+                </div>
+                <div class="cal-row-action">
+                    <button type="button" class="cal-action-btn" onclick="openRace('hockenheim')">Resultados ➔</button>
+                </div>
+            </article>
 
-        <article class="calendar-card completed race-link" data-race="nurburgring">
-            <div class="calendar-card-header">
-                <div class="calendar-number">10</div>
-                <div class="calendar-status">COMPLETED</div>
-            </div>
-            <div class="calendar-card-body">
-                <h3>NÜRBURGRING GP</h3>
-                <p>EUROPE</p>
-            </div>
-            <div class="calendar-card-footer">
-                <div class="calendar-datetime">
-                    <div class="calendar-date">20 SEP</div>
-                    <span class="calendar-time">17:00 CEST</span>
+            <!-- Row 10: Europe -->
+            <article class="cal-list-row race-link" data-race="nurburgring" data-category="championship">
+                <div class="cal-row-round">
+                    <span class="cal-round-badge">R10</span>
                 </div>
-                <span class="click-hint">RESULTS →</span>
-            </div>
-        </article>
+                <div class="cal-row-identity">
+                    <div class="cal-flag-box">
+                        <span class="cal-flag-emoji">🇪🇺</span>
+                        <span class="cal-flag-iso">EUR</span>
+                    </div>
+                    <div class="cal-row-titles">
+                        <span class="cal-row-gp-title">GRAN PREMIO DE EUROPA</span>
+                        <span class="cal-row-circuit">Nürburgring GP-Strecke</span>
+                    </div>
+                </div>
+                <div class="cal-row-date">
+                    <span class="cal-date-main">20 SEP</span>
+                    <span class="cal-date-sub">17:00 CEST</span>
+                </div>
+                <div class="cal-row-status-winner">
+                    <span class="cal-status-badge status-completed">✓ Finalizada</span>
+                    <span class="cal-winner-pill">🏆 Dieguiosk <small>(HRT)</small></span>
+                    <a href="https://www.youtube.com/watch?v=WOl7kH5ac8A" target="_blank" rel="noopener noreferrer" class="cal-replay-link" title="Ver repetición">▶</a>
+                </div>
+                <div class="cal-row-action">
+                    <button type="button" class="cal-action-btn" onclick="openRace('nurburgring')">Resultados ➔</button>
+                </div>
+            </article>
 
-        <article class="calendar-card completed race-link" data-race="hungary">
-            <div class="calendar-card-header">
-                <div class="calendar-number">11</div>
-                <div class="calendar-status">COMPLETED</div>
-            </div>
-            <div class="calendar-card-body">
-                <h3>HUNGARORING</h3>
-                <p>HUNGARY</p>
-            </div>
-            <div class="calendar-card-footer">
-                <div class="calendar-datetime">
-                    <div class="calendar-date">27 SEP</div>
-                    <span class="calendar-time">17:00 CEST</span>
+            <!-- Row 11: Hungary -->
+            <article class="cal-list-row race-link" data-race="hungary" data-category="championship">
+                <div class="cal-row-round">
+                    <span class="cal-round-badge">R11</span>
                 </div>
-                <span class="click-hint">RESULTS →</span>
-            </div>
-        </article>
+                <div class="cal-row-identity">
+                    <div class="cal-flag-box">
+                        <span class="cal-flag-emoji">🇭🇺</span>
+                        <span class="cal-flag-iso">HUN</span>
+                    </div>
+                    <div class="cal-row-titles">
+                        <span class="cal-row-gp-title">GRAN PREMIO DE HUNGRÍA</span>
+                        <span class="cal-row-circuit">Hungaroring &bull; Mogyoród / Budapest</span>
+                    </div>
+                </div>
+                <div class="cal-row-date">
+                    <span class="cal-date-main">27 SEP</span>
+                    <span class="cal-date-sub">17:00 CEST</span>
+                </div>
+                <div class="cal-row-status-winner">
+                    <span class="cal-status-badge status-completed">✓ Finalizada</span>
+                    <span class="cal-winner-pill">🏆 Dieguiosk <small>(HRT)</small></span>
+                    <a href="https://www.youtube.com/watch?v=kgdyds8paqQ" target="_blank" rel="noopener noreferrer" class="cal-replay-link" title="Ver repetición">▶</a>
+                </div>
+                <div class="cal-row-action">
+                    <button type="button" class="cal-action-btn" onclick="openRace('hungary')">Resultados ➔</button>
+                </div>
+            </article>
 
-        <article class="calendar-card completed race-link" data-race="belgium">
-            <div class="calendar-card-header">
-                <div class="calendar-number">12</div>
-                <div class="calendar-status">COMPLETED</div>
-            </div>
-            <div class="calendar-card-body">
-                <h3>SPA-FRANCORCHAMPS</h3>
-                <p>BELGIUM</p>
-            </div>
-            <div class="calendar-card-footer">
-                <div class="calendar-datetime">
-                    <div class="calendar-date">11 OCT</div>
-                    <span class="calendar-time">17:00 CEST</span>
+            <!-- Row 12: Belgium -->
+            <article class="cal-list-row race-link" data-race="belgium" data-category="championship">
+                <div class="cal-row-round">
+                    <span class="cal-round-badge">R12</span>
                 </div>
-                <span class="click-hint">RESULTS →</span>
-            </div>
-        </article>
+                <div class="cal-row-identity">
+                    <div class="cal-flag-box">
+                        <span class="cal-flag-emoji">🇧🇪</span>
+                        <span class="cal-flag-iso">BEL</span>
+                    </div>
+                    <div class="cal-row-titles">
+                        <span class="cal-row-gp-title">GRAN PREMIO DE BÉLGICA</span>
+                        <span class="cal-row-circuit">Circuit de Spa-Francorchamps &bull; Las Ardenas</span>
+                    </div>
+                </div>
+                <div class="cal-row-date">
+                    <span class="cal-date-main">11 OCT</span>
+                    <span class="cal-date-sub">17:00 CEST</span>
+                </div>
+                <div class="cal-row-status-winner">
+                    <span class="cal-status-badge status-completed">✓ Finalizada</span>
+                    <span class="cal-winner-pill">🏆 Novitaa <small>(Red Bull)</small></span>
+                </div>
+                <div class="cal-row-action">
+                    <button type="button" class="cal-action-btn" onclick="openRace('belgium')">Resultados ➔</button>
+                </div>
+            </article>
 
-        <article class="calendar-card next race-link" data-race="fuji">
-            <div class="calendar-card-header">
-                <div class="calendar-number">13</div>
-                <div class="calendar-status">NEXT RACE</div>
-            </div>
-            <div class="calendar-card-body">
-                <h3>FUJI</h3>
-                <p>JAPAN</p>
-            </div>
-            <div class="calendar-card-footer">
-                <div class="calendar-datetime">
-                    <div class="calendar-date">18 OCT</div>
-                    <span class="calendar-time">17:00 CEST</span>
+            <!-- Row 13: Fuji (Next Race!) -->
+            <article class="cal-list-row is-next-race race-link" data-race="fuji" data-category="championship">
+                <div class="cal-row-round">
+                    <span class="cal-round-badge badge-next">R13 NEXT</span>
                 </div>
-                <span class="calendar-action-note" id="nextRaceActionNote">THIS WEEKEND</span>
-            </div>
-        </article>
+                <div class="cal-row-identity">
+                    <div class="cal-flag-box">
+                        <span class="cal-flag-emoji">🇯🇵</span>
+                        <span class="cal-flag-iso">JPN</span>
+                    </div>
+                    <div class="cal-row-titles">
+                        <span class="cal-row-gp-title">GRAN PREMIO DE JAPÓN (FUJI)</span>
+                        <span class="cal-row-circuit">Fuji Speedway &bull; Oyama / Shizuoka</span>
+                    </div>
+                </div>
+                <div class="cal-row-date">
+                    <span class="cal-date-main" style="color: #ff5252;">18 OCT</span>
+                    <span class="cal-date-sub">17:00 CEST</span>
+                </div>
+                <div class="cal-row-status-winner">
+                    <span class="cal-status-badge status-next">🔥 PRÓXIMA CARRERA</span>
+                    <span class="cal-winner-pill" style="border-color: rgba(239, 68, 68, 0.4); color: #ff8585;">¡ESTE FIN DE SEMANA!</span>
+                </div>
+                <div class="cal-row-action">
+                    <button type="button" class="cal-action-btn" style="background: rgba(239, 68, 68, 0.2); border-color: rgba(239, 68, 68, 0.5); color: #ffffff;" onclick="openRace('fuji')">Detalles ➔</button>
+                </div>
+            </article>
 
-        <article class="calendar-card upcoming" data-race="cota">
-            <div class="calendar-card-header">
-                <div class="calendar-number">14</div>
-                <div class="calendar-status">UPCOMING</div>
-            </div>
-            <div class="calendar-card-body">
-                <h3>COTA</h3>
-                <p>USA</p>
-            </div>
-            <div class="calendar-card-footer">
-                <div class="calendar-datetime">
-                    <div class="calendar-date">TBA</div>
-                    <span class="calendar-time">17:00 CEST</span>
+            <!-- Row 14: USA (COTA) -->
+            <article class="cal-list-row race-link" data-race="cota" data-category="championship">
+                <div class="cal-row-round">
+                    <span class="cal-round-badge">R14</span>
                 </div>
-            </div>
-        </article>
+                <div class="cal-row-identity">
+                    <div class="cal-flag-box">
+                        <span class="cal-flag-emoji">🇺🇸</span>
+                        <span class="cal-flag-iso">USA</span>
+                    </div>
+                    <div class="cal-row-titles">
+                        <span class="cal-row-gp-title">GRAN PREMIO DE ESTADOS UNIDOS</span>
+                        <span class="cal-row-circuit">Circuit of The Americas &bull; Austin, Texas</span>
+                    </div>
+                </div>
+                <div class="cal-row-date">
+                    <span class="cal-date-main">TBA</span>
+                    <span class="cal-date-sub">17:00 CEST</span>
+                </div>
+                <div class="cal-row-status-winner">
+                    <span class="cal-status-badge status-upcoming">Próximamente</span>
+                </div>
+                <div class="cal-row-action">
+                    <button type="button" class="cal-action-btn" onclick="openRace('cota')">Detalles ➔</button>
+                </div>
+            </article>
 
-        <article class="calendar-card upcoming" data-race="brazil">
-            <div class="calendar-card-header">
-                <div class="calendar-number">15</div>
-                <div class="calendar-status">FINAL ROUND</div>
-            </div>
-            <div class="calendar-card-body">
-                <h3>BRAZIL</h3>
-                <p>BRAZIL</p>
-            </div>
-            <div class="calendar-card-footer">
-                <div class="calendar-datetime">
-                    <div class="calendar-date">TBA</div>
-                    <span class="calendar-time">17:00 CEST</span>
+            <!-- Row 15: Brazil (Interlagos) -->
+            <article class="cal-list-row race-link" data-race="brazil" data-category="championship">
+                <div class="cal-row-round">
+                    <span class="cal-round-badge">R15</span>
                 </div>
+                <div class="cal-row-identity">
+                    <div class="cal-flag-box">
+                        <span class="cal-flag-emoji">🇧🇷</span>
+                        <span class="cal-flag-iso">BRA</span>
+                    </div>
+                    <div class="cal-row-titles">
+                        <span class="cal-row-gp-title">GRAN PREMIO DE BRASIL</span>
+                        <span class="cal-row-circuit">Autódromo José Carlos Pace &bull; Interlagos, São Paulo</span>
+                    </div>
+                </div>
+                <div class="cal-row-date">
+                    <span class="cal-date-main">TBA</span>
+                    <span class="cal-date-sub">FINAL ROUND</span>
+                </div>
+                <div class="cal-row-status-winner">
+                    <span class="cal-status-badge status-upcoming">Gran Final</span>
+                </div>
+                <div class="cal-row-action">
+                    <button type="button" class="cal-action-btn" onclick="openRace('brazil')">Detalles ➔</button>
+                </div>
+            </article>
+        </div>
+    </div>
+
+    <!-- =========================================================
+         VIEW 2: VISTA CUADRÍCULA ("COMO ESTABA ANTES")
+    ========================================================= -->
+    <div class="calendar-grid-view" id="calendarGridView" style="display: none; margin-top: 24px;">
+        <div class="calendar-grid" id="calendarGridCards">
+
+            <article class="calendar-card test-card race-link" data-race="barcelona_test">
+                <div class="calendar-card-header">
+                    <div class="calendar-number">T</div>
+                    <span class="calendar-flag-badge" title="España">🇪🇸</span>
+                    <div class="calendar-status">TEST DAYS</div>
+                </div>
+                <div class="calendar-card-body">
+                    <h3>BARCELONA</h3>
+                    <p>SPAIN &bull; PRETEMPORADA</p>
+                </div>
+                <div class="calendar-card-footer">
+                    <div class="calendar-datetime">
+                        <div class="calendar-date">5–7 JUN</div>
+                    </div>
+                    <span class="click-hint">DETALLES →</span>
+                </div>
+            </article>
+
+            <article class="calendar-card completed race-link" data-race="australia">
+                <div class="calendar-card-header">
+                    <div class="calendar-number">01</div>
+                    <span class="calendar-flag-badge" title="Australia">🇦🇺</span>
+                    <div class="calendar-status">COMPLETED</div>
+                </div>
+                <div class="calendar-card-body">
+                    <h3>AUSTRALIA</h3>
+                    <p>MELBOURNE</p>
+                </div>
+                <div class="calendar-card-footer">
+                    <div class="calendar-datetime">
+                        <div class="calendar-date">14 JUN</div>
+                        <span class="calendar-time">17:00 CEST</span>
+                    </div>
+                    <span class="click-hint">RESULTS →</span>
+                </div>
+            </article>
+
+            <article class="calendar-card completed race-link" data-race="malaysia">
+                <div class="calendar-card-header">
+                    <div class="calendar-number">02</div>
+                    <span class="calendar-flag-badge" title="Malasia">🇲🇾</span>
+                    <div class="calendar-status">COMPLETED</div>
+                </div>
+                <div class="calendar-card-body">
+                    <h3>MALAYSIA</h3>
+                    <p>SEPANG</p>
+                </div>
+                <div class="calendar-card-footer">
+                    <div class="calendar-datetime">
+                        <div class="calendar-date">28 JUN</div>
+                        <span class="calendar-time">17:00 CEST</span>
+                    </div>
+                    <span class="click-hint">RESULTS →</span>
+                </div>
+            </article>
+
+            <article class="calendar-card completed race-link" data-race="bahrain">
+                <div class="calendar-card-header">
+                    <div class="calendar-number">03</div>
+                    <span class="calendar-flag-badge" title="Baréin">🇧🇭</span>
+                    <div class="calendar-status">COMPLETED</div>
+                </div>
+                <div class="calendar-card-body">
+                    <h3>BAHRAIN</h3>
+                    <p>SAKHIR</p>
+                </div>
+                <div class="calendar-card-footer">
+                    <div class="calendar-datetime">
+                        <div class="calendar-date">12 JUL</div>
+                        <span class="calendar-time">17:00 CEST</span>
+                    </div>
+                    <span class="click-hint">RESULTS →</span>
+                </div>
+            </article>
+
+            <article class="calendar-card completed race-link" data-race="turkey">
+                <div class="calendar-card-header">
+                    <div class="calendar-number">04</div>
+                    <span class="calendar-flag-badge" title="Turquía">🇹🇷</span>
+                    <div class="calendar-status">COMPLETED</div>
+                </div>
+                <div class="calendar-card-body">
+                    <h3>TURKEY</h3>
+                    <p>ISTANBUL PARK</p>
+                </div>
+                <div class="calendar-card-footer">
+                    <div class="calendar-datetime">
+                        <div class="calendar-date">19 JUL</div>
+                        <span class="calendar-time">17:00 CEST</span>
+                    </div>
+                    <span class="click-hint">RESULTS →</span>
+                </div>
+            </article>
+
+            <article class="calendar-card completed race-link" data-race="spain">
+                <div class="calendar-card-header">
+                    <div class="calendar-number">05</div>
+                    <span class="calendar-flag-badge" title="España">🇪🇸</span>
+                    <div class="calendar-status">COMPLETED</div>
+                </div>
+                <div class="calendar-card-body">
+                    <h3>BARCELONA</h3>
+                    <p>SPAIN</p>
+                </div>
+                <div class="calendar-card-footer">
+                    <div class="calendar-datetime">
+                        <div class="calendar-date">9 AUG</div>
+                        <span class="calendar-time">17:00 CEST</span>
+                    </div>
+                    <span class="click-hint">RESULTS →</span>
+                </div>
+            </article>
+
+            <article class="calendar-card completed race-link" data-race="italy">
+                <div class="calendar-card-header">
+                    <div class="calendar-number">06</div>
+                    <span class="calendar-flag-badge" title="Italia">🇮🇹</span>
+                    <div class="calendar-status">COMPLETED</div>
+                </div>
+                <div class="calendar-card-body">
+                    <h3>MONZA</h3>
+                    <p>ITALY</p>
+                </div>
+                <div class="calendar-card-footer">
+                    <div class="calendar-datetime">
+                        <div class="calendar-date">17 AUG</div>
+                        <span class="calendar-time">17:00 CEST</span>
+                    </div>
+                    <span class="click-hint">RESULTS →</span>
+                </div>
+            </article>
+
+            <article class="calendar-card completed race-link" data-race="austria">
+                <div class="calendar-card-header">
+                    <div class="calendar-number">07</div>
+                    <span class="calendar-flag-badge" title="Austria">🇦🇹</span>
+                    <div class="calendar-status">COMPLETED</div>
+                </div>
+                <div class="calendar-card-body">
+                    <h3>AUSTRIA</h3>
+                    <p>RED BULL RING</p>
+                </div>
+                <div class="calendar-card-footer">
+                    <div class="calendar-datetime">
+                        <div class="calendar-date">23 AUG</div>
+                        <span class="calendar-time">17:00 CEST</span>
+                    </div>
+                    <span class="click-hint">RESULTS →</span>
+                </div>
+            </article>
+
+            <article class="calendar-card completed race-link" data-race="silverstone">
+                <div class="calendar-card-header">
+                    <div class="calendar-number">08</div>
+                    <span class="calendar-flag-badge" title="Gran Bretaña">🇬🇧</span>
+                    <div class="calendar-status">COMPLETED</div>
+                </div>
+                <div class="calendar-card-body">
+                    <h3>SILVERSTONE</h3>
+                    <p>UNITED KINGDOM</p>
+                </div>
+                <div class="calendar-card-footer">
+                    <div class="calendar-datetime">
+                        <div class="calendar-date">7 SEP</div>
+                        <span class="calendar-time">17:00 CEST</span>
+                    </div>
+                    <span class="click-hint">RESULTS →</span>
+                </div>
+            </article>
+
+            <article class="calendar-card completed race-link" data-race="hockenheim">
+                <div class="calendar-card-header">
+                    <div class="calendar-number">09</div>
+                    <span class="calendar-flag-badge" title="Alemania">🇩🇪</span>
+                    <div class="calendar-status">COMPLETED</div>
+                </div>
+                <div class="calendar-card-body">
+                    <h3>HOCKENHEIM</h3>
+                    <p>GERMANY</p>
+                </div>
+                <div class="calendar-card-footer">
+                    <div class="calendar-datetime">
+                        <div class="calendar-date">13 SEP</div>
+                        <span class="calendar-time">17:00 CEST</span>
+                    </div>
+                    <span class="click-hint">RESULTS →</span>
+                </div>
+            </article>
+
+            <article class="calendar-card completed race-link" data-race="nurburgring">
+                <div class="calendar-card-header">
+                    <div class="calendar-number">10</div>
+                    <span class="calendar-flag-badge" title="Europa">🇪🇺</span>
+                    <div class="calendar-status">COMPLETED</div>
+                </div>
+                <div class="calendar-card-body">
+                    <h3>NÜRBURGRING GP</h3>
+                    <p>EUROPE</p>
+                </div>
+                <div class="calendar-card-footer">
+                    <div class="calendar-datetime">
+                        <div class="calendar-date">20 SEP</div>
+                        <span class="calendar-time">17:00 CEST</span>
+                    </div>
+                    <span class="click-hint">RESULTS →</span>
+                </div>
+            </article>
+
+            <article class="calendar-card completed race-link" data-race="hungary">
+                <div class="calendar-card-header">
+                    <div class="calendar-number">11</div>
+                    <span class="calendar-flag-badge" title="Hungría">🇭🇺</span>
+                    <div class="calendar-status">COMPLETED</div>
+                </div>
+                <div class="calendar-card-body">
+                    <h3>HUNGARORING</h3>
+                    <p>HUNGARY</p>
+                </div>
+                <div class="calendar-card-footer">
+                    <div class="calendar-datetime">
+                        <div class="calendar-date">27 SEP</div>
+                        <span class="calendar-time">17:00 CEST</span>
+                    </div>
+                    <span class="click-hint">RESULTS →</span>
+                </div>
+            </article>
+
+            <article class="calendar-card completed race-link" data-race="belgium">
+                <div class="calendar-card-header">
+                    <div class="calendar-number">12</div>
+                    <span class="calendar-flag-badge" title="Bélgica">🇧🇪</span>
+                    <div class="calendar-status">COMPLETED</div>
+                </div>
+                <div class="calendar-card-body">
+                    <h3>SPA-FRANCORCHAMPS</h3>
+                    <p>BELGIUM</p>
+                </div>
+                <div class="calendar-card-footer">
+                    <div class="calendar-datetime">
+                        <div class="calendar-date">11 OCT</div>
+                        <span class="calendar-time">17:00 CEST</span>
+                    </div>
+                    <span class="click-hint">RESULTS →</span>
+                </div>
+            </article>
+
+            <article class="calendar-card next race-link" data-race="fuji">
+                <div class="calendar-card-header">
+                    <div class="calendar-number">13</div>
+                    <span class="calendar-flag-badge" title="Japón">🇯🇵</span>
+                    <div class="calendar-status">NEXT RACE</div>
+                </div>
+                <div class="calendar-card-body">
+                    <h3>FUJI</h3>
+                    <p>JAPAN</p>
+                </div>
+                <div class="calendar-card-footer">
+                    <div class="calendar-datetime">
+                        <div class="calendar-date">18 OCT</div>
+                        <span class="calendar-time">17:00 CEST</span>
+                    </div>
+                    <span class="calendar-action-note" id="nextRaceActionNote">THIS WEEKEND</span>
+                </div>
+            </article>
+
+            <article class="calendar-card upcoming race-link" data-race="cota">
+                <div class="calendar-card-header">
+                    <div class="calendar-number">14</div>
+                    <span class="calendar-flag-badge" title="Estados Unidos">🇺🇸</span>
+                    <div class="calendar-status">UPCOMING</div>
+                </div>
+                <div class="calendar-card-body">
+                    <h3>COTA</h3>
+                    <p>USA</p>
+                </div>
+                <div class="calendar-card-footer">
+                    <div class="calendar-datetime">
+                        <div class="calendar-date">TBA</div>
+                        <span class="calendar-time">17:00 CEST</span>
+                    </div>
+                </div>
+            </article>
+
+            <article class="calendar-card upcoming race-link" data-race="brazil">
+                <div class="calendar-card-header">
+                    <div class="calendar-number">15</div>
+                    <span class="calendar-flag-badge" title="Brasil">🇧🇷</span>
+                    <div class="calendar-status">FINAL ROUND</div>
+                </div>
+                <div class="calendar-card-body">
+                    <h3>BRAZIL</h3>
+                    <p>BRAZIL</p>
+                </div>
+                <div class="calendar-card-footer">
+                    <div class="calendar-datetime">
+                        <div class="calendar-date">TBA</div>
+                        <span class="calendar-time">17:00 CEST</span>
+                    </div>
+                </div>
+            </article>
+
+        </div>
+    </div>
+
+    <!-- =========================================================
+         VIEW 3: VISTA LISTA Y DETALLADA (EXPLORER MASTER-DETAIL)
+    ========================================================= -->
+    <div class="calendar-layout-master-detail" id="calendarDetailView" style="display: grid;">
+
+        <!-- LEFT COLUMN: ROUNDS LIST -->
+        <aside class="calendar-rounds-sidebar" aria-label="Lista de Rondas">
+            <div class="calendar-rounds-sidebar-header">
+                <span class="calendar-rounds-label" id="calendarRoundsLabel">ROUNDS (16)</span>
             </div>
-        </article>
+
+            <div class="calendar-rounds-list" id="calendarRoundsList">
+
+                <!-- Test Days (Pretemporada) -->
+                <article class="calendar-round-item test-card race-link" data-race="barcelona_test" data-category="training">
+                    <div class="round-item-number-wrap">
+                        <span class="round-item-pill">T</span>
+                    </div>
+                    <div class="round-item-info">
+                        <div class="round-item-title-row">
+                            <span class="round-flag">🇪🇸</span>
+                            <span class="round-name">BARCELONA TEST</span>
+                        </div>
+                        <div class="round-item-sub">
+                            <span class="round-date">5–7 JUN · PRETEMPORADA</span>
+                        </div>
+                    </div>
+                </article>
+
+                <!-- Round 01: Australia -->
+                <article class="calendar-round-item completed race-link" data-race="australia" data-category="championship">
+                    <div class="round-item-number-wrap">
+                        <span class="round-item-pill">01</span>
+                    </div>
+                    <div class="round-item-info">
+                        <div class="round-item-title-row">
+                            <span class="round-flag">🇦🇺</span>
+                            <span class="round-name">AUSTRALIA</span>
+                        </div>
+                        <div class="round-item-sub">
+                            <span class="round-check">✓</span>
+                            <span class="round-date">14 JUN</span>
+                        </div>
+                    </div>
+                </article>
+
+                <!-- Round 02: Malaysia -->
+                <article class="calendar-round-item completed race-link" data-race="malaysia" data-category="championship">
+                    <div class="round-item-number-wrap">
+                        <span class="round-item-pill">02</span>
+                    </div>
+                    <div class="round-item-info">
+                        <div class="round-item-title-row">
+                            <span class="round-flag">🇲🇾</span>
+                            <span class="round-name">MALAYSIA</span>
+                        </div>
+                        <div class="round-item-sub">
+                            <span class="round-check">✓</span>
+                            <span class="round-date">28 JUN</span>
+                        </div>
+                    </div>
+                </article>
+
+                <!-- Round 03: Bahrain -->
+                <article class="calendar-round-item completed race-link" data-race="bahrain" data-category="championship">
+                    <div class="round-item-number-wrap">
+                        <span class="round-item-pill">03</span>
+                    </div>
+                    <div class="round-item-info">
+                        <div class="round-item-title-row">
+                            <span class="round-flag">🇧🇭</span>
+                            <span class="round-name">BAHRAIN</span>
+                        </div>
+                        <div class="round-item-sub">
+                            <span class="round-check">✓</span>
+                            <span class="round-date">12 JUL</span>
+                        </div>
+                    </div>
+                </article>
+
+                <!-- Round 04: Turkey -->
+                <article class="calendar-round-item completed race-link" data-race="turkey" data-category="championship">
+                    <div class="round-item-number-wrap">
+                        <span class="round-item-pill">04</span>
+                    </div>
+                    <div class="round-item-info">
+                        <div class="round-item-title-row">
+                            <span class="round-flag">🇹🇷</span>
+                            <span class="round-name">TURKEY</span>
+                        </div>
+                        <div class="round-item-sub">
+                            <span class="round-check">✓</span>
+                            <span class="round-date">19 JUL</span>
+                        </div>
+                    </div>
+                </article>
+
+                <!-- Round 05: Spain -->
+                <article class="calendar-round-item completed race-link" data-race="spain" data-category="championship">
+                    <div class="round-item-number-wrap">
+                        <span class="round-item-pill">05</span>
+                    </div>
+                    <div class="round-item-info">
+                        <div class="round-item-title-row">
+                            <span class="round-flag">🇪🇸</span>
+                            <span class="round-name">BARCELONA</span>
+                        </div>
+                        <div class="round-item-sub">
+                            <span class="round-check">✓</span>
+                            <span class="round-date">09 AUG</span>
+                        </div>
+                    </div>
+                </article>
+
+                <!-- Round 06: Italy -->
+                <article class="calendar-round-item completed race-link" data-race="italy" data-category="championship">
+                    <div class="round-item-number-wrap">
+                        <span class="round-item-pill">06</span>
+                    </div>
+                    <div class="round-item-info">
+                        <div class="round-item-title-row">
+                            <span class="round-flag">🇮🇹</span>
+                            <span class="round-name">MONZA</span>
+                        </div>
+                        <div class="round-item-sub">
+                            <span class="round-check">✓</span>
+                            <span class="round-date">17 AUG</span>
+                        </div>
+                    </div>
+                </article>
+
+                <!-- Round 07: Austria -->
+                <article class="calendar-round-item completed race-link" data-race="austria" data-category="championship">
+                    <div class="round-item-number-wrap">
+                        <span class="round-item-pill">07</span>
+                    </div>
+                    <div class="round-item-info">
+                        <div class="round-item-title-row">
+                            <span class="round-flag">🇦🇹</span>
+                            <span class="round-name">RED BULL RING</span>
+                        </div>
+                        <div class="round-item-sub">
+                            <span class="round-check">✓</span>
+                            <span class="round-date">23 AUG</span>
+                        </div>
+                    </div>
+                </article>
+
+                <!-- Round 08: Great Britain -->
+                <article class="calendar-round-item completed race-link" data-race="silverstone" data-category="championship">
+                    <div class="round-item-number-wrap">
+                        <span class="round-item-pill">08</span>
+                    </div>
+                    <div class="round-item-info">
+                        <div class="round-item-title-row">
+                            <span class="round-flag">🇬🇧</span>
+                            <span class="round-name">SILVERSTONE</span>
+                        </div>
+                        <div class="round-item-sub">
+                            <span class="round-check">✓</span>
+                            <span class="round-date">07 SEP</span>
+                        </div>
+                    </div>
+                </article>
+
+                <!-- Round 09: Germany -->
+                <article class="calendar-round-item completed race-link" data-race="hockenheim" data-category="championship">
+                    <div class="round-item-number-wrap">
+                        <span class="round-item-pill">09</span>
+                    </div>
+                    <div class="round-item-info">
+                        <div class="round-item-title-row">
+                            <span class="round-flag">🇩🇪</span>
+                            <span class="round-name">HOCKENHEIM</span>
+                        </div>
+                        <div class="round-item-sub">
+                            <span class="round-check">✓</span>
+                            <span class="round-date">13 SEP</span>
+                        </div>
+                    </div>
+                </article>
+
+                <!-- Round 10: Europe -->
+                <article class="calendar-round-item completed race-link" data-race="nurburgring" data-category="championship">
+                    <div class="round-item-number-wrap">
+                        <span class="round-item-pill">10</span>
+                    </div>
+                    <div class="round-item-info">
+                        <div class="round-item-title-row">
+                            <span class="round-flag">🇪🇺</span>
+                            <span class="round-name">NÜRBURGRING GP</span>
+                        </div>
+                        <div class="round-item-sub">
+                            <span class="round-check">✓</span>
+                            <span class="round-date">20 SEP</span>
+                        </div>
+                    </div>
+                </article>
+
+                <!-- Round 11: Hungary -->
+                <article class="calendar-round-item completed race-link" data-race="hungary" data-category="championship">
+                    <div class="round-item-number-wrap">
+                        <span class="round-item-pill">11</span>
+                    </div>
+                    <div class="round-item-info">
+                        <div class="round-item-title-row">
+                            <span class="round-flag">🇭🇺</span>
+                            <span class="round-name">HUNGARORING</span>
+                        </div>
+                        <div class="round-item-sub">
+                            <span class="round-check">✓</span>
+                            <span class="round-date">27 SEP</span>
+                        </div>
+                    </div>
+                </article>
+
+                <!-- Round 12: Belgium -->
+                <article class="calendar-round-item completed race-link" data-race="belgium" data-category="championship">
+                    <div class="round-item-number-wrap">
+                        <span class="round-item-pill">12</span>
+                    </div>
+                    <div class="round-item-info">
+                        <div class="round-item-title-row">
+                            <span class="round-flag">🇧🇪</span>
+                            <span class="round-name">SPA-FRANCORCHAMPS</span>
+                        </div>
+                        <div class="round-item-sub">
+                            <span class="round-check">✓</span>
+                            <span class="round-date">11 OCT</span>
+                        </div>
+                    </div>
+                </article>
+
+                <!-- Round 13: Fuji (Next Race) -->
+                <article class="calendar-round-item next race-link is-active-round" data-race="fuji" data-category="championship">
+                    <div class="round-item-number-wrap">
+                        <span class="round-item-pill pill-next">13</span>
+                    </div>
+                    <div class="round-item-info">
+                        <div class="round-item-title-row">
+                            <span class="round-flag">🇯🇵</span>
+                            <span class="round-name">FUJI SPEEDWAY</span>
+                        </div>
+                        <div class="round-item-sub">
+                            <span class="round-next-pulse">●</span>
+                            <span class="round-date">18 OCT · NEXT</span>
+                        </div>
+                    </div>
+                </article>
+
+                <!-- Round 14: USA (COTA) -->
+                <article class="calendar-round-item upcoming race-link" data-race="cota" data-category="championship">
+                    <div class="round-item-number-wrap">
+                        <span class="round-item-pill pill-upcoming">14</span>
+                    </div>
+                    <div class="round-item-info">
+                        <div class="round-item-title-row">
+                            <span class="round-flag">🇺🇸</span>
+                            <span class="round-name">COTA</span>
+                        </div>
+                        <div class="round-item-sub">
+                            <span class="round-date">TBA · UPCOMING</span>
+                        </div>
+                    </div>
+                </article>
+
+                <!-- Round 15: Brazil -->
+                <article class="calendar-round-item upcoming race-link" data-race="brazil" data-category="championship">
+                    <div class="round-item-number-wrap">
+                        <span class="round-item-pill pill-upcoming">15</span>
+                    </div>
+                    <div class="round-item-info">
+                        <div class="round-item-title-row">
+                            <span class="round-flag">🇧🇷</span>
+                            <span class="round-name">INTERLAGOS</span>
+                        </div>
+                        <div class="round-item-sub">
+                            <span class="round-date">TBA · FINAL ROUND</span>
+                        </div>
+                    </div>
+                </article>
+
+            </div>
+        </aside>
+
+        <!-- RIGHT COLUMN: SELECTED RACE DETAILS & RESULTS -->
+        <main class="calendar-detail-pane" id="calendarDetailPane">
+            <!-- Dynamically populated by selectCalendarRound() -->
+        </main>
 
     </div>
 
@@ -1407,7 +2378,7 @@
                 <span class="section-kicker" id="infoKicker">
                     FORMULA FACTOR CHAMPIONSHIP · TEMPORADA 1
                 </span>
-                <h2 id="infoHeading">ACERCA DE <span class="gold-gradient">FFC</span></h2>
+                <h2 id="infoHeading">QUIENES <span class="gold-gradient">SOMOS</span></h2>
                 <p id="infoP1" class="info-lead-text">
                     La cumbre del sim racing competitivo en Assetto Corsa. Diseñado para reunir a los mejores pilotos y escuderías en las legendarias eras de Fórmula 1 V8 y V10.
                 </p>
@@ -3729,10 +4700,7 @@
                 <div id="privacySec6Body" class="privacy-sec-body"><p>Para cualquier consulta respecto a la privacidad, puedes contactar con la administración de Formula Factor Championship a través del canal de soporte oficial en Discord.</p></div>
             </section>
 
-            <section class="privacy-section" style="background: rgba(214, 180, 92, 0.08); border-left: 3px solid #d6b45c; padding: 10px 14px; border-radius: 4px; margin-top: 8px;">
-                <h3 style="color: #d6b45c; margin-bottom: 4px;" id="privacyHermesTitle">Nota de Hermes</h3>
-                <p style="font-style: italic; color: #f1f5f9;" id="privacyHermesText">"Basicamente que no hacemos nada con vuestros correos, no nos sirven de nada panolis"</p>
-            </section>
+
         </div>
 
         <footer class="privacy-modal-footer">
