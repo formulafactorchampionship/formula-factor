@@ -172,6 +172,10 @@ export default BorderGlow;
  * Enhancement Helper: Wraps calendar cards in the app with BorderGlow React instances
  */
 export function initCalendarBorderGlow() {
+  const gridView = document.getElementById("calendarGridView");
+  if (gridView && (gridView.style.display === "none" || window.getComputedStyle(gridView).display === "none")) {
+    return;
+  }
   const calendarCards = document.querySelectorAll('#calendarGridView .calendar-card, .calendar-grid .calendar-card');
   if (!calendarCards.length) return;
 

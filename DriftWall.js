@@ -286,7 +286,7 @@ export const DriftWall = ({
       React.createElement('img', {
         src: item.image,
         alt: item.title || '',
-        loading: 'eager',
+        loading: 'lazy',
         decoding: 'async',
         draggable: false
       }),
@@ -412,6 +412,19 @@ export function getRecommendedColumns() {
 }
 
 export async function fetchUploadedPhotosForWall() {
+  // Check sessionStorage cache first
+  try {
+    if (typeof sessionStorage !== 'undefined') {
+      const cachedWall = sessionStorage.getItem('ffc_wall_photos_cache');
+      if (cachedWall) {
+        const parsedCache = JSON.parse(cachedWall);
+        if (Array.isArray(parsedCache) && parsedCache.length > 0) {
+          return parsedCache;
+        }
+      }
+    }
+  } catch (e) {}
+
   const publishedPhotos = [];
 
   const addPhotoIfValid = (p) => {
@@ -430,7 +443,7 @@ export async function fetchUploadedPhotosForWall() {
     }
   };
 
-  // 1. Instant cache from localStorage (works immediately without any network latency)
+  // 1. Instant cache from localStorage
   try {
     if (typeof localStorage !== 'undefined') {
       const cachedRaw = localStorage.getItem('ffc_local_photos');
@@ -443,94 +456,79 @@ export async function fetchUploadedPhotosForWall() {
     }
   } catch (err) {}
 
-  // 2. Also check if window.currentPhotos has any in-memory photos
+  // 2. window.currentPhotos
   try {
     if (typeof window !== 'undefined' && Array.isArray(window.currentPhotos)) {
       window.currentPhotos.forEach(addPhotoIfValid);
     }
   } catch (err) {}
 
-  // 3. Fetch race photos from server endpoint (Studio dev server or Node backend)
-  let backendFetchSuccess = false;
-  try {
-    const res = await fetch('/api/carreras/fotos');
-    if (res.ok) {
-      const data = await res.json();
-      if (data && Array.isArray(data.photos) && data.photos.length > 0) {
-        data.photos.forEach(addPhotoIfValid);
-        backendFetchSuccess = true;
-      }
-    }
-  } catch (err) {
-    // Expected on static hosting like GitHub Pages
+  const isStaticHosting = typeof window !== 'undefined' && (
+    window.location.hostname.includes('github.io') || 
+    window.location.hostname.includes('formulafactorchampionship') ||
+    window.location.protocol === 'file:'
+  );
+
+  const fetchPromises = [];
+
+  if (!isStaticHosting) {
+    fetchPromises.push(
+      fetch('/api/carreras/fotos').then(res => res.ok ? res.json() : null).catch(() => null),
+      fetch('/api/gallery/random-wall-photos').then(res => res.ok ? res.json() : null).catch(() => null)
+    );
   }
 
-  // 4. If backend endpoint is not available or returned empty (e.g. GitHub Pages / static hosting),
-  // fallback to static photos_db.json file stored directly in the repository
-  if (!backendFetchSuccess) {
-    try {
-      const staticRes = await fetch('./photos_db.json');
-      if (staticRes.ok) {
-        const staticData = await staticRes.json();
-        const list = Array.isArray(staticData) ? staticData : (staticData.photos || []);
-        if (Array.isArray(list) && list.length > 0) {
-          list.forEach(addPhotoIfValid);
+  fetchPromises.push(
+    fetch('./photos_db.json').then(res => res.ok ? res.json() : null).catch(() => null),
+    fetch('https://firestore.googleapis.com/v1/projects/formula-factor/databases/(default)/documents/carreras_fotos?pageSize=100&key=AIzaSyAS4RecsGAS4JWUn1d-9_VyqFRKmkF_CNs').then(res => res.ok ? res.json() : null).catch(() => null)
+  );
+
+  const results = await Promise.allSettled(fetchPromises);
+  results.forEach(result => {
+    if (result.status === 'fulfilled' && result.value) {
+      const data = result.value;
+      if (data) {
+        if (Array.isArray(data.photos)) data.photos.forEach(addPhotoIfValid);
+        if (Array.isArray(data.items)) data.items.forEach(addPhotoIfValid);
+        if (Array.isArray(data)) data.forEach(addPhotoIfValid);
+        if (Array.isArray(data.documents)) {
+          data.documents.forEach(doc => {
+            const fields = doc.fields || {};
+            const status = fields.status?.stringValue || 'pending';
+            if (status === 'rejected') return;
+            const photoUrl = fields.photoUrl?.stringValue || '';
+            if (photoUrl) {
+              addPhotoIfValid({
+                photoUrl,
+                caption: fields.caption?.stringValue || '',
+                author: fields.author?.stringValue || 'FFC Simracing',
+                status
+              });
+            }
+          });
         }
       }
-    } catch (err) {}
-  }
-
-  // 5. Direct Firebase Firestore REST fallback (works 100% reliably anywhere without server)
-  try {
-    const firestoreUrl = 'https://firestore.googleapis.com/v1/projects/formula-factor/databases/(default)/documents/carreras_fotos?pageSize=100&key=AIzaSyAS4RecsGAS4JWUn1d-9_VyqFRKmkF_CNs';
-    const fRes = await fetch(firestoreUrl);
-    if (fRes.ok) {
-      const fData = await fRes.json();
-      if (fData && Array.isArray(fData.documents)) {
-        fData.documents.forEach(doc => {
-          const fields = doc.fields || {};
-          const status = fields.status?.stringValue || 'pending';
-          if (status === 'rejected') return;
-          const photoUrl = fields.photoUrl?.stringValue || '';
-          if (photoUrl) {
-            addPhotoIfValid({
-              photoUrl,
-              caption: fields.caption?.stringValue || '',
-              author: fields.author?.stringValue || 'FFC Simracing',
-              status
-            });
-          }
-        });
-      }
     }
-  } catch (err) {}
+  });
 
-  // 6. Fetch from /api/gallery/random-wall-photos if available
-  try {
-    const res = await fetch('/api/gallery/random-wall-photos');
-    if (res.ok) {
-      const data = await res.json();
-      if (data && Array.isArray(data.items) && data.items.length > 0) {
-        data.items.forEach(addPhotoIfValid);
-      }
-    }
-  } catch (err) {}
-
-  // User explicit condition: "y que solo sean las fotos publicadas, no las de las noticias"
+  let finalItems = MOTORSPORT_FALLBACK_ITEMS;
   if (publishedPhotos.length > 0) {
-    // ONLY published race photos! Repeat and distribute them smoothly across columns
     const randomized = shuffleArray(publishedPhotos);
-    const targetCount = 48; // ensure plenty of tiles for up to 10 columns
+    const targetCount = 48;
     const filled = [];
     while (filled.length < targetCount) {
       filled.push(...shuffleArray(randomized));
     }
-    return filled.slice(0, targetCount);
+    finalItems = filled.slice(0, targetCount);
   }
 
-  // Fallback: If no race photos are published yet in the system, show clean motorsport action photography
-  // (NEVER news covers or news uploads)
-  return shuffleArray(MOTORSPORT_FALLBACK_ITEMS);
+  try {
+    if (typeof sessionStorage !== 'undefined') {
+      sessionStorage.setItem('ffc_wall_photos_cache', JSON.stringify(finalItems));
+    }
+  } catch (e) {}
+
+  return finalItems;
 }
 
 export async function renderDriftWall(containerId = 'hero-drift-wall-bg') {

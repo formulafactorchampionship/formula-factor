@@ -175,7 +175,7 @@ export function initCobeGlobe(containerId) {
                 theta: 0.15,
                 dark: 1,
                 diffuse: 1.4,
-                mapSamples: 24000,
+                mapSamples: window.innerWidth < 768 ? 8000 : 14000,
                 mapBrightness: 10,
                 baseColor: [0.18, 0.25, 0.40], 
                 markerColor: [0.0, 0.9, 1.0], 

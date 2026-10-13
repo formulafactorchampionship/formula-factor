@@ -221,6 +221,10 @@ export default function ShapeWaves({
     }
 
     function render(now) {
+      if (now - lastTime < 24) {
+        animId = requestAnimationFrame(render);
+        return;
+      }
       const delta = Math.min(0.1, (now - lastTime) / 1000);
       lastTime = now;
       time += delta * 0.15 * speed;
@@ -336,7 +340,7 @@ export default function ShapeWaves({
 }
 
 export function initShapeWavesBackground(containerId) {
-  const targetIds = containerId ? [containerId] : ['hero-shape-waves-bg', 'fantasy-shape-waves-bg'];
+  const targetIds = containerId ? [containerId] : ['hero-shape-waves-bg'];
 
   targetIds.forEach(id => {
     const container = document.getElementById(id);

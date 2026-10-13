@@ -26,7 +26,10 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;500;600;700;800;900&family=Inter:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
 
-    <link rel="stylesheet" href="style.css?v=20261013_v4">
+        <link rel="preconnect" href="https://esm.sh" crossorigin>
+    <link rel="preconnect" href="https://flagcdn.com" crossorigin>
+    <link rel="preconnect" href="https://firestore.googleapis.com" crossorigin>
+    <link rel="stylesheet" href="style.css?v=20261013_v5">
     <link rel="stylesheet" href="BorderGlow.css">
     <link rel="stylesheet" href="LightPillar.css">
     <script>
@@ -139,7 +142,7 @@
             });
         });
     </script>
-    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://unpkg.com/lucide@0.447.0/dist/umd/lucide.min.js" defer></script>
 </head>
 
 <body>
@@ -151,8 +154,7 @@
 
         <a href="#home" class="brand" title="Formula Factor Championship 2010">
             <img
-                class="brand-logo"
-                src="https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fwww.gridfinder.com%2F_next%2Fimage%3Furl%3Dhttps%3A%252F%252Fgridfinder-wordpress.s3.us-east-2.amazonaws.com%252Fcommunity_logo_7scznez19uu_logoImg%253Fts%253D1778668047402%26w%3D3840%26q%3D75&f=1&nofb=1&ipt=f22017e767bf424bd12cd4071662088d3e245ebaf0b655d5c97b7c2a37d9445c"
+                class="brand-logo" fetchpriority="high" src="https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fwww.gridfinder.com%2F_next%2Fimage%3Furl%3Dhttps%3A%252F%252Fgridfinder-wordpress.s3.us-east-2.amazonaws.com%252Fcommunity_logo_7scznez19uu_logoImg%253Fts%253D1778668047402%26w%3D3840%26q%3D75&f=1&nofb=1&ipt=f22017e767bf424bd12cd4071662088d3e245ebaf0b655d5c97b7c2a37d9445c"
                 alt="Formula Factor Championship"
             >
             <div class="brand-text-wrap">
@@ -378,8 +380,8 @@
                                 <div class="setting-row-item">
                                     <span id="profileLangLabel"><svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor" class="inline-block align-middle" style="display:inline-block; vertical-align:middle; margin-right:4px;"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/></svg> Idioma / Language</span>
                                     <div class="setting-lang-opts">
-                                        <button type="button" class="lang-mini-btn active" id="profileLangEsBtn">ES <img src="https://flagcdn.com/w40/es.png" class="driver-flag-img inline-block align-middle" alt="es" style="width: 16px; height: 11px; border-radius: 2px; margin-left: 4px;"></button>
-                                        <button type="button" class="lang-mini-btn" id="profileLangEnBtn">EN <img src="https://flagcdn.com/w40/gb.png" class="driver-flag-img inline-block align-middle" alt="gb" style="width: 16px; height: 11px; border-radius: 2px; margin-left: 4px;"></button>
+                                        <button type="button" class="lang-mini-btn active" id="profileLangEsBtn">ES <img loading="lazy" decoding="async" src="https://flagcdn.com/w40/es.png" class="driver-flag-img inline-block align-middle" alt="es" style="width: 16px; height: 11px; border-radius: 2px; margin-left: 4px;"></button>
+                                        <button type="button" class="lang-mini-btn" id="profileLangEnBtn">EN <img loading="lazy" decoding="async" src="https://flagcdn.com/w40/gb.png" class="driver-flag-img inline-block align-middle" alt="gb" style="width: 16px; height: 11px; border-radius: 2px; margin-left: 4px;"></button>
                                     </div>
                                 </div>
 
@@ -848,7 +850,7 @@
             <div class="battle-scenarios-title-wrap">
                 <div class="battle-scenarios-badge-row">
                     <span class="battle-scenarios-badge">
-                        <img src="https://flagcdn.com/w40/jp.png" class="driver-flag-img inline-block align-middle" alt="jp" style="width: 16px; height: 11px; border-radius: 2px; vertical-align: -1px; margin-right: 4px;">
+                        <img loading="lazy" decoding="async" src="https://flagcdn.com/w40/jp.png" class="driver-flag-img inline-block align-middle" alt="jp" style="width: 16px; height: 11px; border-radius: 2px; vertical-align: -1px; margin-right: 4px;">
                         <span id="scenariosRoundBadge">RONDA 13 · FUJI SPEEDWAY</span>
                     </span>
                     <span class="scenarios-diff-badge" id="scenariosDiffBadge" style="font-size: 11px; font-weight: 700; color: #38bdf8; background: rgba(56, 189, 248, 0.12); border: 1px solid rgba(56, 189, 248, 0.28); padding: 2px 7px; border-radius: 6px; font-family: 'Barlow Condensed', sans-serif; letter-spacing: 0.5px;">DIFERENCIA: +49 PTS</span>
@@ -876,7 +878,7 @@
                         <th class="th-dieguiosk" scope="col">
                             <div class="scenarios-th-box">
                                 <span class="scenarios-th-name">
-                                    <img src="https://flagcdn.com/w40/al.png" class="driver-flag-img inline-block align-middle" alt="al" style="width: 18px; height: 13px; border-radius: 2px; vertical-align: -1px;">
+                                    <img loading="lazy" decoding="async" src="https://flagcdn.com/w40/al.png" class="driver-flag-img inline-block align-middle" alt="al" style="width: 18px; height: 13px; border-radius: 2px; vertical-align: -1px;">
                                     <span>Dieguiosk</span>
                                 </span>
                                 <span class="scenarios-th-badge hrt">HRT #23 · 168 PTS</span>
@@ -886,7 +888,7 @@
                         <th class="th-munt" scope="col">
                             <div class="scenarios-th-box">
                                 <span class="scenarios-th-name">
-                                    <img src="https://flagcdn.com/w40/es.png" class="driver-flag-img inline-block align-middle" alt="es" style="width: 18px; height: 13px; border-radius: 2px; vertical-align: -1px;">
+                                    <img loading="lazy" decoding="async" src="https://flagcdn.com/w40/es.png" class="driver-flag-img inline-block align-middle" alt="es" style="width: 18px; height: 13px; border-radius: 2px; vertical-align: -1px;">
                                     <span>Munt.</span>
                                 </span>
                                 <span class="scenarios-th-badge rb">RED BULL #99 · 119 PTS</span>
@@ -1170,21 +1172,21 @@
                         <th class="th-pos">Pos.</th>
                         <th class="th-driver">Driver</th>
                         <th class="th-team">Team</th>
-                        <th class="th-race" title="Round 1: Australia"><img src="https://flagcdn.com/w40/au.png" class="driver-flag-img inline-block align-middle" alt="au"><br><small>AUS</small></th>
-                        <th class="th-race" title="Round 2: Malaysia"><img src="https://flagcdn.com/w40/my.png" class="driver-flag-img inline-block align-middle" alt="my"><br><small>MAL</small></th>
-                        <th class="th-race" title="Round 3: Bahrain"><img src="https://flagcdn.com/w40/bh.png" class="driver-flag-img inline-block align-middle" alt="bh"><br><small>BAH</small></th>
-                        <th class="th-race" title="Round 4: Turkey"><img src="https://flagcdn.com/w40/tr.png" class="driver-flag-img inline-block align-middle" alt="tr"><br><small>TUR</small></th>
-                        <th class="th-race" title="Round 5: Spain"><img src="https://flagcdn.com/w40/es.png" class="driver-flag-img inline-block align-middle" alt="es"><br><small>ESP</small></th>
-                        <th class="th-race" title="Round 6: Italy"><img src="https://flagcdn.com/w40/it.png" class="driver-flag-img inline-block align-middle" alt="it"><br><small>ITA</small></th>
-                        <th class="th-race" title="Round 7: Austria"><img src="https://flagcdn.com/w40/at.png" class="driver-flag-img inline-block align-middle" alt="at"><br><small>AUT</small></th>
-                        <th class="th-race" title="Round 8: Great Britain"><img src="https://flagcdn.com/w40/gb.png" class="driver-flag-img inline-block align-middle" alt="gb"><br><small>GBR</small></th>
-                        <th class="th-race" title="Round 9: Germany"><img src="https://flagcdn.com/w40/de.png" class="driver-flag-img inline-block align-middle" alt="de"><br><small>GER</small></th>
-                        <th class="th-race" title="Round 10: Europe"><img src="https://flagcdn.com/w40/eu.png" class="driver-flag-img inline-block align-middle" alt="eu"><br><small>EUR</small></th>
-                        <th class="th-race" title="Round 11: Hungary"><img src="https://flagcdn.com/w40/hu.png" class="driver-flag-img inline-block align-middle" alt="hu"><br><small>HUN</small></th>
-                        <th class="th-race" title="Round 12: Belgium"><img src="https://flagcdn.com/w40/be.png" class="driver-flag-img inline-block align-middle" alt="be"><br><small>BEL</small></th>
-                        <th class="th-race" title="Round 13: Fuji"><img src="https://flagcdn.com/w40/jp.png" class="driver-flag-img inline-block align-middle" alt="jp"><br><small>FUJ</small></th>
-                        <th class="th-race" title="Round 14: USA"><img src="https://flagcdn.com/w40/us.png" class="driver-flag-img inline-block align-middle" alt="us"><br><small>USA</small></th>
-                        <th class="th-race" title="Round 15: Brazil"><img src="https://flagcdn.com/w40/br.png" class="driver-flag-img inline-block align-middle" alt="br"><br><small>BRA</small></th>
+                        <th class="th-race" title="Round 1: Australia"><img loading="lazy" decoding="async" src="https://flagcdn.com/w40/au.png" class="driver-flag-img inline-block align-middle" alt="au"><br><small>AUS</small></th>
+                        <th class="th-race" title="Round 2: Malaysia"><img loading="lazy" decoding="async" src="https://flagcdn.com/w40/my.png" class="driver-flag-img inline-block align-middle" alt="my"><br><small>MAL</small></th>
+                        <th class="th-race" title="Round 3: Bahrain"><img loading="lazy" decoding="async" src="https://flagcdn.com/w40/bh.png" class="driver-flag-img inline-block align-middle" alt="bh"><br><small>BAH</small></th>
+                        <th class="th-race" title="Round 4: Turkey"><img loading="lazy" decoding="async" src="https://flagcdn.com/w40/tr.png" class="driver-flag-img inline-block align-middle" alt="tr"><br><small>TUR</small></th>
+                        <th class="th-race" title="Round 5: Spain"><img loading="lazy" decoding="async" src="https://flagcdn.com/w40/es.png" class="driver-flag-img inline-block align-middle" alt="es"><br><small>ESP</small></th>
+                        <th class="th-race" title="Round 6: Italy"><img loading="lazy" decoding="async" src="https://flagcdn.com/w40/it.png" class="driver-flag-img inline-block align-middle" alt="it"><br><small>ITA</small></th>
+                        <th class="th-race" title="Round 7: Austria"><img loading="lazy" decoding="async" src="https://flagcdn.com/w40/at.png" class="driver-flag-img inline-block align-middle" alt="at"><br><small>AUT</small></th>
+                        <th class="th-race" title="Round 8: Great Britain"><img loading="lazy" decoding="async" src="https://flagcdn.com/w40/gb.png" class="driver-flag-img inline-block align-middle" alt="gb"><br><small>GBR</small></th>
+                        <th class="th-race" title="Round 9: Germany"><img loading="lazy" decoding="async" src="https://flagcdn.com/w40/de.png" class="driver-flag-img inline-block align-middle" alt="de"><br><small>GER</small></th>
+                        <th class="th-race" title="Round 10: Europe"><img loading="lazy" decoding="async" src="https://flagcdn.com/w40/eu.png" class="driver-flag-img inline-block align-middle" alt="eu"><br><small>EUR</small></th>
+                        <th class="th-race" title="Round 11: Hungary"><img loading="lazy" decoding="async" src="https://flagcdn.com/w40/hu.png" class="driver-flag-img inline-block align-middle" alt="hu"><br><small>HUN</small></th>
+                        <th class="th-race" title="Round 12: Belgium"><img loading="lazy" decoding="async" src="https://flagcdn.com/w40/be.png" class="driver-flag-img inline-block align-middle" alt="be"><br><small>BEL</small></th>
+                        <th class="th-race" title="Round 13: Fuji"><img loading="lazy" decoding="async" src="https://flagcdn.com/w40/jp.png" class="driver-flag-img inline-block align-middle" alt="jp"><br><small>FUJ</small></th>
+                        <th class="th-race" title="Round 14: USA"><img loading="lazy" decoding="async" src="https://flagcdn.com/w40/us.png" class="driver-flag-img inline-block align-middle" alt="us"><br><small>USA</small></th>
+                        <th class="th-race" title="Round 15: Brazil"><img loading="lazy" decoding="async" src="https://flagcdn.com/w40/br.png" class="driver-flag-img inline-block align-middle" alt="br"><br><small>BRA</small></th>
                         <th class="th-points">Points:</th>
                         <th class="th-dif">Dif.</th>
                     </tr>
@@ -1226,7 +1228,7 @@
                 <div class="ranking-leader-left">
                     <span class="ranking-leader-pos">1.</span>
                     <div class="ranking-leader-info">
-                        <span class="ranking-leader-name driver-clickable" data-driver="Dieguiosk"><img src="https://flagcdn.com/w40/al.png" class="driver-flag-img inline-block align-middle" alt="al">Dieguiosk</span>
+                        <span class="ranking-leader-name driver-clickable" data-driver="Dieguiosk"><img loading="lazy" decoding="async" src="https://flagcdn.com/w40/al.png" class="driver-flag-img inline-block align-middle" alt="al">Dieguiosk</span>
                         <div class="ranking-leader-meta">
                             <span class="ranking-team-pill team-hrt"><span class="team-dot"></span>HRT</span>
                         </div>
@@ -1252,7 +1254,7 @@
                     <div class="ranking-podium-left">
                         <span class="ranking-podium-pos">2.</span>
                         <div class="ranking-podium-info">
-                            <span class="ranking-podium-name driver-clickable" data-driver="Muntii"><img src="https://flagcdn.com/w40/es.png" class="driver-flag-img inline-block align-middle" alt="es">Muntii</span>
+                            <span class="ranking-podium-name driver-clickable" data-driver="Muntii"><img loading="lazy" decoding="async" src="https://flagcdn.com/w40/es.png" class="driver-flag-img inline-block align-middle" alt="es">Muntii</span>
                             <div class="ranking-podium-meta">
                                 <span class="ranking-team-pill team-redbull"><span class="team-dot"></span>Red Bull</span>
                             </div>
@@ -1269,7 +1271,7 @@
                     <div class="ranking-podium-left">
                         <span class="ranking-podium-pos">3.</span>
                         <div class="ranking-podium-info">
-                            <span class="ranking-podium-name driver-clickable" data-driver="Suforr"><img src="https://flagcdn.com/w40/es.png" class="driver-flag-img inline-block align-middle" alt="es">Suforr</span>
+                            <span class="ranking-podium-name driver-clickable" data-driver="Suforr"><img loading="lazy" decoding="async" src="https://flagcdn.com/w40/es.png" class="driver-flag-img inline-block align-middle" alt="es">Suforr</span>
                             <div class="ranking-podium-meta">
                                 <span class="ranking-team-pill team-mercedes"><span class="team-dot"></span>Mercedes</span>
                             </div>
@@ -1479,7 +1481,7 @@
                 </div>
                 <div class="cal-row-identity">
                     <div class="cal-flag-box">
-                        <span class="cal-flag-emoji"><img src="https://flagcdn.com/w40/es.png" class="cal-flag-img inline-block align-middle" alt="es"></span>
+                        <span class="cal-flag-emoji"><img loading="lazy" decoding="async" src="https://flagcdn.com/w40/es.png" class="cal-flag-img inline-block align-middle" alt="es"></span>
                         <span class="cal-flag-iso">ESP</span>
                     </div>
                     <div class="cal-row-titles">
@@ -1507,7 +1509,7 @@
                 </div>
                 <div class="cal-row-identity">
                     <div class="cal-flag-box">
-                        <span class="cal-flag-emoji"><img src="https://flagcdn.com/w40/au.png" class="cal-flag-img inline-block align-middle" alt="au"></span>
+                        <span class="cal-flag-emoji"><img loading="lazy" decoding="async" src="https://flagcdn.com/w40/au.png" class="cal-flag-img inline-block align-middle" alt="au"></span>
                         <span class="cal-flag-iso">AUS</span>
                     </div>
                     <div class="cal-row-titles">
@@ -1536,7 +1538,7 @@
                 </div>
                 <div class="cal-row-identity">
                     <div class="cal-flag-box">
-                        <span class="cal-flag-emoji"><img src="https://flagcdn.com/w40/my.png" class="cal-flag-img inline-block align-middle" alt="my"></span>
+                        <span class="cal-flag-emoji"><img loading="lazy" decoding="async" src="https://flagcdn.com/w40/my.png" class="cal-flag-img inline-block align-middle" alt="my"></span>
                         <span class="cal-flag-iso">MAL</span>
                     </div>
                     <div class="cal-row-titles">
@@ -1565,7 +1567,7 @@
                 </div>
                 <div class="cal-row-identity">
                     <div class="cal-flag-box">
-                        <span class="cal-flag-emoji"><img src="https://flagcdn.com/w40/bh.png" class="cal-flag-img inline-block align-middle" alt="bh"></span>
+                        <span class="cal-flag-emoji"><img loading="lazy" decoding="async" src="https://flagcdn.com/w40/bh.png" class="cal-flag-img inline-block align-middle" alt="bh"></span>
                         <span class="cal-flag-iso">BAH</span>
                     </div>
                     <div class="cal-row-titles">
@@ -1594,7 +1596,7 @@
                 </div>
                 <div class="cal-row-identity">
                     <div class="cal-flag-box">
-                        <span class="cal-flag-emoji"><img src="https://flagcdn.com/w40/tr.png" class="cal-flag-img inline-block align-middle" alt="tr"></span>
+                        <span class="cal-flag-emoji"><img loading="lazy" decoding="async" src="https://flagcdn.com/w40/tr.png" class="cal-flag-img inline-block align-middle" alt="tr"></span>
                         <span class="cal-flag-iso">TUR</span>
                     </div>
                     <div class="cal-row-titles">
@@ -1623,7 +1625,7 @@
                 </div>
                 <div class="cal-row-identity">
                     <div class="cal-flag-box">
-                        <span class="cal-flag-emoji"><img src="https://flagcdn.com/w40/es.png" class="cal-flag-img inline-block align-middle" alt="es"></span>
+                        <span class="cal-flag-emoji"><img loading="lazy" decoding="async" src="https://flagcdn.com/w40/es.png" class="cal-flag-img inline-block align-middle" alt="es"></span>
                         <span class="cal-flag-iso">ESP</span>
                     </div>
                     <div class="cal-row-titles">
@@ -1652,7 +1654,7 @@
                 </div>
                 <div class="cal-row-identity">
                     <div class="cal-flag-box">
-                        <span class="cal-flag-emoji"><img src="https://flagcdn.com/w40/it.png" class="cal-flag-img inline-block align-middle" alt="it"></span>
+                        <span class="cal-flag-emoji"><img loading="lazy" decoding="async" src="https://flagcdn.com/w40/it.png" class="cal-flag-img inline-block align-middle" alt="it"></span>
                         <span class="cal-flag-iso">ITA</span>
                     </div>
                     <div class="cal-row-titles">
@@ -1681,7 +1683,7 @@
                 </div>
                 <div class="cal-row-identity">
                     <div class="cal-flag-box">
-                        <span class="cal-flag-emoji"><img src="https://flagcdn.com/w40/at.png" class="cal-flag-img inline-block align-middle" alt="at"></span>
+                        <span class="cal-flag-emoji"><img loading="lazy" decoding="async" src="https://flagcdn.com/w40/at.png" class="cal-flag-img inline-block align-middle" alt="at"></span>
                         <span class="cal-flag-iso">AUT</span>
                     </div>
                     <div class="cal-row-titles">
@@ -1710,7 +1712,7 @@
                 </div>
                 <div class="cal-row-identity">
                     <div class="cal-flag-box">
-                        <span class="cal-flag-emoji"><img src="https://flagcdn.com/w40/gb.png" class="cal-flag-img inline-block align-middle" alt="gb"></span>
+                        <span class="cal-flag-emoji"><img loading="lazy" decoding="async" src="https://flagcdn.com/w40/gb.png" class="cal-flag-img inline-block align-middle" alt="gb"></span>
                         <span class="cal-flag-iso">GBR</span>
                     </div>
                     <div class="cal-row-titles">
@@ -1739,7 +1741,7 @@
                 </div>
                 <div class="cal-row-identity">
                     <div class="cal-flag-box">
-                        <span class="cal-flag-emoji"><img src="https://flagcdn.com/w40/de.png" class="cal-flag-img inline-block align-middle" alt="de"></span>
+                        <span class="cal-flag-emoji"><img loading="lazy" decoding="async" src="https://flagcdn.com/w40/de.png" class="cal-flag-img inline-block align-middle" alt="de"></span>
                         <span class="cal-flag-iso">GER</span>
                     </div>
                     <div class="cal-row-titles">
@@ -1768,7 +1770,7 @@
                 </div>
                 <div class="cal-row-identity">
                     <div class="cal-flag-box">
-                        <span class="cal-flag-emoji"><img src="https://flagcdn.com/w40/eu.png" class="cal-flag-img inline-block align-middle" alt="eu"></span>
+                        <span class="cal-flag-emoji"><img loading="lazy" decoding="async" src="https://flagcdn.com/w40/eu.png" class="cal-flag-img inline-block align-middle" alt="eu"></span>
                         <span class="cal-flag-iso">EUR</span>
                     </div>
                     <div class="cal-row-titles">
@@ -1797,7 +1799,7 @@
                 </div>
                 <div class="cal-row-identity">
                     <div class="cal-flag-box">
-                        <span class="cal-flag-emoji"><img src="https://flagcdn.com/w40/hu.png" class="cal-flag-img inline-block align-middle" alt="hu"></span>
+                        <span class="cal-flag-emoji"><img loading="lazy" decoding="async" src="https://flagcdn.com/w40/hu.png" class="cal-flag-img inline-block align-middle" alt="hu"></span>
                         <span class="cal-flag-iso">HUN</span>
                     </div>
                     <div class="cal-row-titles">
@@ -1826,7 +1828,7 @@
                 </div>
                 <div class="cal-row-identity">
                     <div class="cal-flag-box">
-                        <span class="cal-flag-emoji"><img src="https://flagcdn.com/w40/be.png" class="cal-flag-img inline-block align-middle" alt="be"></span>
+                        <span class="cal-flag-emoji"><img loading="lazy" decoding="async" src="https://flagcdn.com/w40/be.png" class="cal-flag-img inline-block align-middle" alt="be"></span>
                         <span class="cal-flag-iso">BEL</span>
                     </div>
                     <div class="cal-row-titles">
@@ -1854,7 +1856,7 @@
                 </div>
                 <div class="cal-row-identity">
                     <div class="cal-flag-box">
-                        <span class="cal-flag-emoji"><img src="https://flagcdn.com/w40/jp.png" class="cal-flag-img inline-block align-middle" alt="jp"></span>
+                        <span class="cal-flag-emoji"><img loading="lazy" decoding="async" src="https://flagcdn.com/w40/jp.png" class="cal-flag-img inline-block align-middle" alt="jp"></span>
                         <span class="cal-flag-iso">JPN</span>
                     </div>
                     <div class="cal-row-titles">
@@ -1882,7 +1884,7 @@
                 </div>
                 <div class="cal-row-identity">
                     <div class="cal-flag-box">
-                        <span class="cal-flag-emoji"><img src="https://flagcdn.com/w40/us.png" class="cal-flag-img inline-block align-middle" alt="us"></span>
+                        <span class="cal-flag-emoji"><img loading="lazy" decoding="async" src="https://flagcdn.com/w40/us.png" class="cal-flag-img inline-block align-middle" alt="us"></span>
                         <span class="cal-flag-iso">USA</span>
                     </div>
                     <div class="cal-row-titles">
@@ -1909,7 +1911,7 @@
                 </div>
                 <div class="cal-row-identity">
                     <div class="cal-flag-box">
-                        <span class="cal-flag-emoji"><img src="https://flagcdn.com/w40/br.png" class="cal-flag-img inline-block align-middle" alt="br"></span>
+                        <span class="cal-flag-emoji"><img loading="lazy" decoding="async" src="https://flagcdn.com/w40/br.png" class="cal-flag-img inline-block align-middle" alt="br"></span>
                         <span class="cal-flag-iso">BRA</span>
                     </div>
                     <div class="cal-row-titles">
@@ -1940,7 +1942,7 @@
             <article class="calendar-card test-card race-link" data-race="barcelona_test">
                 <div class="calendar-card-header">
                     <div class="calendar-number">T</div>
-                    <span class="calendar-flag-badge" title="España"><img src="https://flagcdn.com/w40/es.png" class="grid-flag-img inline-block align-middle" alt="es"></span>
+                    <span class="calendar-flag-badge" title="España"><img loading="lazy" decoding="async" src="https://flagcdn.com/w40/es.png" class="grid-flag-img inline-block align-middle" alt="es"></span>
                     <div class="calendar-status">TEST DAYS</div>
                 </div>
                 <div class="calendar-card-body">
@@ -1958,7 +1960,7 @@
             <article class="calendar-card completed race-link" data-race="australia">
                 <div class="calendar-card-header">
                     <div class="calendar-number">01</div>
-                    <span class="calendar-flag-badge" title="Australia"><img src="https://flagcdn.com/w40/au.png" class="grid-flag-img inline-block align-middle" alt="au"></span>
+                    <span class="calendar-flag-badge" title="Australia"><img loading="lazy" decoding="async" src="https://flagcdn.com/w40/au.png" class="grid-flag-img inline-block align-middle" alt="au"></span>
                     <div class="calendar-status">COMPLETED</div>
                 </div>
                 <div class="calendar-card-body">
@@ -1977,7 +1979,7 @@
             <article class="calendar-card completed race-link" data-race="malaysia">
                 <div class="calendar-card-header">
                     <div class="calendar-number">02</div>
-                    <span class="calendar-flag-badge" title="Malasia"><img src="https://flagcdn.com/w40/my.png" class="grid-flag-img inline-block align-middle" alt="my"></span>
+                    <span class="calendar-flag-badge" title="Malasia"><img loading="lazy" decoding="async" src="https://flagcdn.com/w40/my.png" class="grid-flag-img inline-block align-middle" alt="my"></span>
                     <div class="calendar-status">COMPLETED</div>
                 </div>
                 <div class="calendar-card-body">
@@ -1996,7 +1998,7 @@
             <article class="calendar-card completed race-link" data-race="bahrain">
                 <div class="calendar-card-header">
                     <div class="calendar-number">03</div>
-                    <span class="calendar-flag-badge" title="Baréin"><img src="https://flagcdn.com/w40/bh.png" class="grid-flag-img inline-block align-middle" alt="bh"></span>
+                    <span class="calendar-flag-badge" title="Baréin"><img loading="lazy" decoding="async" src="https://flagcdn.com/w40/bh.png" class="grid-flag-img inline-block align-middle" alt="bh"></span>
                     <div class="calendar-status">COMPLETED</div>
                 </div>
                 <div class="calendar-card-body">
@@ -2015,7 +2017,7 @@
             <article class="calendar-card completed race-link" data-race="turkey">
                 <div class="calendar-card-header">
                     <div class="calendar-number">04</div>
-                    <span class="calendar-flag-badge" title="Turquía"><img src="https://flagcdn.com/w40/tr.png" class="grid-flag-img inline-block align-middle" alt="tr"></span>
+                    <span class="calendar-flag-badge" title="Turquía"><img loading="lazy" decoding="async" src="https://flagcdn.com/w40/tr.png" class="grid-flag-img inline-block align-middle" alt="tr"></span>
                     <div class="calendar-status">COMPLETED</div>
                 </div>
                 <div class="calendar-card-body">
@@ -2034,7 +2036,7 @@
             <article class="calendar-card completed race-link" data-race="spain">
                 <div class="calendar-card-header">
                     <div class="calendar-number">05</div>
-                    <span class="calendar-flag-badge" title="España"><img src="https://flagcdn.com/w40/es.png" class="grid-flag-img inline-block align-middle" alt="es"></span>
+                    <span class="calendar-flag-badge" title="España"><img loading="lazy" decoding="async" src="https://flagcdn.com/w40/es.png" class="grid-flag-img inline-block align-middle" alt="es"></span>
                     <div class="calendar-status">COMPLETED</div>
                 </div>
                 <div class="calendar-card-body">
@@ -2053,7 +2055,7 @@
             <article class="calendar-card completed race-link" data-race="italy">
                 <div class="calendar-card-header">
                     <div class="calendar-number">06</div>
-                    <span class="calendar-flag-badge" title="Italia"><img src="https://flagcdn.com/w40/it.png" class="grid-flag-img inline-block align-middle" alt="it"></span>
+                    <span class="calendar-flag-badge" title="Italia"><img loading="lazy" decoding="async" src="https://flagcdn.com/w40/it.png" class="grid-flag-img inline-block align-middle" alt="it"></span>
                     <div class="calendar-status">COMPLETED</div>
                 </div>
                 <div class="calendar-card-body">
@@ -2072,7 +2074,7 @@
             <article class="calendar-card completed race-link" data-race="austria">
                 <div class="calendar-card-header">
                     <div class="calendar-number">07</div>
-                    <span class="calendar-flag-badge" title="Austria"><img src="https://flagcdn.com/w40/at.png" class="grid-flag-img inline-block align-middle" alt="at"></span>
+                    <span class="calendar-flag-badge" title="Austria"><img loading="lazy" decoding="async" src="https://flagcdn.com/w40/at.png" class="grid-flag-img inline-block align-middle" alt="at"></span>
                     <div class="calendar-status">COMPLETED</div>
                 </div>
                 <div class="calendar-card-body">
@@ -2091,7 +2093,7 @@
             <article class="calendar-card completed race-link" data-race="silverstone">
                 <div class="calendar-card-header">
                     <div class="calendar-number">08</div>
-                    <span class="calendar-flag-badge" title="Gran Bretaña"><img src="https://flagcdn.com/w40/gb.png" class="grid-flag-img inline-block align-middle" alt="gb"></span>
+                    <span class="calendar-flag-badge" title="Gran Bretaña"><img loading="lazy" decoding="async" src="https://flagcdn.com/w40/gb.png" class="grid-flag-img inline-block align-middle" alt="gb"></span>
                     <div class="calendar-status">COMPLETED</div>
                 </div>
                 <div class="calendar-card-body">
@@ -2110,7 +2112,7 @@
             <article class="calendar-card completed race-link" data-race="hockenheim">
                 <div class="calendar-card-header">
                     <div class="calendar-number">09</div>
-                    <span class="calendar-flag-badge" title="Alemania"><img src="https://flagcdn.com/w40/de.png" class="grid-flag-img inline-block align-middle" alt="de"></span>
+                    <span class="calendar-flag-badge" title="Alemania"><img loading="lazy" decoding="async" src="https://flagcdn.com/w40/de.png" class="grid-flag-img inline-block align-middle" alt="de"></span>
                     <div class="calendar-status">COMPLETED</div>
                 </div>
                 <div class="calendar-card-body">
@@ -2129,7 +2131,7 @@
             <article class="calendar-card completed race-link" data-race="nurburgring">
                 <div class="calendar-card-header">
                     <div class="calendar-number">10</div>
-                    <span class="calendar-flag-badge" title="Europa"><img src="https://flagcdn.com/w40/eu.png" class="grid-flag-img inline-block align-middle" alt="eu"></span>
+                    <span class="calendar-flag-badge" title="Europa"><img loading="lazy" decoding="async" src="https://flagcdn.com/w40/eu.png" class="grid-flag-img inline-block align-middle" alt="eu"></span>
                     <div class="calendar-status">COMPLETED</div>
                 </div>
                 <div class="calendar-card-body">
@@ -2148,7 +2150,7 @@
             <article class="calendar-card completed race-link" data-race="hungary">
                 <div class="calendar-card-header">
                     <div class="calendar-number">11</div>
-                    <span class="calendar-flag-badge" title="Hungría"><img src="https://flagcdn.com/w40/hu.png" class="grid-flag-img inline-block align-middle" alt="hu"></span>
+                    <span class="calendar-flag-badge" title="Hungría"><img loading="lazy" decoding="async" src="https://flagcdn.com/w40/hu.png" class="grid-flag-img inline-block align-middle" alt="hu"></span>
                     <div class="calendar-status">COMPLETED</div>
                 </div>
                 <div class="calendar-card-body">
@@ -2167,7 +2169,7 @@
             <article class="calendar-card completed race-link" data-race="belgium">
                 <div class="calendar-card-header">
                     <div class="calendar-number">12</div>
-                    <span class="calendar-flag-badge" title="Bélgica"><img src="https://flagcdn.com/w40/be.png" class="grid-flag-img inline-block align-middle" alt="be"></span>
+                    <span class="calendar-flag-badge" title="Bélgica"><img loading="lazy" decoding="async" src="https://flagcdn.com/w40/be.png" class="grid-flag-img inline-block align-middle" alt="be"></span>
                     <div class="calendar-status">COMPLETED</div>
                 </div>
                 <div class="calendar-card-body">
@@ -2186,7 +2188,7 @@
             <article class="calendar-card next race-link" data-race="fuji">
                 <div class="calendar-card-header">
                     <div class="calendar-number">13</div>
-                    <span class="calendar-flag-badge" title="Japón"><img src="https://flagcdn.com/w40/jp.png" class="grid-flag-img inline-block align-middle" alt="jp"></span>
+                    <span class="calendar-flag-badge" title="Japón"><img loading="lazy" decoding="async" src="https://flagcdn.com/w40/jp.png" class="grid-flag-img inline-block align-middle" alt="jp"></span>
                     <div class="calendar-status">NEXT RACE</div>
                 </div>
                 <div class="calendar-card-body">
@@ -2205,7 +2207,7 @@
             <article class="calendar-card upcoming race-link" data-race="cota">
                 <div class="calendar-card-header">
                     <div class="calendar-number">14</div>
-                    <span class="calendar-flag-badge" title="Estados Unidos"><img src="https://flagcdn.com/w40/us.png" class="grid-flag-img inline-block align-middle" alt="us"></span>
+                    <span class="calendar-flag-badge" title="Estados Unidos"><img loading="lazy" decoding="async" src="https://flagcdn.com/w40/us.png" class="grid-flag-img inline-block align-middle" alt="us"></span>
                     <div class="calendar-status">UPCOMING</div>
                 </div>
                 <div class="calendar-card-body">
@@ -2223,7 +2225,7 @@
             <article class="calendar-card upcoming race-link" data-race="brazil">
                 <div class="calendar-card-header">
                     <div class="calendar-number">15</div>
-                    <span class="calendar-flag-badge" title="Brasil"><img src="https://flagcdn.com/w40/br.png" class="grid-flag-img inline-block align-middle" alt="br"></span>
+                    <span class="calendar-flag-badge" title="Brasil"><img loading="lazy" decoding="async" src="https://flagcdn.com/w40/br.png" class="grid-flag-img inline-block align-middle" alt="br"></span>
                     <div class="calendar-status">FINAL ROUND</div>
                 </div>
                 <div class="calendar-card-body">
@@ -2261,7 +2263,7 @@
                     </div>
                     <div class="round-item-info">
                         <div class="round-item-title-row">
-                            <span class="round-flag"><img src="https://flagcdn.com/w40/es.png" class="round-flag-img inline-block align-middle" alt="es"></span>
+                            <span class="round-flag"><img loading="lazy" decoding="async" src="https://flagcdn.com/w40/es.png" class="round-flag-img inline-block align-middle" alt="es"></span>
                             <span class="round-name">BARCELONA TEST</span>
                         </div>
                         <div class="round-item-sub">
@@ -2277,7 +2279,7 @@
                     </div>
                     <div class="round-item-info">
                         <div class="round-item-title-row">
-                            <span class="round-flag"><img src="https://flagcdn.com/w40/au.png" class="round-flag-img inline-block align-middle" alt="au"></span>
+                            <span class="round-flag"><img loading="lazy" decoding="async" src="https://flagcdn.com/w40/au.png" class="round-flag-img inline-block align-middle" alt="au"></span>
                             <span class="round-name">AUSTRALIA</span>
                         </div>
                         <div class="round-item-sub">
@@ -2294,7 +2296,7 @@
                     </div>
                     <div class="round-item-info">
                         <div class="round-item-title-row">
-                            <span class="round-flag"><img src="https://flagcdn.com/w40/my.png" class="round-flag-img inline-block align-middle" alt="my"></span>
+                            <span class="round-flag"><img loading="lazy" decoding="async" src="https://flagcdn.com/w40/my.png" class="round-flag-img inline-block align-middle" alt="my"></span>
                             <span class="round-name">MALAYSIA</span>
                         </div>
                         <div class="round-item-sub">
@@ -2311,7 +2313,7 @@
                     </div>
                     <div class="round-item-info">
                         <div class="round-item-title-row">
-                            <span class="round-flag"><img src="https://flagcdn.com/w40/bh.png" class="round-flag-img inline-block align-middle" alt="bh"></span>
+                            <span class="round-flag"><img loading="lazy" decoding="async" src="https://flagcdn.com/w40/bh.png" class="round-flag-img inline-block align-middle" alt="bh"></span>
                             <span class="round-name">BAHRAIN</span>
                         </div>
                         <div class="round-item-sub">
@@ -2328,7 +2330,7 @@
                     </div>
                     <div class="round-item-info">
                         <div class="round-item-title-row">
-                            <span class="round-flag"><img src="https://flagcdn.com/w40/tr.png" class="round-flag-img inline-block align-middle" alt="tr"></span>
+                            <span class="round-flag"><img loading="lazy" decoding="async" src="https://flagcdn.com/w40/tr.png" class="round-flag-img inline-block align-middle" alt="tr"></span>
                             <span class="round-name">TURKEY</span>
                         </div>
                         <div class="round-item-sub">
@@ -2345,7 +2347,7 @@
                     </div>
                     <div class="round-item-info">
                         <div class="round-item-title-row">
-                            <span class="round-flag"><img src="https://flagcdn.com/w40/es.png" class="round-flag-img inline-block align-middle" alt="es"></span>
+                            <span class="round-flag"><img loading="lazy" decoding="async" src="https://flagcdn.com/w40/es.png" class="round-flag-img inline-block align-middle" alt="es"></span>
                             <span class="round-name">BARCELONA</span>
                         </div>
                         <div class="round-item-sub">
@@ -2362,7 +2364,7 @@
                     </div>
                     <div class="round-item-info">
                         <div class="round-item-title-row">
-                            <span class="round-flag"><img src="https://flagcdn.com/w40/it.png" class="round-flag-img inline-block align-middle" alt="it"></span>
+                            <span class="round-flag"><img loading="lazy" decoding="async" src="https://flagcdn.com/w40/it.png" class="round-flag-img inline-block align-middle" alt="it"></span>
                             <span class="round-name">MONZA</span>
                         </div>
                         <div class="round-item-sub">
@@ -2379,7 +2381,7 @@
                     </div>
                     <div class="round-item-info">
                         <div class="round-item-title-row">
-                            <span class="round-flag"><img src="https://flagcdn.com/w40/at.png" class="round-flag-img inline-block align-middle" alt="at"></span>
+                            <span class="round-flag"><img loading="lazy" decoding="async" src="https://flagcdn.com/w40/at.png" class="round-flag-img inline-block align-middle" alt="at"></span>
                             <span class="round-name">RED BULL RING</span>
                         </div>
                         <div class="round-item-sub">
@@ -2396,7 +2398,7 @@
                     </div>
                     <div class="round-item-info">
                         <div class="round-item-title-row">
-                            <span class="round-flag"><img src="https://flagcdn.com/w40/gb.png" class="round-flag-img inline-block align-middle" alt="gb"></span>
+                            <span class="round-flag"><img loading="lazy" decoding="async" src="https://flagcdn.com/w40/gb.png" class="round-flag-img inline-block align-middle" alt="gb"></span>
                             <span class="round-name">SILVERSTONE</span>
                         </div>
                         <div class="round-item-sub">
@@ -2413,7 +2415,7 @@
                     </div>
                     <div class="round-item-info">
                         <div class="round-item-title-row">
-                            <span class="round-flag"><img src="https://flagcdn.com/w40/de.png" class="round-flag-img inline-block align-middle" alt="de"></span>
+                            <span class="round-flag"><img loading="lazy" decoding="async" src="https://flagcdn.com/w40/de.png" class="round-flag-img inline-block align-middle" alt="de"></span>
                             <span class="round-name">HOCKENHEIM</span>
                         </div>
                         <div class="round-item-sub">
@@ -2430,7 +2432,7 @@
                     </div>
                     <div class="round-item-info">
                         <div class="round-item-title-row">
-                            <span class="round-flag"><img src="https://flagcdn.com/w40/eu.png" class="round-flag-img inline-block align-middle" alt="eu"></span>
+                            <span class="round-flag"><img loading="lazy" decoding="async" src="https://flagcdn.com/w40/eu.png" class="round-flag-img inline-block align-middle" alt="eu"></span>
                             <span class="round-name">NÜRBURGRING GP</span>
                         </div>
                         <div class="round-item-sub">
@@ -2447,7 +2449,7 @@
                     </div>
                     <div class="round-item-info">
                         <div class="round-item-title-row">
-                            <span class="round-flag"><img src="https://flagcdn.com/w40/hu.png" class="round-flag-img inline-block align-middle" alt="hu"></span>
+                            <span class="round-flag"><img loading="lazy" decoding="async" src="https://flagcdn.com/w40/hu.png" class="round-flag-img inline-block align-middle" alt="hu"></span>
                             <span class="round-name">HUNGARORING</span>
                         </div>
                         <div class="round-item-sub">
@@ -2464,7 +2466,7 @@
                     </div>
                     <div class="round-item-info">
                         <div class="round-item-title-row">
-                            <span class="round-flag"><img src="https://flagcdn.com/w40/be.png" class="round-flag-img inline-block align-middle" alt="be"></span>
+                            <span class="round-flag"><img loading="lazy" decoding="async" src="https://flagcdn.com/w40/be.png" class="round-flag-img inline-block align-middle" alt="be"></span>
                             <span class="round-name">SPA-FRANCORCHAMPS</span>
                         </div>
                         <div class="round-item-sub">
@@ -2481,7 +2483,7 @@
                     </div>
                     <div class="round-item-info">
                         <div class="round-item-title-row">
-                            <span class="round-flag"><img src="https://flagcdn.com/w40/jp.png" class="round-flag-img inline-block align-middle" alt="jp"></span>
+                            <span class="round-flag"><img loading="lazy" decoding="async" src="https://flagcdn.com/w40/jp.png" class="round-flag-img inline-block align-middle" alt="jp"></span>
                             <span class="round-name">FUJI SPEEDWAY</span>
                         </div>
                         <div class="round-item-sub">
@@ -2498,7 +2500,7 @@
                     </div>
                     <div class="round-item-info">
                         <div class="round-item-title-row">
-                            <span class="round-flag"><img src="https://flagcdn.com/w40/us.png" class="round-flag-img inline-block align-middle" alt="us"></span>
+                            <span class="round-flag"><img loading="lazy" decoding="async" src="https://flagcdn.com/w40/us.png" class="round-flag-img inline-block align-middle" alt="us"></span>
                             <span class="round-name">COTA</span>
                         </div>
                         <div class="round-item-sub">
@@ -2514,7 +2516,7 @@
                     </div>
                     <div class="round-item-info">
                         <div class="round-item-title-row">
-                            <span class="round-flag"><img src="https://flagcdn.com/w40/br.png" class="round-flag-img inline-block align-middle" alt="br"></span>
+                            <span class="round-flag"><img loading="lazy" decoding="async" src="https://flagcdn.com/w40/br.png" class="round-flag-img inline-block align-middle" alt="br"></span>
                             <span class="round-name">INTERLAGOS</span>
                         </div>
                         <div class="round-item-sub">
@@ -3465,7 +3467,7 @@
             <div class="driver-modal-dorsal" id="driverModalDorsal">#23</div>
             <div class="driver-modal-identity">
                 <div class="driver-modal-name-row">
-                    <span class="driver-modal-flag" id="driverModalFlag"><img src="https://flagcdn.com/w40/al.png" class="driver-flag-img inline-block align-middle" alt="al" style="width: 24px; height: 16px; border-radius: 2px;"></span>
+                    <span class="driver-modal-flag" id="driverModalFlag"><img loading="lazy" decoding="async" src="https://flagcdn.com/w40/al.png" class="driver-flag-img inline-block align-middle" alt="al" style="width: 24px; height: 16px; border-radius: 2px;"></span>
                     <h3 class="driver-modal-name" id="driverModalName">Dieguiosk</h3>
                     <span id="driverModalVerifiedBadge" class="verify-badge-verified" style="display: none; margin-left: 6px;">VERIFICADO</span>
                 </div>
@@ -3562,7 +3564,7 @@
             </div>
             <div class="team-modal-identity">
                 <div class="team-modal-name-row">
-                    <span class="team-modal-flag" id="teamModalFlag"><img src="https://flagcdn.com/w40/es.png" class="driver-flag-img inline-block align-middle" alt="es" style="width: 24px; height: 16px; border-radius: 2px;"></span>
+                    <span class="team-modal-flag" id="teamModalFlag"><img loading="lazy" decoding="async" src="https://flagcdn.com/w40/es.png" class="driver-flag-img inline-block align-middle" alt="es" style="width: 24px; height: 16px; border-radius: 2px;"></span>
                     <h3 class="team-modal-name" id="teamModalName">HRT</h3>
                 </div>
                 <div class="team-modal-meta-row">
@@ -3665,7 +3667,7 @@
             <div class="compare-selector-col col-driver-a">
                 <label for="compareSelectDriverA" class="compare-select-label" id="lblSelectDriverA">PILOTO A (ESQUINA ROJA)</label>
                 <div class="compare-select-wrap">
-                    <span class="compare-select-flag" id="compareSelectFlagA"><img src="https://flagcdn.com/w40/al.png" class="driver-flag-img inline-block align-middle" alt="al" style="width: 20px; height: 14px; border-radius: 2px;"></span>
+                    <span class="compare-select-flag" id="compareSelectFlagA"><img loading="lazy" decoding="async" src="https://flagcdn.com/w40/al.png" class="driver-flag-img inline-block align-middle" alt="al" style="width: 20px; height: 14px; border-radius: 2px;"></span>
                     <select id="compareSelectDriverA" class="compare-driver-select" aria-label="Seleccionar Piloto A">
                         <!-- Dynamically populated -->
                     </select>
@@ -3686,7 +3688,7 @@
             <div class="compare-selector-col col-driver-b">
                 <label for="compareSelectDriverB" class="compare-select-label" id="lblSelectDriverB">PILOTO B (ESQUINA AZUL)</label>
                 <div class="compare-select-wrap">
-                    <span class="compare-select-flag" id="compareSelectFlagB"><img src="https://flagcdn.com/w40/es.png" class="driver-flag-img inline-block align-middle" alt="es" style="width: 20px; height: 14px; border-radius: 2px;"></span>
+                    <span class="compare-select-flag" id="compareSelectFlagB"><img loading="lazy" decoding="async" src="https://flagcdn.com/w40/es.png" class="driver-flag-img inline-block align-middle" alt="es" style="width: 20px; height: 14px; border-radius: 2px;"></span>
                     <select id="compareSelectDriverB" class="compare-driver-select" aria-label="Seleccionar Piloto B">
                         <!-- Dynamically populated -->
                     </select>
@@ -3725,7 +3727,7 @@
                     <div class="compare-driver-dorsal" id="compareDorsalA">#23</div>
                     <div class="compare-driver-meta">
                         <div class="compare-driver-name-row">
-                            <span class="compare-flag" id="compareFlagA"><img src="https://flagcdn.com/w40/al.png" class="driver-flag-img inline-block align-middle" alt="al" style="width: 20px; height: 14px; border-radius: 2px;"></span>
+                            <span class="compare-flag" id="compareFlagA"><img loading="lazy" decoding="async" src="https://flagcdn.com/w40/al.png" class="driver-flag-img inline-block align-middle" alt="al" style="width: 20px; height: 14px; border-radius: 2px;"></span>
                             <h3 class="compare-name" id="compareNameA">Dieguiosk</h3>
                             <span id="compareVerifiedA" class="verify-badge-verified" style="display: none;"><svg viewBox="0 0 24 24" width="12" height="12" fill="#10b981"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></span>
                         </div>
@@ -3760,7 +3762,7 @@
                     <div class="compare-driver-dorsal" id="compareDorsalB">#1</div>
                     <div class="compare-driver-meta">
                         <div class="compare-driver-name-row">
-                            <span class="compare-flag" id="compareFlagB"><img src="https://flagcdn.com/w40/es.png" class="driver-flag-img inline-block align-middle" alt="es" style="width: 20px; height: 14px; border-radius: 2px;"></span>
+                            <span class="compare-flag" id="compareFlagB"><img loading="lazy" decoding="async" src="https://flagcdn.com/w40/es.png" class="driver-flag-img inline-block align-middle" alt="es" style="width: 20px; height: 14px; border-radius: 2px;"></span>
                             <h3 class="compare-name" id="compareNameB">Hermesalo</h3>
                             <span id="compareVerifiedB" class="verify-badge-verified" style="display: none;"><svg viewBox="0 0 24 24" width="12" height="12" fill="#10b981"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></span>
                         </div>
@@ -5654,12 +5656,12 @@
                         </div>
                         <div class="news-bilingual-tabs">
                             <button type="button" class="news-lang-tab-btn active" id="btnNewsLangTab_es" onclick="switchNewsEditorLang('es')">
-                                <span class="lang-flag"><img src="https://flagcdn.com/w40/es.png" class="driver-flag-img inline-block align-middle" alt="es" style="width: 18px; height: 12px; border-radius: 2px;"></span>
+                                <span class="lang-flag"><img loading="lazy" decoding="async" src="https://flagcdn.com/w40/es.png" class="driver-flag-img inline-block align-middle" alt="es" style="width: 18px; height: 12px; border-radius: 2px;"></span>
                                 <span class="lang-tab-name">Español</span>
                                 <span class="lang-status-badge pending" id="badgeLangStatus_es">⚠️ Incompleto</span>
                             </button>
                             <button type="button" class="news-lang-tab-btn" id="btnNewsLangTab_en" onclick="switchNewsEditorLang('en')">
-                                <span class="lang-flag"><img src="https://flagcdn.com/w40/gb.png" class="driver-flag-img inline-block align-middle" alt="gb" style="width: 18px; height: 12px; border-radius: 2px;"></span>
+                                <span class="lang-flag"><img loading="lazy" decoding="async" src="https://flagcdn.com/w40/gb.png" class="driver-flag-img inline-block align-middle" alt="gb" style="width: 18px; height: 12px; border-radius: 2px;"></span>
                                 <span class="lang-tab-name">English</span>
                                 <span class="lang-status-badge pending" id="badgeLangStatus_en">⚠️ Incomplete</span>
                             </button>
@@ -5672,7 +5674,7 @@
                         <div class="news-sheet-field-wrap">
                             <div class="news-field-header-row">
                                 <label for="newsSubmitTitle_es" class="news-sheet-label" id="lblNewsSubmitTitle_es">
-                                    <span class="flag-mini"><img src="https://flagcdn.com/w40/es.png" class="driver-flag-img inline-block align-middle" alt="es" style="width: 16px; height: 11px; border-radius: 2px;"></span> TÍTULO EN ESPAÑOL <span class="required-star">*</span>
+                                    <span class="flag-mini"><img loading="lazy" decoding="async" src="https://flagcdn.com/w40/es.png" class="driver-flag-img inline-block align-middle" alt="es" style="width: 16px; height: 11px; border-radius: 2px;"></span> TÍTULO EN ESPAÑOL <span class="required-star">*</span>
                                 </label>
                                 <span class="news-char-counter" id="charCountTitle_es">0 / 120</span>
                             </div>
@@ -5683,7 +5685,7 @@
                         <div class="news-sheet-field-wrap">
                             <div class="news-field-header-row">
                                 <label for="newsSubmitSummary_es" class="news-sheet-label" id="lblNewsSubmitSummary_es">
-                                    <span class="flag-mini"><img src="https://flagcdn.com/w40/es.png" class="driver-flag-img inline-block align-middle" alt="es" style="width: 16px; height: 11px; border-radius: 2px;"></span> SUBTÍTULO / RESUMEN EN ESPAÑOL
+                                    <span class="flag-mini"><img loading="lazy" decoding="async" src="https://flagcdn.com/w40/es.png" class="driver-flag-img inline-block align-middle" alt="es" style="width: 16px; height: 11px; border-radius: 2px;"></span> SUBTÍTULO / RESUMEN EN ESPAÑOL
                                 </label>
                                 <span class="news-char-counter" id="charCountSummary_es">0 / 240</span>
                             </div>
@@ -5695,7 +5697,7 @@
                         <!-- WORD-LIKE CONTENTEDITABLE DOCUMENT BODY ES -->
                         <div class="news-sheet-field-wrap">
                             <label class="news-sheet-label" id="lblNewsSubmitContent_es">
-                                <span class="flag-mini"><img src="https://flagcdn.com/w40/es.png" class="driver-flag-img inline-block align-middle" alt="es" style="width: 16px; height: 11px; border-radius: 2px;"></span> CUERPO DEL ARTÍCULO (ESPAÑOL) <span class="required-star">*</span>
+                                <span class="flag-mini"><img loading="lazy" decoding="async" src="https://flagcdn.com/w40/es.png" class="driver-flag-img inline-block align-middle" alt="es" style="width: 16px; height: 11px; border-radius: 2px;"></span> CUERPO DEL ARTÍCULO (ESPAÑOL) <span class="required-star">*</span>
                             </label>
                             
                             <div id="newsSubmitContentEditor_es" class="news-document-editor-canvas" contenteditable="true" spellcheck="true" role="textbox" aria-multiline="true" oninput="handleEditorCanvasInput('es')"></div>
@@ -5705,7 +5707,7 @@
 
                         <div class="news-pane-footer-switch">
                             <button type="button" class="btn-switch-lang-next" onclick="switchNewsEditorLang('en')">
-                                <span><img src="https://flagcdn.com/w40/gb.png" class="driver-flag-img inline-block align-middle" alt="gb" style="width: 16px; height: 11px; border-radius: 2px; margin-right: 4px;"> Redactar versión en Inglés ➔</span>
+                                <span><img loading="lazy" decoding="async" src="https://flagcdn.com/w40/gb.png" class="driver-flag-img inline-block align-middle" alt="gb" style="width: 16px; height: 11px; border-radius: 2px; margin-right: 4px;"> Redactar versión en Inglés ➔</span>
                             </button>
                         </div>
                     </div>
@@ -5716,7 +5718,7 @@
                         <div class="news-sheet-field-wrap">
                             <div class="news-field-header-row">
                                 <label for="newsSubmitTitle_en" class="news-sheet-label" id="lblNewsSubmitTitle_en">
-                                    <span class="flag-mini"><img src="https://flagcdn.com/w40/gb.png" class="driver-flag-img inline-block align-middle" alt="gb" style="width: 16px; height: 11px; border-radius: 2px;"></span> ARTICLE TITLE (ENGLISH) <span class="required-star">*</span>
+                                    <span class="flag-mini"><img loading="lazy" decoding="async" src="https://flagcdn.com/w40/gb.png" class="driver-flag-img inline-block align-middle" alt="gb" style="width: 16px; height: 11px; border-radius: 2px;"></span> ARTICLE TITLE (ENGLISH) <span class="required-star">*</span>
                                 </label>
                                 <span class="news-char-counter" id="charCountTitle_en">0 / 120</span>
                             </div>
@@ -5727,7 +5729,7 @@
                         <div class="news-sheet-field-wrap">
                             <div class="news-field-header-row">
                                 <label for="newsSubmitSummary_en" class="news-sheet-label" id="lblNewsSubmitSummary_en">
-                                    <span class="flag-mini"><img src="https://flagcdn.com/w40/gb.png" class="driver-flag-img inline-block align-middle" alt="gb" style="width: 16px; height: 11px; border-radius: 2px;"></span> SUBTITLE / SUMMARY (ENGLISH)
+                                    <span class="flag-mini"><img loading="lazy" decoding="async" src="https://flagcdn.com/w40/gb.png" class="driver-flag-img inline-block align-middle" alt="gb" style="width: 16px; height: 11px; border-radius: 2px;"></span> SUBTITLE / SUMMARY (ENGLISH)
                                 </label>
                                 <span class="news-char-counter" id="charCountSummary_en">0 / 240</span>
                             </div>
@@ -5739,7 +5741,7 @@
                         <!-- WORD-LIKE CONTENTEDITABLE DOCUMENT BODY EN -->
                         <div class="news-sheet-field-wrap">
                             <label class="news-sheet-label" id="lblNewsSubmitContent_en">
-                                <span class="flag-mini"><img src="https://flagcdn.com/w40/gb.png" class="driver-flag-img inline-block align-middle" alt="gb" style="width: 16px; height: 11px; border-radius: 2px;"></span> ARTICLE BODY (ENGLISH) <span class="required-star">*</span>
+                                <span class="flag-mini"><img loading="lazy" decoding="async" src="https://flagcdn.com/w40/gb.png" class="driver-flag-img inline-block align-middle" alt="gb" style="width: 16px; height: 11px; border-radius: 2px;"></span> ARTICLE BODY (ENGLISH) <span class="required-star">*</span>
                             </label>
                             
                             <div id="newsSubmitContentEditor_en" class="news-document-editor-canvas" contenteditable="true" spellcheck="true" role="textbox" aria-multiline="true" oninput="handleEditorCanvasInput('en')"></div>
@@ -5749,7 +5751,7 @@
 
                         <div class="news-pane-footer-switch">
                             <button type="button" class="btn-switch-lang-next btn-switch-lang-prev" onclick="switchNewsEditorLang('es')">
-                                <span>⬅ <img src="https://flagcdn.com/w40/es.png" class="driver-flag-img inline-block align-middle" alt="es" style="width: 16px; height: 11px; border-radius: 2px; margin-right: 4px;"> Volver a versión en Español</span>
+                                <span>⬅ <img loading="lazy" decoding="async" src="https://flagcdn.com/w40/es.png" class="driver-flag-img inline-block align-middle" alt="es" style="width: 16px; height: 11px; border-radius: 2px; margin-right: 4px;"> Volver a versión en Español</span>
                             </button>
                         </div>
                     </div>
@@ -6032,7 +6034,7 @@
 
 
 
-<script type="module" src="script.js?v=20261013_v4"></script>
+<script type="module" src="script.js?v=20261013_v5"></script>
 
 </body>
 </html>

@@ -63,19 +63,44 @@ const handleInitBackgrounds = () => {
     } catch (e) {}
 
     try {
-        initLightPillar("unified-lightpillar-bg", {
-            topColor: "#f5e29f",
-            bottomColor: "#06080d",
-            intensity: 0.65,
-            rotationSpeed: 0.45,
-            interactive: true,
-            glowAmount: 0.005,
-            pillarWidth: 1.1,
-            pillarHeight: 0.35,
-            noiseIntensity: 0.18,
-            pillarRotation: 12,
-            quality: "medium"
-        });
+        const targetPillar = document.getElementById("standings") || document.getElementById("unified-lightpillar-bg");
+        if (targetPillar && typeof IntersectionObserver !== "undefined") {
+            const pillarObserver = new IntersectionObserver((entries, obs) => {
+                if (entries[0].isIntersecting) {
+                    obs.disconnect();
+                    try {
+                        initLightPillar("unified-lightpillar-bg", {
+                            topColor: "#f5e29f",
+                            bottomColor: "#06080d",
+                            intensity: 0.65,
+                            rotationSpeed: 0.45,
+                            interactive: true,
+                            glowAmount: 0.005,
+                            pillarWidth: 1.1,
+                            pillarHeight: 0.35,
+                            noiseIntensity: 0.18,
+                            pillarRotation: 12,
+                            quality: "medium"
+                        });
+                    } catch (e) {}
+                }
+            }, { rootMargin: '300px' });
+            pillarObserver.observe(targetPillar);
+        } else {
+            initLightPillar("unified-lightpillar-bg", {
+                topColor: "#f5e29f",
+                bottomColor: "#06080d",
+                intensity: 0.65,
+                rotationSpeed: 0.45,
+                interactive: true,
+                glowAmount: 0.005,
+                pillarWidth: 1.1,
+                pillarHeight: 0.35,
+                noiseIntensity: 0.18,
+                pillarRotation: 12,
+                quality: "medium"
+            });
+        }
     } catch (e) {}
 };
 
