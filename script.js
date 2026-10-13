@@ -4550,13 +4550,14 @@ function renderTop3BattleChart(top3Drivers) {
         svgHtml += `<text x="${padding.left - 8}" y="${y + 4}" fill="#64748b" font-size="10" font-family="'Barlow Condensed', sans-serif" text-anchor="end">${val}</text>`;
     }
 
-    // X axis labels (Rounds 1, 3, 5, 7, 9, 11, 13, 15)
+    // X axis country flags for ALL rounds using foreignObject for bulletproof emoji rendering
     gps.forEach((gp, idx) => {
-        const rNum = idx + 1;
-        if (rNum === 1 || rNum % 2 === 1 || rNum === gps.length) {
-            const x = padding.left + stepX * idx + stepX / 2;
-            svgHtml += `<text x="${x}" y="${height - 10}" fill="#64748b" font-size="10" font-family="'Barlow Condensed', sans-serif" text-anchor="middle">R${rNum}</text>`;
-        }
+        const x = padding.left + stepX * idx + stepX / 2;
+        svgHtml += `<foreignObject x="${x - 14}" y="${height - 24}" width="28" height="24">
+            <div xmlns="http://www.w3.org/1999/xhtml" style="display: flex; align-items: center; justify-content: center; width: 100%; height: 100%; font-size: 14px; line-height: 1;" title="${gp.name}">
+                ${gp.flag}
+            </div>
+        </foreignObject>`;
     });
 
     // Draw gradient area fills and lines for each driver
