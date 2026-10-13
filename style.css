@@ -371,6 +371,49 @@ button {
     margin-right: 8px;
 }
 
+/* Universal Flag Images (All Views matching Battle Chart) */
+.driver-flag-img,
+.round-flag-img,
+.grid-flag-img,
+.cal-flag-img,
+.cal-flag-emoji img,
+.calendar-flag-badge img,
+.round-flag img,
+.th-race img,
+.driver-modal-flag img,
+.team-modal-flag img,
+.compare-select-flag img,
+.compare-flag img,
+.lang-flag img,
+.flag-mini img {
+    object-fit: cover;
+    border-radius: 2px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.45);
+    display: inline-block;
+    vertical-align: middle;
+}
+
+.th-race img {
+    width: 20px;
+    height: 14px;
+    margin-bottom: 2px;
+}
+
+.cal-flag-emoji img {
+    width: 26px;
+    height: 18px;
+}
+
+.calendar-flag-badge img {
+    width: 22px;
+    height: 15px;
+}
+
+.round-flag img {
+    width: 18px;
+    height: 12px;
+}
+
 .nav-actions {
     display: flex;
     align-items: center;

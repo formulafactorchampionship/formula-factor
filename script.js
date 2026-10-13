@@ -2402,33 +2402,36 @@ function applyTranslations(lang) {
         const btnToggleUrlInput = document.getElementById("btnToggleUrlInput");
         if (btnToggleUrlInput) btnToggleUrlInput.textContent = lang === "en" ? "🔗 Or paste image web link" : "🔗 O pegar enlace web de imagen";
         const btnNewsUseDefaultImg = document.getElementById("btnNewsUseDefaultImg");
-        if (btnNewsUseDefaultImg) btnNewsUseDefaultImg.textContent = lang === "en" ? "🏁 Use official FFC background" : "🏁 Usar fondo oficial FFC";
+        if (btnNewsUseDefaultImg) btnNewsUseDefaultImg.textContent = lang === "en" ? "Use official FFC background" : "Usar fondo oficial FFC";
+
+        const esFlagHtml = `<span class="flag-mini">${getFlagHtml("es", 16)}</span> `;
+        const gbFlagHtml = `<span class="flag-mini">${getFlagHtml("gb", 16)}</span> `;
 
         const lblNewsSubmitTitle_es = document.getElementById("lblNewsSubmitTitle_es");
-        if (lblNewsSubmitTitle_es) lblNewsSubmitTitle_es.innerHTML = '<span class="flag-mini">🇪🇸</span> ' + (lang === "en" ? 'TITLE IN SPANISH <span class="required-star">*</span>' : 'TÍTULO EN ESPAÑOL <span class="required-star">*</span>');
+        if (lblNewsSubmitTitle_es) lblNewsSubmitTitle_es.innerHTML = esFlagHtml + (lang === "en" ? 'TITLE IN SPANISH <span class="required-star">*</span>' : 'TÍTULO EN ESPAÑOL <span class="required-star">*</span>');
         const newsSubmitTitle_es = document.getElementById("newsSubmitTitle_es");
         if (newsSubmitTitle_es) newsSubmitTitle_es.placeholder = lang === "en" ? "Enter headline in Spanish..." : "Escribe el titular en español...";
 
         const lblNewsSubmitSummary_es = document.getElementById("lblNewsSubmitSummary_es");
-        if (lblNewsSubmitSummary_es) lblNewsSubmitSummary_es.innerHTML = '<span class="flag-mini">🇪🇸</span> ' + (lang === "en" ? 'SUBTITLE / SUMMARY IN SPANISH' : 'SUBTÍTULO / RESUMEN EN ESPAÑOL');
+        if (lblNewsSubmitSummary_es) lblNewsSubmitSummary_es.innerHTML = esFlagHtml + (lang === "en" ? 'SUBTITLE / SUMMARY IN SPANISH' : 'SUBTÍTULO / RESUMEN EN ESPAÑOL');
         const newsSubmitSummary_es = document.getElementById("newsSubmitSummary_es");
         if (newsSubmitSummary_es) newsSubmitSummary_es.placeholder = lang === "en" ? "Write a brief subtitle or summary in Spanish..." : "Escribe un breve subtítulo o resumen de 1-2 frases en español...";
 
         const lblNewsSubmitContent_es = document.getElementById("lblNewsSubmitContent_es");
-        if (lblNewsSubmitContent_es) lblNewsSubmitContent_es.innerHTML = '<span class="flag-mini">🇪🇸</span> ' + (lang === "en" ? 'ARTICLE BODY (SPANISH) <span class="required-star">*</span>' : 'CUERPO DEL ARTÍCULO (ESPAÑOL) <span class="required-star">*</span>');
+        if (lblNewsSubmitContent_es) lblNewsSubmitContent_es.innerHTML = esFlagHtml + (lang === "en" ? 'ARTICLE BODY (SPANISH) <span class="required-star">*</span>' : 'CUERPO DEL ARTÍCULO (ESPAÑOL) <span class="required-star">*</span>');
 
         const lblNewsSubmitTitle_en = document.getElementById("lblNewsSubmitTitle_en");
-        if (lblNewsSubmitTitle_en) lblNewsSubmitTitle_en.innerHTML = '<span class="flag-mini">🇬🇧</span> ' + (lang === "en" ? 'ARTICLE TITLE (ENGLISH) <span class="required-star">*</span>' : 'TÍTULO EN INGLÉS <span class="required-star">*</span>');
+        if (lblNewsSubmitTitle_en) lblNewsSubmitTitle_en.innerHTML = gbFlagHtml + (lang === "en" ? 'ARTICLE TITLE (ENGLISH) <span class="required-star">*</span>' : 'TÍTULO EN INGLÉS <span class="required-star">*</span>');
         const newsSubmitTitle_en = document.getElementById("newsSubmitTitle_en");
         if (newsSubmitTitle_en) newsSubmitTitle_en.placeholder = lang === "en" ? "Enter headline in English..." : "Escribe el titular en inglés...";
 
         const lblNewsSubmitSummary_en = document.getElementById("lblNewsSubmitSummary_en");
-        if (lblNewsSubmitSummary_en) lblNewsSubmitSummary_en.innerHTML = '<span class="flag-mini">🇬🇧</span> ' + (lang === "en" ? 'SUBTITLE / SUMMARY (ENGLISH)' : 'SUBTÍTULO / RESUMEN EN INGLÉS');
+        if (lblNewsSubmitSummary_en) lblNewsSubmitSummary_en.innerHTML = gbFlagHtml + (lang === "en" ? 'SUBTITLE / SUMMARY (ENGLISH)' : 'SUBTÍTULO / RESUMEN EN INGLÉS');
         const newsSubmitSummary_en = document.getElementById("newsSubmitSummary_en");
         if (newsSubmitSummary_en) newsSubmitSummary_en.placeholder = lang === "en" ? "Write a brief subtitle or 1-2 sentence summary in English..." : "Escribe un breve subtítulo o resumen de 1-2 frases en inglés...";
 
         const lblNewsSubmitContent_en = document.getElementById("lblNewsSubmitContent_en");
-        if (lblNewsSubmitContent_en) lblNewsSubmitContent_en.innerHTML = '<span class="flag-mini">🇬🇧</span> ' + (lang === "en" ? 'ARTICLE BODY (ENGLISH) <span class="required-star">*</span>' : 'CUERPO DEL ARTÍCULO (INGLÉS) <span class="required-star">*</span>');
+        if (lblNewsSubmitContent_en) lblNewsSubmitContent_en.innerHTML = gbFlagHtml + (lang === "en" ? 'ARTICLE BODY (ENGLISH) <span class="required-star">*</span>' : 'CUERPO DEL ARTÍCULO (INGLÉS) <span class="required-star">*</span>');
 
         const lblNewsSubmitCategory = document.getElementById("lblNewsSubmitCategory");
         if (lblNewsSubmitCategory) lblNewsSubmitCategory.innerHTML = dict.news.labelCategory;
@@ -3660,6 +3663,27 @@ function refreshAllCalendarCards() {
 let currentSelectedCalendarRound = "fuji";
 let currentSelectedCalendarSession = "race";
 
+const RACE_FLAG_ISO_MAP = {
+    barcelona_test: "es",
+    australia: "au",
+    malaysia: "my",
+    bahrain: "bh",
+    turkey: "tr",
+    spain: "es",
+    italy: "it",
+    austria: "at",
+    silverstone: "gb",
+    hockenheim: "de",
+    nurburgring: "eu",
+    hungary: "hu",
+    belgium: "be",
+    fuji: "jp",
+    singapore: "sg",
+    cota: "us",
+    usa: "us",
+    brazil: "br"
+};
+
 function getRaceFlagEmoji(key) {
     const flags = {
         barcelona_test: "🇪🇸",
@@ -3685,8 +3709,11 @@ function getRaceFlagEmoji(key) {
 }
 
 function getRaceFlagHtml(key, size = 20) {
-    const emoji = getRaceFlagEmoji(key);
-    return (typeof getFlagHtml === "function") ? getFlagHtml(emoji, size) : `<span class="round-flag">${emoji}</span>`;
+    const code = RACE_FLAG_ISO_MAP[key] || (typeof getCountryCodeFromEmoji === "function" ? getCountryCodeFromEmoji(getRaceFlagEmoji(key)) : "es");
+    if (code) {
+        return `<img src="https://flagcdn.com/w40/${code}.png" class="driver-flag-img inline-block align-middle" alt="${code}" style="width: ${size}px; height: auto; max-height: ${Math.round(size * 0.82)}px; border-radius: 2px; box-shadow: 0 1px 3px rgba(0,0,0,0.35); display: inline-block; vertical-align: middle; margin-top: -2px; margin-right: 4px;" onerror="this.style.display='none'">`;
+    }
+    return `<svg viewBox="0 0 24 24" width="${size}" height="${size}" fill="currentColor" class="inline-block align-middle" style="display:inline-block; vertical-align:middle; margin-right:4px;" aria-hidden="true"><path d="M14.4 6L14 4H5v17h2v-7h5.6l.4 2h7V6h-5.6z"/></svg>`;
 }
 window.getRaceFlagHtml = getRaceFlagHtml;
 
@@ -3757,7 +3784,7 @@ function selectCalendarRound(raceKey, sessionType = "race") {
             <div class="calendar-detail-header">
                 <div class="detail-header-left">
                     <div class="detail-title-badge">
-                        <span class="detail-title-flag">🇪🇸</span>
+                        <span class="detail-title-flag">${getRaceFlagHtml("barcelona_test", 24)}</span>
                         <span class="detail-title-text">${isEn ? "PRE-SEASON TEST · BARCELONA" : "TEST DE PRETEMPORADA · BARCELONA"}</span>
                     </div>
                 </div>
@@ -3770,32 +3797,28 @@ function selectCalendarRound(raceKey, sessionType = "race") {
                 <div class="upcoming-info-cards-grid">
                     <div class="upcoming-info-card">
                         <div class="upcoming-info-card-header">
-                            <span class="upcoming-info-card-title">📍 CIRCUITO</span>
-                            <span>🏁</span>
+                            <span class="upcoming-info-card-title"><svg viewBox="0 0 24 24" width="13" height="13" fill="currentColor" class="inline-block align-middle mr-1"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>CIRCUITO</span>
                         </div>
                         <div class="upcoming-info-card-val">Circuit de Barcelona-Catalunya</div>
                         <div class="upcoming-info-card-desc">Sede oficial de pruebas de invierno</div>
                     </div>
                     <div class="upcoming-info-card">
                         <div class="upcoming-info-card-header">
-                            <span class="upcoming-info-card-title">📏 LONGITUD</span>
-                            <span>🔄</span>
+                            <span class="upcoming-info-card-title"><svg viewBox="0 0 24 24" width="13" height="13" fill="currentColor" class="inline-block align-middle mr-1"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V5h14v14z"/></svg>LONGITUD</span>
                         </div>
                         <div class="upcoming-info-card-val">4.675 km · 16 Curvas</div>
                         <div class="upcoming-info-card-desc">Trazado completo FFC Temporada 1</div>
                     </div>
                     <div class="upcoming-info-card">
                         <div class="upcoming-info-card-header">
-                            <span class="upcoming-info-card-title">🏎️ EQUIPOS EN PISTA</span>
-                            <span>👥</span>
+                            <span class="upcoming-info-card-title"><svg viewBox="0 0 24 24" width="13" height="13" fill="currentColor" class="inline-block align-middle mr-1"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>EQUIPOS EN PISTA</span>
                         </div>
                         <div class="upcoming-info-card-val">10 Escuderías · 20 Pilotos</div>
                         <div class="upcoming-info-card-desc">Parrilla al completo en rodaje</div>
                     </div>
                     <div class="upcoming-info-card">
                         <div class="upcoming-info-card-header">
-                            <span class="upcoming-info-card-title">⏱️ MEJOR TIEMPO TEST</span>
-                            <span>⚡</span>
+                            <span class="upcoming-info-card-title"><svg viewBox="0 0 24 24" width="13" height="13" fill="currentColor" class="inline-block align-middle mr-1"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>MEJOR TIEMPO TEST</span>
                         </div>
                         <div class="upcoming-info-card-val">1:17.482</div>
                         <div class="upcoming-info-card-desc">Dieguiosk · HRT F1 Team (Día 3)</div>
@@ -3803,7 +3826,7 @@ function selectCalendarRound(raceKey, sessionType = "race") {
                 </div>
 
                 <div class="special-events-hero" style="margin-top: 6px;">
-                    <h3>📋 ${isEn ? "OFFICIAL PRE-SEASON SUMMARY" : "RESUMEN DE PRUEBAS DE PRETEMPORADA"}</h3>
+                    <h3>${isEn ? "OFFICIAL PRE-SEASON SUMMARY" : "RESUMEN DE PRUEBAS DE PRETEMPORADA"}</h3>
                     <p>
                         ${isEn 
                             ? "Over three intensive test days, drivers and engineers dialed in aerodynamic setups, tire degradation models, and reliability before the Australian Grand Prix opener."
@@ -3994,23 +4017,23 @@ function selectCalendarRound(raceKey, sessionType = "race") {
 
                 <div class="calendar-race-summary-bar">
                     <div class="summary-stat-chip">
-                        <span class="summary-chip-label">🏆 ${isEn ? "RACE WINNER" : "GANADOR DE CARRERA"}</span>
+                        <span class="summary-chip-label"><svg viewBox="0 0 24 24" width="12" height="12" fill="currentColor" class="inline-block align-middle mr-1"><path d="M19 5h-2V3H7v2H5c-1.1 0-2 .9-2 2v1c0 2.55 1.92 4.63 4.39 4.94A5.01 5.01 0 0 0 11 15.9V18H9v2h6v-2h-2v-2.1c1.92-.38 3.41-1.92 3.61-3.96C19.08 11.63 21 9.55 21 7V5c0-1.1-.9-2-2-2z"/></svg>${isEn ? "RACE WINNER" : "GANADOR DE CARRERA"}</span>
                         <span class="summary-chip-val">${escapeHtml(race.winner || "—")}</span>
                     </div>
                     <div class="summary-stat-chip">
-                        <span class="summary-chip-label">⚡ POLE POSITION</span>
+                        <span class="summary-chip-label"><svg viewBox="0 0 24 24" width="12" height="12" fill="currentColor" class="inline-block align-middle mr-1"><path d="M7 2v11h3v9l7-12h-4l4-8z"/></svg>POLE POSITION</span>
                         <span class="summary-chip-val">${escapeHtml(race.pole || "—")}</span>
                     </div>
                     <div class="summary-stat-chip">
-                        <span class="summary-chip-label">⏱️ ${isEn ? "FASTEST LAP" : "VUELTA RÁPIDA"}</span>
+                        <span class="summary-chip-label"><svg viewBox="0 0 24 24" width="12" height="12" fill="currentColor" class="inline-block align-middle mr-1"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>${isEn ? "FASTEST LAP" : "VUELTA RÁPIDA"}</span>
                         <span class="summary-chip-val">${escapeHtml(race.fastest || "—")}</span>
                     </div>
                     <div class="summary-stat-chip">
-                        <span class="summary-chip-label">⭐ ${isEn ? "DRIVER OF THE DAY" : "PILOTO DEL DÍA"}</span>
+                        <span class="summary-chip-label"><svg viewBox="0 0 24 24" width="12" height="12" fill="currentColor" class="inline-block align-middle mr-1"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>${isEn ? "DRIVER OF THE DAY" : "PILOTO DEL DÍA"}</span>
                         <span class="summary-chip-val">${escapeHtml(race.driverDay || "—")}</span>
                     </div>
                     <div class="summary-stat-chip">
-                        <span class="summary-chip-label">🏁 ${isEn ? "CLASSIFIED" : "CLASIFICADOS"}</span>
+                        <span class="summary-chip-label"><svg viewBox="0 0 24 24" width="12" height="12" fill="currentColor" class="inline-block align-middle mr-1"><path d="M14.4 6L14 4H5v17h2v-7h5.6l.4 2h7V6h-5.6z"/></svg>${isEn ? "CLASSIFIED" : "CLASIFICADOS"}</span>
                         <span class="summary-chip-val">${classifiedCount} / ${driversList.length} ${isEn ? "Drivers" : "Pilotos"}</span>
                     </div>
                 </div>
@@ -4048,7 +4071,7 @@ function selectCalendarRound(raceKey, sessionType = "race") {
                         </button>
                     </div>
 
-                    <span class="detail-date-display">📅 ${escapeHtml(roundDate)}</span>
+                    <span class="detail-date-display">${escapeHtml(roundDate)}</span>
                 </div>
             </div>
 
@@ -4072,12 +4095,12 @@ function selectCalendarRound(raceKey, sessionType = "race") {
                 </div>
 
                 <button type="button" class="detail-action-btn" onclick="openRace('${raceKey}')">
-                    📋 ${isEn ? "RACE PREVIEW" : "PREVIA OFICIAL"}
+                    <svg viewBox="0 0 24 24" width="13" height="13" fill="currentColor" class="inline-block align-middle mr-1"><path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/></svg>${isEn ? "RACE PREVIEW" : "PREVIA OFICIAL"}
                 </button>
             </div>
 
             <div class="detail-header-right">
-                <span class="detail-date-display">📅 ${escapeHtml(roundDate)}</span>
+                <span class="detail-date-display">${escapeHtml(roundDate)}</span>
             </div>
         </div>
 
@@ -4091,7 +4114,7 @@ function selectCalendarRound(raceKey, sessionType = "race") {
                         </span>
                     </div>
                     <h3>${escapeHtml(roundTitle)}</h3>
-                    <p>📍 ${escapeHtml(roundLocation)} · 🏁 ${specs.circuit}</p>
+                    <p>${escapeHtml(roundLocation)} · ${specs.circuit}</p>
                 </div>
 
                 <div class="upcoming-countdown-row">
@@ -4118,32 +4141,28 @@ function selectCalendarRound(raceKey, sessionType = "race") {
             <div class="upcoming-info-cards-grid">
                 <div class="upcoming-info-card">
                     <div class="upcoming-info-card-header">
-                        <span class="upcoming-info-card-title">📍 CIRCUITO</span>
-                        <span>🏁</span>
+                        <span class="upcoming-info-card-title"><svg viewBox="0 0 24 24" width="13" height="13" fill="currentColor" class="inline-block align-middle mr-1"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>CIRCUITO</span>
                     </div>
                     <div class="upcoming-info-card-val">${specs.circuit}</div>
                     <div class="upcoming-info-card-desc">Trazado homologado por la FFC</div>
                 </div>
                 <div class="upcoming-info-card">
                     <div class="upcoming-info-card-header">
-                        <span class="upcoming-info-card-title">📏 LONGITUD &amp; VUELTAS</span>
-                        <span>🔄</span>
+                        <span class="upcoming-info-card-title"><svg viewBox="0 0 24 24" width="13" height="13" fill="currentColor" class="inline-block align-middle mr-1"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V5h14v14z"/></svg>LONGITUD &amp; VUELTAS</span>
                     </div>
                     <div class="upcoming-info-card-val">${specs.length} · ${specs.laps} Vueltas</div>
                     <div class="upcoming-info-card-desc">Distancia total de Gran Premio</div>
                 </div>
                 <div class="upcoming-info-card">
                     <div class="upcoming-info-card-header">
-                        <span class="upcoming-info-card-title">⚡ ZONA DRS</span>
-                        <span>🚀</span>
+                        <span class="upcoming-info-card-title"><svg viewBox="0 0 24 24" width="13" height="13" fill="currentColor" class="inline-block align-middle mr-1"><path d="M7 2v11h3v9l7-12h-4l4-8z"/></svg>ZONA DRS</span>
                     </div>
                     <div class="upcoming-info-card-val">${specs.drs}</div>
                     <div class="upcoming-info-card-desc">Punto de adelantamiento y rebufo</div>
                 </div>
                 <div class="upcoming-info-card">
                     <div class="upcoming-info-card-header">
-                        <span class="upcoming-info-card-title">⏱️ RÉCORD DE PISTA</span>
-                        <span>⚡</span>
+                        <span class="upcoming-info-card-title"><svg viewBox="0 0 24 24" width="13" height="13" fill="currentColor" class="inline-block align-middle mr-1"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>RÉCORD DE PISTA</span>
                     </div>
                     <div class="upcoming-info-card-val">${specs.lapRecord}</div>
                     <div class="upcoming-info-card-desc">Tiempo de vuelta de referencia</div>
@@ -4153,14 +4172,14 @@ function selectCalendarRound(raceKey, sessionType = "race") {
             <!-- WEEKEND SCHEDULE STRIP -->
             <div class="upcoming-schedule-strip">
                 <div class="schedule-strip-item">
-                    <span style="font-size: 20px;">⏱️</span>
+                    <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor" class="inline-block align-middle text-amber-400"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
                     <div>
                         <div class="schedule-strip-time">16:30 CEST</div>
                         <div class="schedule-strip-session">CLASIFICACIÓN OFICIAL (Q1 - Q3)</div>
                     </div>
                 </div>
                 <div class="schedule-strip-item">
-                    <span style="font-size: 20px;">🚦</span>
+                    <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor" class="inline-block align-middle text-emerald-400"><path d="M14.4 6L14 4H5v17h2v-7h5.6l.4 2h7V6h-5.6z"/></svg>
                     <div>
                         <div class="schedule-strip-time">17:00 CEST</div>
                         <div class="schedule-strip-session">CARRERA PRINCIPAL (100% DISTANCIA)</div>
@@ -4168,7 +4187,7 @@ function selectCalendarRound(raceKey, sessionType = "race") {
                 </div>
                 <div class="schedule-strip-item">
                     <button type="button" class="btn btn-secondary btn-sm" onclick="const lc = document.getElementById('nextRaceLiveChatView') || document.getElementById('liveChatGpName'); if(lc) lc.scrollIntoView({behavior:'smooth'});">
-                        💬 Chat en Vivo de Carrera
+                        <svg viewBox="0 0 24 24" width="13" height="13" fill="currentColor" class="inline-block align-middle mr-1"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/></svg>Chat en Vivo de Carrera
                     </button>
                 </div>
             </div>
@@ -4190,7 +4209,7 @@ function renderCalendarSpecialEvents() {
         <div class="special-events-pane">
             <div class="special-events-hero">
                 <div style="display:flex; align-items:center; gap:8px;">
-                    <span style="font-size: 24px;">🏆</span>
+                    <svg viewBox="0 0 24 24" width="22" height="22" fill="#facc15"><path d="M19 5h-2V3H7v2H5c-1.1 0-2 .9-2 2v1c0 2.55 1.92 4.63 4.39 4.94A5.01 5.01 0 0 0 11 15.9V18H9v2h6v-2h-2v-2.1c1.92-.38 3.41-1.92 3.61-3.96C19.08 11.63 21 9.55 21 7V5c0-1.1-.9-2-2-2zM5 8V5h2v4.82C5.84 9.4 5 8.79 5 8zm14 0c0 .79-.84 1.4-2 1.82V5h2v3z"/></svg>
                     <span style="font-family:'Barlow Condensed', sans-serif; font-size:12px; font-weight:800; letter-spacing:1.5px; color:#fde047; text-transform:uppercase;">FFC SPECIALS &amp; EXHIBITIONS</span>
                 </div>
                 <h3>${isEn ? "SPECIAL EVENTS & TOURNAMENTS" : "EVENTOS ESPECIALES Y EXHIBICIÓN"}</h3>
@@ -4203,7 +4222,7 @@ function renderCalendarSpecialEvents() {
 
             <div class="special-events-grid">
                 <div class="special-event-card">
-                    <span class="special-event-badge">🌟 ${isEn ? "SEASON FINALE" : "FIN DE TEMPORADA"}</span>
+                    <span class="special-event-badge">${isEn ? "SEASON FINALE" : "FIN DE TEMPORADA"}</span>
                     <h4 class="special-event-title">TORNEO ALL-STAR FFC</h4>
                     <p class="special-event-desc">
                         ${isEn ? "The top 10 championship drivers face off in identical machinery without driving assists." : "Los 10 mejores pilotos del campeonato se enfrentan en monoplazas idénticos sin ayudas para coronar al campeón definitivo de la temporada."}
@@ -4211,7 +4230,7 @@ function renderCalendarSpecialEvents() {
                 </div>
 
                 <div class="special-event-card">
-                    <span class="special-event-badge">🤝 ${isEn ? "COMMUNITY RACE" : "CARRERA BENÉFICA"}</span>
+                    <span class="special-event-badge">${isEn ? "COMMUNITY RACE" : "CARRERA BENÉFICA"}</span>
                     <h4 class="special-event-title">ENDURANCE SOLIDARIO</h4>
                     <p class="special-event-desc">
                         ${isEn ? "2-hour team relay race with community guest drivers and simracing streamers." : "Carrera de resistencia por relevos de 2 horas con parejas de pilotos de la liga e invitados especiales de la comunidad."}
@@ -4219,7 +4238,7 @@ function renderCalendarSpecialEvents() {
                 </div>
 
                 <div class="special-event-card">
-                    <span class="special-event-badge">⏱️ ${isEn ? "HOTLAP CHALLENGE" : "RETO SEMANAL"}</span>
+                    <span class="special-event-badge">${isEn ? "HOTLAP CHALLENGE" : "RETO SEMANAL"}</span>
                     <h4 class="special-event-title">CONTRARRELOJ FFC</h4>
                     <p class="special-event-desc">
                         ${isEn ? "Weekly leaderboard time-trial challenge with custom driver rewards." : "Compite por marcar la vuelta más rápida de la semana en el circuito seleccionado y escala en la clasificación oficial."}
@@ -5825,28 +5844,28 @@ function renderNextRaceOnPage(race) {
     }
 
     if (weatherCond === "sunny") {
-        icon = "☀️";
+        icon = `<svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor" class="inline-block align-middle"><circle cx="12" cy="12" r="5"/><path d="M12 1v2m0 18v2M4.22 4.22l1.42 1.42m12.72 12.72l1.42 1.42M1 12h2m18 0h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>`;
         condLabel = isEn ? "SUNNY" : "SOLEADO";
         themeClass = "weather-sunny";
     } else if (weatherCond === "partly-cloudy") {
-        icon = "⛅";
+        icon = `<svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor" class="inline-block align-middle"><path d="M19.35 15.04C18.67 12.74 16.53 11 14 11c-.34 0-.67.04-.98.11C12.39 9.88 11.01 9 9.4 9 7.02 9 5.07 10.87 5.01 13.24A4.5 4.5 0 0 0 6.5 22h12a3.5 3.5 0 0 0 .85-6.96z"/><circle cx="9" cy="8" r="3" fill="#facc15"/></svg>`;
         condLabel = isEn ? "PARTLY CLOUDY" : "PARCIALMENTE NUBLADO";
         themeClass = "weather-partly-cloudy";
     } else if (weatherCond === "cloudy") {
-        icon = "☁️";
+        icon = `<svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor" class="inline-block align-middle"><path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96z"/></svg>`;
         condLabel = isEn ? "CLOUDY" : "NUBLADO";
         themeClass = "weather-cloudy";
     } else if (weatherCond === "rainy") {
-        icon = "🌧️";
+        icon = `<svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor" class="inline-block align-middle"><path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96z"/><path d="M8 21l-2 3m6-3l-2 3m6-3l-2 3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>`;
         condLabel = isEn ? "WET / RAIN" : "LLUVIA / PISTA MOJADA";
         themeClass = "weather-rainy";
     } else if (weatherCond === "storm") {
-        icon = "🌩️";
+        icon = `<svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor" class="inline-block align-middle"><path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96z"/><path d="M13 14l-4 6h3l-1 4 5-7h-3z" fill="#facc15"/></svg>`;
         condLabel = isEn ? "HEAVY STORM" : "TORMENTA INTENSA";
         themeClass = "weather-storm";
     }
 
-    if (weatherIconEl) weatherIconEl.textContent = icon;
+    if (weatherIconEl) weatherIconEl.innerHTML = icon;
     if (weatherTempEl) weatherTempEl.textContent = rawTemp;
     if (weatherCondEl) weatherCondEl.textContent = condLabel;
     if (weatherPillEl) {
@@ -6364,16 +6383,18 @@ function getCountryCodeFromEmoji(emoji) {
 }
 
 function getFlagHtml(flagEmoji, size = 18) {
-    if (!flagEmoji) return `<span class="driver-flag-emoji" style="display: inline-block; vertical-align: middle;">🏁</span>`;
+    if (typeof flagEmoji === "string" && flagEmoji.startsWith("<img")) return flagEmoji;
+    const flagSvgFallback = `<svg viewBox="0 0 24 24" width="${size}" height="${size}" fill="currentColor" class="driver-flag-svg inline-block align-middle" style="display: inline-block; vertical-align: middle; margin-top: -2px; margin-right: 4px; opacity: 0.8;" aria-hidden="true"><path d="M14.4 6L14 4H5v17h2v-7h5.6l.4 2h7V6h-5.6z"/></svg>`;
+    if (!flagEmoji || flagEmoji === "🏁" || flagEmoji === "🏭") return flagSvgFallback;
     const code = getCountryCodeFromEmoji(flagEmoji);
     if (code) {
-        return `<img src="https://flagcdn.com/w40/${code}.png" class="driver-flag-img inline-block align-middle" alt="${code}" style="width: ${size}px; height: auto; max-height: ${Math.round(size * 0.85)}px; border-radius: 2px; box-shadow: 0 1px 3px rgba(0,0,0,0.35); display: inline-block; vertical-align: middle; margin-top: -2px; margin-right: 4px;" onerror="this.outerHTML='<span class=\\'driver-flag-emoji\\'>${flagEmoji}</span>'">`;
+        return `<img src="https://flagcdn.com/w40/${code}.png" class="driver-flag-img inline-block align-middle" alt="${code}" style="width: ${size}px; height: auto; max-height: ${Math.round(size * 0.82)}px; border-radius: 2px; box-shadow: 0 1px 3px rgba(0,0,0,0.35); display: inline-block; vertical-align: middle; margin-top: -2px; margin-right: 4px;" onerror="this.outerHTML='${flagSvgFallback.replace(/"/g, '&quot;')}';">`;
     }
-    return `<span class="driver-flag-emoji" style="display: inline-block; vertical-align: middle;">${flagEmoji}</span>`;
+    return flagSvgFallback;
 }
 
 function getDriverFlagHtml(driverName, size = 18) {
-    const flagEmoji = (typeof getOfficialDriverFlag === "function") ? getOfficialDriverFlag(driverName) : "🏁";
+    const flagEmoji = (typeof getOfficialDriverFlag === "function") ? getOfficialDriverFlag(driverName) : "es";
     return getFlagHtml(flagEmoji, size);
 }
 
@@ -7061,8 +7082,8 @@ function enhanceAllFlagsInDom() {
     document.querySelectorAll(".calendar-round-item").forEach(item => {
         const raceKey = item.getAttribute("data-race");
         const flagEl = item.querySelector(".round-flag");
-        if (raceKey && flagEl && !flagEl.querySelector("img")) {
-            flagEl.innerHTML = getRaceFlagHtml(raceKey, 20);
+        if (raceKey && flagEl) {
+            flagEl.innerHTML = getRaceFlagHtml(raceKey, 18);
         }
     });
 
@@ -7070,8 +7091,8 @@ function enhanceAllFlagsInDom() {
     document.querySelectorAll(".calendar-card.race-link").forEach(card => {
         const raceKey = card.getAttribute("data-race");
         const badge = card.querySelector(".calendar-flag-badge");
-        if (raceKey && badge && !badge.querySelector("img")) {
-            badge.innerHTML = getRaceFlagHtml(raceKey, 22);
+        if (raceKey && badge) {
+            badge.innerHTML = getRaceFlagHtml(raceKey, 20);
         }
     });
 
@@ -7079,8 +7100,8 @@ function enhanceAllFlagsInDom() {
     document.querySelectorAll(".cal-list-row.race-link").forEach(row => {
         const raceKey = row.getAttribute("data-race");
         const flagBox = row.querySelector(".cal-flag-emoji");
-        if (raceKey && flagBox && !flagBox.querySelector("img")) {
-            flagBox.innerHTML = getRaceFlagHtml(raceKey, 24);
+        if (raceKey && flagBox) {
+            flagBox.innerHTML = getRaceFlagHtml(raceKey, 22);
         }
     });
 
@@ -7090,7 +7111,7 @@ function enhanceAllFlagsInDom() {
         const nameSpan = el.querySelector(".ranking-leader-name, .ranking-podium-name, .ranking-row-name");
         if (dName && nameSpan && !nameSpan.querySelector(".driver-flag-img")) {
             const flagHtml = getDriverFlagHtml(dName, 18);
-            if (flagHtml && flagHtml.includes("<img")) {
+            if (flagHtml) {
                 const existingFlag = nameSpan.querySelector(".driver-flag-emoji");
                 if (existingFlag) {
                     existingFlag.outerHTML = flagHtml;
@@ -7100,6 +7121,17 @@ function enhanceAllFlagsInDom() {
             }
         }
     });
+
+    // 5. Matrix spreadsheet headers
+    if (typeof FFC_SEASON_GPS !== "undefined" && Array.isArray(FFC_SEASON_GPS)) {
+        document.querySelectorAll("#matrixHeaderRow th.th-race").forEach((th, idx) => {
+            const gp = FFC_SEASON_GPS[idx];
+            if (gp) {
+                const flagHtml = getRaceFlagHtml(gp.raceKey, 18);
+                th.innerHTML = `${flagHtml}<br><small>${escapeHtml(gp.code)}</small>`;
+            }
+        });
+    }
 }
 window.enhanceAllFlagsInDom = enhanceAllFlagsInDom;
 
@@ -8702,7 +8734,7 @@ function renderSettingsOnPage(settings) {
             const champMetaLabelWins = document.getElementById("champMetaLabelWins");
             if (champMetaLabelWins) champMetaLabelWins.textContent = isEn ? "VICTORIES" : "VICTORIAS";
             const championBtnStandings = document.getElementById("championBtnStandings");
-            if (championBtnStandings) championBtnStandings.textContent = isEn ? "🏆 VIEW HALL OF FAME" : "🏆 VER CUADRO DE HONOR";
+            if (championBtnStandings) championBtnStandings.textContent = isEn ? "VIEW HALL OF FAME" : "VER CUADRO DE HONOR";
             const championBtnCalendar = document.getElementById("championBtnCalendar");
             if (championBtnCalendar) championBtnCalendar.textContent = isEn ? "SEASON RECAP" : "REPASO DE TEMPORADA";
 
@@ -9616,11 +9648,11 @@ function populateAdminForms() {
         adminChampionMode.checked = isChamp;
     }
     if (adminChampionSwitchStatusText) {
-        adminChampionSwitchStatusText.textContent = isChamp ? "👑 MODO CAMPEÓN ACTIVADO (EN PORTADA)" : "MODO CAMPEÓN DESACTIVADO";
+        adminChampionSwitchStatusText.textContent = isChamp ? "MODO CAMPEÓN ACTIVADO (EN PORTADA)" : "MODO CAMPEÓN DESACTIVADO";
         adminChampionSwitchStatusText.classList.toggle("is-active", isChamp);
     }
     if (adminQuickChampionStatus) {
-        adminQuickChampionStatus.textContent = isChamp ? "👑 ACTIVO" : "DESACTIVADO";
+        adminQuickChampionStatus.textContent = isChamp ? "ACTIVO" : "DESACTIVADO";
         adminQuickChampionStatus.style.color = isChamp ? "var(--gold-light)" : "#8c929c";
     }
     if (adminChampionDriverSelect) {
@@ -9882,11 +9914,11 @@ function initFirestoreListeners() {
                     adminChampionMode.checked = isChamp;
                 }
                 if (adminChampionSwitchStatusText) {
-                    adminChampionSwitchStatusText.textContent = isChamp ? "👑 MODO CAMPEÓN ACTIVADO (EN PORTADA)" : "MODO CAMPEÓN DESACTIVADO";
+                    adminChampionSwitchStatusText.textContent = isChamp ? "MODO CAMPEÓN ACTIVADO (EN PORTADA)" : "MODO CAMPEÓN DESACTIVADO";
                     adminChampionSwitchStatusText.classList.toggle("is-active", isChamp);
                 }
                 if (adminQuickChampionStatus) {
-                    adminQuickChampionStatus.textContent = isChamp ? "👑 ACTIVO" : "DESACTIVADO";
+                    adminQuickChampionStatus.textContent = isChamp ? "ACTIVO" : "DESACTIVADO";
                     adminQuickChampionStatus.style.color = isChamp ? "var(--gold-light)" : "#8c929c";
                 }
                 if (adminChampionDriverSelect && document.activeElement !== adminChampionDriverSelect) {
@@ -10715,11 +10747,11 @@ if (adminChampionMode) {
     adminChampionMode.addEventListener("change", () => {
         const isChamp = adminChampionMode.checked;
         if (adminChampionSwitchStatusText) {
-            adminChampionSwitchStatusText.textContent = isChamp ? "👑 MODO CAMPEÓN ACTIVADO (EN PORTADA)" : "MODO CAMPEÓN DESACTIVADO";
+            adminChampionSwitchStatusText.textContent = isChamp ? "MODO CAMPEÓN ACTIVADO (EN PORTADA)" : "MODO CAMPEÓN DESACTIVADO";
             adminChampionSwitchStatusText.classList.toggle("is-active", isChamp);
         }
         if (adminQuickChampionStatus) {
-            adminQuickChampionStatus.textContent = isChamp ? "👑 ACTIVO" : "DESACTIVADO";
+            adminQuickChampionStatus.textContent = isChamp ? "ACTIVO" : "DESACTIVADO";
             adminQuickChampionStatus.style.color = isChamp ? "var(--gold-light)" : "#8c929c";
         }
     });
@@ -16376,8 +16408,8 @@ function renderDriverComparison(driverNameA, driverNameB) {
     const flagB = (typeof getOfficialDriverFlag === "function") ? getOfficialDriverFlag(compareDriverB) : "🏁";
     const flagElA = document.getElementById("compareSelectFlagA");
     const flagElB = document.getElementById("compareSelectFlagB");
-    if (flagElA) flagElA.textContent = flagA;
-    if (flagElB) flagElB.textContent = flagB;
+    if (flagElA) flagElA.innerHTML = getFlagHtml(flagA, 20);
+    if (flagElB) flagElB.innerHTML = getFlagHtml(flagB, 20);
 
     // Fetch Stats using existing rich statistical aggregator
     const rawStatsA = (typeof findDriverStats === "function") ? findDriverStats(compareDriverA) : null;
@@ -16705,24 +16737,24 @@ function renderComparatorScoreboard(h2h, statsA, statsB) {
     }
 
     if (h2h.mode === "mutual" && h2h.mutualRoundsCount === 0) {
-        leaderTagEl.innerHTML = isEn ? "⚖️ NO MUTUAL RACES (0 SHARED GPS)" : "⚖️ SIN ENFRENTAMIENTOS DIRECTOS (0 GPs juntos)";
+        leaderTagEl.innerHTML = isEn ? "NO MUTUAL RACES (0 SHARED GPS)" : "SIN ENFRENTAMIENTOS DIRECTOS (0 GPs juntos)";
         leaderTagEl.style.color = "#94a3b8";
         leaderTagEl.style.borderColor = "rgba(255, 255, 255, 0.15)";
         leaderTagEl.style.background = "rgba(255, 255, 255, 0.05)";
     } else if (h2h.scoreA > h2h.scoreB) {
         const diff = h2h.scoreA - h2h.scoreB;
-        leaderTagEl.innerHTML = `🏆 <strong>${escapeHTML(statsA.driver.toUpperCase())}</strong> ${isEn ? "LEADS DUEL" : "LIDERA EL DUELO"} (+${diff})`;
+        leaderTagEl.innerHTML = `<strong>${escapeHTML(statsA.driver.toUpperCase())}</strong> ${isEn ? "LEADS DUEL" : "LIDERA EL DUELO"} (+${diff})`;
         leaderTagEl.style.color = "#f87171";
         leaderTagEl.style.borderColor = "rgba(239, 68, 68, 0.4)";
         leaderTagEl.style.background = "rgba(239, 68, 68, 0.15)";
     } else if (h2h.scoreB > h2h.scoreA) {
         const diff = h2h.scoreB - h2h.scoreA;
-        leaderTagEl.innerHTML = `🏆 <strong>${escapeHTML(statsB.driver.toUpperCase())}</strong> ${isEn ? "LEADS DUEL" : "LIDERA EL DUELO"} (+${diff})`;
+        leaderTagEl.innerHTML = `<strong>${escapeHTML(statsB.driver.toUpperCase())}</strong> ${isEn ? "LEADS DUEL" : "LIDERA EL DUELO"} (+${diff})`;
         leaderTagEl.style.color = "#60a5fa";
         leaderTagEl.style.borderColor = "rgba(59, 130, 246, 0.4)";
         leaderTagEl.style.background = "rgba(59, 130, 246, 0.15)";
     } else {
-        leaderTagEl.innerHTML = `⚖️ ${isEn ? "TIED DUEL" : "DUELO EMPATADO"} (${h2h.scoreA} - ${h2h.scoreB})`;
+        leaderTagEl.innerHTML = `${isEn ? "TIED DUEL" : "DUELO EMPATADO"} (${h2h.scoreA} - ${h2h.scoreB})`;
         leaderTagEl.style.color = "#fce79a";
         leaderTagEl.style.borderColor = "rgba(214, 180, 92, 0.3)";
         leaderTagEl.style.background = "rgba(214, 180, 92, 0.12)";
@@ -16955,11 +16987,11 @@ function renderComparatorSkillsGrid(statsA, statsB) {
     const podScoreB = Math.min(99, Math.round((statsB.podiums / racesB) * 90 + 10));
 
     const skills = [
-        { name: sKeys.racePace || "🏎️ RITMO DE CARRERA", scoreA: racePaceA, scoreB: racePaceB },
-        { name: sKeys.qualyPace || "⏱️ RITMO DE CLASIFICACIÓN", scoreA: qualySpeedA, scoreB: qualySpeedB },
-        { name: sKeys.reliability || "🛡️ FIABILIDAD MECÁNICA", scoreA: relScoreA, scoreB: relScoreB },
-        { name: sKeys.consistency || "🎯 REGULARIDAD EN TOP 10", scoreA: regScoreA, scoreB: regScoreB },
-        { name: sKeys.podiumEff || "🏆 EFECTIVIDAD EN PODIOS", scoreA: podScoreA, scoreB: podScoreB }
+        { name: sKeys.racePace || "RITMO DE CARRERA", scoreA: racePaceA, scoreB: racePaceB },
+        { name: sKeys.qualyPace || "RITMO DE CLASIFICACIÓN", scoreA: qualySpeedA, scoreB: qualySpeedB },
+        { name: sKeys.reliability || "FIABILIDAD MECÁNICA", scoreA: relScoreA, scoreB: relScoreB },
+        { name: sKeys.consistency || "REGULARIDAD EN TOP 10", scoreA: regScoreA, scoreB: regScoreB },
+        { name: sKeys.podiumEff || "EFECTIVIDAD EN PODIOS", scoreA: podScoreA, scoreB: podScoreB }
     ];
 
     grid.innerHTML = skills.map(s => `
@@ -17002,22 +17034,22 @@ function renderComparatorRoundsTable(statsA, statsB, h2h) {
 
         if (d.isCompleted) {
             if (d.winner === "A") {
-                duelBadge = `<span class="round-winner-chip winner-a">🔴 ${escapeHTML(statsA.driver)}</span>`;
+                duelBadge = `<span class="round-winner-chip winner-a"><span style="display:inline-block; width:6px; height:6px; border-radius:50%; background:#ef4444; margin-right:4px;"></span>${escapeHTML(statsA.driver)}</span>`;
             } else if (d.winner === "B") {
-                duelBadge = `<span class="round-winner-chip winner-b">🔵 ${escapeHTML(statsB.driver)}</span>`;
+                duelBadge = `<span class="round-winner-chip winner-b"><span style="display:inline-block; width:6px; height:6px; border-radius:50%; background:#3b82f6; margin-right:4px;"></span>${escapeHTML(statsB.driver)}</span>`;
             } else if (d.winner === "TIE") {
-                duelBadge = `<span class="round-winner-chip winner-tie">➖ ${cmpDict.tie || "Empate"}</span>`;
+                duelBadge = `<span class="round-winner-chip winner-tie">${cmpDict.tie || "Empate"}</span>`;
             } else if (d.winner === "NON_MUTUAL") {
                 isNonMutual = true;
-                duelBadge = `<span class="round-winner-chip chip-non-mutual" title="${escapeHTML(cmpDict.noMatchTitle || "Solo uno participó: no suma victoria en Modo Justo")}">⚪ ${cmpDict.noMatch || "Sin coincidencia"}</span>`;
+                duelBadge = `<span class="round-winner-chip chip-non-mutual" title="${escapeHTML(cmpDict.noMatchTitle || "Solo uno participó: no suma victoria en Modo Justo")}">${cmpDict.noMatch || "Sin coincidencia"}</span>`;
             }
         }
 
         // Format Driver A Result Cell
         let dispA = `<span style="color: #64748b;">—</span>`;
         if (d.resA) {
-            const poleTag = d.resA.pole ? ` <span title="Pole Position" style="color: #d6b45c;">⭕</span>` : "";
-            const vrTag = d.resA.vr ? ` <span title="Vuelta Rápida" style="color: #a855f7;">⭐</span>` : "";
+            const poleTag = d.resA.pole ? ` <span title="Pole Position" style="color: #d6b45c; font-weight:700; font-size:10px;">[POLE]</span>` : "";
+            const vrTag = d.resA.vr ? ` <span title="Vuelta Rápida" style="color: #a855f7; font-weight:700; font-size:10px;">[VR]</span>` : "";
             const isWinnerA = d.winner === "A";
             dispA = `<span class="round-driver-val ${isWinnerA ? 'is-ahead' : ''}" style="${isWinnerA ? 'color: #fca5a5;' : 'color: #cbd5e1;'}">${escapeHTML(d.resA.pos)} (${d.ptsA} pts)${poleTag}${vrTag}</span>`;
         } else if (d.isCompleted) {
@@ -17027,8 +17059,8 @@ function renderComparatorRoundsTable(statsA, statsB, h2h) {
         // Format Driver B Result Cell
         let dispB = `<span style="color: #64748b;">—</span>`;
         if (d.resB) {
-            const poleTag = d.resB.pole ? ` <span title="Pole Position" style="color: #d6b45c;">⭕</span>` : "";
-            const vrTag = d.resB.vr ? ` <span title="Vuelta Rápida" style="color: #a855f7;">⭐</span>` : "";
+            const poleTag = d.resB.pole ? ` <span title="Pole Position" style="color: #d6b45c; font-weight:700; font-size:10px;">[POLE]</span>` : "";
+            const vrTag = d.resB.vr ? ` <span title="Vuelta Rápida" style="color: #a855f7; font-weight:700; font-size:10px;">[VR]</span>` : "";
             const isWinnerB = d.winner === "B";
             dispB = `<span class="round-driver-val ${isWinnerB ? 'is-ahead' : ''}" style="${isWinnerB ? 'color: #93c5fd;' : 'color: #cbd5e1;'}">${escapeHTML(d.resB.pos)} (${d.ptsB} pts)${poleTag}${vrTag}</span>`;
         } else if (d.isCompleted) {
