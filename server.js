@@ -3,6 +3,7 @@ import path from 'path';
 import fs from 'fs';
 import crypto from 'crypto';
 import { fileURLToPath } from 'url';
+import { fetchAllAccounts, deleteAccounts, PROTECTED_EMAILS } from './emailAuditService.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -539,6 +540,80 @@ app.get('/api/gallery/random-wall-photos', (req, res) => {
   } catch (e) {}
 
   return res.json({ success: true, items: photoPool });
+});
+
+// =========================================================
+// EMAIL AUDIT & CLEANUP SYSTEM (ADMIN ONLY)
+// =========================================================
+
+app.get('/api/admin/audit-emails', async (req, res) => {
+  try {
+    const accounts = await fetchAllAccounts();
+    const suspicious = accounts.filter(a => a.status === 'suspicious');
+    const clean = accounts.filter(a => a.status === 'clean');
+
+    const summary = {
+      total: accounts.length,
+      suspicious: suspicious.length,
+      clean: clean.length,
+      disposableCount: accounts.filter(a => a.category === 'disposable').length,
+      dummyDomainCount: accounts.filter(a => a.category === 'dummy_domain').length,
+      testPatternCount: accounts.filter(a => a.category === 'test_pattern').length,
+      corruptedCount: accounts.filter(a => a.category === 'corrupted').length,
+      timestamp: new Date().toISOString()
+    };
+
+    return res.json({
+      success: true,
+      summary,
+      accounts,
+      protectedEmails: PROTECTED_EMAILS
+    });
+  } catch (err) {
+    console.error('Error during email audit:', err);
+    return res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+app.post('/api/admin/delete-accounts', async (req, res) => {
+  try {
+    const { targets } = req.body || {};
+    if (!Array.isArray(targets) || targets.length === 0) {
+      return res.status(400).json({ success: false, error: 'No targets specified for deletion' });
+    }
+
+    const result = await deleteAccounts(targets);
+    if (!result.success) {
+      return res.status(400).json(result);
+    }
+
+    return res.json(result);
+  } catch (err) {
+    console.error('Error deleting accounts in audit cleanup:', err);
+    return res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+app.get('/api/admin/audit-backups', (req, res) => {
+  try {
+    const backupDir = path.join(__dirname, 'backups');
+    if (!fs.existsSync(backupDir)) {
+      return res.json({ success: true, backups: [] });
+    }
+    const files = fs.readdirSync(backupDir).filter(f => f.endsWith('.json'));
+    const backups = files.map(file => {
+      const stat = fs.statSync(path.join(backupDir, file));
+      return {
+        filename: file,
+        size: stat.size,
+        createdAt: stat.birthtime || stat.mtime
+      };
+    }).sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+
+    return res.json({ success: true, backups });
+  } catch (err) {
+    return res.status(500).json({ success: false, error: err.message });
+  }
 });
 
 app.get('*', (req, res) => {

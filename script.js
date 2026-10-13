@@ -1982,6 +1982,8 @@ function applyTranslations(lang) {
         if (ad6) ad6.textContent = adminDict.tabNews;
         const ad7 = document.getElementById("adminTabPhotosTitle");
         if (ad7) ad7.textContent = adminDict.tabPhotos;
+        const adAudit = document.getElementById("adminTabEmailAuditTitle");
+        if (adAudit) adAudit.textContent = lang === "en" ? "Email Audit" : "Auditoría de Correos";
         const ad8 = document.getElementById("adminTabSettingsTitle");
         if (ad8) ad8.textContent = adminDict.tabSettings;
 
@@ -6126,6 +6128,7 @@ function openAdminPanel() {
     if (typeof syncPhotosFromSources === "function") syncPhotosFromSources();
     if (typeof updateAdminPhotosBadge === "function") updateAdminPhotosBadge();
     if (typeof renderAdminPhotosTab === "function") renderAdminPhotosTab();
+    if (typeof updateAdminEmailAuditBadge === "function") updateAdminEmailAuditBadge();
     adminPanelOverlay.classList.add("active");
     document.body.classList.add("modal-open");
 }
@@ -10602,8 +10605,22 @@ adminTabButtons.forEach(btn => {
                 renderAdminPhotosTab();
             }
         }
+        if (targetId === "tab-email-audit") {
+            if (typeof loadAndRenderEmailAudit === "function") {
+                loadAndRenderEmailAudit();
+            }
+        }
     });
 });
+
+// Quick shortcut click on Fake Emails KPI in Admin Ops Bar
+const adminQuickFakeEmailsOpItem = document.getElementById("adminQuickFakeEmailsOpItem");
+if (adminQuickFakeEmailsOpItem) {
+    adminQuickFakeEmailsOpItem.addEventListener("click", () => {
+        const auditTabBtn = document.getElementById("adminTabEmailAuditBtn");
+        if (auditTabBtn) auditTabBtn.click();
+    });
+}
 
 // Helper to format datetime-local value (YYYY-MM-DDTHH:mm) into dateText (DD MMM · HH:mm CEST)
 function formatDateTimeLocalToDateText(dtVal) {
@@ -21545,8 +21562,507 @@ if (document.readyState === "loading") {
     });
 } else {
     initializeSavedData();
+}/* =========================================================
+   EMAIL AUDIT & FAKE ACCOUNTS CLEANUP SYSTEM
+========================================================= */
+
+let ffcAuditAccounts = [];
+let ffcAuditSelectedKeys = new Set();
+let ffcAuditFilter = "all";
+let ffcAuditSearchQuery = "";
+let ffcAuditIsLoading = false;
+let ffcPendingDeleteTargets = [];
+
+async function updateAdminEmailAuditBadge() {
+    try {
+        const res = await fetch('/api/admin/audit-emails');
+        if (!res.ok) return;
+        const data = await res.json();
+        if (data && data.summary) {
+            const suspiciousCount = data.summary.suspicious || 0;
+            const badge = document.getElementById("adminTabEmailAuditBadge");
+            if (badge) {
+                badge.textContent = suspiciousCount;
+                badge.style.display = suspiciousCount > 0 ? "inline-flex" : "none";
+            }
+            const opsCount = document.getElementById("adminQuickFakeEmailsCount");
+            if (opsCount) {
+                opsCount.textContent = `${suspiciousCount} Detectados`;
+                opsCount.style.color = suspiciousCount > 0 ? "#f87171" : "#10b981";
+            }
+        }
+    } catch (e) {
+        console.warn("Could not update email audit badge:", e);
+    }
 }
 
+async function loadAndRenderEmailAudit(forceRefresh = false) {
+    if (ffcAuditIsLoading) return;
+    ffcAuditIsLoading = true;
 
+    const tbody = document.getElementById("auditTableBody");
+    const refreshBtn = document.getElementById("btnRefreshEmailAudit");
+    if (refreshBtn) refreshBtn.classList.add("loading");
 
+    if (tbody && (forceRefresh || ffcAuditAccounts.length === 0)) {
+        tbody.innerHTML = `
+            <tr>
+                <td colspan="7" style="text-align: center; padding: 40px 20px; color: #94a3b8;">
+                    <div style="display: flex; flex-direction: column; align-items: center; gap: 10px;">
+                        <span style="font-size: 24px;">⏳</span>
+                        <span>Escaneando bases de datos (Firestore, Equipos Fantasy y Usuarios)...</span>
+                    </div>
+                </td>
+            </tr>
+        `;
+    }
 
+    try {
+        const res = await fetch('/api/admin/audit-emails');
+        if (!res.ok) {
+            throw new Error(`HTTP ${res.status}`);
+        }
+        const data = await res.json();
+        ffcAuditAccounts = data.accounts || [];
+
+        // Update KPI summary cards
+        const summary = data.summary || {};
+        const kpiTotal = document.getElementById("auditKpiTotal");
+        const kpiSuspicious = document.getElementById("auditKpiSuspicious");
+        const kpiDisposable = document.getElementById("auditKpiDisposable");
+        const kpiDummy = document.getElementById("auditKpiDummy");
+        const kpiClean = document.getElementById("auditKpiClean");
+
+        if (kpiTotal) kpiTotal.textContent = summary.total || 0;
+        if (kpiSuspicious) kpiSuspicious.textContent = summary.suspicious || 0;
+        if (kpiDisposable) kpiDisposable.textContent = summary.disposableCount || 0;
+        if (kpiDummy) kpiDummy.textContent = summary.dummyDomainCount || 0;
+        if (kpiClean) kpiClean.textContent = summary.clean || 0;
+
+        // Update counts in filter buttons
+        const cntAll = document.getElementById("auditCountAll");
+        const cntSuspicious = document.getElementById("auditCountSuspicious");
+        const cntDisposable = document.getElementById("auditCountDisposable");
+        const cntDummy = document.getElementById("auditCountDummy");
+        const cntPattern = document.getElementById("auditCountPattern");
+        const cntCorrupted = document.getElementById("auditCountCorrupted");
+        const cntClean = document.getElementById("auditCountClean");
+
+        if (cntAll) cntAll.textContent = ffcAuditAccounts.length;
+        if (cntSuspicious) cntSuspicious.textContent = ffcAuditAccounts.filter(a => a.status === 'suspicious').length;
+        if (cntDisposable) cntDisposable.textContent = ffcAuditAccounts.filter(a => a.category === 'disposable').length;
+        if (cntDummy) cntDummy.textContent = ffcAuditAccounts.filter(a => a.category === 'dummy_domain').length;
+        if (cntPattern) cntPattern.textContent = ffcAuditAccounts.filter(a => a.category === 'test_pattern').length;
+        if (cntCorrupted) cntCorrupted.textContent = ffcAuditAccounts.filter(a => a.category === 'corrupted').length;
+        if (cntClean) cntClean.textContent = ffcAuditAccounts.filter(a => a.status === 'clean').length;
+
+        // Update badge counters
+        const badge = document.getElementById("adminTabEmailAuditBadge");
+        if (badge) badge.textContent = summary.suspicious || 0;
+        const opsCount = document.getElementById("adminQuickFakeEmailsCount");
+        if (opsCount) opsCount.textContent = `${summary.suspicious || 0} Detectados`;
+
+        // Render table
+        renderAuditTableRows();
+
+        // Check for backups info
+        fetchRecentAuditBackupInfo();
+    } catch (err) {
+        console.error("Error loading email audit:", err);
+        if (tbody) {
+            tbody.innerHTML = `
+                <tr>
+                    <td colspan="7" style="text-align: center; padding: 30px; color: #ef4444;">
+                        Error al cargar la auditoría de correos: ${err.message}. Por favor, reintenta.
+                    </td>
+                </tr>
+            `;
+        }
+    } finally {
+        ffcAuditIsLoading = false;
+        if (refreshBtn) refreshBtn.classList.remove("loading");
+    }
+}
+
+async function fetchRecentAuditBackupInfo() {
+    try {
+        const res = await fetch('/api/admin/audit-backups');
+        if (!res.ok) return;
+        const data = await res.json();
+        const infoEl = document.getElementById("auditLastBackupInfo");
+        if (infoEl && data.backups && data.backups.length > 0) {
+            const latest = data.backups[0];
+            const dateStr = new Date(latest.createdAt).toLocaleTimeString();
+            infoEl.innerHTML = `Último respaldo: <span style="color:#10b981;">${latest.filename}</span> (${dateStr})`;
+        }
+    } catch (e) {}
+}
+
+function getFilteredAuditAccounts() {
+    return ffcAuditAccounts.filter(acc => {
+        // Filter by category / status
+        if (ffcAuditFilter === "suspicious" && acc.status !== "suspicious") return false;
+        if (ffcAuditFilter === "disposable" && acc.category !== "disposable") return false;
+        if (ffcAuditFilter === "dummy_domain" && acc.category !== "dummy_domain") return false;
+        if (ffcAuditFilter === "test_pattern" && acc.category !== "test_pattern") return false;
+        if (ffcAuditFilter === "corrupted" && acc.category !== "corrupted") return false;
+        if (ffcAuditFilter === "clean" && acc.status !== "clean") return false;
+
+        // Filter by search query
+        if (ffcAuditSearchQuery) {
+            const q = ffcAuditSearchQuery.toLowerCase();
+            const emailMatch = (acc.email || '').toLowerCase().includes(q);
+            const nameMatch = (acc.displayName || acc.managerName || '').toLowerCase().includes(q);
+            const reasonMatch = (acc.reason || '').toLowerCase().includes(q);
+            const docIdMatch = (acc.firestoreDocId || '').toLowerCase().includes(q);
+            if (!emailMatch && !nameMatch && !reasonMatch && !docIdMatch) return false;
+        }
+
+        return true;
+    });
+}
+
+function renderAuditTableRows() {
+    const tbody = document.getElementById("auditTableBody");
+    if (!tbody) return;
+
+    const filtered = getFilteredAuditAccounts();
+
+    if (filtered.length === 0) {
+        tbody.innerHTML = `
+            <tr>
+                <td colspan="7" style="text-align: center; padding: 40px 20px; color: #94a3b8;">
+                    <div style="display: flex; flex-direction: column; align-items: center; gap: 8px;">
+                        <svg viewBox="0 0 24 24" width="32" height="32" fill="none" stroke="#10b981" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+                        <strong style="color: #f1f5f9; font-size: 15px;">No se encontraron cuentas con el filtro actual</strong>
+                        <span style="font-size: 12px; color: #64748b;">Prueba cambiando el filtro o la búsqueda</span>
+                    </div>
+                </td>
+            </tr>
+        `;
+        updateAuditSelectionSummary();
+        return;
+    }
+
+    tbody.innerHTML = filtered.map((acc) => {
+        const isSelected = ffcAuditSelectedKeys.has(acc.key);
+        const isProtected = acc.isProtected;
+
+        // Badge styling
+        let badgeStyle = "background: rgba(148, 163, 184, 0.15); color: #cbd5e1; border: 1px solid rgba(148, 163, 184, 0.3);";
+        if (acc.isProtected) {
+            badgeStyle = "background: rgba(214, 180, 92, 0.15); color: #f5e29f; border: 1px solid rgba(214, 180, 92, 0.4);";
+        } else if (acc.status === "clean") {
+            badgeStyle = "background: rgba(16, 185, 129, 0.15); color: #6ee7b7; border: 1px solid rgba(16, 185, 129, 0.4);";
+        } else if (acc.category === "disposable") {
+            badgeStyle = "background: rgba(245, 158, 11, 0.15); color: #fde68a; border: 1px solid rgba(245, 158, 11, 0.4);";
+        } else if (acc.category === "dummy_domain") {
+            badgeStyle = "background: rgba(168, 85, 247, 0.15); color: #e9d5ff; border: 1px solid rgba(168, 85, 247, 0.4);";
+        } else if (acc.category === "test_pattern") {
+            badgeStyle = "background: rgba(239, 68, 68, 0.15); color: #fca5a5; border: 1px solid rgba(239, 68, 68, 0.4);";
+        } else if (acc.category === "corrupted") {
+            badgeStyle = "background: rgba(100, 116, 139, 0.2); color: #94a3b8; border: 1px solid rgba(100, 116, 139, 0.4);";
+        }
+
+        // Row background
+        const rowBg = isSelected 
+            ? "background: rgba(239, 68, 68, 0.08);" 
+            : (acc.status === "suspicious" ? "background: rgba(239, 68, 68, 0.02);" : "");
+
+        const sourcesHtml = (acc.sources || []).map(s => {
+            return `<span style="display: inline-block; padding: 2px 6px; font-size: 10px; border-radius: 4px; background: rgba(255,255,255,0.06); color: #cbd5e1; border: 1px solid rgba(255,255,255,0.1); margin-right: 4px;">${s}</span>`;
+        }).join("");
+
+        const displayEmail = acc.email 
+            ? `<div style="display: flex; align-items: center; gap: 6px;">
+                 <span style="font-family: monospace; font-size: 13px; font-weight: 600; color: ${acc.status === 'suspicious' ? '#fca5a5' : '#f8fafc'};">${escapeHtml(acc.email)}</span>
+                 <button type="button" class="btn btn-xs" onclick="navigator.clipboard.writeText('${acc.email}');" style="padding: 1px 5px; font-size: 10px; opacity: 0.6;" title="Copiar correo">📋</button>
+               </div>`
+            : `<span style="font-style: italic; color: #64748b; font-size: 12px;">(Sin correo registrado · Doc: ${escapeHtml(acc.firestoreDocId || 'N/A')})</span>`;
+
+        const displayName = escapeHtml(acc.displayName || acc.managerName || (acc.email ? acc.email.split('@')[0] : '—'));
+
+        return `
+            <tr style="border-bottom: 1px solid rgba(255, 255, 255, 0.06); transition: background 0.15s; ${rowBg}" data-key="${escapeHtml(acc.key)}">
+                <td style="padding: 12px 14px; text-align: center;">
+                    ${isProtected 
+                        ? `<span title="Cuenta protegida" style="cursor: not-allowed; opacity: 0.4;">🔒</span>`
+                        : `<input type="checkbox" class="audit-row-checkbox" data-key="${escapeHtml(acc.key)}" ${isSelected ? 'checked' : ''} style="accent-color: #ef4444; width: 16px; height: 16px; cursor: pointer;">`
+                    }
+                </td>
+                <td style="padding: 12px 14px;">
+                    ${displayEmail}
+                    <div style="font-size: 10px; color: #64748b; margin-top: 2px;">
+                        ${acc.firestoreDocId ? `ID: ${escapeHtml(acc.firestoreDocId)}` : ''} 
+                        ${acc.createdAt ? `· ${escapeHtml(acc.createdAt.substring(0, 10))}` : ''}
+                    </div>
+                </td>
+                <td style="padding: 12px 14px; font-weight: 600; color: #e2e8f0;">
+                    ${displayName}
+                </td>
+                <td style="padding: 12px 14px; white-space: nowrap;">
+                    <span style="display: inline-block; padding: 3px 8px; border-radius: 9999px; font-size: 11px; font-weight: 700; letter-spacing: 0.3px; ${badgeStyle}">
+                        ${escapeHtml(acc.badge || 'INFO')}
+                    </span>
+                </td>
+                <td style="padding: 12px 14px; color: #cbd5e1; font-size: 12px; max-width: 280px;">
+                    ${escapeHtml(acc.reason || '')}
+                </td>
+                <td style="padding: 12px 14px; white-space: nowrap;">
+                    ${sourcesHtml}
+                </td>
+                <td style="padding: 12px 14px; text-align: right; white-space: nowrap;">
+                    ${isProtected 
+                        ? `<span style="font-size: 11px; color: #d6b45c; font-weight: 700; padding: 4px 8px; background: rgba(214, 180, 92, 0.1); border-radius: 4px; border: 1px solid rgba(214, 180, 92, 0.3);">PROTEGIDO</span>`
+                        : `<button type="button" class="btn btn-xs btn-danger btn-delete-single-audit" data-key="${escapeHtml(acc.key)}" style="background: rgba(239, 68, 68, 0.15); color: #fca5a5; border: 1px solid rgba(239, 68, 68, 0.35); font-size: 11px; padding: 4px 8px;">
+                             Eliminar
+                           </button>`
+                    }
+                </td>
+            </tr>
+        `;
+    }).join("");
+
+    // Bind row checkbox events
+    tbody.querySelectorAll(".audit-row-checkbox").forEach(cb => {
+        cb.addEventListener("change", (e) => {
+            const key = e.target.dataset.key;
+            if (e.target.checked) {
+                ffcAuditSelectedKeys.add(key);
+            } else {
+                ffcAuditSelectedKeys.delete(key);
+            }
+            updateAuditSelectionSummary();
+        });
+    });
+
+    // Bind individual delete button
+    tbody.querySelectorAll(".btn-delete-single-audit").forEach(btn => {
+        btn.addEventListener("click", () => {
+            const key = btn.dataset.key;
+            const targetAcc = ffcAuditAccounts.find(a => a.key === key);
+            if (!targetAcc) return;
+            openAuditDeleteConfirmModal([targetAcc]);
+        });
+    });
+
+    updateAuditSelectionSummary();
+}
+
+function updateAuditSelectionSummary() {
+    const summaryEl = document.getElementById("auditSelectionSummary");
+    const count = ffcAuditSelectedKeys.size;
+    if (summaryEl) {
+        summaryEl.textContent = `${count} seleccionados`;
+    }
+
+    const deleteBtn = document.getElementById("btnDeleteSelectedAudit");
+    const deleteBtnText = document.getElementById("btnDeleteSelectedAuditText");
+    if (deleteBtn) {
+        deleteBtn.disabled = count === 0;
+    }
+    if (deleteBtnText) {
+        deleteBtnText.textContent = `Eliminar Seleccionados (${count})`;
+    }
+
+    // Update select all checkbox state
+    const selectAllCb = document.getElementById("auditSelectAllVisible");
+    if (selectAllCb) {
+        const visible = getFilteredAuditAccounts().filter(a => !a.isProtected);
+        if (visible.length === 0) {
+            selectAllCb.checked = false;
+            selectAllCb.indeterminate = false;
+        } else {
+            const allChecked = visible.every(a => ffcAuditSelectedKeys.has(a.key));
+            const someChecked = visible.some(a => ffcAuditSelectedKeys.has(a.key));
+            selectAllCb.checked = allChecked;
+            selectAllCb.indeterminate = !allChecked && someChecked;
+        }
+    }
+}
+
+function openAuditDeleteConfirmModal(targets) {
+    ffcPendingDeleteTargets = targets;
+    const modal = document.getElementById("auditDeleteConfirmModal");
+    const countText = document.getElementById("auditConfirmCountText");
+    const previewList = document.getElementById("auditConfirmListPreview");
+    if (!modal) return;
+
+    if (countText) {
+        countText.textContent = `${targets.length} cuenta${targets.length !== 1 ? 's' : ''}`;
+    }
+
+    if (previewList) {
+        previewList.innerHTML = targets.map(t => {
+            const name = t.displayName || t.managerName || '';
+            const email = t.email || `Doc: ${t.firestoreDocId || 'Sin email'}`;
+            return `
+                <div style="display: flex; justify-content: space-between; align-items: center; padding: 4px 0; border-bottom: 1px solid rgba(255,255,255,0.05);">
+                    <div>
+                        <strong style="color: #f87171;">${escapeHtml(email)}</strong>
+                        ${name ? `<span style="color: #94a3b8; font-size: 11px; margin-left: 6px;">(${escapeHtml(name)})</span>` : ''}
+                    </div>
+                    <span style="font-size: 10px; color: #cbd5e1; background: rgba(239,68,68,0.15); padding: 1px 6px; border-radius: 4px;">${escapeHtml(t.badge || 'FALSO')}</span>
+                </div>
+            `;
+        }).join("");
+    }
+
+    modal.style.display = "flex";
+}
+
+function closeAuditDeleteConfirmModal() {
+    const modal = document.getElementById("auditDeleteConfirmModal");
+    if (modal) modal.style.display = "none";
+    ffcPendingDeleteTargets = [];
+}
+
+async function executeAuditDelete() {
+    if (!ffcPendingDeleteTargets || ffcPendingDeleteTargets.length === 0) return;
+
+    const spinner = document.getElementById("auditDeleteSpinner");
+    const btnText = document.getElementById("auditDeleteBtnText");
+    const executeBtn = document.getElementById("btnExecuteAuditDelete");
+    const cancelBtn = document.getElementById("btnCancelAuditDelete");
+
+    if (spinner) spinner.style.display = "inline-block";
+    if (btnText) btnText.textContent = "Eliminando y creando respaldo...";
+    if (executeBtn) executeBtn.disabled = true;
+    if (cancelBtn) cancelBtn.disabled = true;
+
+    try {
+        const payloadTargets = ffcPendingDeleteTargets.map(t => ({
+            email: t.email,
+            firestoreDocId: t.firestoreDocId,
+            fantasyTeamId: t.fantasyTeamId,
+            userUid: t.userUid
+        }));
+
+        const res = await fetch('/api/admin/delete-accounts', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ targets: payloadTargets })
+        });
+
+        const data = await res.json();
+        if (!res.ok || !data.success) {
+            throw new Error(data.error || 'Fallo al eliminar las cuentas');
+        }
+
+        // Clean up from local selection
+        ffcPendingDeleteTargets.forEach(t => ffcAuditSelectedKeys.delete(t.key));
+
+        closeAuditDeleteConfirmModal();
+
+        alert(`¡Eliminación exitosa!\n\nSe eliminaron ${data.deletedCount} cuentas de la base de datos.\nCopia de seguridad guardada automáticamente en: ${data.backupFile}`);
+
+        // Reload audit data
+        await loadAndRenderEmailAudit(true);
+    } catch (err) {
+        console.error("Error executing audit delete:", err);
+        alert(`Error al eliminar cuentas: ${err.message}`);
+    } finally {
+        if (spinner) spinner.style.display = "none";
+        if (btnText) btnText.textContent = "Sí, Eliminar de la Base de Datos";
+        if (executeBtn) executeBtn.disabled = false;
+        if (cancelBtn) cancelBtn.disabled = false;
+    }
+}
+
+function initAdminEmailAuditHandlers() {
+    // Refresh button
+    const btnRefresh = document.getElementById("btnRefreshEmailAudit");
+    if (btnRefresh) {
+        btnRefresh.addEventListener("click", () => {
+            loadAndRenderEmailAudit(true);
+        });
+    }
+
+    // Filter buttons
+    const filterBtns = document.querySelectorAll(".audit-filter-btn");
+    filterBtns.forEach(btn => {
+        btn.addEventListener("click", () => {
+            filterBtns.forEach(b => b.classList.remove("active"));
+            btn.classList.add("active");
+            ffcAuditFilter = btn.dataset.filter || "all";
+            renderAuditTableRows();
+        });
+    });
+
+    // Search input
+    const searchInput = document.getElementById("auditSearchInput");
+    if (searchInput) {
+        searchInput.addEventListener("input", (e) => {
+            ffcAuditSearchQuery = (e.target.value || '').trim();
+            renderAuditTableRows();
+        });
+    }
+
+    // Select all visible
+    const selectAllCb = document.getElementById("auditSelectAllVisible");
+    if (selectAllCb) {
+        selectAllCb.addEventListener("change", (e) => {
+            const visible = getFilteredAuditAccounts().filter(a => !a.isProtected);
+            if (e.target.checked) {
+                visible.forEach(a => ffcAuditSelectedKeys.add(a.key));
+            } else {
+                visible.forEach(a => ffcAuditSelectedKeys.delete(a.key));
+            }
+            renderAuditTableRows();
+        });
+    }
+
+    // Select all suspicious
+    const btnSelectSuspicious = document.getElementById("btnSelectAllSuspicious");
+    if (btnSelectSuspicious) {
+        btnSelectSuspicious.addEventListener("click", () => {
+            ffcAuditAccounts.forEach(a => {
+                if (a.status === "suspicious" && !a.isProtected) {
+                    ffcAuditSelectedKeys.add(a.key);
+                }
+            });
+            renderAuditTableRows();
+        });
+    }
+
+    // Deselect all
+    const btnDeselectAll = document.getElementById("btnDeselectAllAudit");
+    if (btnDeselectAll) {
+        btnDeselectAll.addEventListener("click", () => {
+            ffcAuditSelectedKeys.clear();
+            renderAuditTableRows();
+        });
+    }
+
+    // Delete selected button
+    const btnDeleteSelected = document.getElementById("btnDeleteSelectedAudit");
+    if (btnDeleteSelected) {
+        btnDeleteSelected.addEventListener("click", () => {
+            const targets = ffcAuditAccounts.filter(a => ffcAuditSelectedKeys.has(a.key) && !a.isProtected);
+            if (targets.length === 0) return;
+            openAuditDeleteConfirmModal(targets);
+        });
+    }
+
+    // Modal buttons
+    const btnCancelModal = document.getElementById("btnCancelAuditDelete");
+    if (btnCancelModal) {
+        btnCancelModal.addEventListener("click", closeAuditDeleteConfirmModal);
+    }
+
+    const btnExecModal = document.getElementById("btnExecuteAuditDelete");
+    if (btnExecModal) {
+        btnExecModal.addEventListener("click", executeAuditDelete);
+    }
+}
+
+if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", initAdminEmailAuditHandlers);
+} else {
+    initAdminEmailAuditHandlers();
+}
+
+window.loadAndRenderEmailAudit = loadAndRenderEmailAudit;
+window.updateAdminEmailAuditBadge = updateAdminEmailAuditBadge;
+window.openAuditDeleteConfirmModal = openAuditDeleteConfirmModal;
+window.closeAuditDeleteConfirmModal = closeAuditDeleteConfirmModal;
