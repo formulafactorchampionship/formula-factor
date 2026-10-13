@@ -1,0 +1,133 @@
+======================================================================
+FORMULA FACTOR CHAMPIONSHIP — REGLAMENTO OFICIAL / OFFICIAL REGULATIONS
+======================================================================
+
+1. Introducción
+El reglamento aquí expuesto detalla las normas de participación, conducta y carrera, estableciendo las bases para que la liga se desarrolle de manera equitativa. Todos los pilotos deben conocerlo y aceptarlo antes de participar.
+IMPORTANTE: El desconocimiento del reglamento no exime a los pilotos de su cumplimiento.
+La dirección de carrera se reserva el derecho de interpretar y aplicar el reglamento en situaciones no contempladas explícitamente y viceversa.
+
+2. Formato de la Competición
+2.1 Calendario
+La temporada constará de 15 carreras, siendo los circuitos aquellos que hayan resultado ganadores en una votación organizada al final de la temporada anterior.
+
+2.2 Formato de Carrera
+• Clasificación: Formato de una única sesión abierta.
+• Carrera: Hay que recorrer aproximadamente 150 kilómetros por Gran Premio, lo que normalmente se traduce en 25–35 vueltas dependiendo del circuito.
+
+2.3 Clasificación
+Se utilizará un sistema de clasificación en una sola sesión que durará 20 minutos.
+Normas de clasificación:
+• Si un piloto molesta a otro en vuelta rápida, se podrá contemplar una sanción de tiempo para la carrera.
+• Si causa una colisión durante la clasificación, se le pondrá una sanción de tiempo para la carrera.
+• Si un coche sufre daños que puedan suponer un peligro para el resto de pilotos, deberá entrar a boxes inmediatamente.
+• Está prohibido detener el coche en zonas peligrosas o en mitad del circuito.
+• Los pilotos que estén en vuelta lenta deberán apartarse de la trazada para no molestar a quienes estén en vuelta rápida.
+
+Regla del 107%:
+• Para poder participar en la carrera, todos los pilotos deberán marcar un tiempo dentro del 107% del mejor tiempo de clasificación.
+• Cualquier piloto que no consiga entrar dentro del 107% no podrá disputar la carrera.
+• Dirección de carrera podrá hacer excepciones en casos especiales, como problemas técnicos demostrables o incidentes ajenos al piloto.
+
+2.4 Carrera
+Normas Generales:
+• Se deberán respetar las banderas azules. Un piloto doblado tendrá tres curvas para dejarse adelantar. Si molesta deliberadamente, recibirá una sanción de 5 segundos. Si provoca un accidente, la sanción podrá ser mayor.
+• Los pilotos deberán mantener una conducción limpia y respetuosa en todo momento.
+• Está prohibido provocar accidentes intencionadamente.
+
+Adelantamientos y Defensa:
+• Está prohibido cambiar de dirección durante la frenada.
+• Si existe un solape significativo entre dos coches al llegar a una curva, ambos pilotos deberán dejar espacio suficiente.
+• Si un piloto gana una posición fuera de pista, deberá devolverla inmediatamente.
+• Forzar deliberadamente a otro piloto fuera de pista podrá ser sancionado.
+
+Límites de pista:
+• Se considerará fuera de pista cuando las cuatro ruedas sobrepasen completamente el piano exterior del circuito.
+• Ganar tiempo o ventaja reiteradamente excediendo los límites de pista podrá ser sancionado.
+• La reincidencia en track limits podrá derivar en sanciones de tiempo o pérdida de posiciones.
+
+Colisiones:
+• Lance de carrera: Incidente de carrera sin daños importantes ni ventajas claras.
+• Sanción leve: +5 segundos si hay daños menores o se obtiene ventaja injustamente.
+• Sanción grave: +10 segundos o Drive Through si la colisión provoca daños importantes.
+• Accidente intencional: Bandera negra (descalificación) y suspensión de una carrera.
+• Reincidencia en accidentes intencionales: Suspensión de 2 carreras.
+• Tercer accidente intencional: Expulsión permanente de la liga.
+
+Paradas en Boxes:
+• En todas las carreras habrá un mínimo de una parada obligatoria en boxes.
+• No existirá una ventana obligatoria de parada. Cada piloto podrá realizar su pit stop en el momento que considere oportuno.
+• Será obligatorio cambiar de compuesto de neumáticos durante la parada.
+• No cumplir con la parada obligatoria o no cambiar neumáticos supondrá la descalificación de la carrera.
+• En caso de lluvia o condiciones variables, dirección de carrera podrá modificar o anular esta norma si lo considera necesario.
+
+Daños en el coche y DNF:
+Si el daño ocasionado supondría un abandono realista, el piloto deberá retirarse de la carrera.
+• Ejemplos de daños considerados DNF:
+  - Suspensión completamente rota.
+  - Dirección inutilizable.
+  - Pérdida total de una rueda.
+  - Daños extremos que hagan el coche incontrolable.
+
+Reinicios, desconexiones y lag:
+• Si el servidor cae totalmente y se interrumpe la conexión de todos, dirección de carrera podrá hacer bandera roja y relanzar la carrera en las posiciones de cuando el servidor cayó.
+• Si una persona tiene un lag que suponga un peligro para el resto de la parrilla se le expulsará de la sala y no se le permitirá participar.
+
+
+3. Normas de Participación
+3.1 Requisitos de los Pilotos
+• Mantener una conducción limpia y deportiva.
+• Mantener el respeto hacia otros pilotos, administradores y espectadores.
+• Está prohibido cualquier comportamiento tóxico, insultos, acoso, discriminación o faltas de respeto de forma seria tanto en pista como en Discord.
+
+3.2 Compromiso y Asistencia
+• Se deberá participar en el máximo número posible de carreras.
+• Si un piloto falta a una carrera sin previo aviso ni justificación, será movido a piloto reserva.
+• Se debe avisar con antelación en caso de ausencia.
+
+3.3 Pilotos Reserva
+• Los pilotos reserva podrán sustituir a pilotos titulares ausentes.
+• La asignación de plazas se realizará según disponibilidad y criterio de la administración.
+• Los pilotos reserva podrán puntuar salvo decisión contraria de la organización.
+
+
+4. Sistema de Puntuación
+Se utilizará el sistema oficial de puntuación de Fórmula 1:
+- 1°: 25 puntos
+- 2°: 18 puntos
+- 3°: 15 puntos
+- 4°: 12 puntos
+- 5°: 10 puntos
+- 6°: 8 puntos
+- 7°: 6 puntos
+- 8°: 4 puntos
+- 9°: 2 puntos
+- 10°: 1 punto
+- Vuelta rápida: 1 punto (siempre que finalice en top 10)
+
+
+5. Vehículos y Setups
+• Se utilizarán los F1 2010 de RSS en Assetto Corsa.
+• Los setups serán fixed, permitiéndose únicamente los ajustes que el servidor o el juego permitan modificar tras aplicar el fixed setup.
+• La organización podrá modificar parámetros técnicos del servidor antes del inicio de cada racing weekend.
+
+
+6. Dirección de Carrera y Sanciones
+6.1 Dirección de Carrera
+• La administración y dirección de carrera tendrán la última palabra sobre cualquier incidente o situación no contemplada en este reglamento.
+• Las decisiones tomadas por los comisarios deberán ser respetadas.
+
+6.2 Reportes
+• Para reportar un incidente, se deberá abrir un ticket en Tickets y adjuntar un clip del incidente.
+• Una vez revisado el caso, la resolución y sanción serán publicadas mencionando al piloto sancionado en Judgments.
+• Los reportes deberán enviarse dentro de las 24 horas posteriores a la carrera.
+
+6.3 Apelaciones
+• Los pilotos sancionados tendrán derecho a apelar la decisión abriendo un ticket adicional y aportando pruebas nuevas o una explicación razonada.
+• La dirección de carrera revisará la apelación y emitirá una resolución final.
+
+
+7. Interpretación del Reglamento
+• Cualquier situación no contemplada específicamente en este reglamento será evaluada por dirección de carrera.
+• La administración podrá modificar el reglamento si considera que es necesario para el correcto funcionamiento de la competición.
+• Toda modificación será comunicada previamente a los pilotos.

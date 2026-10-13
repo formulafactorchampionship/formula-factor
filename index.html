@@ -113,10 +113,7 @@
             </div>
             <a href="#calendar" id="navCalendar" class="nav-item">CALENDARIO</a>
             <a href="#news" id="navNews" class="nav-item">NOTICIAS</a>
-            <a href="#fantasy" class="nav-item nav-fantasy-link" id="navFantasy" title="FFC Fantasy League" onclick="if(window.openFantasyPortal){window.openFantasyPortal();return false;}">
-                <span class="fantasy-nav-dot" aria-hidden="true"></span>
-                <span id="navFantasyText">FANTASY</span>
-            </a>
+            <a href="#fantasy" id="navFantasy" class="nav-item text-amber-400 font-bold">FANTASY</a>
         </nav>
 
         <div class="nav-actions">
@@ -293,14 +290,6 @@
                                     </button>
                                 </div>
 
-                                <!-- Acceso directo FFC Fantasy -->
-                                <div class="user-fantasy-shortcut">
-                                    <button type="button" class="setting-row-btn fantasy-btn" id="userOpenFantasyBtn">
-                                        <span style="font-size: 14px;">🏎️</span>
-                                        <span id="userFantasyBtnText">Mi Escudería FFC Fantasy</span>
-                                        <span class="setting-tz-badge">75M€</span>
-                                    </button>
-                                </div>
 
                                 <!-- Preferencia de Idioma -->
                                 <div class="setting-row-item">
@@ -767,6 +756,258 @@
         </div>
         <div id="homeTop3BattleSvgContainer" style="width: 100%; height: 340px; position: relative;">
             <!-- Dynamically rendered clean SVG chart -->
+        </div>
+    </div>
+
+    <!-- ESCENARIOS DE CAMPEONATO (DIEGUIOSK EN FUJI vs MUNT) -->
+    <div class="battle-scenarios-wrapper" id="battleScenariosWrapper">
+        <div class="battle-scenarios-header">
+            <div class="battle-scenarios-title-wrap">
+                <div class="battle-scenarios-badge-row">
+                    <span class="battle-scenarios-badge">
+                        <img src="https://flagcdn.com/w40/jp.png" class="driver-flag-img inline-block align-middle" alt="jp" style="width: 16px; height: 11px; border-radius: 2px; vertical-align: -1px; margin-right: 4px;">
+                        <span id="scenariosRoundBadge">RONDA 13 · FUJI SPEEDWAY</span>
+                    </span>
+                    <span class="scenarios-diff-badge" id="scenariosDiffBadge" style="font-size: 11px; font-weight: 700; color: #38bdf8; background: rgba(56, 189, 248, 0.12); border: 1px solid rgba(56, 189, 248, 0.28); padding: 2px 7px; border-radius: 6px; font-family: 'Barlow Condensed', sans-serif; letter-spacing: 0.5px;">DIFERENCIA: +49 PTS</span>
+                </div>
+                <h3 class="battle-scenarios-title" id="battleScenariosTitle">
+                    <span>🏆</span>
+                    <span id="scenariosTitleText">ESCENARIOS PARA EL CAMPEONATO DEL MUNDO</span>
+                </h3>
+                <p class="battle-scenarios-sub" id="scenariosSubText">
+                    Si <strong>Dieguiosk</strong> sale de Fuji con más de <strong>52 puntos</strong> sobre <strong>Munt.</strong>, se proclamará Campeón de Pilotos matemáticamente (quedarán 52 pts en disputa entre Austin y Abu Dhabi).
+                </p>
+            </div>
+            <div class="battle-scenarios-quickfilter" id="scenariosQuickFilter" aria-label="Filtro de escenarios">
+                <button type="button" class="scenario-filter-btn active" data-filter="all" id="btnFilterAll" onclick="filterScenariosRows('all')">Todos</button>
+                <button type="button" class="scenario-filter-btn" data-filter="win" id="btnFilterWin" onclick="filterScenariosRows('win')">Victoria</button>
+                <button type="button" class="scenario-filter-btn" data-filter="podium" id="btnFilterPodium" onclick="filterScenariosRows('podium')">Podio</button>
+                <button type="button" class="scenario-filter-btn" data-filter="top5" id="btnFilterTop5" onclick="filterScenariosRows('top5')">Top 5</button>
+            </div>
+        </div>
+
+        <div class="battle-scenarios-table-container">
+            <table class="battle-scenarios-table" id="battleScenariosTable" aria-label="Escenarios de Campeonato Dieguiosk vs Munt en Fuji">
+                <thead>
+                    <tr>
+                        <th class="th-dieguiosk" scope="col">
+                            <div class="scenarios-th-box">
+                                <span class="scenarios-th-name">
+                                    <img src="https://flagcdn.com/w40/al.png" class="driver-flag-img inline-block align-middle" alt="al" style="width: 18px; height: 13px; border-radius: 2px; vertical-align: -1px;">
+                                    <span>Dieguiosk</span>
+                                </span>
+                                <span class="scenarios-th-badge hrt">HRT #23 · 168 PTS</span>
+                            </div>
+                            <div class="scenarios-th-sub" id="thDiegoSub">Si finaliza en Fuji:</div>
+                        </th>
+                        <th class="th-munt" scope="col">
+                            <div class="scenarios-th-box">
+                                <span class="scenarios-th-name">
+                                    <img src="https://flagcdn.com/w40/es.png" class="driver-flag-img inline-block align-middle" alt="es" style="width: 18px; height: 13px; border-radius: 2px; vertical-align: -1px;">
+                                    <span>Munt.</span>
+                                </span>
+                                <span class="scenarios-th-badge rb">RED BULL #99 · 119 PTS</span>
+                            </div>
+                            <div class="scenarios-th-sub" id="thMuntSub">Munt debe cruzar meta:</div>
+                        </th>
+                        <th class="th-outcome" scope="col">
+                            <div class="scenarios-th-box">
+                                <span class="scenarios-th-name">
+                                    <svg width="18" height="13" viewBox="0 0 24 16" class="driver-flag-img inline-block align-middle" style="width: 18px; height: 13px; border-radius: 2px; vertical-align: -1px; box-shadow: 0 1px 3px rgba(0,0,0,0.4);" aria-hidden="true">
+                                        <rect width="24" height="16" fill="#0f172a" rx="1"/>
+                                        <rect x="0" y="0" width="6" height="5.33" fill="#ffffff"/>
+                                        <rect x="12" y="0" width="6" height="5.33" fill="#ffffff"/>
+                                        <rect x="6" y="5.33" width="6" height="5.34" fill="#ffffff"/>
+                                        <rect x="18" y="5.33" width="6" height="5.34" fill="#ffffff"/>
+                                        <rect x="0" y="10.67" width="6" height="5.33" fill="#ffffff"/>
+                                        <rect x="12" y="10.67" width="6" height="5.33" fill="#ffffff"/>
+                                    </svg>
+                                    <span id="thOutcomeTitle">Desenlace del Título</span>
+                                </span>
+                                <span class="scenarios-th-badge outcome-hdr">R13 MATEMÁTICO</span>
+                            </div>
+                            <div class="scenarios-th-sub" id="thOutcomeSub">Estado del campeonato:</div>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody id="battleScenariosTbody">
+                    <!-- 1º + VR -->
+                    <tr class="scenario-row row-win" data-group="win" onclick="highlightScenarioRow(this)">
+                        <td class="cell-dieguiosk">
+                            <div class="scenario-cell-flex">
+                                <span class="scenario-pos-pill pill-p1">1º</span>
+                                <span class="scenario-fl-tag" id="scenFl1">⚡ VUELTA RÁPIDA</span>
+                            </div>
+                        </td>
+                        <td class="cell-munt">
+                            <span class="scenario-pos-pill pill-munt-req" id="scenReq1">3º o peor</span>
+                        </td>
+                        <td class="cell-outcome">
+                            <span class="scenario-outcome-tag outcome-champ" id="scenOut1">🏆 CAMPEÓN DEL MUNDO</span>
+                        </td>
+                    </tr>
+
+                    <!-- 1º -->
+                    <tr class="scenario-row row-win" data-group="win" onclick="highlightScenarioRow(this)">
+                        <td class="cell-dieguiosk">
+                            <div class="scenario-cell-flex">
+                                <span class="scenario-pos-pill pill-p1">1º</span>
+                            </div>
+                        </td>
+                        <td class="cell-munt">
+                            <span class="scenario-pos-pill pill-munt-req" id="scenReq2">4º o peor</span>
+                        </td>
+                        <td class="cell-outcome">
+                            <span class="scenario-outcome-tag outcome-champ" id="scenOut2">🏆 CAMPEÓN DEL MUNDO</span>
+                        </td>
+                    </tr>
+
+                    <!-- 2º + VR -->
+                    <tr class="scenario-row row-podium" data-group="podium" onclick="highlightScenarioRow(this)">
+                        <td class="cell-dieguiosk">
+                            <div class="scenario-cell-flex">
+                                <span class="scenario-pos-pill pill-podium">2º</span>
+                                <span class="scenario-fl-tag" id="scenFl2">⚡ VUELTA RÁPIDA</span>
+                            </div>
+                        </td>
+                        <td class="cell-munt">
+                            <span class="scenario-pos-pill pill-munt-req" id="scenReq3">5º o peor</span>
+                        </td>
+                        <td class="cell-outcome">
+                            <span class="scenario-outcome-tag outcome-champ" id="scenOut3">🏆 CAMPEÓN DEL MUNDO</span>
+                        </td>
+                    </tr>
+
+                    <!-- 2º -->
+                    <tr class="scenario-row row-podium" data-group="podium" onclick="highlightScenarioRow(this)">
+                        <td class="cell-dieguiosk">
+                            <div class="scenario-cell-flex">
+                                <span class="scenario-pos-pill pill-podium">2º</span>
+                            </div>
+                        </td>
+                        <td class="cell-munt">
+                            <span class="scenario-pos-pill pill-munt-req" id="scenReq4">6º o peor</span>
+                        </td>
+                        <td class="cell-outcome">
+                            <span class="scenario-outcome-tag outcome-champ" id="scenOut4">🏆 CAMPEÓN DEL MUNDO</span>
+                        </td>
+                    </tr>
+
+                    <!-- 3º + VR -->
+                    <tr class="scenario-row row-podium" data-group="podium" onclick="highlightScenarioRow(this)">
+                        <td class="cell-dieguiosk">
+                            <div class="scenario-cell-flex">
+                                <span class="scenario-pos-pill pill-podium">3º</span>
+                                <span class="scenario-fl-tag" id="scenFl3">⚡ VUELTA RÁPIDA</span>
+                            </div>
+                        </td>
+                        <td class="cell-munt">
+                            <span class="scenario-pos-pill pill-munt-req" id="scenReq5">7º o peor</span>
+                        </td>
+                        <td class="cell-outcome">
+                            <span class="scenario-outcome-tag outcome-champ" id="scenOut5">🏆 CAMPEÓN DEL MUNDO</span>
+                        </td>
+                    </tr>
+
+                    <!-- 3º -->
+                    <tr class="scenario-row row-podium" data-group="podium" onclick="highlightScenarioRow(this)">
+                        <td class="cell-dieguiosk">
+                            <div class="scenario-cell-flex">
+                                <span class="scenario-pos-pill pill-podium">3º</span>
+                            </div>
+                        </td>
+                        <td class="cell-munt">
+                            <span class="scenario-pos-pill pill-munt-req" id="scenReq6">8º o peor</span>
+                        </td>
+                        <td class="cell-outcome">
+                            <span class="scenario-outcome-tag outcome-champ" id="scenOut6">🏆 CAMPEÓN DEL MUNDO</span>
+                        </td>
+                    </tr>
+
+                    <!-- 4º + VR -->
+                    <tr class="scenario-row row-top5" data-group="top5" onclick="highlightScenarioRow(this)">
+                        <td class="cell-dieguiosk">
+                            <div class="scenario-cell-flex">
+                                <span class="scenario-pos-pill pill-top5">4º</span>
+                                <span class="scenario-fl-tag" id="scenFl4">⚡ VUELTA RÁPIDA</span>
+                            </div>
+                        </td>
+                        <td class="cell-munt">
+                            <span class="scenario-pos-pill pill-munt-req" id="scenReq7">9º o peor</span>
+                        </td>
+                        <td class="cell-outcome">
+                            <span class="scenario-outcome-tag outcome-champ" id="scenOut7">🏆 CAMPEÓN DEL MUNDO</span>
+                        </td>
+                    </tr>
+
+                    <!-- 4º -->
+                    <tr class="scenario-row row-top5" data-group="top5" onclick="highlightScenarioRow(this)">
+                        <td class="cell-dieguiosk">
+                            <div class="scenario-cell-flex">
+                                <span class="scenario-pos-pill pill-top5">4º</span>
+                            </div>
+                        </td>
+                        <td class="cell-munt">
+                            <span class="scenario-pos-pill pill-munt-req" id="scenReq8">10º o peor</span>
+                        </td>
+                        <td class="cell-outcome">
+                            <span class="scenario-outcome-tag outcome-champ" id="scenOut8">🏆 CAMPEÓN DEL MUNDO</span>
+                        </td>
+                    </tr>
+
+                    <!-- 5º + VR -->
+                    <tr class="scenario-row row-top5" data-group="top5" onclick="highlightScenarioRow(this)">
+                        <td class="cell-dieguiosk">
+                            <div class="scenario-cell-flex">
+                                <span class="scenario-pos-pill pill-top5">5º</span>
+                                <span class="scenario-fl-tag" id="scenFl5">⚡ VUELTA RÁPIDA</span>
+                            </div>
+                        </td>
+                        <td class="cell-munt">
+                            <span class="scenario-pos-pill pill-munt-req" id="scenReq9">10º o peor (sin VR)</span>
+                        </td>
+                        <td class="cell-outcome">
+                            <span class="scenario-outcome-tag outcome-champ" id="scenOut9">🏆 CAMPEÓN DEL MUNDO</span>
+                        </td>
+                    </tr>
+
+                    <!-- 5º -->
+                    <tr class="scenario-row row-top5" data-group="top5" onclick="highlightScenarioRow(this)">
+                        <td class="cell-dieguiosk">
+                            <div class="scenario-cell-flex">
+                                <span class="scenario-pos-pill pill-top5">5º</span>
+                            </div>
+                        </td>
+                        <td class="cell-munt">
+                            <span class="scenario-pos-pill pill-munt-nopoints" id="scenReq10">Sin puntos (11º o DNF)</span>
+                        </td>
+                        <td class="cell-outcome">
+                            <span class="scenario-outcome-tag outcome-champ" id="scenOut10">🏆 CAMPEÓN DEL MUNDO</span>
+                        </td>
+                    </tr>
+
+                    <!-- 6º o inferior -->
+                    <tr class="scenario-row" data-group="wait" onclick="highlightScenarioRow(this)">
+                        <td class="cell-dieguiosk">
+                            <div class="scenario-cell-flex">
+                                <span class="scenario-pos-pill pill-postpone" id="scenDiego11">6º o peor</span>
+                            </div>
+                        </td>
+                        <td class="cell-munt">
+                            <span class="scenario-pos-pill pill-postpone" id="scenReq11">Cualquier resultado</span>
+                        </td>
+                        <td class="cell-outcome">
+                            <span class="scenario-outcome-tag outcome-wait" id="scenOut11">⏳ SE APLAZA A AUSTIN (R14)</span>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="battle-scenarios-footer">
+            <p class="battle-scenarios-note" id="scenariosFooterNote">
+                * Con estos resultados matemáticos frente a Munt., Dieguiosk asegura el título de pilotos 2026 en Fuji Speedway. Puntuación oficial F1 (25-18-15-12-10-8-6-4-2-1 + 1 pt VR).
+            </p>
         </div>
     </div>
 
@@ -2279,6 +2520,237 @@
 </section>
 
 
+<!-- =========================================================
+     CÓMO PARTICIPAR / HOW TO JOIN FFC
+========================================================= -->
+<section class="section participate-section" id="participate">
+
+    <div class="participate-hero-banner">
+
+        <!-- Header -->
+        <div class="participate-header-content">
+            <div class="participate-kicker-row">
+                <span class="section-kicker" id="participateKicker">
+                    INSCRIPCIONES &amp; COMUNIDAD · TEMPORADA 2026
+                </span>
+                <span class="participate-live-status-pill">
+                    <span class="participate-dot-pulse"></span>
+                    <span id="participateStatusPillText">PLAZAS ABIERTAS</span>
+                </span>
+            </div>
+
+            <div class="participate-title-area">
+                <h2 id="participateHeading">CÓMO <span class="gold-gradient">PARTICIPAR</span></h2>
+                <p id="participateLead" class="participate-lead-text">
+                    La Formula Factor Championship está abierta a pilotos de todos los niveles comprometidos con el juego limpio. Sigue esta guía paso a paso para configurar tu simulador, unirte a la comunidad oficial y subirte a un monoplaza en la próxima cita del calendario.
+                </p>
+            </div>
+
+            <!-- Quick Specs Strip -->
+            <div class="participate-specs-strip">
+                <div class="participate-spec-item">
+                    <span class="spec-label" id="specLabelPlatform">PLATAFORMA</span>
+                    <span class="spec-val" id="specValPlatform">PC · Assetto Corsa</span>
+                </div>
+                <div class="participate-spec-divider" aria-hidden="true"></div>
+                <div class="participate-spec-item">
+                    <span class="spec-label" id="specLabelCategory">CATEGORÍA</span>
+                    <span class="spec-val" id="specValCategory">Fórmula 1 (V8 / V10)</span>
+                </div>
+                <div class="participate-spec-divider" aria-hidden="true"></div>
+                <div class="participate-spec-item">
+                    <span class="spec-label" id="specLabelSeats">ASIENTOS</span>
+                    <span class="spec-val" id="specValSeats">Titulares &amp; Reservas</span>
+                </div>
+                <div class="participate-spec-divider" aria-hidden="true"></div>
+                <div class="participate-spec-item">
+                    <span class="spec-label" id="specLabelHub">COORDINACIÓN</span>
+                    <span class="spec-val" id="specValHub">Servidor Oficial Discord</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- 4 Step Progressive Grid -->
+        <div class="participate-steps-grid">
+
+            <!-- Step 1 -->
+            <div class="participate-step-card">
+                <div class="step-card-header">
+                    <span class="step-num-badge">01</span>
+                    <div class="step-icon-wrap step-icon-discord" title="Discord FFC">
+                        <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor" aria-hidden="true">
+                            <path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028c.462-.63.874-1.295 1.226-1.994.021-.041.001-.09-.041-.106a13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.929 1.793 8.18 1.793 12.061 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.894.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.028zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.956-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.956 2.418-2.157 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.946 2.418-2.157 2.418z"/>
+                        </svg>
+                    </div>
+                </div>
+                <h3 id="step1Title">Únete al Servidor de Discord</h3>
+                <p id="step1Desc">
+                    Es el centro neurálgico de la competición. Desde Discord se gestionan los anuncios oficiales, briefings de carrera obligatorios, enlaces de servidores privados y adjudicación de plazas.
+                </p>
+                <div class="step-card-footer">
+                    <a href="https://discord.gg/NXFPWd6eg" target="_blank" rel="noopener noreferrer" class="step-link-btn" id="step1Btn">
+                        <span id="step1BtnText">Unirse a Discord FFC</span>
+                        <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17l9.2-9.2M17 17V8H8"/></svg>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Step 2 -->
+            <div class="participate-step-card">
+                <div class="step-card-header">
+                    <span class="step-num-badge">02</span>
+                    <div class="step-icon-wrap step-icon-wheel" title="Assetto Corsa">
+                        <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <circle cx="12" cy="12" r="10"/>
+                            <circle cx="12" cy="12" r="3"/>
+                            <path d="M12 2v7M12 15v7M2 12h7M15 12h7"/>
+                        </svg>
+                    </div>
+                </div>
+                <h3 id="step2Title">Prepara Assetto Corsa &amp; Mods</h3>
+                <p id="step2Desc">
+                    Necesitarás Assetto Corsa en PC (Steam) junto a <strong>Content Manager</strong> y <strong>Custom Shaders Patch (CSP)</strong>. En los canales de Discord encontrarás los enlaces directos a los coches oficiales y trazados.
+                </p>
+                <div class="step-card-footer">
+                    <a href="#calendar" class="step-link-btn" id="step2Btn">
+                        <span id="step2BtnText">Ver Circuitos Oficiales</span>
+                        <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Step 3 -->
+            <div class="participate-step-card">
+                <div class="step-card-header">
+                    <span class="step-num-badge">03</span>
+                    <div class="step-icon-wrap step-icon-ticket" title="Preselección">
+                        <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                            <polyline points="14 2 14 8 20 8"/>
+                            <line x1="16" y1="13" x2="8" y2="13"/>
+                            <line x1="16" y1="17" x2="8" y2="17"/>
+                            <polyline points="10 9 9 9 8 9"/>
+                        </svg>
+                    </div>
+                </div>
+                <h3 id="step3Title">Solicita Plaza en #join-a-team</h3>
+                <p id="step3Desc">
+                    Para solicitar plaza y unirte a una escudería, escribe directamente en el canal <strong>#join-a-team</strong> de nuestro servidor de Discord. Los comisarios evaluarán tu perfil y disponibilidad.
+                </p>
+                <div class="step-card-footer">
+                    <a href="https://discord.gg/NXFPWd6eg" target="_blank" rel="noopener noreferrer" class="step-link-btn" id="step3Btn">
+                        <span id="step3BtnText">Escribir en #join-a-team</span>
+                        <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17l9.2-9.2M17 17V8H8"/></svg>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Step 4 -->
+            <div class="participate-step-card">
+                <div class="step-card-header">
+                    <span class="step-num-badge">04</span>
+                    <div class="step-icon-wrap step-icon-flag" title="Carrera">
+                        <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/>
+                            <line x1="4" y1="22" x2="4" y2="15"/>
+                        </svg>
+                    </div>
+                </div>
+                <h3 id="step4Title">Briefing, Luces Fuera &amp; A Pista</h3>
+                <p id="step4Desc">
+                    Conéctate en los horarios estipulados para cada fin de semana. Tras el briefing con los comisarios FIA, disputa la sesión de clasificación y la carrera retransmitida en directo con telemetría en vivo.
+                </p>
+                <div class="step-card-footer">
+                    <a href="/reglamento-ffc.txt" download="Reglamento_Oficial_FFC.txt" class="step-link-btn" id="step4Btn">
+                        <span id="step4BtnText">Descargar Reglamento Oficial (TXT)</span>
+                        <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+                    </a>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Bento Grid: Requirements & Roles -->
+        <div class="participate-details-grid">
+
+            <!-- Card 1: Requirements -->
+            <div class="participate-info-card">
+                <div class="participate-card-title-row">
+                    <div class="card-icon-accent">
+                        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                    </div>
+                    <h4 id="reqTitle">Requisitos Técnicos &amp; Fair Play</h4>
+                </div>
+                <ul class="participate-checklist">
+                    <li>
+                        <span class="check-icon">✓</span>
+                        <span id="req1"><strong>Plataforma PC:</strong> Assetto Corsa original (Steam) con Content Manager y Custom Shaders Patch instalados.</span>
+                    </li>
+                    <li>
+                        <span class="check-icon">✓</span>
+                        <span id="req2"><strong>Control del Vehículo:</strong> Volante con Force Feedback o mando analógico con trazada limpia y control estricto.</span>
+                    </li>
+                    <li>
+                        <span class="check-icon">✓</span>
+                        <span id="req3"><strong>Conexión a Internet:</strong> Conexión estable (preferiblemente fibra por cable ethernet) con bajo ping para evitar lag en parrilla.</span>
+                    </li>
+                    <li>
+                        <span class="check-icon">✓</span>
+                        <span id="req4"><strong>Deportividad Máxima:</strong> Respeto innegociable al reglamento deportivo, comisarios de pista y juego limpio entre pilotos.</span>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Card 2: Roles -->
+            <div class="participate-info-card">
+                <div class="participate-card-title-row">
+                    <div class="card-icon-accent">
+                        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                    </div>
+                    <h4 id="rolesTitle">Modalidades de Participación</h4>
+                </div>
+                <div class="participate-roles-list">
+                    <div class="participate-role-item">
+                        <div class="role-badge-tag gold-tag" id="roleTag1">TITULAR</div>
+                        <div class="role-desc-group">
+                            <strong id="role1Title">Piloto Titular FFC</strong>
+                            <p id="role1Desc">Asiento fijo garantizado en una de las escuderías oficiales para disputar los 15 Grandes Premios y luchar por los campeonatos de Pilotos y Constructores.</p>
+                        </div>
+                    </div>
+                    <div class="participate-role-item">
+                        <div class="role-badge-tag cyan-tag" id="roleTag2">RESERVA</div>
+                        <div class="role-desc-group">
+                            <strong id="role2Title">Piloto Reserva / Wildcard</strong>
+                            <p id="role2Desc">Convocado ante bajas o ausencias de titulares en cada fin de semana. Suma puntos oficiales y tiene prioridad directa para ocupar vacantes de titular.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Bottom Action CTA -->
+        <div class="participate-cta-banner">
+            <div class="participate-cta-text">
+                <h4 id="ctaBannerTitle">¿Listo para encender motores en Formula Factor?</h4>
+                <p id="ctaBannerDesc">Para solicitar plaza, escribe en el canal #join-a-team de nuestro Discord oficial. ¡Te esperamos en la parrilla!</p>
+            </div>
+            <div class="participate-cta-buttons">
+                <a href="https://discord.gg/NXFPWd6eg" target="_blank" rel="noopener noreferrer" class="btn btn-primary participate-cta-main-btn" id="btnParticipateDiscord">
+                    <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" class="inline-block align-middle mr-1.5"><path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028c.462-.63.874-1.295 1.226-1.994.021-.041.001-.09-.041-.106a13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.929 1.793 8.18 1.793 12.061 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.894.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.028zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.956-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.956 2.418-2.157 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.946 2.418-2.157 2.418z"/></svg>
+                    <span id="btnParticipateDiscordText">ESCRIBIR EN #JOIN-A-TEAM ↗</span>
+                </a>
+                <a href="/reglamento-ffc.txt" download="Reglamento_Oficial_FFC.txt" class="btn btn-secondary participate-cta-sec-btn" id="btnParticipateReglamento">
+                    <span id="btnParticipateRegText">📄 DESCARGAR REGLAMENTO</span>
+                </a>
+            </div>
+        </div>
+
+    </div>
+
+</section>
+
+
 <!-- =========================
      INFO & ABOUT FFC
 ========================= -->
@@ -2407,6 +2879,8 @@
             <button type="button" class="footer-link-btn" id="footerCookiesBtn" onclick="if(window.openCookiesModal){window.openCookiesModal();return false;}">Política de Cookies</button>
             <span class="footer-dot">•</span>
             <a href="https://discord.gg/NXFPWd6eg" target="_blank" rel="noopener noreferrer" class="footer-link-a" id="footerDiscordLink">Discord Oficial</a>
+            <span class="footer-dot">•</span>
+            <a href="#participate" class="footer-link-a" id="footerParticipateLink">Cómo Participar</a>
             <span class="footer-dot">•</span>
             <a href="#info" class="footer-link-a" id="footerRulesLink">Reglamento FFC</a>
         </div>

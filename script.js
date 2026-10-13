@@ -474,6 +474,36 @@ const translations = {
             racing: "COMPETICIÓN",
             drivers: "PILOTOS"
         },
+        scenarios: {
+            roundBadge: "RONDA 13 · FUJI SPEEDWAY",
+            diffBadge: "DIFERENCIA: +49 PTS",
+            title: "ESCENARIOS PARA EL CAMPEONATO DEL MUNDO",
+            sub: "Si <strong>Dieguiosk</strong> sale de Fuji con más de <strong>52 puntos</strong> sobre <strong>Munt.</strong>, se proclamará Campeón de Pilotos matemáticamente (quedarán 52 pts en disputa entre Austin y Abu Dhabi).",
+            filterAll: "Todos",
+            filterWin: "Victoria",
+            filterPodium: "Podio",
+            filterTop5: "Top 5",
+            thDiegoSub: "Si finaliza en Fuji:",
+            thMuntSub: "Munt debe cruzar meta:",
+            thOutcomeTitle: "Desenlace del Título",
+            thOutcomeSub: "Estado del campeonato:",
+            footerNote: "* Con estos resultados matemáticos frente a Munt., Dieguiosk asegura el título de pilotos 2026 en Fuji Speedway. Puntuación oficial F1 (25-18-15-12-10-8-6-4-2-1 + 1 pt VR).",
+            fastestLap: "⚡ VUELTA RÁPIDA",
+            champTag: "🏆 CAMPEÓN DEL MUNDO",
+            postponeTag: "⏳ SE APLAZA A AUSTIN (R14)",
+            muntReq1: "3º o peor",
+            muntReq2: "4º o peor",
+            muntReq3: "5º o peor",
+            muntReq4: "6º o peor",
+            muntReq5: "7º o peor",
+            muntReq6: "8º o peor",
+            muntReq7: "9º o peor",
+            muntReq8: "10º o peor",
+            muntReq9: "10º o peor (sin VR)",
+            muntReq10: "Sin puntos (11º o DNF)",
+            diego11: "6º o peor",
+            muntReq11: "Cualquier resultado"
+        },
         standings: {
             kicker: "CAMPEONATO",
             heading: "CLASIFICACIÓN",
@@ -548,6 +578,42 @@ const translations = {
             card4Desc: "Organización profesional con transmisiones en directo, mercado de fichajes Fantasy y gestión centralizada a través de nuestra comunidad en Discord.",
             disclaimerHtml: "<strong>Aviso Importante:</strong> Es imprescindible formar parte del servidor oficial de Discord para estar al día de los comunicados, normativas y fichajes de equipos.",
             socialsKicker: "ENLACES OFICIALES Y REDES SOCIALES"
+        },
+        participate: {
+            kicker: "INSCRIPCIONES & COMUNIDAD · TEMPORADA 2026",
+            statusPill: "PLAZAS ABIERTAS",
+            heading: "CÓMO <span class=\"gold-gradient\">PARTICIPAR</span>",
+            lead: "La Formula Factor Championship está abierta a pilotos de todos los niveles comprometidos con el juego limpio. Sigue esta guía paso a paso para configurar tu simulador, unirte a la comunidad oficial y subirte a un monoplaza en la próxima cita del calendario.",
+            specPlatform: "PLATAFORMA",
+            specCategory: "CATEGORÍA",
+            specSeats: "ASIENTOS",
+            specHub: "COORDINACIÓN",
+            step1Title: "Únete al Servidor de Discord",
+            step1Desc: "Es el centro neurálgico de la competición. Desde Discord se gestionan los anuncios oficiales, briefings de carrera obligatorios, enlaces de servidores privados y adjudicación de plazas.",
+            step1Btn: "Unirse a Discord FFC",
+            step2Title: "Prepara Assetto Corsa & Mods",
+            step2Desc: "Necesitarás Assetto Corsa en PC (Steam) junto a <strong>Content Manager</strong> y <strong>Custom Shaders Patch (CSP)</strong>. En los canales de Discord encontrarás los enlaces directos a los coches oficiales y trazados.",
+            step2Btn: "Ver Circuitos Oficiales",
+            step3Title: "Solicita Plaza en #join-a-team",
+            step3Desc: "Para solicitar plaza y unirte a una escudería, escribe directamente en el canal <strong>#join-a-team</strong> de nuestro servidor de Discord. Los comisarios evaluarán tu perfil y disponibilidad.",
+            step3Btn: "Escribir en #join-a-team",
+            step4Title: "Briefing, Luces Fuera & A Pista",
+            step4Desc: "Conéctate en los horarios estipulados para cada fin de semana. Tras el briefing con los comisarios FIA, disputa la sesión de clasificación y la carrera retransmitida en directo con telemetría en vivo.",
+            step4Btn: "Consultar Normativa & Info",
+            reqTitle: "Requisitos Técnicos & Fair Play",
+            req1: "<strong>Plataforma PC:</strong> Assetto Corsa original (Steam) con Content Manager y Custom Shaders Patch instalados.",
+            req2: "<strong>Control del Vehículo:</strong> Volante con Force Feedback o mando analógico con trazada limpia y control estricto.",
+            req3: "<strong>Conexión a Internet:</strong> Conexión estable (preferiblemente fibra por cable ethernet) con bajo ping para evitar lag en parrilla.",
+            req4: "<strong>Deportividad Máxima:</strong> Respeto innegociable al reglamento deportivo, comisarios de pista y juego limpio entre pilotos.",
+            rolesTitle: "Modalidades de Participación",
+            role1Title: "Piloto Titular FFC",
+            role1Desc: "Asiento fijo garantizado en una de las escuderías oficiales para disputar los 15 Grandes Premios y luchar por los campeonatos de Pilotos y Constructores.",
+            role2Title: "Piloto Reserva / Wildcard",
+            role2Desc: "Convocado ante bajas o ausencias de titulares en cada fin de semana. Suma puntos oficiales y tiene prioridad directa para ocupar vacantes de titular.",
+            ctaTitle: "¿Listo para encender motores en Formula Factor?",
+            ctaDesc: "Para solicitar plaza, escribe en el canal #join-a-team de nuestro Discord oficial. ¡Te esperamos en la parrilla!",
+            btnDiscord: "ESCRIBIR EN #JOIN-A-TEAM ↗",
+            btnCalendar: "VER CALENDARIO DE CARRERAS ➔"
         },
         modal: {
             closeLabel: "Cerrar resultados de carrera",
@@ -986,6 +1052,36 @@ const translations = {
             racing: "RACING",
             drivers: "DRIVERS"
         },
+        scenarios: {
+            roundBadge: "ROUND 13 · FUJI SPEEDWAY",
+            diffBadge: "GAP: +49 PTS",
+            title: "WORLD CHAMPIONSHIP SCENARIOS",
+            sub: "If <strong>Dieguiosk</strong> leaves Fuji with more than <strong>52 points</strong> ahead of <strong>Munt.</strong>, he will mathematically claim the Drivers' World Championship (with 52 points remaining between Austin and Abu Dhabi).",
+            filterAll: "All",
+            filterWin: "Win",
+            filterPodium: "Podium",
+            filterTop5: "Top 5",
+            thDiegoSub: "If finishing in Fuji:",
+            thMuntSub: "Munt must finish:",
+            thOutcomeTitle: "Title Outcome",
+            thOutcomeSub: "Championship Status:",
+            footerNote: "* With these mathematical results against Munt., Dieguiosk secures the 2026 drivers' title at Fuji Speedway. Official F1 points system (25-18-15-12-10-8-6-4-2-1 + 1 pt FL).",
+            fastestLap: "⚡ FASTEST LAP",
+            champTag: "🏆 WORLD CHAMPION",
+            postponeTag: "⏳ POSTPONED TO AUSTIN (R14)",
+            muntReq1: "3rd or worse",
+            muntReq2: "4th or worse",
+            muntReq3: "5th or worse",
+            muntReq4: "6th or worse",
+            muntReq5: "7th or worse",
+            muntReq6: "8th or worse",
+            muntReq7: "9th or worse",
+            muntReq8: "10th or worse",
+            muntReq9: "10th or worse (no FL)",
+            muntReq10: "No points (11th or DNF)",
+            diego11: "6th or worse",
+            muntReq11: "Any result"
+        },
         standings: {
             kicker: "CHAMPIONSHIP",
             heading: "STANDINGS",
@@ -1060,6 +1156,42 @@ const translations = {
             card4Desc: "Professional organization featuring live broadcasts, Fantasy transfer market, and centralized league management through our Discord hub.",
             disclaimerHtml: "<strong>Important Notice:</strong> Joining the official Discord server is mandatory to stay updated on league announcements, regulations, and team signings.",
             socialsKicker: "OFFICIAL LINKS & SOCIAL MEDIA"
+        },
+        participate: {
+            kicker: "REGISTRATIONS & COMMUNITY · 2026 SEASON",
+            statusPill: "OPEN REGISTRATIONS",
+            heading: "HOW TO <span class=\"gold-gradient\">PARTICIPATE</span>",
+            lead: "Formula Factor Championship is open to sim racers of all skill levels committed to clean racing. Follow this step-by-step guide to configure your simulator, join the official community, and jump into a single-seater at the next Grand Prix on the calendar.",
+            specPlatform: "PLATFORM",
+            specCategory: "CATEGORY",
+            specSeats: "SEATS",
+            specHub: "COORDINATION",
+            step1Title: "Join the Discord Server",
+            step1Desc: "It is the heart of the championship. All official announcements, mandatory driver briefings, private server links, and seat allocations are handled on Discord.",
+            step1Btn: "Join FFC Discord",
+            step2Title: "Setup Assetto Corsa & Mods",
+            step2Desc: "You will need Assetto Corsa on PC (Steam) along with <strong>Content Manager</strong> and <strong>Custom Shaders Patch (CSP)</strong>. Official car and track download links are in Discord.",
+            step2Btn: "View Official Tracks",
+            step3Title: "Request a Seat in #join-a-team",
+            step3Desc: "To request a seat and join a team, write directly in the <strong>#join-a-team</strong> channel on our Discord server. Stewards will assess your profile and availability.",
+            step3Btn: "Write in #join-a-team",
+            step4Title: "Briefing, Lights Out & Race",
+            step4Desc: "Join on scheduled race weekends. Following the driver briefing with FIA stewards, contest qualifying and the race broadcasted live with real-time telemetry.",
+            step4Btn: "Consult Rules & Info",
+            reqTitle: "Technical & Fair Play Requirements",
+            req1: "<strong>PC Platform:</strong> Genuine Assetto Corsa (Steam) with Content Manager and Custom Shaders Patch installed.",
+            req2: "<strong>Vehicle Control:</strong> Force Feedback wheel or analogue gamepad with clean racing lines and strict control.",
+            req3: "<strong>Internet Connection:</strong> Stable broadband (wired ethernet recommended) with low ping to eliminate grid lag.",
+            req4: "<strong>Sportsmanship:</strong> Non-negotiable commitment to the sporting code, flag rules, and respectful racing conduct.",
+            rolesTitle: "Participation Roles",
+            role1Title: "Official Driver",
+            role1Desc: "Guaranteed race seat in one of the official teams across all 15 Grands Prix to fight for the Drivers' & Constructors' crowns.",
+            role2Title: "Reserve / Wildcard Driver",
+            role2Desc: "Called up for Grand Prix absences or wildcards. Scores official points and holds priority promotion for full-time vacancies.",
+            ctaTitle: "Ready to fire up engines in Formula Factor?",
+            ctaDesc: "To request a seat, write in the #join-a-team channel on our official Discord. See you on the grid!",
+            btnDiscord: "WRITE IN #JOIN-A-TEAM ↗",
+            btnCalendar: "VIEW RACE CALENDAR ➔"
         },
         modal: {
             closeLabel: "Close race results",
@@ -1549,6 +1681,55 @@ function applyTranslations(lang) {
     const navF = document.getElementById("navFantasyText");
     if (navF && dict.nav && dict.nav.fantasy) navF.textContent = dict.nav.fantasy;
 
+    const scenariosDict = dict.scenarios;
+    if (scenariosDict) {
+        const sRb = document.getElementById("scenariosRoundBadge");
+        if (sRb) sRb.textContent = scenariosDict.roundBadge;
+        const sDb = document.getElementById("scenariosDiffBadge");
+        if (sDb) sDb.textContent = scenariosDict.diffBadge;
+        const sTt = document.getElementById("scenariosTitleText");
+        if (sTt) sTt.textContent = scenariosDict.title;
+        const sSt = document.getElementById("scenariosSubText");
+        if (sSt) sSt.innerHTML = scenariosDict.sub;
+        const bAll = document.getElementById("btnFilterAll");
+        if (bAll) bAll.textContent = scenariosDict.filterAll;
+        const bWin = document.getElementById("btnFilterWin");
+        if (bWin) bWin.textContent = scenariosDict.filterWin;
+        const bPod = document.getElementById("btnFilterPodium");
+        if (bPod) bPod.textContent = scenariosDict.filterPodium;
+        const bTop5 = document.getElementById("btnFilterTop5");
+        if (bTop5) bTop5.textContent = scenariosDict.filterTop5;
+        const thD = document.getElementById("thDiegoSub");
+        if (thD) thD.textContent = scenariosDict.thDiegoSub;
+        const thM = document.getElementById("thMuntSub");
+        if (thM) thM.textContent = scenariosDict.thMuntSub;
+        const thOT = document.getElementById("thOutcomeTitle");
+        if (thOT) thOT.textContent = scenariosDict.thOutcomeTitle;
+        const thOS = document.getElementById("thOutcomeSub");
+        if (thOS) thOS.textContent = scenariosDict.thOutcomeSub;
+        const sFn = document.getElementById("scenariosFooterNote");
+        if (sFn) sFn.textContent = scenariosDict.footerNote;
+
+        for (let i = 1; i <= 5; i++) {
+            const fl = document.getElementById(`scenFl${i}`);
+            if (fl) fl.textContent = scenariosDict.fastestLap;
+        }
+        for (let i = 1; i <= 10; i++) {
+            const req = document.getElementById(`scenReq${i}`);
+            if (req && scenariosDict[`muntReq${i}`]) req.textContent = scenariosDict[`muntReq${i}`];
+        }
+        for (let i = 1; i <= 10; i++) {
+            const out = document.getElementById(`scenOut${i}`);
+            if (out) out.textContent = scenariosDict.champTag;
+        }
+        const d11 = document.getElementById("scenDiego11");
+        if (d11) d11.textContent = scenariosDict.diego11;
+        const r11 = document.getElementById("scenReq11");
+        if (r11) r11.textContent = scenariosDict.muntReq11;
+        const o11 = document.getElementById("scenOut11");
+        if (o11) o11.textContent = scenariosDict.postponeTag;
+    }
+
     const photosDict = dict.photos || (dict.compare && dict.compare.photos) || (dict.news && dict.news.compare && dict.news.compare.photos);
     if (photosDict) {
         const gk = document.getElementById("galleryModalKicker");
@@ -2015,6 +2196,90 @@ function applyTranslations(lang) {
 
     const inSoc = document.getElementById("socialsKicker");
     if (inSoc) inSoc.textContent = dict.info.socialsKicker;
+
+    // Participate section
+    if (dict.participate) {
+        const pKicker = document.getElementById("participateKicker");
+        if (pKicker) pKicker.textContent = dict.participate.kicker;
+        const pStatus = document.getElementById("participateStatusPillText");
+        if (pStatus) pStatus.textContent = dict.participate.statusPill;
+        const pH = document.getElementById("participateHeading");
+        if (pH) pH.innerHTML = dict.participate.heading;
+        const pLead = document.getElementById("participateLead");
+        if (pLead) pLead.textContent = dict.participate.lead;
+
+        const specP = document.getElementById("specLabelPlatform");
+        if (specP) specP.textContent = dict.participate.specPlatform;
+        const specC = document.getElementById("specLabelCategory");
+        if (specC) specC.textContent = dict.participate.specCategory;
+        const specS = document.getElementById("specLabelSeats");
+        if (specS) specS.textContent = dict.participate.specSeats;
+        const specH = document.getElementById("specLabelHub");
+        if (specH) specH.textContent = dict.participate.specHub;
+
+        const s1T = document.getElementById("step1Title");
+        if (s1T) s1T.textContent = dict.participate.step1Title;
+        const s1D = document.getElementById("step1Desc");
+        if (s1D) s1D.textContent = dict.participate.step1Desc;
+        const s1B = document.getElementById("step1BtnText");
+        if (s1B) s1B.textContent = dict.participate.step1Btn;
+
+        const s2T = document.getElementById("step2Title");
+        if (s2T) s2T.textContent = dict.participate.step2Title;
+        const s2D = document.getElementById("step2Desc");
+        if (s2D) s2D.innerHTML = dict.participate.step2Desc;
+        const s2B = document.getElementById("step2BtnText");
+        if (s2B) s2B.textContent = dict.participate.step2Btn;
+
+        const s3T = document.getElementById("step3Title");
+        if (s3T) s3T.textContent = dict.participate.step3Title;
+        const s3D = document.getElementById("step3Desc");
+        if (s3D) s3D.innerHTML = dict.participate.step3Desc;
+        const s3B = document.getElementById("step3BtnText");
+        if (s3B) s3B.textContent = dict.participate.step3Btn;
+
+        const s4T = document.getElementById("step4Title");
+        if (s4T) s4T.textContent = dict.participate.step4Title;
+        const s4D = document.getElementById("step4Desc");
+        if (s4D) s4D.textContent = dict.participate.step4Desc;
+        const s4B = document.getElementById("step4BtnText");
+        if (s4B) s4B.textContent = dict.participate.step4Btn;
+
+        const rqT = document.getElementById("reqTitle");
+        if (rqT) rqT.textContent = dict.participate.reqTitle;
+        const r1 = document.getElementById("req1");
+        if (r1) r1.innerHTML = dict.participate.req1;
+        const r2 = document.getElementById("req2");
+        if (r2) r2.innerHTML = dict.participate.req2;
+        const r3 = document.getElementById("req3");
+        if (r3) r3.innerHTML = dict.participate.req3;
+        const r4 = document.getElementById("req4");
+        if (r4) r4.innerHTML = dict.participate.req4;
+
+        const rlT = document.getElementById("rolesTitle");
+        if (rlT) rlT.textContent = dict.participate.rolesTitle;
+        const ro1T = document.getElementById("role1Title");
+        if (ro1T) ro1T.textContent = dict.participate.role1Title;
+        const ro1D = document.getElementById("role1Desc");
+        if (ro1D) ro1D.textContent = dict.participate.role1Desc;
+        const ro2T = document.getElementById("role2Title");
+        if (ro2T) ro2T.textContent = dict.participate.role2Title;
+        const ro2D = document.getElementById("role2Desc");
+        if (ro2D) ro2D.textContent = dict.participate.role2Desc;
+
+
+        const ctaT = document.getElementById("ctaBannerTitle");
+        if (ctaT) ctaT.textContent = dict.participate.ctaTitle;
+        const ctaD = document.getElementById("ctaBannerDesc");
+        if (ctaD) ctaD.textContent = dict.participate.ctaDesc;
+        const bDisc = document.getElementById("btnParticipateDiscordText");
+        if (bDisc) bDisc.textContent = dict.participate.btnDiscord;
+        const bCal = document.getElementById("btnParticipateCalText");
+        if (bCal) bCal.textContent = dict.participate.btnCalendar;
+
+        const fPart = document.getElementById("footerParticipateLink");
+        if (fPart) fPart.textContent = (lang === "en") ? "How to Participate" : "Cómo Participar";
+    }
 
     // Modal
     const clBtn = document.getElementById("closeRace");
@@ -2853,16 +3118,20 @@ function closeAllDropdowns() {
     const langDd = document.getElementById("langDropdown");
     const tzDd = document.getElementById("tzDropdown");
     const userDd = document.getElementById("userAuthDropdown");
+    const standingsDd = document.getElementById("navStandingsDropdownWrap");
     const langBtn = document.getElementById("langDropdownBtn");
     const tzBtn = document.getElementById("tzDropdownBtn");
     const authBtn = document.getElementById("authHeaderBtn");
+    const standingsBtn = document.getElementById("navStandings");
 
     if (langDd) langDd.classList.remove("is-open");
     if (tzDd) tzDd.classList.remove("is-open");
     if (userDd) userDd.classList.remove("is-open");
+    if (standingsDd) standingsDd.classList.remove("is-open");
     if (langBtn) langBtn.setAttribute("aria-expanded", "false");
     if (tzBtn) tzBtn.setAttribute("aria-expanded", "false");
     if (authBtn) authBtn.setAttribute("aria-expanded", "false");
+    if (standingsBtn) standingsBtn.setAttribute("aria-expanded", "false");
 }
 
 function initCustomDropdowns() {
@@ -2870,6 +3139,8 @@ function initCustomDropdowns() {
     const langDropdownBtn = document.getElementById("langDropdownBtn");
     const tzDropdown = document.getElementById("tzDropdown");
     const tzDropdownBtn = document.getElementById("tzDropdownBtn");
+    const standingsDropdown = document.getElementById("navStandingsDropdownWrap");
+    const standingsBtn = document.getElementById("navStandings");
 
     if (langDropdownBtn && langDropdown) {
         langDropdownBtn.addEventListener("click", (e) => {
@@ -2913,6 +3184,19 @@ function initCustomDropdowns() {
         });
     }
 
+    if (standingsBtn && standingsDropdown) {
+        standingsBtn.addEventListener("click", (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            const isOpen = standingsDropdown.classList.contains("is-open");
+            closeAllDropdowns();
+            if (!isOpen) {
+                standingsDropdown.classList.add("is-open");
+                standingsBtn.setAttribute("aria-expanded", "true");
+            }
+        });
+    }
+
     const profileTzSelect = document.getElementById("profileTzSelect");
     if (profileTzSelect) {
         profileTzSelect.addEventListener("change", (e) => {
@@ -2921,7 +3205,7 @@ function initCustomDropdowns() {
     }
 
     document.addEventListener("click", (e) => {
-        if (!e.target.closest(".custom-dropdown")) {
+        if (!e.target.closest(".custom-dropdown") && !e.target.closest(".nav-dropdown-wrap")) {
             closeAllDropdowns();
         }
     });
@@ -4499,6 +4783,40 @@ function renderHomeTop3Podium() {
 }
 window.renderHomeTop3Podium = renderHomeTop3Podium;
 
+// --- Championship Battle Scenarios Table Helpers ---
+function filterScenariosRows(filterGroup) {
+    const rows = document.querySelectorAll("#battleScenariosTbody .scenario-row");
+    const btns = document.querySelectorAll("#scenariosQuickFilter .scenario-filter-btn");
+    btns.forEach(b => {
+        b.classList.toggle("active", b.getAttribute("data-filter") === filterGroup);
+    });
+    rows.forEach(r => {
+        const group = r.getAttribute("data-group");
+        if (filterGroup === "all") {
+            r.style.display = "";
+        } else if (filterGroup === "win" && group === "win") {
+            r.style.display = "";
+        } else if (filterGroup === "podium" && (group === "win" || group === "podium")) {
+            r.style.display = "";
+        } else if (filterGroup === "top5" && (group === "win" || group === "podium" || group === "top5")) {
+            r.style.display = "";
+        } else {
+            r.style.display = "none";
+        }
+    });
+}
+window.filterScenariosRows = filterScenariosRows;
+
+function highlightScenarioRow(rowEl) {
+    if (!rowEl) return;
+    const isCurrentlyHighlighted = rowEl.classList.contains("row-highlight");
+    document.querySelectorAll("#battleScenariosTbody .scenario-row").forEach(r => r.classList.remove("row-highlight"));
+    if (!isCurrentlyHighlighted) {
+        rowEl.classList.add("row-highlight");
+    }
+}
+window.highlightScenarioRow = highlightScenarioRow;
+
 function renderTop3BattleChart(top3Drivers) {
     const container = document.getElementById("homeTop3BattleSvgContainer");
     const roundLabel = document.getElementById("homeBattleCurrentRound");
@@ -4705,7 +5023,7 @@ window.renderTop3BattleChart = renderTop3BattleChart;
 function switchMainTab(tabName, shouldScroll = true) {
     if (!tabName) tabName = "home";
     tabName = tabName.replace(/^#/, "");
-    if (!["home", "standings", "calendar", "news", "info"].includes(tabName)) {
+    if (!["home", "standings", "calendar", "news", "info", "participate"].includes(tabName)) {
         tabName = "home";
     }
 
@@ -4716,6 +5034,7 @@ function switchMainTab(tabName, shouldScroll = true) {
     const standingsEl = document.getElementById("standings");
     const calendarEl = document.getElementById("calendar");
     const newsEl = document.getElementById("news");
+    const participateEl = document.getElementById("participate");
     const infoEl = document.getElementById("info");
 
     // Close mobile nav drawer if open
@@ -4738,9 +5057,27 @@ function switchMainTab(tabName, shouldScroll = true) {
         if (standingsEl) standingsEl.style.display = "none";
         if (calendarEl) calendarEl.style.display = "none";
         if (newsEl) newsEl.style.display = "none";
+        if (participateEl) participateEl.style.display = "block";
         if (infoEl) infoEl.style.display = "block"; // Info visible on initial panel as requested!
         const navH = document.getElementById("navHome");
         if (navH) navH.classList.add("active");
+    } else if (tabName === "participate") {
+        if (homeEl) homeEl.style.display = "";
+        if (statsEl) statsEl.style.display = "";
+        if (homeTop3El) homeTop3El.style.display = "block";
+        if (unifiedWrap) unifiedWrap.style.display = "block";
+        if (standingsEl) standingsEl.style.display = "none";
+        if (calendarEl) calendarEl.style.display = "none";
+        if (newsEl) newsEl.style.display = "none";
+        if (participateEl) participateEl.style.display = "block";
+        if (infoEl) infoEl.style.display = "block";
+        const navH = document.getElementById("navHome");
+        if (navH) navH.classList.add("active");
+        if (participateEl) {
+            setTimeout(() => {
+                participateEl.scrollIntoView({ behavior: "smooth" });
+            }, 80);
+        }
     } else if (tabName === "info") {
         if (homeEl) homeEl.style.display = "none";
         if (statsEl) statsEl.style.display = "none";
@@ -4749,6 +5086,7 @@ function switchMainTab(tabName, shouldScroll = true) {
         if (standingsEl) standingsEl.style.display = "none";
         if (calendarEl) calendarEl.style.display = "none";
         if (newsEl) newsEl.style.display = "none";
+        if (participateEl) participateEl.style.display = "block";
         if (infoEl) infoEl.style.display = "block";
         const navI = document.getElementById("navInfo");
         if (navI) navI.classList.add("active");
@@ -4776,6 +5114,7 @@ function switchMainTab(tabName, shouldScroll = true) {
             }
         }
         if (newsEl) newsEl.style.display = (tabName === "news") ? "block" : "none";
+        if (participateEl) participateEl.style.display = "none";
         if (infoEl) infoEl.style.display = "none";
 
         if (tabName === "standings") {
@@ -4823,7 +5162,7 @@ function initTabNavigation() {
         if (!href || !href.startsWith("#")) return;
 
         const targetTab = href.substring(1);
-        if (["home", "standings", "calendar", "news", "info"].includes(targetTab)) {
+        if (["home", "standings", "calendar", "news", "info", "participate"].includes(targetTab)) {
             e.preventDefault();
             switchMainTab(targetTab, true);
         }
@@ -4831,14 +5170,14 @@ function initTabNavigation() {
 
     window.addEventListener("hashchange", () => {
         const hash = window.location.hash.replace(/^#/, "");
-        if (["home", "standings", "calendar", "news", "info"].includes(hash)) {
+        if (["home", "standings", "calendar", "news", "info", "participate"].includes(hash)) {
             switchMainTab(hash, true);
         }
     });
 
     // Check initial hash on load
     const initialHash = window.location.hash.replace(/^#/, "");
-    if (["standings", "calendar", "news", "info"].includes(initialHash)) {
+    if (["standings", "calendar", "news", "info", "participate"].includes(initialHash)) {
         switchMainTab(initialHash, false);
     } else {
         switchMainTab("home", false);

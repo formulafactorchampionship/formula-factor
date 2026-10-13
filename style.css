@@ -247,7 +247,6 @@ button {
     flex-shrink: 0;
 }
 
-.nav-dropdown-wrap:hover .nav-dropdown-chevron,
 .nav-dropdown-wrap.is-open .nav-dropdown-chevron {
     transform: rotate(180deg);
     opacity: 1;
@@ -278,8 +277,6 @@ button {
     gap: 3px;
 }
 
-.nav-dropdown-wrap:hover .nav-dropdown-menu,
-.nav-dropdown-wrap:focus-within .nav-dropdown-menu,
 .nav-dropdown-wrap.is-open .nav-dropdown-menu {
     opacity: 1;
     visibility: visible;
@@ -5779,6 +5776,406 @@ button {
     flex-wrap: wrap;
     margin-top: 24px;
 }
+
+/* =========================================================
+   BATTLE SCENARIOS TABLE (MOTORSPORT CHAMPIONSHIP GRAPHIC)
+========================================================= */
+.battle-scenarios-wrapper {
+    margin: 24px auto 0 auto;
+    max-width: 920px;
+    width: 100%;
+    background: linear-gradient(180deg, rgba(12, 18, 30, 0.92) 0%, rgba(7, 11, 20, 0.97) 100%);
+    border: 1px solid rgba(255, 255, 255, 0.09);
+    border-radius: 12px;
+    padding: 20px 22px;
+    backdrop-filter: blur(14px);
+    box-shadow: 0 12px 36px rgba(0, 0, 0, 0.55);
+    position: relative;
+    overflow: hidden;
+}
+
+.battle-scenarios-wrapper::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, transparent 0%, #d6b45c 25%, #38bdf8 75%, transparent 100%);
+}
+
+.battle-scenarios-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 16px;
+    gap: 16px;
+    flex-wrap: wrap;
+}
+
+.battle-scenarios-title-wrap {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    flex: 1;
+    min-width: 280px;
+}
+
+.battle-scenarios-badge-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.battle-scenarios-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+    color: #fef08a;
+    background: rgba(214, 180, 92, 0.15);
+    border: 1px solid rgba(214, 180, 92, 0.4);
+    padding: 3px 8px;
+    border-radius: 6px;
+}
+
+.battle-scenarios-title {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 19px;
+    font-weight: 800;
+    letter-spacing: 0.8px;
+    color: #f8fafc;
+    text-transform: uppercase;
+    margin: 2px 0 0 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.battle-scenarios-sub {
+    font-size: 12px;
+    color: #94a3b8;
+    margin: 2px 0 0 0;
+    line-height: 1.45;
+}
+
+.battle-scenarios-sub strong {
+    color: #cbd5e1;
+}
+
+.battle-scenarios-quickfilter {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+    background: rgba(0, 0, 0, 0.45);
+    padding: 4px 6px;
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    flex-shrink: 0;
+}
+
+.scenario-filter-btn {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    color: #cbd5e1;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 12px;
+    font-weight: 700;
+    padding: 5px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    letter-spacing: 0.4px;
+    line-height: 1.2;
+}
+
+.scenario-filter-btn:hover,
+.scenario-filter-btn.active {
+    background: rgba(214, 180, 92, 0.25);
+    border-color: #d6b45c;
+    color: #fef08a;
+    box-shadow: 0 0 10px rgba(214, 180, 92, 0.25);
+}
+
+.battle-scenarios-table-container {
+    width: 100%;
+    overflow-x: auto;
+    border-radius: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    background: rgba(4, 7, 13, 0.65);
+    box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.45);
+}
+
+.battle-scenarios-table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left;
+    min-width: 600px;
+}
+
+.battle-scenarios-table thead th {
+    padding: 10px 14px;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 13px;
+    font-weight: 800;
+    letter-spacing: 0.6px;
+    text-transform: uppercase;
+}
+
+.battle-scenarios-table thead .th-dieguiosk {
+    width: 35%;
+    background: linear-gradient(90deg, rgba(214, 180, 92, 0.16) 0%, rgba(214, 180, 92, 0.03) 100%);
+    border-bottom: 2px solid #d6b45c;
+    border-right: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.battle-scenarios-table thead .th-munt {
+    width: 35%;
+    background: linear-gradient(90deg, rgba(56, 189, 248, 0.16) 0%, rgba(56, 189, 248, 0.03) 100%);
+    border-bottom: 2px solid #38bdf8;
+    border-right: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.battle-scenarios-table thead .th-outcome {
+    width: 30%;
+    background: linear-gradient(90deg, rgba(34, 197, 94, 0.14) 0%, rgba(34, 197, 94, 0.02) 100%);
+    border-bottom: 2px solid #22c55e;
+}
+
+.scenarios-th-box {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 3px;
+}
+
+.scenarios-th-name {
+    color: #ffffff;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 14px;
+    letter-spacing: 0.6px;
+    font-weight: 800;
+}
+
+.scenarios-th-sub {
+    font-size: 11px;
+    color: #94a3b8;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+    text-transform: none;
+}
+
+.scenarios-th-badge {
+    font-size: 10px;
+    font-weight: 800;
+    padding: 2px 7px;
+    border-radius: 4px;
+    letter-spacing: 0.5px;
+}
+
+.scenarios-th-badge.hrt {
+    background: rgba(214, 180, 92, 0.2);
+    color: #fef08a;
+    border: 1px solid rgba(214, 180, 92, 0.4);
+}
+
+.scenarios-th-badge.rb {
+    background: rgba(56, 189, 248, 0.2);
+    color: #bae6fd;
+    border: 1px solid rgba(56, 189, 248, 0.4);
+}
+
+.scenarios-th-badge.outcome-hdr {
+    background: rgba(34, 197, 94, 0.18);
+    color: #86efac;
+    border: 1px solid rgba(34, 197, 94, 0.35);
+}
+
+.battle-scenarios-table tbody tr {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+    cursor: pointer;
+    transition: background 0.15s ease;
+}
+
+.battle-scenarios-table tbody tr:nth-child(even) {
+    background: rgba(255, 255, 255, 0.015);
+}
+
+.battle-scenarios-table tbody tr:hover,
+.battle-scenarios-table tbody tr.row-highlight {
+    background: rgba(214, 180, 92, 0.1) !important;
+}
+
+.battle-scenarios-table tbody tr:last-child {
+    border-bottom: none;
+}
+
+.battle-scenarios-table td {
+    padding: 8px 14px;
+    vertical-align: middle;
+}
+
+.battle-scenarios-table td.cell-dieguiosk {
+    border-right: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.battle-scenarios-table td.cell-munt {
+    border-right: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.scenario-cell-flex {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.scenario-pos-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 800;
+    font-size: 14px;
+    letter-spacing: 0.6px;
+    padding: 3px 10px;
+    border-radius: 5px;
+    line-height: 1.2;
+}
+
+.scenario-pos-pill.pill-p1 {
+    background: linear-gradient(135deg, rgba(214, 180, 92, 0.3) 0%, rgba(180, 140, 50, 0.18) 100%);
+    color: #fef08a;
+    border: 1px solid rgba(214, 180, 92, 0.55);
+    box-shadow: 0 0 8px rgba(214, 180, 92, 0.15);
+}
+
+.scenario-pos-pill.pill-podium {
+    background: rgba(255, 255, 255, 0.07);
+    color: #f8fafc;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.scenario-pos-pill.pill-top5 {
+    background: rgba(255, 255, 255, 0.04);
+    color: #cbd5e1;
+    border: 1px solid rgba(255, 255, 255, 0.09);
+}
+
+.scenario-pos-pill.pill-munt-req {
+    background: rgba(239, 68, 68, 0.12);
+    color: #fca5a5;
+    border: 1px solid rgba(239, 68, 68, 0.3);
+    font-weight: 700;
+}
+
+.scenario-pos-pill.pill-munt-nopoints {
+    background: rgba(244, 63, 94, 0.15);
+    color: #fda4af;
+    border: 1px solid rgba(244, 63, 94, 0.35);
+    font-weight: 700;
+}
+
+.scenario-pos-pill.pill-postpone {
+    background: rgba(148, 163, 184, 0.1);
+    color: #94a3b8;
+    border: 1px solid rgba(148, 163, 184, 0.2);
+}
+
+.scenario-fl-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    font-size: 10px;
+    font-weight: 800;
+    color: #d8b4fe;
+    background: rgba(168, 85, 247, 0.16);
+    border: 1px solid rgba(168, 85, 247, 0.35);
+    padding: 2px 7px;
+    border-radius: 4px;
+    letter-spacing: 0.4px;
+}
+
+.scenario-outcome-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: 0.7px;
+    text-transform: uppercase;
+    padding: 4px 10px;
+    border-radius: 6px;
+    line-height: 1.2;
+}
+
+.scenario-outcome-tag.outcome-champ {
+    background: linear-gradient(135deg, rgba(34, 197, 94, 0.22) 0%, rgba(22, 101, 52, 0.15) 100%);
+    color: #86efac;
+    border: 1px solid rgba(34, 197, 94, 0.45);
+    box-shadow: 0 0 10px rgba(34, 197, 94, 0.15);
+}
+
+.scenario-outcome-tag.outcome-wait {
+    background: rgba(148, 163, 184, 0.1);
+    color: #94a3b8;
+    border: 1px solid rgba(148, 163, 184, 0.2);
+}
+
+.battle-scenarios-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    margin-top: 12px;
+    padding-top: 10px;
+    border-top: 1px solid rgba(255, 255, 255, 0.06);
+    flex-wrap: wrap;
+}
+
+.battle-scenarios-note {
+    font-size: 11px;
+    color: #94a3b8;
+    margin: 0;
+    line-height: 1.4;
+}
+
+@media (max-width: 768px) {
+    .battle-scenarios-wrapper {
+        margin: 16px 8px 0 8px;
+        padding: 14px 14px;
+    }
+    .battle-scenarios-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+    .battle-scenarios-title {
+        font-size: 16px;
+    }
+    .battle-scenarios-table thead th,
+    .battle-scenarios-table td {
+        padding: 6px 10px;
+    }
+    .scenario-pos-pill {
+        font-size: 12px;
+        padding: 2px 7px;
+    }
+    .scenario-outcome-tag {
+        font-size: 11px;
+        padding: 3px 7px;
+    }
+}
+
 
 /* =========================================================
    CALENDAR VIEW SWITCHER & LIST VIEW
@@ -19428,6 +19825,480 @@ input:focus, select:focus, textarea:focus {
     .cal-row-action {
         grid-column: 2 / span 2;
         justify-content: flex-start;
+    }
+}
+
+
+/* =========================================================
+   CÓMO PARTICIPAR / HOW TO JOIN FFC SECTION
+========================================================= */
+
+.participate-section {
+    padding-top: 50px;
+    padding-bottom: 70px;
+}
+
+.participate-hero-banner {
+    display: flex;
+    flex-direction: column;
+    gap: 36px;
+    padding: 50px;
+    background:
+        radial-gradient(circle at 90% 12%, rgba(56, 189, 248, 0.08), transparent 45%),
+        radial-gradient(circle at 10% 88%, rgba(214, 180, 92, 0.1), transparent 50%),
+        #090d13;
+    border: 1px solid rgba(214, 180, 92, 0.28);
+    border-radius: 14px;
+    box-shadow: 0 18px 45px rgba(0, 0, 0, 0.45);
+}
+
+.participate-header-content {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.participate-kicker-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.participate-live-status-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 5px 14px;
+    background: rgba(34, 197, 94, 0.12);
+    border: 1px solid rgba(34, 197, 94, 0.35);
+    border-radius: 9999px;
+    font-size: 11px;
+    font-weight: 700;
+    color: #4ade80;
+    letter-spacing: 0.8px;
+    font-family: "Barlow Condensed", sans-serif;
+    text-transform: uppercase;
+}
+
+.participate-dot-pulse {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: #4ade80;
+    box-shadow: 0 0 8px #4ade80;
+    display: inline-block;
+}
+
+.participate-title-area h2 {
+    margin-top: 4px;
+    font-family: "Barlow Condensed", sans-serif;
+    font-size: 50px;
+    line-height: 0.95;
+    font-weight: 800;
+    letter-spacing: 0.5px;
+    color: #ffffff;
+    text-transform: uppercase;
+}
+
+.participate-lead-text {
+    margin-top: 14px;
+    font-size: 15.5px;
+    line-height: 1.6;
+    color: #cbd5e1;
+    max-width: 820px;
+}
+
+/* Specs strip */
+.participate-specs-strip {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 16px;
+    margin-top: 16px;
+    padding: 14px 22px;
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 10px;
+}
+
+.participate-spec-item {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.participate-spec-item .spec-label {
+    font-family: "Barlow Condensed", sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    color: #94a3b8;
+    text-transform: uppercase;
+}
+
+.participate-spec-item .spec-val {
+    font-size: 14px;
+    font-weight: 600;
+    color: #ffffff;
+}
+
+.participate-spec-divider {
+    width: 1px;
+    height: 28px;
+    background: rgba(255, 255, 255, 0.08);
+}
+
+/* 4 Step Cards Grid */
+.participate-steps-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 18px;
+}
+
+.participate-step-card {
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid rgba(255, 255, 255, 0.07);
+    border-radius: 10px;
+    padding: 22px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    transition: all 0.25s ease;
+    position: relative;
+}
+
+.participate-step-card:hover {
+    background: rgba(214, 180, 92, 0.04);
+    border-color: rgba(214, 180, 92, 0.35);
+    transform: translateY(-3px);
+    box-shadow: 0 10px 28px rgba(0, 0, 0, 0.4);
+}
+
+.step-card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 2px;
+}
+
+.step-num-badge {
+    font-family: "Barlow Condensed", sans-serif;
+    font-size: 22px;
+    font-weight: 800;
+    color: #d6b45c;
+    letter-spacing: 1px;
+}
+
+.step-icon-wrap {
+    width: 38px;
+    height: 38px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.step-icon-discord {
+    background: rgba(88, 101, 242, 0.15);
+    color: #7983f5;
+    border: 1px solid rgba(88, 101, 242, 0.3);
+}
+
+.step-icon-wheel {
+    background: rgba(56, 189, 248, 0.15);
+    color: #38bdf8;
+    border: 1px solid rgba(56, 189, 248, 0.3);
+}
+
+.step-icon-ticket {
+    background: rgba(234, 179, 8, 0.15);
+    color: #eab308;
+    border: 1px solid rgba(234, 179, 8, 0.3);
+}
+
+.step-icon-flag {
+    background: rgba(239, 68, 68, 0.15);
+    color: #f87171;
+    border: 1px solid rgba(239, 68, 68, 0.3);
+}
+
+.participate-step-card h3 {
+    font-family: "Barlow Condensed", sans-serif;
+    font-size: 19px;
+    font-weight: 700;
+    color: #ffffff;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    margin: 0;
+    line-height: 1.15;
+}
+
+.participate-step-card p {
+    font-size: 13.5px;
+    line-height: 1.55;
+    color: #94a3b8;
+    margin: 0;
+    flex-grow: 1;
+}
+
+.step-card-footer {
+    margin-top: auto;
+    padding-top: 10px;
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.step-link-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    font-weight: 700;
+    color: #d6b45c;
+    text-decoration: none;
+    letter-spacing: 0.4px;
+    font-family: "Barlow Condensed", sans-serif;
+    text-transform: uppercase;
+    transition: color 0.2s ease, gap 0.2s ease;
+}
+
+.step-link-btn:hover {
+    color: #fce79a;
+    gap: 9px;
+}
+
+/* Bento details: Requirements & Roles */
+.participate-details-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+}
+
+.participate-info-card {
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid rgba(255, 255, 255, 0.07);
+    border-radius: 10px;
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.participate-card-title-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.card-icon-accent {
+    color: #d6b45c;
+    display: flex;
+    align-items: center;
+}
+
+.participate-card-title-row h4 {
+    font-family: "Barlow Condensed", sans-serif;
+    font-size: 21px;
+    font-weight: 700;
+    color: #ffffff;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    margin: 0;
+}
+
+.participate-checklist {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.participate-checklist li {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    font-size: 13.5px;
+    line-height: 1.5;
+    color: #cbd5e1;
+}
+
+.participate-checklist .check-icon {
+    color: #22c55e;
+    font-weight: 800;
+    font-size: 14px;
+    flex-shrink: 0;
+    margin-top: 1px;
+}
+
+.participate-roles-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.participate-role-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 12px 14px;
+    background: rgba(0, 0, 0, 0.25);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 8px;
+    transition: border-color 0.2s ease;
+}
+
+.participate-role-item:hover {
+    border-color: rgba(255, 255, 255, 0.12);
+}
+
+.role-badge-tag {
+    font-family: "Barlow Condensed", sans-serif;
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 0.8px;
+    padding: 3px 8px;
+    border-radius: 4px;
+    flex-shrink: 0;
+    text-transform: uppercase;
+}
+
+.gold-tag {
+    background: rgba(214, 180, 92, 0.15);
+    color: #f6d88c;
+    border: 1px solid rgba(214, 180, 92, 0.4);
+}
+
+.cyan-tag {
+    background: rgba(56, 189, 248, 0.15);
+    color: #7dd3fc;
+    border: 1px solid rgba(56, 189, 248, 0.4);
+}
+
+.purple-tag {
+    background: rgba(168, 85, 247, 0.15);
+    color: #c084fc;
+    border: 1px solid rgba(168, 85, 247, 0.4);
+}
+
+.role-desc-group strong {
+    font-size: 14px;
+    color: #ffffff;
+    display: block;
+    margin-bottom: 2px;
+}
+
+.role-desc-group p {
+    font-size: 12.5px;
+    line-height: 1.45;
+    color: #94a3b8;
+    margin: 0;
+}
+
+/* CTA Bottom Banner */
+.participate-cta-banner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 20px;
+    padding: 26px 30px;
+    background: linear-gradient(135deg, rgba(214, 180, 92, 0.1), rgba(9, 13, 19, 0.95));
+    border: 1px solid rgba(214, 180, 92, 0.35);
+    border-radius: 10px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+}
+
+.participate-cta-text h4 {
+    font-family: "Barlow Condensed", sans-serif;
+    font-size: 22px;
+    font-weight: 800;
+    color: #ffffff;
+    letter-spacing: 0.5px;
+    margin: 0 0 4px 0;
+    text-transform: uppercase;
+}
+
+.participate-cta-text p {
+    font-size: 14px;
+    line-height: 1.5;
+    color: #cbd5e1;
+    margin: 0;
+    max-width: 650px;
+}
+
+.participate-cta-buttons {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.participate-cta-main-btn {
+    font-family: "Barlow Condensed", sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    padding: 10px 20px;
+}
+
+.participate-cta-sec-btn {
+    font-family: "Barlow Condensed", sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    padding: 10px 18px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 1100px) {
+    .participate-steps-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 900px) {
+    .participate-hero-banner {
+        padding: 30px 20px;
+    }
+    .participate-title-area h2 {
+        font-size: 38px;
+    }
+    .participate-specs-strip {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
+    }
+    .participate-spec-divider {
+        display: none;
+    }
+    .participate-details-grid {
+        grid-template-columns: 1fr;
+    }
+    .participate-cta-banner {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    .participate-cta-buttons {
+        width: 100%;
+        flex-direction: column;
+    }
+    .participate-cta-main-btn,
+    .participate-cta-sec-btn {
+        width: 100%;
+        text-align: center;
+        justify-content: center;
+    }
+}
+
+@media (max-width: 640px) {
+    .participate-steps-grid {
+        grid-template-columns: 1fr;
     }
 }
 
