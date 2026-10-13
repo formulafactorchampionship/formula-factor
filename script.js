@@ -1,3 +1,4 @@
+window.__FFC_BOOT_OK = true;
 /* =========================================================
    FIREBASE FIRESTORE SETUP (MODULAR SDK v10 VIA CDN)
 ========================================================= */
@@ -19,47 +20,56 @@ function safeGetLocalJSON(key, fallback = null) {
 }
 window.safeGetLocalJSON = safeGetLocalJSON;
 
-import { initShapeWavesBackground } from "./ShapeWaves.js";
-import { initCalendarBorderGlow } from "./BorderGlow.js";
-import { initSideRaysBackground } from "./SideRays.js";
-import { initCobeGlobe } from "./CobeGlobe.js";
-import { initLightPillar } from "./LightPillar.js";
-
-// Initialize interactive background layers safely
+// Initialize interactive background layers safely via dynamic imports
 const handleInitBackgrounds = () => {
-    try { initShapeWavesBackground(); } catch (e) { console.warn("ShapeWaves init:", e); }
-    try { initCalendarBorderGlow(); } catch (e) { console.warn("BorderGlow init:", e); }
-    
     try {
-        initSideRaysBackground("hero-siderays-bg", {
-            speed: 2.5,
-            rayColor1: "#d6b45c",
-            rayColor2: "#00d2be",
-            intensity: 2.0,
-            spread: 2.4,
-            origin: "top-right",
-            tilt: -5,
-            saturation: 1.4,
-            blend: 0.65,
-            falloff: 1.5,
-            opacity: 0.55
-        });
+        import('./ShapeWaves.js?v=20261014').then(m => m.initShapeWavesBackground && m.initShapeWavesBackground()).catch(e => console.warn("ShapeWaves init:", e));
     } catch (e) {}
 
     try {
-        initSideRaysBackground("fantasy-siderays-bg", {
-            speed: 1.8,
-            rayColor1: "#d6b45c",
-            rayColor2: "#10b981",
-            intensity: 1.8,
-            spread: 2.2,
-            origin: "top-right",
-            tilt: -8,
-            saturation: 1.3,
-            blend: 0.6,
-            falloff: 1.6,
-            opacity: 0.6
-        });
+        import('./BorderGlow.js?v=20261014').then(m => m.initCalendarBorderGlow && m.initCalendarBorderGlow()).catch(e => console.warn("BorderGlow init:", e));
+    } catch (e) {}
+    
+    try {
+        import('./SideRays.js?v=20261014').then(m => {
+            if (m.initSideRaysBackground) {
+                try {
+                    m.initSideRaysBackground("hero-siderays-bg", {
+                        speed: 2.5,
+                        rayColor1: "#d6b45c",
+                        rayColor2: "#00d2be",
+                        intensity: 2.0,
+                        spread: 2.4,
+                        origin: "top-right",
+                        tilt: -5,
+                        saturation: 1.4,
+                        blend: 0.65,
+                        falloff: 1.5,
+                        opacity: 0.55
+                    });
+                } catch (e) {}
+
+                try {
+                    m.initSideRaysBackground("fantasy-siderays-bg", {
+                        speed: 1.8,
+                        rayColor1: "#d6b45c",
+                        rayColor2: "#10b981",
+                        intensity: 1.8,
+                        spread: 2.2,
+                        origin: "top-right",
+                        tilt: -8,
+                        saturation: 1.3,
+                        blend: 0.6,
+                        falloff: 1.6,
+                        opacity: 0.6
+                    });
+                } catch (e) {}
+            }
+        }).catch(e => {});
+    } catch (e) {}
+
+    try {
+        import('./DriftWall.js?v=20261014').then(m => m.initDriftWall && m.initDriftWall()).catch(e => console.warn("DriftWall init:", e));
     } catch (e) {}
 
     try {
@@ -68,8 +78,33 @@ const handleInitBackgrounds = () => {
             const pillarObserver = new IntersectionObserver((entries, obs) => {
                 if (entries[0].isIntersecting) {
                     obs.disconnect();
+                    import('./LightPillar.js?v=20261014').then(m => {
+                        if (m.initLightPillar) {
+                            try {
+                                m.initLightPillar("unified-lightpillar-bg", {
+                                    topColor: "#f5e29f",
+                                    bottomColor: "#06080d",
+                                    intensity: 0.65,
+                                    rotationSpeed: 0.45,
+                                    interactive: true,
+                                    glowAmount: 0.005,
+                                    pillarWidth: 1.1,
+                                    pillarHeight: 0.35,
+                                    noiseIntensity: 0.18,
+                                    pillarRotation: 12,
+                                    quality: "medium"
+                                });
+                            } catch (e) {}
+                        }
+                    }).catch(e => {});
+                }
+            }, { rootMargin: '300px' });
+            pillarObserver.observe(targetPillar);
+        } else {
+            import('./LightPillar.js?v=20261014').then(m => {
+                if (m.initLightPillar) {
                     try {
-                        initLightPillar("unified-lightpillar-bg", {
+                        m.initLightPillar("unified-lightpillar-bg", {
                             topColor: "#f5e29f",
                             bottomColor: "#06080d",
                             intensity: 0.65,
@@ -84,22 +119,7 @@ const handleInitBackgrounds = () => {
                         });
                     } catch (e) {}
                 }
-            }, { rootMargin: '300px' });
-            pillarObserver.observe(targetPillar);
-        } else {
-            initLightPillar("unified-lightpillar-bg", {
-                topColor: "#f5e29f",
-                bottomColor: "#06080d",
-                intensity: 0.65,
-                rotationSpeed: 0.45,
-                interactive: true,
-                glowAmount: 0.005,
-                pillarWidth: 1.1,
-                pillarHeight: 0.35,
-                noiseIntensity: 0.18,
-                pillarRotation: 12,
-                quality: "medium"
-            });
+            }).catch(e => {});
         }
     } catch (e) {}
 };
@@ -6167,7 +6187,9 @@ function openAdminPanel() {
         return;
     }
 
-    if (!adminPanelOverlay) return;
+    const newAdminPanel = document.getElementById("adminPanel");
+    if (!newAdminPanel) return;
+    
     populateAdminForms();
     if (typeof updateAdminNewsBadge === "function") updateAdminNewsBadge();
     if (typeof renderAdminNewsTab === "function") renderAdminNewsTab();
@@ -6175,15 +6197,39 @@ function openAdminPanel() {
     if (typeof updateAdminPhotosBadge === "function") updateAdminPhotosBadge();
     if (typeof renderAdminPhotosTab === "function") renderAdminPhotosTab();
     if (typeof updateAdminEmailAuditBadge === "function") updateAdminEmailAuditBadge();
-    adminPanelOverlay.classList.add("active");
-    document.body.classList.add("modal-open");
+    
+    newAdminPanel.classList.add("active");
+    document.body.style.overflow = "hidden";
 }
 
 function closeAdminPanel() {
-    if (!adminPanelOverlay) return;
-    adminPanelOverlay.classList.remove("active");
-    document.body.classList.remove("modal-open");
+    const newAdminPanel = document.getElementById("adminPanel");
+    if (!newAdminPanel) return;
+    newAdminPanel.classList.remove("active");
+    document.body.style.overflow = "";
 }
+
+function initAdminPanelTabSwitching() {
+    const navItems = document.querySelectorAll('.admin-nav-item');
+    const panelTitle = document.getElementById('adminPanelTitle');
+
+    navItems.forEach(item => {
+        item.addEventListener('click', () => {
+            navItems.forEach(i => i.classList.remove('active'));
+            item.classList.add('active');
+            
+            const tab = item.dataset.tab;
+            panelTitle.textContent = item.textContent;
+
+            // Hide all existing tab panes
+            document.querySelectorAll('.admin-tab-pane').forEach(pane => pane.style.display = 'none');
+            // Show target
+            const targetPane = document.getElementById('tab-' + tab) || document.getElementById('tab-' + (tab === 'control' ? 'settings' : tab));
+            if (targetPane) targetPane.style.display = 'block';
+        });
+    });
+}
+
 
 // --- Next Race Logic ---
 function getSavedNextRace() {
@@ -8552,7 +8598,13 @@ function initTeamStatsModal() {
    FFC GLOBAL 3D COBE GLOBE TELEMETRY SYSTEM
 ========================================================= */
 function initInteractiveChampionshipMap() {
-    initCobeGlobe("hero-cobe-globe-container");
+    try {
+        import('./CobeGlobe.js?v=20261014').then(m => {
+            if (m.initCobeGlobe) {
+                m.initCobeGlobe("hero-cobe-globe-container");
+            }
+        }).catch(e => console.warn("CobeGlobe dynamic load error:", e));
+    } catch (e) {}
 }
 
 // Initialize modals on script load / DOM ready
@@ -22206,3 +22258,9 @@ if (document.readyState === "loading") {
     initGlobalResilienceAndHealing();
 }
 
+
+
+
+
+// Initialize Admin Panel Tab Switching
+document.addEventListener("DOMContentLoaded", initAdminPanelTabSwitching);

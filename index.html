@@ -29,10 +29,36 @@
         <link rel="preconnect" href="https://esm.sh" crossorigin>
     <link rel="preconnect" href="https://flagcdn.com" crossorigin>
     <link rel="preconnect" href="https://firestore.googleapis.com" crossorigin>
-    <link rel="stylesheet" href="style.css?v=20261013_v5">
+    <link rel="stylesheet" href="style.css?v=20261014_rc1">
     <link rel="stylesheet" href="BorderGlow.css">
     <link rel="stylesheet" href="LightPillar.css">
     <script>
+        window.purgeCorruptedCacheAndReload = function() {
+            try {
+                for (var i = localStorage.length - 1; i >= 0; i--) {
+                    var k = localStorage.key(i);
+                    if (k && k.startsWith("ffc_")) localStorage.removeItem(k);
+                }
+                indexedDB.deleteDatabase('firebaseLocalStorageDb');
+                if (indexedDB.databases) {
+                    indexedDB.databases().then(dbs => {
+                        dbs.forEach(db => {
+                            if (db.name && (db.name.includes('firebase') || db.name.includes('firestore'))) {
+                                indexedDB.deleteDatabase(db.name);
+                            }
+                        });
+                    });
+                }
+            } catch (e) {}
+            setTimeout(() => window.location.reload(), 500);
+        };
+        setTimeout(function() {
+            if (!window.__FFC_BOOT_OK && !sessionStorage.getItem('ffc_watchdog_healed')) {
+                sessionStorage.setItem('ffc_watchdog_healed', 'true');
+                window.purgeCorruptedCacheAndReload();
+            }
+        }, 3500);
+
         // Early instant hook for FFC Fantasy Portal
         window.openFantasyPortal = function() {
             var main = document.getElementById("mainSiteContent");
@@ -57,6 +83,29 @@
             if (window._renderFantasyPortalInternal) {
                 window._renderFantasyPortalInternal();
             }
+            setTimeout(function() {
+                var body = document.getElementById("fantasyLeaderboardBody");
+                if (body && body.innerHTML.trim() === "") {
+                    fetch('./fantasy_teams_db.json')
+                        .then(r => r.json())
+                        .then(data => {
+                            // Sort by totalPoints descending
+                            data.sort((a, b) => b.totalPoints - a.totalPoints);
+                            
+                            var html = '';
+                            data.forEach((team, index) => {
+                                html += '<tr>' +
+                                    '<td>' + (index + 1) + '</td>' +
+                                    '<td>' + team.teamName + ' / ' + team.managerName + '</td>' +
+                                    '<td>' + (team.drivers ? team.drivers.join(', ') : '') + '</td>' +
+                                    '<td>' + team.teamValue + 'M€</td>' +
+                                    '<td>' + team.totalPoints + '</td>' +
+                                    '</tr>';
+                            });
+                            body.innerHTML = html;
+                        });
+                }
+            }, 700);
         };
 
         // Global Error & Promise Rejection Handler for auto-healing cache / IndexedDB once per session
@@ -97,6 +146,13 @@
 
         // DOMContentLoaded Fallback for Login & Fantasy Login Prompt
         document.addEventListener("DOMContentLoaded", function() {
+            setTimeout(function() {
+                var globeContainer = document.getElementById('hero-cobe-globe-container');
+                if (globeContainer && !globeContainer.querySelector('canvas')) {
+                    import('./CobeGlobe.js?v=20261014_rc1').then(m => m.initCobeGlobe('hero-cobe-globe-container'));
+                }
+            }, 1200);
+
             var authBtn = document.getElementById("authHeaderBtn");
             if (authBtn) {
                 authBtn.addEventListener("click", function() {
@@ -146,9 +202,6 @@
 </head>
 
 <body>
-
-
-
 <header class="navbar">
     <div class="nav-inner">
 
@@ -3974,127 +4027,141 @@
     </div>
 </div>
 
-<!-- =========================
-     ADMIN MENU MODAL
-========================= -->
+<!<!-- =========================
+     ADMIN MENU MODAL (FIA RACE CONTROL FULL-SCREEN WORKSPACE)
+======================== -->
 <div class="admin-panel-overlay" id="adminPanelOverlay" aria-hidden="true">
-    <div class="admin-panel-card">
-        <header class="admin-panel-header">
-            <div class="admin-header-brand">
-                <div class="admin-card-badge">FFC // TORRE DE CONTROL &bull; GESTIÓN OFICIAL</div>
-                <h2>PANEL DE ADMINISTRACIÓN</h2>
-                <div class="admin-status-indicator">
-                    <span class="live-dot"></span>
-                    <span id="adminSessionInfo">Sesión de Administrador Activa</span>
+    <div class="admin-race-control-layout">
+        <!-- 1. Sidebar Izquierdo Compacto -->
+        <aside class="admin-sidebar">
+            <div class="admin-sidebar-header">
+                <div class="admin-brand-tag">FFC // RACE CONTROL</div>
+                <div class="admin-cloud-sync-pill">
+                    <span class="sync-pulse">🟢</span>
+                    <span>Cloud Synced</span>
                 </div>
             </div>
-            <div class="admin-header-actions">
-                <button id="adminLogoutBtn" class="admin-logout-btn" type="button">
-                    <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true" style="margin-right: 5px; vertical-align: middle;"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
-                    Cerrar Sesión
+            
+            <nav class="admin-sidebar-nav">
+                <button type="button" class="admin-tab-btn active" data-tab="tab-next-race">
+                    <span class="admin-tab-icon">⚡</span>
+                    <span class="admin-tab-title">Próxima Carrera</span>
                 </button>
-                <button id="adminPanelClose" class="admin-modal-close-btn" aria-label="Cerrar panel">&times;</button>
-            </div>
-        </header>
+                <button type="button" class="admin-tab-btn" data-tab="tab-race-results">
+                    <span class="admin-tab-icon">🏁</span>
+                    <span class="admin-tab-title">Resultados GP</span>
+                </button>
+                <button type="button" class="admin-tab-btn" data-tab="tab-standings">
+                    <span class="admin-tab-icon">🏆</span>
+                    <span class="admin-tab-title">Clasificación</span>
+                </button>
+                <button type="button" class="admin-tab-btn" data-tab="tab-drivers">
+                    <span class="admin-tab-icon">🏎️</span>
+                    <span class="admin-tab-title">Pilotos & Equipos</span>
+                    <span class="admin-tab-pill-badge" id="adminTabDriversBadge">44</span>
+                </button>
+                <button type="button" class="admin-tab-btn" data-tab="tab-verify">
+                    <span class="admin-tab-icon">🔑</span>
+                    <span class="admin-tab-title">Verificación</span>
+                    <span class="admin-tab-pill-badge admin-tab-badge-gold" id="adminTabVerifyBadge">0</span>
+                </button>
+                <button type="button" class="admin-tab-btn" data-tab="tab-email-audit" id="adminTabEmailAuditBtn">
+                    <span class="admin-tab-icon">🛡️</span>
+                    <span class="admin-tab-title">Auditoría Correos</span>
+                    <span class="admin-tab-pill-badge" id="adminTabEmailAuditBadge" style="background: rgba(239, 68, 68, 0.25); color: #fca5a5; border: 1px solid rgba(239, 68, 68, 0.45);">0</span>
+                </button>
+                <button type="button" class="admin-tab-btn" data-tab="tab-news">
+                    <span class="admin-tab-icon">📰</span>
+                    <span class="admin-tab-title">Noticias Prensa</span>
+                    <span class="admin-tab-pill-badge admin-tab-badge-gold" id="adminTabNewsBadge">0</span>
+                </button>
+                <button type="button" class="admin-tab-btn" data-tab="tab-photos">
+                    <span class="admin-tab-icon">📸</span>
+                    <span class="admin-tab-title">Moderación Fotos</span>
+                    <span class="admin-tab-pill-badge admin-tab-badge-gold" id="adminTabPhotosBadge">0</span>
+                </button>
+                <button type="button" class="admin-tab-btn" data-tab="tab-settings">
+                    <span class="admin-tab-icon">⚙️</span>
+                    <span class="admin-tab-title">Ajustes & Sistema</span>
+                </button>
+            </nav>
 
-        <!-- ADMIN QUICK KPI OPERATIONS STRIP -->
-        <div class="admin-quick-ops-bar" id="adminQuickOpsBar">
-            <div class="admin-quick-op-item" title="Próximo Gran Premio configurado">
-                <span class="admin-quick-op-icon"><svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M14.4 6L14 4H5v17h2v-7h5.6l.4 2h7V6h-5.6z"/></svg></span>
-                <div class="admin-quick-op-text">
-                    <span class="admin-quick-op-label">Próxima Carrera</span>
-                    <strong class="admin-quick-op-val" id="adminQuickNextRace">ROUND 10</strong>
-                </div>
+            <div class="admin-sidebar-footer">
+                <button type="button" class="admin-back-web-btn" id="adminLogoutBtn">
+                    <span>←</span> Volver a la Web
+                </button>
             </div>
-            <div class="admin-quick-op-item" title="Total de pilotos en el censo">
-                <span class="admin-quick-op-icon"><svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg></span>
-                <div class="admin-quick-op-text">
-                    <span class="admin-quick-op-label">Pilotos en Grid</span>
-                    <strong class="admin-quick-op-val" id="adminQuickDriversCount">44 Pilotos</strong>
-                </div>
-            </div>
-            <div class="admin-quick-op-item" title="Cuentas verificadas oficialmente">
-                <span class="admin-quick-op-icon"><svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M12.65 10C11.83 7.67 9.61 6 7 6c-3.31 0-6 2.69-6 6s2.69 6 6 6c2.61 0 4.83-1.67 5.65-4H17v4h4v-4h2v-4H12.65zM7 14c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2z"/></svg></span>
-                <div class="admin-quick-op-text">
-                    <span class="admin-quick-op-label">Verificados</span>
-                    <strong class="admin-quick-op-val" id="adminQuickVerifiedCount">0</strong>
-                </div>
-            </div>
-            <div class="admin-quick-op-item" title="Estado del modo Campeón del Mundo">
-                <span class="admin-quick-op-icon"><svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M5 16L3 5l5.5 5L12 4l3.5 6L21 5l-2 11H5zm14 3c0 .55-.45 1-1 1H6c-.55 0-1-.45-1-1v-1h14v1z"/></svg></span>
-                <div class="admin-quick-op-text">
-                    <span class="admin-quick-op-label">Campeón Mundial</span>
-                    <strong class="admin-quick-op-val" id="adminQuickChampionStatus">DESACTIVADO</strong>
-                </div>
-            </div>
-            <div class="admin-quick-op-item" title="Estado de la retransmisión Twitch">
-                <span class="admin-quick-op-icon"><svg viewBox="0 0 24 24" width="16" height="16" fill="#ef4444"><circle cx="12" cy="12" r="8"/></svg></span>
-                <div class="admin-quick-op-text">
-                    <span class="admin-quick-op-label">Modo Directo</span>
-                    <strong class="admin-quick-op-val" id="adminQuickLiveStatus">OFFLINE</strong>
-                </div>
-            </div>
-            <div class="admin-quick-op-item" title="Estado del mercado Fantasy">
-                <span class="admin-quick-op-icon"><svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M16 6l2.29 2.29-4.88 4.88-4-4L2 16.59 3.41 18l6-6 4 4 6.3-6.29L22 12V6z"/></svg></span>
-                <div class="admin-quick-op-text">
-                    <span class="admin-quick-op-label">Mercado Fantasy</span>
-                    <strong class="admin-quick-op-val" id="adminQuickFantasyStatus">ABIERTO</strong>
-                </div>
-            </div>
-            <div class="admin-quick-op-item" id="adminQuickFakeEmailsOpItem" title="Cuentas y correos falsos detectados" style="cursor: pointer;">
-                <span class="admin-quick-op-icon"><svg viewBox="0 0 24 24" width="16" height="16" fill="#ef4444"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg></span>
-                <div class="admin-quick-op-text">
-                    <span class="admin-quick-op-label">Correos Falsos</span>
-                    <strong class="admin-quick-op-val" id="adminQuickFakeEmailsCount" style="color: #f87171;">0 Detectados</strong>
-                </div>
-            </div>
-        </div>
+        </aside>
 
-        <nav class="admin-tabs">
-            <button type="button" class="admin-tab-btn active" data-tab="tab-next-race">
-                <span class="admin-tab-icon"><svg viewBox="0 0 24 24" width="15" height="15" fill="currentColor"><path d="M14.4 6L14 4H5v17h2v-7h5.6l.4 2h7V6h-5.6z"/></svg></span>
-                <span class="admin-tab-title" id="adminTabNextRaceTitle">Próxima Carrera</span>
-            </button>
-            <button type="button" class="admin-tab-btn" data-tab="tab-race-results">
-                <span class="admin-tab-icon"><svg viewBox="0 0 24 24" width="15" height="15" fill="currentColor"><path d="M19 5h-2V3H7v2H5c-1.1 0-2 .9-2 2v1c0 2.55 1.92 4.63 4.39 4.94A5.01 5.01 0 0 0 11 15.9V18H9v2h6v-2h-2v-2.1c1.92-.38 3.41-1.92 3.61-3.96C19.08 11.63 21 9.55 21 7V5c0-1.1-.9-2-2-2z"/></svg></span>
-                <span class="admin-tab-title" id="adminTabRaceResultsTitle">Resultados de Carreras</span>
-            </button>
-            <button type="button" class="admin-tab-btn" data-tab="tab-standings">
-                <span class="admin-tab-icon"><svg viewBox="0 0 24 24" width="15" height="15" fill="currentColor"><path d="M5 9.2h3V19H5zM10.6 5h2.8v14h-2.8zm5.6 8H19v6h-2.8z"/></svg></span>
-                <span class="admin-tab-title" id="adminTabStandingsTitle">Clasificación</span>
-            </button>
-            <button type="button" class="admin-tab-btn" data-tab="tab-drivers">
-                <span class="admin-tab-icon"><svg viewBox="0 0 24 24" width="15" height="15" fill="currentColor"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg></span>
-                <span class="admin-tab-title" id="adminTabDriversTitle">Pilotos &amp; Equipos</span>
-                <span class="admin-tab-pill-badge" id="adminTabDriversBadge">44</span>
-            </button>
-            <button type="button" class="admin-tab-btn" data-tab="tab-verify">
-                <span class="admin-tab-icon"><svg viewBox="0 0 24 24" width="15" height="15" fill="currentColor"><path d="M12.65 10C11.83 7.67 9.61 6 7 6c-3.31 0-6 2.69-6 6s2.69 6 6 6c2.61 0 4.83-1.67 5.65-4H17v4h4v-4h2v-4H12.65zM7 14c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2z"/></svg></span>
-                <span class="admin-tab-title" id="adminTabVerifyTitle">Verificación de Pilotos</span>
-                <span class="admin-tab-pill-badge admin-tab-badge-gold" id="adminTabVerifyBadge">0</span>
-            </button>
-            <button type="button" class="admin-tab-btn" data-tab="tab-email-audit" id="adminTabEmailAuditBtn">
-                <span class="admin-tab-icon"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg></span>
-                <span class="admin-tab-title" id="adminTabEmailAuditTitle">Auditoría de Correos</span>
-                <span class="admin-tab-pill-badge" id="adminTabEmailAuditBadge" style="background: rgba(239, 68, 68, 0.25); color: #fca5a5; border: 1px solid rgba(239, 68, 68, 0.45);">0</span>
-            </button>
-            <button type="button" class="admin-tab-btn" data-tab="tab-news">
-                <span class="admin-tab-icon"><svg viewBox="0 0 24 24" width="15" height="15" fill="currentColor"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/></svg></span>
-                <span class="admin-tab-title" id="adminTabNewsTitle">Gestión de Noticias</span>
-                <span class="admin-tab-pill-badge admin-tab-badge-gold" id="adminTabNewsBadge">0</span>
-            </button>
-            <button type="button" class="admin-tab-btn" data-tab="tab-photos">
-                <span class="admin-tab-icon"><svg viewBox="0 0 24 24" width="15" height="15" fill="currentColor"><circle cx="12" cy="12" r="3.2"/><path d="M9 2L7.17 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2h-3.17L15 2H9zm3 15c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5z"/></svg></span>
-                <span class="admin-tab-title" id="adminTabPhotosTitle">Moderación de Fotos</span>
-                <span class="admin-tab-pill-badge admin-tab-badge-gold" id="adminTabPhotosBadge">0</span>
-            </button>
-            <button type="button" class="admin-tab-btn" data-tab="tab-settings">
-                <span class="admin-tab-icon"><svg viewBox="0 0 24 24" width="15" height="15" fill="currentColor"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg></span>
-                <span class="admin-tab-title" id="adminTabSettingsTitle">Ajustes Generales</span>
-            </button>
-        </nav>
+        <!-- 2. Área de Trabajo Principal -->
+        <main class="admin-main-workspace">
+            <header class="admin-workspace-topbar">
+                <div class="admin-workspace-search-wrap">
+                    <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                    <input type="text" id="adminGlobalQuickSearch" placeholder="Búsqueda rápida en panel (Pilotos, GPs, Config)..." autocomplete="off">
+                </div>
+                <div class="admin-workspace-actions-right">
+                    <span class="admin-session-badge" id="adminSessionInfo">🔒 Admin Pit Wall</span>
+                    <button type="button" class="admin-quick-guide-btn" title="Guía Rápida / Pit Wall" onclick="alert('Formula Factor Championship // FIA Race Control Pit Wall v2026. Gestiona en segundos la próxima carrera, resultados oficiales, mercado fantasy, códigos de verificación y moderación de prensa/fotos.')">💡 Pit Wall Guide</button>
+                    <button type="button" class="admin-close-window-btn" id="adminPanelClose" aria-label="Cerrar ventana">✕</button>
+                </div>
+            </header>
 
-        <div class="admin-panel-body">
+            <!-- ADMIN QUICK KPI OPERATIONS STRIP -->
+            <div class="admin-quick-ops-bar" id="adminQuickOpsBar">
+                <div class="admin-quick-op-item" title="Próximo Gran Premio configurado">
+                    <span class="admin-quick-op-icon"><svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M14.4 6L14 4H5v17h2v-7h5.6l.4 2h7V6h-5.6z"/></svg></span>
+                    <div class="admin-quick-op-text">
+                        <span class="admin-quick-op-label">Próxima Carrera</span>
+                        <strong class="admin-quick-op-val" id="adminQuickNextRace">ROUND 10</strong>
+                    </div>
+                </div>
+                <div class="admin-quick-op-item" title="Total de pilotos en el censo">
+                    <span class="admin-quick-op-icon"><svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg></span>
+                    <div class="admin-quick-op-text">
+                        <span class="admin-quick-op-label">Pilotos en Grid</span>
+                        <strong class="admin-quick-op-val" id="adminQuickDriversCount">44 Pilotos</strong>
+                    </div>
+                </div>
+                <div class="admin-quick-op-item" title="Cuentas verificadas oficialmente">
+                    <span class="admin-quick-op-icon"><svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M12.65 10C11.83 7.67 9.61 6 7 6c-3.31 0-6 2.69-6 6s2.69 6 6 6c2.61 0 4.83-1.67 5.65-4H17v4h4v-4h2v-4H12.65zM7 14c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2z"/></svg></span>
+                    <div class="admin-quick-op-text">
+                        <span class="admin-quick-op-label">Verificados</span>
+                        <strong class="admin-quick-op-val" id="adminQuickVerifiedCount">0</strong>
+                    </div>
+                </div>
+                <div class="admin-quick-op-item" title="Estado del modo Campeón del Mundo">
+                    <span class="admin-quick-op-icon"><svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M5 16L3 5l5.5 5L12 4l3.5 6L21 5l-2 11H5zm14 3c0 .55-.45 1-1 1H6c-.55 0-1-.45-1-1v-1h14v1z"/></svg></span>
+                    <div class="admin-quick-op-text">
+                        <span class="admin-quick-op-label">Campeón Mundial</span>
+                        <strong class="admin-quick-op-val" id="adminQuickChampionStatus">DESACTIVADO</strong>
+                    </div>
+                </div>
+                <div class="admin-quick-op-item" title="Estado de la retransmisión Twitch">
+                    <span class="admin-quick-op-icon"><svg viewBox="0 0 24 24" width="16" height="16" fill="#ef4444"><circle cx="12" cy="12" r="8"/></svg></span>
+                    <div class="admin-quick-op-text">
+                        <span class="admin-quick-op-label">Modo Directo</span>
+                        <strong class="admin-quick-op-val" id="adminQuickLiveStatus">OFFLINE</strong>
+                    </div>
+                </div>
+                <div class="admin-quick-op-item" title="Estado del mercado Fantasy">
+                    <span class="admin-quick-op-icon"><svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M16 6l2.29 2.29-4.88 4.88-4-4L2 16.59 3.41 18l6-6 4 4 6.3-6.29L22 12V6z"/></svg></span>
+                    <div class="admin-quick-op-text">
+                        <span class="admin-quick-op-label">Mercado Fantasy</span>
+                        <strong class="admin-quick-op-val" id="adminQuickFantasyStatus">ABIERTO</strong>
+                    </div>
+                </div>
+                <div class="admin-quick-op-item" id="adminQuickFakeEmailsOpItem" title="Cuentas y correos falsos detectados" style="cursor: pointer;">
+                    <span class="admin-quick-op-icon"><svg viewBox="0 0 24 24" width="16" height="16" fill="#ef4444"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg></span>
+                    <div class="admin-quick-op-text">
+                        <span class="admin-quick-op-label">Correos Falsos</span>
+                        <strong class="admin-quick-op-val" id="adminQuickFakeEmailsCount" style="color: #f87171;">0 Detectados</strong>
+                    </div>
+                </div>
+            </div>
+
+            <div class="admin-panel-body">
+
             <!-- TAB 1: PRÓXIMA CARRERA -->
             <div class="admin-tab-pane active" id="tab-next-race">
                 <div class="admin-tab-intro">
@@ -6034,7 +6101,32 @@
 
 
 
-<script type="module" src="script.js?v=20261013_v5"></script>
+<script type="module" src="script.js?v=20261014_rc1"></script>
 
+    <div id="adminPanel">
+        <aside id="adminPanelSidebar">
+            <div class="admin-sidebar-header">
+                FFC // RACE CONTROL
+                <div class="admin-cloud-status">🟢 Cloud Synced</div>
+            </div>
+            <nav>
+                <div class="admin-nav-item active" data-tab="control">⚡ Control Rápido</div>
+                <div class="admin-nav-item" data-tab="results">🏁 Resultados & Pilotos</div>
+                <div class="admin-nav-item" data-tab="fantasy">🏆 Fantasy Manager</div>
+                <div class="admin-nav-item" data-tab="moderation">📰 Moderación</div>
+                <div class="admin-nav-item" data-tab="verification">🔑 Códigos & Verificación</div>
+            </nav>
+            <div class="admin-back-btn" id="closeAdminPanel">← Volver a la Web</div>
+        </aside>
+        <main id="adminPanelMain">
+            <header class="admin-panel-header">
+                <h2 id="adminPanelTitle">Control Rápido</h2>
+                <button class="btn btn-primary" id="adminSaveGlobalBtn">Guardar Cambios</button>
+            </header>
+            <div id="adminPanelContent">
+                <!-- Content will be injected here dynamically based on tab -->
+            </div>
+        </main>
+    </div>
 </body>
 </html>
