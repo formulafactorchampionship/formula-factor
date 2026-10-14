@@ -5,3 +5,4 @@ users_db.json
 node_modules/
 dist/
 .aistudio/
+serviceAccountKey.json
