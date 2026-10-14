@@ -97,7 +97,7 @@ export default function ShapeWaves({
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
-    const ctx = canvas.getContext('2d');
+    const ctx = canvas.getContext('2d', { alpha: false });
     if (!ctx) return;
 
     let animId = 0;
@@ -109,12 +109,30 @@ export default function ShapeWaves({
     let time = 0;
     let lastTime = performance.now();
 
+    // Check device capabilities / reduced motion / mobile
+    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const targetFpsInterval = isMobile || reducedMotion ? 50 : 25; // Lower framerate on mobile / battery saver
+
     let heights = new Float32Array(1);
     let previousHeights = new Float32Array(1);
     let charges = new Float32Array(1);
 
     const baseRGB = parseHexColor(color, '#2a364f');
     const hoverRGB = parseHexColor(hoverColor, '#d6b45c');
+
+    // Pre-allocate color string cache to eliminate garbage collection overhead per frame
+    const colorCache = new Map();
+    function getCachedColor(r, g, b, a) {
+      const key = (r << 24) | (g << 16) | (b << 8) | Math.round(a * 100);
+      let cached = colorCache.get(key);
+      if (!cached) {
+        cached = `rgba(${r},${g},${b},${a.toFixed(2)})`;
+        if (colorCache.size > 1000) colorCache.clear();
+        colorCache.set(key, cached);
+      }
+      return cached;
+    }
 
     function resize() {
       const dpr = Math.min(window.devicePixelRatio || 1, 2);
@@ -125,7 +143,9 @@ export default function ShapeWaves({
       canvas.style.width = width + 'px';
       canvas.style.height = height + 'px';
 
-      cellPx = Math.max(8, cellSize);
+      // Requirement 2: Increase cell size on mobile / reduced motion
+      const effectiveCellSize = (isMobile || reducedMotion) ? Math.max(cellSize, 22) : Math.max(8, cellSize);
+      cellPx = effectiveCellSize;
       cols = Math.max(1, Math.ceil(width / cellPx));
       rows = Math.max(1, Math.ceil(height / cellPx));
 
@@ -133,7 +153,8 @@ export default function ShapeWaves({
       previousHeights = new Float32Array(cols * rows);
       charges = new Float32Array(cols * rows);
 
-      ctx.scale(dpr, dpr);
+      // Requirement 2: Use setTransform to avoid cumulative scale bugs
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
       setReady(true);
     }
 
@@ -160,12 +181,23 @@ export default function ShapeWaves({
       }
     }
 
+    // Requirement 2: Throttle handlePointerMove with requestAnimationFrame flag
+    let pointerPending = false;
+    let latestPointerEvent = null;
     function handlePointerMove(e) {
-      const rect = canvas.getBoundingClientRect();
-      const x = e.clientX - rect.left;
-      const y = e.clientY - rect.top;
-      if (x >= 0 && y >= 0 && x <= width && y <= height) {
-        splash(x, y, splashStrength);
+      latestPointerEvent = e;
+      if (!pointerPending) {
+        pointerPending = true;
+        requestAnimationFrame(() => {
+          pointerPending = false;
+          if (!latestPointerEvent) return;
+          const rect = canvas.getBoundingClientRect();
+          const x = latestPointerEvent.clientX - rect.left;
+          const y = latestPointerEvent.clientY - rect.top;
+          if (x >= 0 && y >= 0 && x <= width && y <= height) {
+            splash(x, y, splashStrength);
+          }
+        });
       }
     }
 
@@ -202,15 +234,12 @@ export default function ShapeWaves({
       const half = size / 2;
 
       if (shapeType === 0) {
-        // Square
         ctx.fillRect(x - half, y - half, size, size);
       } else if (shapeType === 1) {
-        // Circle
         ctx.beginPath();
         ctx.arc(x, y, half, 0, Math.PI * 2);
         ctx.fill();
       } else {
-        // Triangle
         ctx.beginPath();
         ctx.moveTo(x, y - half);
         ctx.lineTo(x + half, y + half);
@@ -221,7 +250,7 @@ export default function ShapeWaves({
     }
 
     function render(now) {
-      if (now - lastTime < 24) {
+      if (now - lastTime < targetFpsInterval) {
         animId = requestAnimationFrame(render);
         return;
       }
@@ -252,7 +281,7 @@ export default function ShapeWaves({
           const charge = charges[idx];
           const stepped = (band + Math.floor(Math.min(charge, 0.999) * 3)) % 3;
 
-          let shapeType = 2 - stepped; // 0 square, 1 circle, 2 triangle
+          let shapeType = 2 - stepped;
           if (shapes === 'squares') shapeType = 0;
           else if (shapes === 'circles') shapeType = 1;
           else if (shapes === 'triangles') shapeType = 2;
@@ -266,7 +295,7 @@ export default function ShapeWaves({
           const blue = Math.round(baseRGB[2] + (hoverRGB[2] - baseRGB[2]) * blend);
           const alpha = Math.min(0.8, 0.25 + tone * 0.3 + charge * 0.42);
 
-          drawShape(r, c, cx, cy, currentSize, shapeType, `rgba(${red},${green},${blue},${alpha})`);
+          drawShape(r, c, cx, cy, currentSize, shapeType, getCachedColor(red, green, blue, alpha));
         }
       }
 
@@ -346,7 +375,6 @@ export function initShapeWavesBackground(containerId) {
     const container = document.getElementById(id);
     if (!container) return;
 
-    // Avoid double mounting
     if (container.dataset.mounted === "true") return;
     container.dataset.mounted = "true";
 

@@ -32,14 +32,17 @@ function sanitizeString(str, maxLength = 250) {
 }
 
 // -------------------------------------------------------------
-// 2. HTTP HEADERS SECURITY MIDDLEWARE
+// 2. HTTP HEADERS & CACHE-CONTROL MIDDLEWARE
 // -------------------------------------------------------------
 app.use((req, res, next) => {
   res.setHeader('X-Content-Type-Options', 'nosniff');
-  if (req.path.startsWith('/api/') || req.path.endsWith('.js') || req.path.endsWith('.html') || req.path.endsWith('.css') || req.path === '/') {
+  const p = req.path;
+  if (p.startsWith('/api/') || p.endsWith('.html') || p === '/') {
     res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
     res.setHeader('Pragma', 'no-cache');
     res.setHeader('Expires', '0');
+  } else if (p.endsWith('.css') || p.endsWith('.js') || p.endsWith('.png') || p.endsWith('.jpg') || p.endsWith('.webp') || p.includes('/news_uploads/')) {
+    res.setHeader('Cache-Control', 'public, max-age=3600, stale-while-revalidate=86400');
   }
   next();
 });

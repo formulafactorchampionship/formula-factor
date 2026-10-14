@@ -370,67 +370,27 @@ const LightPillar = ({
 
   useEffect(() => {
     rotationSpeedRef.current = rotationSpeed;
-  }, [rotationSpeed]);
-
-  useEffect(() => {
     if (!materialRef.current) return;
+
     const parseColor = hex => {
       const color = new THREE.Color(hex);
       return new THREE.Vector3(color.r, color.g, color.b);
     };
+
     materialRef.current.uniforms.uTopColor.value = parseColor(topColor);
-  }, [topColor]);
-
-  useEffect(() => {
-    if (!materialRef.current) return;
-    const parseColor = hex => {
-      const color = new THREE.Color(hex);
-      return new THREE.Vector3(color.r, color.g, color.b);
-    };
     materialRef.current.uniforms.uBottomColor.value = parseColor(bottomColor);
-  }, [bottomColor]);
-
-  useEffect(() => {
-    if (!materialRef.current) return;
     materialRef.current.uniforms.uIntensity.value = intensity;
-  }, [intensity]);
-
-  useEffect(() => {
-    if (!materialRef.current) return;
     materialRef.current.uniforms.uInteractive.value = interactive;
-  }, [interactive]);
-
-  useEffect(() => {
-    if (!materialRef.current) return;
     materialRef.current.uniforms.uGlowAmount.value = glowAmount;
-  }, [glowAmount]);
-
-  useEffect(() => {
-    if (!materialRef.current) return;
     materialRef.current.uniforms.uPillarWidth.value = pillarWidth;
-  }, [pillarWidth]);
-
-  useEffect(() => {
-    if (!materialRef.current) return;
     materialRef.current.uniforms.uPillarHeight.value = pillarHeight;
-  }, [pillarHeight]);
-
-  useEffect(() => {
-    if (!materialRef.current) return;
     materialRef.current.uniforms.uNoiseIntensity.value = noiseIntensity;
-  }, [noiseIntensity]);
-
-  useEffect(() => {
-    if (!materialRef.current) return;
     materialRef.current.uniforms.uLightMode.value = lightMode ? 1 : 0;
-  }, [lightMode]);
 
-  useEffect(() => {
-    if (!materialRef.current) return;
     const pillarRotRad = (pillarRotation * Math.PI) / 180;
     materialRef.current.uniforms.uPillarRotCos.value = Math.cos(pillarRotRad);
     materialRef.current.uniforms.uPillarRotSin.value = Math.sin(pillarRotRad);
-  }, [pillarRotation]);
+  }, [topColor, bottomColor, intensity, interactive, glowAmount, pillarWidth, pillarHeight, noiseIntensity, lightMode, pillarRotation, rotationSpeed]);
 
   if (!webGLSupported) {
     return React.createElement('div', {

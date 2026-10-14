@@ -165,6 +165,10 @@ export const DriftWall = ({
 
   useEffect(() => {
     const animate = ts => {
+      if (!isWallVisibleRef.current) {
+        rafRef.current = requestAnimationFrame(animate);
+        return;
+      }
       if (lastTsRef.current === null) lastTsRef.current = ts;
       const dt = Math.min(0.05, Math.max(0, ts - lastTsRef.current) / 1000);
       lastTsRef.current = ts;
@@ -190,7 +194,6 @@ export const DriftWall = ({
           const currentV = velocitiesRef.current[c] ?? target;
           velocitiesRef.current[c] = currentV + (target - currentV) * ease;
 
-          // Pure seamless infinite conveyor loop in both directions
           let next = (offsetsRef.current[c] ?? 0) + velocitiesRef.current[c] * dt;
           next = ((next % meta.copyHeight) + meta.copyHeight) % meta.copyHeight;
           offsetsRef.current[c] = next;
@@ -234,24 +237,49 @@ export const DriftWall = ({
     setActiveId(null);
   }, []);
 
+  const pointerThrottleRef = useRef(false);
+  const isWallVisibleRef = useRef(true);
+
+  useEffect(() => {
+    if (!containerRef.current) return;
+    const io = new IntersectionObserver(([entry]) => {
+      isWallVisibleRef.current = entry.isIntersecting && !document.hidden;
+    }, { threshold: 0.05 });
+    io.observe(containerRef.current);
+
+    const onVisChange = () => {
+      isWallVisibleRef.current = !document.hidden && containerRef.current && containerRef.current.getBoundingClientRect().bottom > 0;
+    };
+    document.addEventListener('visibilitychange', onVisChange);
+    return () => {
+      io.disconnect();
+      document.removeEventListener('visibilitychange', onVisChange);
+    };
+  }, []);
+
   const handlePointerMove = useCallback(
     e => {
-      const rect = containerRef.current?.getBoundingClientRect();
-      if (!rect) return;
-      if (parallax > 0 && !reduced) {
-        pointerRef.current = {
-          x: (e.clientX - rect.left) / rect.width - 0.5,
-          y: (e.clientY - rect.top) / rect.height - 0.5
-        };
-      }
-      const hit = document.elementFromPoint(e.clientX, e.clientY);
-      const tile = hit && hit.closest ? hit.closest('[data-tile-id]') : null;
-      if (!tile) return;
-      const id = tile.dataset.tileId;
-      if (id === activeIdRef.current) return;
-      activeIdRef.current = id;
-      hoveredColRef.current = Number(tile.dataset.col);
-      setActiveId(id);
+      if (pointerThrottleRef.current) return;
+      pointerThrottleRef.current = true;
+      requestAnimationFrame(() => {
+        pointerThrottleRef.current = false;
+        const rect = containerRef.current?.getBoundingClientRect();
+        if (!rect) return;
+        if (parallax > 0 && !reduced) {
+          pointerRef.current = {
+            x: (e.clientX - rect.left) / rect.width - 0.5,
+            y: (e.clientY - rect.top) / rect.height - 0.5
+          };
+        }
+        const hit = document.elementFromPoint(e.clientX, e.clientY);
+        const tile = hit && hit.closest ? hit.closest('[data-tile-id]') : null;
+        if (!tile) return;
+        const id = tile.dataset.tileId;
+        if (id === activeIdRef.current) return;
+        activeIdRef.current = id;
+        hoveredColRef.current = Number(tile.dataset.col);
+        setActiveId(id);
+      });
     },
     [parallax, reduced]
   );
