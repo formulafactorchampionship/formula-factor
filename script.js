@@ -12663,7 +12663,6 @@ const CloudAuthService = {
         const docId = getUserDocId(cleanEmail);
         const pHash = await hashUserPassword(password);
 
-        // 1. Try Firebase Auth first
         try {
             const cred = await signInWithEmailAndPassword(auth, cleanEmail, password);
             if (cred && cred.user) {
@@ -12682,97 +12681,10 @@ const CloudAuthService = {
                 return loggedIn;
             }
         } catch (fbErr) {
-            console.warn("Firebase Auth signIn attempt:", fbErr);
+            throw fbErr;
         }
 
-        // 2. Direct Cloud Firestore user lookup (cross-device & incognito support)
-        try {
-            let userData = null;
-            const userRef = doc(db, "usuarios", docId);
-            const snap = await getDoc(userRef);
-
-            if (snap.exists()) {
-                userData = snap.data();
-            } else {
-                // Try query by email field if document ID was different
-                const q = query(collection(db, "usuarios"), where("email", "==", cleanEmail));
-                const qSnap = await getDocs(q);
-                if (!qSnap.empty) {
-                    userData = qSnap.docs[0].data();
-                }
-            }
-
-            if (userData) {
-                const storedHash = userData.passwordHash;
-                const storedPlain = userData.password;
-                const isMatch = (storedHash && storedHash === pHash) || (storedPlain && storedPlain === password);
-
-                if (!isMatch) {
-                    throw { code: "auth/wrong-password", message: "Wrong password" };
-                }
-
-                if (!storedHash) {
-                    try {
-                        await setDoc(userRef, { passwordHash: pHash }, { merge: true });
-                    } catch (e) {}
-                }
-
-                const userObj = {
-                    uid: userData.uid || ("user_" + Date.now()),
-                    displayName: userData.displayName || cleanEmail.split("@")[0],
-                    email: userData.email || cleanEmail,
-                    createdAt: userData.createdAt || new Date().toISOString()
-                };
-
-                LocalAuthStore.saveCloudUserLocal(userObj, password);
-                LocalAuthStore.setCurrentUser(userObj);
-
-                // Sync with server in background
-                fetch('/api/auth/register', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ name: userObj.displayName, email: cleanEmail, password, passwordHash: pHash })
-                }).catch(() => {});
-
-                return userObj;
-            }
-        } catch (dbErr) {
-            if (dbErr.code === "auth/wrong-password") throw dbErr;
-            console.warn("Firestore lookup error:", dbErr);
-        }
-
-        // 3. Server backend lookup
-        try {
-            const sRes = await fetch('/api/auth/login', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ email: cleanEmail, password, passwordHash: pHash })
-            });
-            if (sRes.ok) {
-                const sData = await sRes.json();
-                if (sData.user) {
-                    LocalAuthStore.saveCloudUserLocal(sData.user, password);
-                    LocalAuthStore.setCurrentUser(sData.user);
-                    // Sync back to Firestore
-                    try {
-                        await setDoc(doc(db, "usuarios", docId), { ...sData.user, passwordHash: pHash }, { merge: true });
-                    } catch (e) {}
-                    return sData.user;
-                }
-            } else {
-                const errData = await sRes.json().catch(() => ({}));
-                if (errData.code === "auth/wrong-password") {
-                    throw { code: "auth/wrong-password", message: "Wrong password" };
-                }
-            }
-        } catch (sErr) {
-            if (sErr.code === "auth/wrong-password") throw sErr;
-            console.warn("Server login attempt error:", sErr);
-        }
-
-        // 4. Fallback to LocalAuthStore if external services are offline
-        const localUser = LocalAuthStore.login(cleanEmail, password);
-        return localUser;
+        throw { code: "auth/user-not-found", message: "User not found" };
     },
 
     async resetPassword(email) {

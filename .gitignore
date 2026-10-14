@@ -1,0 +1,7 @@
+.env
+users_db.json
+*_backup_*.json
+/backups/
+node_modules/
+dist/
+.aistudio/

@@ -1,6 +1,0 @@
-{
-  "summary": "Plan de implementación para la detección, auditoría y eliminación de correos falsos y cuentas de prueba en la base de datos. Incluye motor de detección heurística, panel de auditoría interactivo para administradores con tabla detallada y confirmación de eliminación segura con copia de respaldo.",
-  "updatedAt": "2026-10-13T18:46:07.503538624Z",
-  "requestFeedback": true,
-  "userFacing": true
-}

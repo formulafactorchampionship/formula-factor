@@ -13,7 +13,7 @@ const PORT = 3000;
 
 // Security salt and secret key configuration
 const AUTH_SALT = '_formula_factor_auth_salt_2026';
-const ADMIN_SECRET = process.env.ADMIN_SECRET || 'ffc_admin_auth_jwt_secret_formula_factor_2026';
+const ADMIN_SECRET = process.env.ADMIN_API_SECRET;
 
 // -------------------------------------------------------------
 // 1. STRICT STRING SANITIZATION HELPER
@@ -115,6 +115,14 @@ function generateAdminToken(email) {
 }
 
 function requireAdminAuth(req, res, next) {
+  if (!ADMIN_SECRET) {
+    return res.status(403).json({
+      success: false,
+      error: 'Acceso denegado: ADMIN_API_SECRET no está configurado en el servidor',
+      code: 'auth/admin-unauthorized'
+    });
+  }
+
   const adminEmail = (
     req.headers['x-admin-email'] ||
     req.query.adminEmail ||
@@ -132,23 +140,21 @@ function requireAdminAuth(req, res, next) {
     ''
   ).trim();
 
-  if (adminToken) {
-    for (const pe of PROTECTED_EMAILS) {
-      if (adminToken === generateAdminToken(pe) || adminToken === ADMIN_SECRET) {
-        req.adminUser = { email: pe };
-        return next();
-      }
-    }
+  if (!adminToken) {
+    return res.status(403).json({
+      success: false,
+      error: 'Acceso denegado: Se requieren credenciales de Administrador FFC autorizadas',
+      code: 'auth/admin-unauthorized'
+    });
+  }
+
+  if (adminToken === ADMIN_SECRET) {
+    req.adminUser = { email: adminEmail || 'admin@formulafactor.internal' };
+    return next();
   }
 
   if (adminEmail && PROTECTED_EMAILS.some(pe => pe.toLowerCase() === adminEmail)) {
-    if (adminToken === generateAdminToken(adminEmail) || adminToken === ADMIN_SECRET) {
-      req.adminUser = { email: adminEmail };
-      return next();
-    }
-
-    const adminSession = req.headers['x-admin-session'];
-    if (adminSession === 'active' || adminToken === 'ffc_admin_authorized') {
+    if (adminToken === generateAdminToken(adminEmail)) {
       req.adminUser = { email: adminEmail };
       return next();
     }
@@ -356,7 +362,7 @@ app.post('/api/auth/login', (req, res) => {
 });
 
 // Requirement 1b: Strict sanitization and validation in /api/auth/sync
-app.post('/api/auth/sync', (req, res) => {
+app.post('/api/auth/sync', requireAdminAuth, (req, res) => {
   const { users } = req.body || {};
   if (!Array.isArray(users)) {
     return res.status(400).json({ error: 'Expected array of users' });

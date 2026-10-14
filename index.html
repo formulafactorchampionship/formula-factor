@@ -100,7 +100,13 @@
             var authBtn = document.getElementById("authHeaderBtn");
             if (authBtn) {
                 authBtn.addEventListener("click", function() {
+                    if (typeof activeUserAuth !== "undefined" && activeUserAuth) {
+                        return;
+                    }
                     setTimeout(function() {
+                        if (typeof activeUserAuth !== "undefined" && activeUserAuth) {
+                            return;
+                        }
                         var overlay = document.getElementById("userAuthOverlay");
                         var profileMenu = document.getElementById("userProfileMenu");
                         var btnLabel = document.getElementById("authBtnLabel");
