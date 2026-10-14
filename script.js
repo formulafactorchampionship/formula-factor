@@ -5771,7 +5771,9 @@ const ADMIN_EMAIL = ADMIN_EMAILS[0];
 
 function isUserAdmin(user) {
     const u = user !== undefined ? user : (typeof activeUserAuth !== "undefined" && activeUserAuth ? activeUserAuth : ((typeof window !== "undefined" && window.LocalAuthStore) ? window.LocalAuthStore.getCurrentUser() : (typeof LocalAuthStore !== "undefined" ? LocalAuthStore.getCurrentUser() : null)));
-    if (!u || !u.email) return false;
+    if (!u) return false;
+    if (u.role === 'admin') return true;
+    if (!u.email) return false;
     const cleanEmail = u.email.trim().toLowerCase();
     return ADMIN_EMAILS.some(adminEmail => adminEmail.toLowerCase().trim() === cleanEmail);
 }
@@ -6201,13 +6203,13 @@ function openAdminPanel() {
     }
 
     if (!adminPanelOverlay) return;
-    populateAdminForms();
-    if (typeof updateAdminNewsBadge === "function") updateAdminNewsBadge();
-    if (typeof renderAdminNewsTab === "function") renderAdminNewsTab();
-    if (typeof syncPhotosFromSources === "function") syncPhotosFromSources();
-    if (typeof updateAdminPhotosBadge === "function") updateAdminPhotosBadge();
-    if (typeof renderAdminPhotosTab === "function") renderAdminPhotosTab();
-    if (typeof updateAdminEmailAuditBadge === "function") updateAdminEmailAuditBadge();
+    try { populateAdminForms(); } catch (e) { console.warn("populateAdminForms error:", e); }
+    try { if (typeof updateAdminNewsBadge === "function") updateAdminNewsBadge(); } catch (e) {}
+    try { if (typeof renderAdminNewsTab === "function") renderAdminNewsTab(); } catch (e) {}
+    try { if (typeof syncPhotosFromSources === "function") syncPhotosFromSources(); } catch (e) {}
+    try { if (typeof updateAdminPhotosBadge === "function") updateAdminPhotosBadge(); } catch (e) {}
+    try { if (typeof renderAdminPhotosTab === "function") renderAdminPhotosTab(); } catch (e) {}
+    try { if (typeof updateAdminEmailAuditBadge === "function") updateAdminEmailAuditBadge(); } catch (e) {}
     adminPanelOverlay.classList.add("active");
     document.body.classList.add("modal-open");
 }
@@ -10702,30 +10704,34 @@ adminTabButtons.forEach(btn => {
         const pane = document.getElementById(targetId);
         if (pane) pane.classList.add("active");
 
-        if (targetId === "tab-verify" || targetId === "tab-matriz-resultados") {
-            if (typeof refreshAdminVerificationData === "function") {
-                refreshAdminVerificationData();
-            } else if (typeof renderAdminVerifyTab === "function") {
-                renderAdminVerifyTab(typeof adminSearchVerifyPilotInput !== "undefined" && adminSearchVerifyPilotInput ? adminSearchVerifyPilotInput.value : "");
+        try {
+            if (targetId === "tab-verify" || targetId === "tab-matriz-resultados") {
+                if (typeof refreshAdminVerificationData === "function") {
+                    refreshAdminVerificationData();
+                } else if (typeof renderAdminVerifyTab === "function") {
+                    renderAdminVerifyTab(typeof adminSearchVerifyPilotInput !== "undefined" && adminSearchVerifyPilotInput ? adminSearchVerifyPilotInput.value : "");
+                }
             }
-        }
-        if (targetId === "tab-news" || targetId === "tab-galeria-medios") {
-            if (typeof renderAdminNewsTab === "function") {
-                renderAdminNewsTab();
+            if (targetId === "tab-news" || targetId === "tab-galeria-medios") {
+                if (typeof renderAdminNewsTab === "function") {
+                    renderAdminNewsTab();
+                }
             }
-        }
-        if (targetId === "tab-photos" || targetId === "tab-galeria-medios") {
-            if (typeof syncPhotosFromSources === "function") {
-                syncPhotosFromSources();
+            if (targetId === "tab-photos" || targetId === "tab-galeria-medios") {
+                if (typeof syncPhotosFromSources === "function") {
+                    syncPhotosFromSources();
+                }
+                if (typeof renderAdminPhotosTab === "function") {
+                    renderAdminPhotosTab();
+                }
             }
-            if (typeof renderAdminPhotosTab === "function") {
-                renderAdminPhotosTab();
+            if (targetId === "tab-email-audit" || targetId === "tab-auditoria-seguridad") {
+                if (typeof loadAndRenderEmailAudit === "function") {
+                    loadAndRenderEmailAudit();
+                }
             }
-        }
-        if (targetId === "tab-email-audit" || targetId === "tab-auditoria-seguridad") {
-            if (typeof loadAndRenderEmailAudit === "function") {
-                loadAndRenderEmailAudit();
-            }
+        } catch (err) {
+            console.warn("Error loading admin tab data for " + targetId + ":", err);
         }
     });
 });
