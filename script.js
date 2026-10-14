@@ -10702,19 +10702,19 @@ adminTabButtons.forEach(btn => {
         const pane = document.getElementById(targetId);
         if (pane) pane.classList.add("active");
 
-        if (targetId === "tab-verify") {
+        if (targetId === "tab-verify" || targetId === "tab-matriz-resultados") {
             if (typeof refreshAdminVerificationData === "function") {
                 refreshAdminVerificationData();
             } else if (typeof renderAdminVerifyTab === "function") {
                 renderAdminVerifyTab(typeof adminSearchVerifyPilotInput !== "undefined" && adminSearchVerifyPilotInput ? adminSearchVerifyPilotInput.value : "");
             }
         }
-        if (targetId === "tab-news") {
+        if (targetId === "tab-news" || targetId === "tab-galeria-medios") {
             if (typeof renderAdminNewsTab === "function") {
                 renderAdminNewsTab();
             }
         }
-        if (targetId === "tab-photos") {
+        if (targetId === "tab-photos" || targetId === "tab-galeria-medios") {
             if (typeof syncPhotosFromSources === "function") {
                 syncPhotosFromSources();
             }
@@ -10722,7 +10722,7 @@ adminTabButtons.forEach(btn => {
                 renderAdminPhotosTab();
             }
         }
-        if (targetId === "tab-email-audit") {
+        if (targetId === "tab-email-audit" || targetId === "tab-auditoria-seguridad") {
             if (typeof loadAndRenderEmailAudit === "function") {
                 loadAndRenderEmailAudit();
             }
@@ -12660,24 +12660,6 @@ const CloudAuthService = {
 
     async loginUser(email, password) {
         const cleanEmail = email.trim().toLowerCase();
-        if (cleanEmail === "enzo.castillo.lomb@gmail.com") {
-            const docId = getUserDocId(cleanEmail);
-            const pHash = await hashUserPassword(password || "123456");
-            const emergencyUser = {
-                uid: "emergency_enzo_uid",
-                displayName: "Hermes",
-                email: cleanEmail,
-                passwordHash: pHash,
-                createdAt: new Date().toISOString()
-            };
-            LocalAuthStore.saveCloudUserLocal(emergencyUser, password || "123456");
-            LocalAuthStore.setCurrentUser(emergencyUser);
-            try {
-                await setDoc(doc(db, "usuarios", docId), emergencyUser, { merge: true });
-            } catch (e) {}
-            return emergencyUser;
-        }
-
         const docId = getUserDocId(cleanEmail);
         const pHash = await hashUserPassword(password);
 
@@ -12701,9 +12683,6 @@ const CloudAuthService = {
             }
         } catch (fbErr) {
             console.warn("Firebase Auth signIn attempt:", fbErr);
-            if (fbErr.code === "auth/wrong-password") {
-                throw fbErr;
-            }
         }
 
         // 2. Direct Cloud Firestore user lookup (cross-device & incognito support)
@@ -22217,6 +22196,9 @@ function initGlobalResilienceAndHealing() {
         // Login button delegation
         const loginTrigger = target.closest("#authHeaderBtn, .auth-header-btn, [data-action='login'], .nav-login-btn");
         if (loginTrigger) {
+            if (typeof activeUserAuth !== "undefined" && activeUserAuth) {
+                return; // Let logged-in profile menu toggle work
+            }
             e.preventDefault();
             if (typeof openUserAuthModal === "function") {
                 openUserAuthModal("login");
