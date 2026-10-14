@@ -59,41 +59,7 @@
             }
         };
 
-        // Global Error & Promise Rejection Handler for auto-healing cache / IndexedDB once per session
-        window.addEventListener('error', function(event) {
-            var msg = (event.message || "").toLowerCase();
-            if ((msg.includes("json") || msg.includes("syntaxerror") || msg.includes("cannot read") || msg.includes("undefined") || msg.includes("null") || msg.includes("indexeddb") || msg.includes("quota") || msg.includes("storage")) && !sessionStorage.getItem('ffc_auto_healed')) {
-                sessionStorage.setItem('ffc_auto_healed', 'true');
-                try {
-                    for (var i = localStorage.length - 1; i >= 0; i--) {
-                        var k = localStorage.key(i);
-                        if (k && (k.startsWith("ffc_") || k.includes("fantasy") || k.includes("user"))) {
-                            localStorage.removeItem(k);
-                        }
-                    }
-                } catch (e) {}
-                console.warn("Auto-healed corrupted cache/storage error, reloading page...");
-                window.location.reload();
-            }
-        });
 
-        window.addEventListener('unhandledrejection', function(event) {
-            var reason = event.reason ? (event.reason.message || String(event.reason)) : "";
-            var low = reason.toLowerCase();
-            if ((low.includes("json") || low.includes("syntaxerror") || low.includes("cannot read") || low.includes("undefined") || low.includes("null") || low.includes("indexeddb") || low.includes("quota") || low.includes("storage")) && !sessionStorage.getItem('ffc_auto_healed')) {
-                sessionStorage.setItem('ffc_auto_healed', 'true');
-                try {
-                    for (var i = localStorage.length - 1; i >= 0; i--) {
-                        var k = localStorage.key(i);
-                        if (k && (k.startsWith("ffc_") || k.includes("fantasy") || k.includes("user"))) {
-                            localStorage.removeItem(k);
-                        }
-                    }
-                } catch (e) {}
-                console.warn("Auto-healed unhandled promise rejection cache error, reloading page...");
-                window.location.reload();
-            }
-        });
 
         // DOMContentLoaded Fallback for Login & Fantasy Login Prompt
         document.addEventListener("DOMContentLoaded", function() {
