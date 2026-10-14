@@ -5,6 +5,9 @@ import { fileURLToPath } from 'url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+// Centralized API Key constant
+export const FIREBASE_API_KEY = process.env.FIREBASE_API_KEY || 'AIzaSyAS4RecsGAS4JWUn1d-9_VyqFRKmkF_CNs';
+
 // Protected administrative accounts that MUST NEVER be flagged as fake or deleted
 export const PROTECTED_EMAILS = [
   'enzo.castillo.lomb@gmail.com',
@@ -56,7 +59,6 @@ export const DISPOSABLE_DOMAINS = new Set([
   'crazymailing.com',
   'mytempemail.com',
   'incognitomail.org',
-  'crazymailing.com',
   'discard.email',
   'discardmail.com',
   'spambog.com',
@@ -131,17 +133,14 @@ function isSuspiciousLocalPart(localPart) {
   if (!localPart) return false;
   const lower = localPart.toLowerCase();
 
-  // Test keywords
   if (/^(asdf|qwer|zxcv|dfbdf|test|fake|prueba|dummy|spam|temp|random|nobody)/i.test(lower)) {
     return true;
   }
 
-  // Very short repeated single characters (e.g. 'e', 'w', 'a', 'aaaa', '1111')
   if (/^([a-z0-9])\1*$/i.test(lower) && lower.length < 5) {
     return true;
   }
 
-  // Keyboard mash pattern (no vowels with length >= 4)
   if (lower.length >= 4 && !/[aeiouy0-9]/i.test(lower)) {
     return true;
   }
@@ -149,7 +148,6 @@ function isSuspiciousLocalPart(localPart) {
   return false;
 }
 
-// Helper to check if domain is suspicious
 function isSuspiciousDomain(domain) {
   if (!domain) return { isSuspicious: true, reason: 'Dominio ausente' };
   const dLower = domain.toLowerCase().trim();
@@ -162,13 +160,11 @@ function isSuspiciousDomain(domain) {
     return { isSuspicious: true, category: 'dummy_domain', reason: `Dominio simulado / de prueba no válido (${dLower})` };
   }
 
-  // Domain with single letter name before TLD (e.g. e.com, w.com)
   const parts = dLower.split('.');
   if (parts.length >= 2 && parts[0].length === 1) {
     return { isSuspicious: true, category: 'dummy_domain', reason: `Dominio de un solo carácter (${dLower})` };
   }
 
-  // Obvious typo / mash domain (e.g., gmasdas.com, asdfgh.com)
   if (dLower.includes('gmasdas') || dLower.includes('asdf') || dLower.includes('fake')) {
     return { isSuspicious: true, category: 'dummy_domain', reason: `Dominio irregular / simulado (${dLower})` };
   }
@@ -176,15 +172,10 @@ function isSuspiciousDomain(domain) {
   return { isSuspicious: false };
 }
 
-/**
- * Classifies an account record based on email, name, and metadata
- */
 export function auditAccount(account) {
   const email = (account.email || '').trim().toLowerCase();
   const name = (account.displayName || account.managerName || '').trim();
-  const docId = account.docId || account.id || account.userId || '';
 
-  // 1. Protected Admin Accounts
   if (PROTECTED_EMAILS.some(pe => pe.toLowerCase() === email)) {
     return {
       status: 'clean',
@@ -196,31 +187,18 @@ export function auditAccount(account) {
     };
   }
 
-  // 2. Corrupted / Ghost record (No email AND no name)
-  if (!email && !name) {
+  // Prevent orphaned or corrupted ghost records
+  if (!email || email.length < 5 || !email.includes('@')) {
     return {
       status: 'suspicious',
       risk: 'danger',
       category: 'corrupted',
       isProtected: false,
-      reason: 'Registro vacío / huérfano sin datos de usuario ni correo',
+      reason: 'Registro vacío, huérfano o sin dirección de correo válida',
       badge: 'CORRUPTO'
     };
   }
 
-  // If no email exists but has docId
-  if (!email) {
-    return {
-      status: 'suspicious',
-      risk: 'warning',
-      category: 'corrupted',
-      isProtected: false,
-      reason: 'Cuenta sin dirección de correo electrónico registrada',
-      badge: 'SIN CORREO'
-    };
-  }
-
-  // 3. Check for red flags
   const [localPart, domainPart] = email.split('@');
   if (!localPart || !domainPart) {
     return {
@@ -237,7 +215,6 @@ export function auditAccount(account) {
   let category = 'clean';
   let badge = 'LIMPIO';
 
-  // Check disposable or dummy domain
   const domainCheck = isSuspiciousDomain(domainPart);
   if (domainCheck.isSuspicious) {
     redFlags.push(domainCheck.reason);
@@ -245,18 +222,12 @@ export function auditAccount(account) {
     badge = domainCheck.category === 'disposable' ? 'DESECHABLE' : 'DOMINIO FALSO';
   }
 
-  // Check XSS / Code injection
   if (/<script/i.test(name) || /onerror=/i.test(name) || /alert\(/i.test(name) || /<[^>]+>/i.test(name)) {
     redFlags.push('Inyección de código / script malicioso detectado en el nombre');
-    if (category === 'clean') {
-      category = 'test_pattern';
-      badge = 'CÓDIGO / XSS';
-    } else {
-      badge = badge + ' + XSS';
-    }
+    category = 'test_pattern';
+    badge = 'CÓDIGO / XSS';
   }
 
-  // Reserved admin check
   if (localPart === 'admin' || domainPart === 'admin.com') {
     redFlags.push('Cuenta de prueba con palabra reservada admin no autorizada');
     if (category === 'clean') {
@@ -265,7 +236,6 @@ export function auditAccount(account) {
     }
   }
 
-  // Suspicious local-part patterns (e.g. dfbdf@..., asdf@..., e@..., w@...)
   if (isSuspiciousLocalPart(localPart)) {
     redFlags.push(`Patrón sintáctico sospechoso / teclado de prueba ("${localPart}@")`);
     if (category === 'clean') {
@@ -285,7 +255,6 @@ export function auditAccount(account) {
     };
   }
 
-  // 4. Legitimate Verified or Clean Account
   return {
     status: 'clean',
     risk: 'safe',
@@ -296,15 +265,12 @@ export function auditAccount(account) {
   };
 }
 
-/**
- * Reads local fantasy teams, users DB, and Firestore usuarios, returning unified accounts
- */
 export async function fetchAllAccounts() {
-  const accountsMap = new Map(); // key = email or docId
+  const accountsMap = new Map();
 
-  // 1. Fetch from Firestore 'usuarios' collection
+  // 1. Fetch from Firestore 'usuarios' collection using centralized API key
   try {
-    const firestoreUrl = `https://firestore.googleapis.com/v1/projects/formula-factor/databases/(default)/documents/usuarios?pageSize=300&key=AIzaSyAS4RecsGAS4JWUn1d-9_VyqFRKmkF_CNs`;
+    const firestoreUrl = `https://firestore.googleapis.com/v1/projects/formula-factor/databases/(default)/documents/usuarios?pageSize=300&key=${FIREBASE_API_KEY}`;
     const res = await fetch(firestoreUrl);
     if (res.ok) {
       const data = await res.json();
@@ -317,7 +283,10 @@ export async function fetchAllAccounts() {
           const createdAt = f.createdAt?.stringValue || '';
           const isVerified = f.isVerified?.booleanValue || false;
 
-          const key = email || docId;
+          // Skip corrupted or empty records lacking valid email
+          if (!email || !email.includes('@')) return;
+
+          const key = email;
           const existing = accountsMap.get(key) || {
             key,
             email: email,
@@ -327,7 +296,6 @@ export async function fetchAllAccounts() {
             sources: []
           };
 
-          if (email && !existing.email) existing.email = email;
           if (name && !existing.displayName) existing.displayName = name;
           if (createdAt && !existing.createdAt) existing.createdAt = createdAt;
           existing.firestoreDocId = docId;
@@ -349,9 +317,8 @@ export async function fetchAllAccounts() {
       if (Array.isArray(teams)) {
         teams.forEach(team => {
           const email = (team.email || '').trim().toLowerCase();
-          const id = team.id || team.userId || '';
-          const key = email || id;
-          if (!key) return;
+          if (!email || !email.includes('@')) return;
+          const key = email;
 
           const existing = accountsMap.get(key) || {
             key,
@@ -362,9 +329,8 @@ export async function fetchAllAccounts() {
             sources: []
           };
 
-          if (email && !existing.email) existing.email = email;
           if (!existing.displayName && team.managerName) existing.displayName = team.managerName;
-          existing.fantasyTeamId = team.id || id;
+          existing.fantasyTeamId = team.id || team.userId || '';
           existing.teamName = team.teamName || '';
           if (!existing.sources.includes('Fantasy DB')) existing.sources.push('Fantasy DB');
 
@@ -384,9 +350,8 @@ export async function fetchAllAccounts() {
       if (Array.isArray(users)) {
         users.forEach(u => {
           const email = (u.email || '').trim().toLowerCase();
-          const uid = u.uid || '';
-          const key = email || uid;
-          if (!key) return;
+          if (!email || !email.includes('@')) return;
+          const key = email;
 
           const existing = accountsMap.get(key) || {
             key,
@@ -397,9 +362,8 @@ export async function fetchAllAccounts() {
             sources: []
           };
 
-          if (email && !existing.email) existing.email = email;
           if (!existing.displayName && u.displayName) existing.displayName = u.displayName;
-          existing.userUid = uid;
+          existing.userUid = u.uid || '';
           if (!existing.sources.includes('Users DB')) existing.sources.push('Users DB');
 
           accountsMap.set(key, existing);
@@ -410,7 +374,6 @@ export async function fetchAllAccounts() {
     console.error('Error fetching users DB for audit:', err.message);
   }
 
-  // Run audit on each account
   const accountList = Array.from(accountsMap.values()).map(acc => {
     const auditRes = auditAccount(acc);
     return {
@@ -422,9 +385,6 @@ export async function fetchAllAccounts() {
   return accountList;
 }
 
-/**
- * Creates an automatic backup file in /backups before deletion
- */
 export function createBackupSnapshot(data, label = 'audit_cleanup') {
   try {
     const backupDir = path.join(__dirname, 'backups');
@@ -436,24 +396,17 @@ export function createBackupSnapshot(data, label = 'audit_cleanup') {
     const fullPath = path.join(backupDir, filename);
 
     fs.writeFileSync(fullPath, JSON.stringify(data, null, 2), 'utf8');
-    console.log(`Automatic backup snapshot created at: ${fullPath}`);
     return { success: true, filename, timestamp };
   } catch (err) {
-    console.error('Failed to create backup snapshot:', err);
     return { success: false, error: err.message };
   }
 }
 
-/**
- * Deletes selected accounts from Firestore, users_db.json, and fantasy_teams_db.json
- */
 export async function deleteAccounts(targets) {
-  // targets: array of { email?, firestoreDocId?, fantasyTeamId?, userUid? }
   if (!Array.isArray(targets) || targets.length === 0) {
     return { success: false, error: 'No accounts provided for deletion' };
   }
 
-  // Filter out any protected admin accounts
   const validTargets = targets.filter(t => {
     const email = (t.email || '').toLowerCase().trim();
     return !PROTECTED_EMAILS.some(pe => pe.toLowerCase() === email);
@@ -463,7 +416,6 @@ export async function deleteAccounts(targets) {
     return { success: false, error: 'Cannot delete protected administrator accounts' };
   }
 
-  // 1. Fetch current full state and save backup
   const allCurrentAccounts = await fetchAllAccounts();
   const backupRes = createBackupSnapshot({
     timestamp: new Date().toISOString(),
@@ -474,17 +426,15 @@ export async function deleteAccounts(targets) {
   const deletedSummary = [];
   const errors = [];
 
-  // Sets for quick lookup
   const emailsToDelete = new Set(validTargets.map(t => (t.email || '').toLowerCase().trim()).filter(Boolean));
   const firestoreDocsToDelete = new Set(validTargets.map(t => t.firestoreDocId).filter(Boolean));
   const fantasyTeamsToDelete = new Set(validTargets.map(t => t.fantasyTeamId).filter(Boolean));
   const userUidsToDelete = new Set(validTargets.map(t => t.userUid).filter(Boolean));
 
-  // 2. Delete from Firestore 'usuarios'
   for (const docId of firestoreDocsToDelete) {
     if (!docId || !/^[a-zA-Z0-9_.\-]+$/.test(docId)) continue;
     try {
-      const deleteUrl = `https://firestore.googleapis.com/v1/projects/formula-factor/databases/(default)/documents/usuarios/${encodeURIComponent(docId)}?key=AIzaSyAS4RecsGAS4JWUn1d-9_VyqFRKmkF_CNs`;
+      const deleteUrl = `https://firestore.googleapis.com/v1/projects/formula-factor/databases/(default)/documents/usuarios/${encodeURIComponent(docId)}?key=${FIREBASE_API_KEY}`;
       const res = await fetch(deleteUrl, { method: 'DELETE' });
       if (res.ok) {
         deletedSummary.push({ type: 'firestore', docId });
@@ -496,7 +446,6 @@ export async function deleteAccounts(targets) {
     }
   }
 
-  // Also check if any target had an email that matches a Firestore docId format (e.g. name_domain.com)
   for (const email of emailsToDelete) {
     const altDocId1 = email.replace(/[@.]/g, '_');
     const altDocId2 = email.replace('@', '_');
@@ -504,14 +453,13 @@ export async function deleteAccounts(targets) {
       if (!/^[a-zA-Z0-9_.\-]+$/.test(altId)) continue;
       if (!firestoreDocsToDelete.has(altId)) {
         try {
-          const deleteUrl = `https://firestore.googleapis.com/v1/projects/formula-factor/databases/(default)/documents/usuarios/${encodeURIComponent(altId)}?key=AIzaSyAS4RecsGAS4JWUn1d-9_VyqFRKmkF_CNs`;
+          const deleteUrl = `https://firestore.googleapis.com/v1/projects/formula-factor/databases/(default)/documents/usuarios/${encodeURIComponent(altId)}?key=${FIREBASE_API_KEY}`;
           await fetch(deleteUrl, { method: 'DELETE' });
         } catch (e) {}
       }
     }
   }
 
-  // 3. Delete from fantasy_teams_db.json
   try {
     const teamsFile = path.join(__dirname, 'fantasy_teams_db.json');
     if (fs.existsSync(teamsFile)) {
@@ -535,7 +483,6 @@ export async function deleteAccounts(targets) {
     errors.push(`fantasy_teams_db error: ${e.message}`);
   }
 
-  // 4. Delete from users_db.json
   try {
     const usersFile = path.join(__dirname, 'users_db.json');
     if (fs.existsSync(usersFile)) {

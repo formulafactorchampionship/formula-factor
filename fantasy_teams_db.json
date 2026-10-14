@@ -758,5 +758,17 @@
     "userId": "theagus60_gmail_com",
     "roundPoints": {},
     "frozenTotalBeforeBelgium": 87
+  },
+  {
+    "userId": "test_xss_user",
+    "teamName": "Team",
+    "managerName": "Hacker",
+    "teamValue": 70,
+    "team": "",
+    "driver1": "",
+    "driver2": "",
+    "driver3": "",
+    "turboDriver": "",
+    "updatedAt": "2026-10-14T14:48:56.210Z"
   }
 ]

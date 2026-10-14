@@ -171,7 +171,13 @@ export function initCobeGlobe(containerId) {
             if (infoGpName) infoGpName.textContent = circuit.name;
             if (infoDate) infoDate.textContent = circuit.date;
             if (infoCircuit) {
-                infoCircuit.innerHTML = `<span style="color:var(--gold); font-weight:700;">${circuit.circuit}</span> · ${circuit.location}`;
+                infoCircuit.textContent = "";
+                const circuitSpan = document.createElement("span");
+                circuitSpan.style.color = "var(--gold)";
+                circuitSpan.style.fontWeight = "700";
+                circuitSpan.textContent = circuit.circuit;
+                infoCircuit.appendChild(circuitSpan);
+                infoCircuit.appendChild(document.createTextNode(` · ${circuit.location}`));
             }
         }
 
