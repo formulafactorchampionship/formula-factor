@@ -11,396 +11,52 @@ const __dirname = path.dirname(__filename);
 const app = express();
 const PORT = 3000;
 
-// Security salt and secret key configuration
-const AUTH_SALT = '_formula_factor_auth_salt_2026';
-const ADMIN_SECRET = process.env.ADMIN_SECRET || 'ffc_admin_auth_jwt_secret_formula_factor_2026';
+// Firebase credentials are supplied only through the deployment environment.
+const FIREBASE_API_KEY = process.env.FIREBASE_API_KEY || "";
 
-// -------------------------------------------------------------
-// 1. STRICT STRING SANITIZATION HELPER
-// -------------------------------------------------------------
-function sanitizeString(str, maxLength = 250) {
-  if (!str) return '';
-  const cleaned = String(str)
-    .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '')
-    .replace(/<[^>]*>?/gm, '')
-    .replace(/javascript:/gi, '')
-    .replace(/onerror\s*=/gi, '')
-    .replace(/onload\s*=/gi, '')
-    .replace(/onclick\s*=/gi, '')
-    .trim();
-  return cleaned.slice(0, maxLength);
-}
+async function requireAdminAuth(req, res, next) {
+  const authorization = String(req.headers.authorization || "");
+  const idToken = authorization.startsWith("Bearer ") ? authorization.slice(7).trim() : "";
 
-// -------------------------------------------------------------
-// 2. HTTP HEADERS & CACHE-CONTROL MIDDLEWARE
-// -------------------------------------------------------------
-app.use((req, res, next) => {
-  res.setHeader('X-Content-Type-Options', 'nosniff');
-  const p = req.path;
-  if (p.startsWith('/api/') || p.endsWith('.html') || p === '/') {
-    res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
-    res.setHeader('Pragma', 'no-cache');
-    res.setHeader('Expires', '0');
-  } else if (p.endsWith('.css') || p.endsWith('.js') || p.endsWith('.png') || p.endsWith('.jpg') || p.endsWith('.webp') || p.includes('/news_uploads/')) {
-    res.setHeader('Cache-Control', 'public, max-age=3600, stale-while-revalidate=86400');
+  if (!FIREBASE_API_KEY || !idToken) {
+    return res.status(403).json({ success: false, error: "Acceso denegado", code: "auth/admin-unauthorized" });
   }
-  next();
-});
 
-// -------------------------------------------------------------
-// 3. SENSITIVE FILES & DIRECTORIES ACCESS BLOCKER (403 FORBIDDEN)
-// -------------------------------------------------------------
-const SENSITIVE_PATTERNS = [
-  /server\.js$/i,
-  /emailauditservice\.js$/i,
-  /update_index\.js$/i,
-  /scores_snippet\.js$/i,
-  /package(\.json|-lock\.json)?$/i,
-  /^\/?\.env/i,
-  /\.env/i,
-  /_db\.json$/i,
-  /backup/i,
-  /^\/?backups(\/|$)/i,
-  /^\/?components(\/|$)/i,
-  /^\/?\.aistudio(\/|$)/i,
-  /firestore\.rules$/i,
-  /firebase-blueprint\.json$/i
-];
-
-app.use((req, res, next) => {
-  let normalizedPath = '';
   try {
-    normalizedPath = decodeURIComponent(req.path).replace(/\\/g, '/');
-  } catch (e) {
-    return res.status(400).send('400 Bad Request');
-  }
-
-  const safePath = path.posix.normalize(normalizedPath);
-  const baseName = path.posix.basename(safePath);
-  const isBlocked = SENSITIVE_PATTERNS.some(pattern => pattern.test(safePath) || pattern.test(baseName));
-
-  if (isBlocked) {
-    return res.status(403).json({
-      error: '403 Forbidden: Acceso denegado a archivo o directorio protegido del sistema',
-      code: 'security/forbidden-file-access'
-    });
-  }
-
-  next();
-});
-
-// -------------------------------------------------------------
-// 4. BODY PARSER CONFIGURATION (PAYLOAD LIMIT RESTRICTION)
-// -------------------------------------------------------------
-const uploadLimitParser = express.json({ limit: '15mb' });
-app.use(['/api/noticias/upload-image', '/api/carreras/fotos'], uploadLimitParser);
-
-app.use(express.json({ limit: '2mb' }));
-app.use(express.urlencoded({ extended: true, limit: '2mb' }));
-
-// -------------------------------------------------------------
-// 5. STATIC ASSET SERVING
-// -------------------------------------------------------------
-app.use(express.static(__dirname, {
-  etag: false,
-  lastModified: false
-}));
-
-// -------------------------------------------------------------
-// 6. SECURE ADMIN TOKEN & AUTHORIZATION SYSTEM
-// -------------------------------------------------------------
-function generateAdminToken(email) {
-  const clean = String(email || '').toLowerCase().trim();
-  return crypto.createHmac('sha256', ADMIN_SECRET).update(`admin_session:${clean}`).digest('hex');
-}
-
-function requireAdminAuth(req, res, next) {
-  const adminEmail = (
-    req.headers['x-admin-email'] ||
-    req.query.adminEmail ||
-    (req.body && req.body.adminEmail) ||
-    ''
-  ).toLowerCase().trim();
-
-  const authHeader = req.headers['authorization'] || '';
-  const bearerToken = authHeader.startsWith('Bearer ') ? authHeader.substring(7).trim() : authHeader.trim();
-  const adminToken = (
-    req.headers['x-admin-token'] ||
-    bearerToken ||
-    req.query.adminToken ||
-    (req.body && req.body.adminToken) ||
-    ''
-  ).trim();
-
-  if (adminToken) {
-    for (const pe of PROTECTED_EMAILS) {
-      if (adminToken === generateAdminToken(pe) || adminToken === ADMIN_SECRET) {
-        req.adminUser = { email: pe };
-        return next();
+    const verifyResponse = await fetch(
+      `https://identitytoolkit.googleapis.com/v1/accounts:lookup?key=${encodeURIComponent(FIREBASE_API_KEY)}`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ idToken })
       }
+    );
+    const verified = await verifyResponse.json();
+    const email = String(verified?.users?.[0]?.email || "").toLowerCase().trim();
+    const isVerified = verified?.users?.[0]?.emailVerified === true;
+
+    if (!verifyResponse.ok || !isVerified || !PROTECTED_EMAILS.some(value => value.toLowerCase() === email)) {
+      return res.status(403).json({ success: false, error: "Acceso denegado", code: "auth/admin-unauthorized" });
     }
+
+    req.adminUser = { email };
+    return next();
+  } catch (error) {
+    return res.status(503).json({ success: false, error: "No se pudo verificar la sesión administrativa", code: "auth/admin-verification-unavailable" });
   }
+}
 
-  if (adminEmail && PROTECTED_EMAILS.some(pe => pe.toLowerCase() === adminEmail)) {
-    if (adminToken === generateAdminToken(adminEmail) || adminToken === ADMIN_SECRET) {
-      req.adminUser = { email: adminEmail };
-      return next();
-    }
-
-    const adminSession = req.headers['x-admin-session'];
-    if (adminSession === 'active' || adminToken === 'ffc_admin_authorized') {
-      req.adminUser = { email: adminEmail };
-      return next();
-    }
-  }
-
-  return res.status(403).json({
-    success: false,
-    error: 'Acceso denegado: Se requieren credenciales de Administrador FFC autorizadas',
-    code: 'auth/admin-unauthorized'
+// -------------------------------------------------------------
+// 7. Legacy password storage disabled
+// -------------------------------------------------------------
+// -------------------------------------------------------------
+// Passwords are handled exclusively by Firebase Authentication. These legacy
+// endpoints stay disabled to prevent local password databases from being recreated.
+app.all(["/api/auth/register", "/api/auth/login", "/api/auth/sync"], (req, res) => {
+  return res.status(410).json({
+    error: "La autenticación local está deshabilitada. Usa Firebase Authentication.",
+    code: "auth/local-auth-disabled"
   });
-}
-
-// -------------------------------------------------------------
-// 7. ENHANCED PASSWORD HASHING (SCRYPT + LEGACY SHA-256 COMPAT)
-// -------------------------------------------------------------
-function hashPassword(password) {
-  if (!password) return '';
-  const derivedKey = crypto.scryptSync(password, AUTH_SALT, 64, { N: 16384, r: 8, p: 1 });
-  return `scrypt$${derivedKey.toString('hex')}`;
-}
-
-function verifyPassword(candidatePassword, storedHashOrPassword) {
-  if (!candidatePassword || !storedHashOrPassword) return false;
-
-  if (storedHashOrPassword.startsWith('scrypt$')) {
-    const candidateHash = hashPassword(candidatePassword);
-    return crypto.timingSafeEqual(Buffer.from(candidateHash), Buffer.from(storedHashOrPassword));
-  }
-
-  const legacyHash = crypto.createHash('sha256').update(candidatePassword + AUTH_SALT).digest('hex');
-  if (storedHashOrPassword === legacyHash) {
-    return true;
-  }
-
-  if (storedHashOrPassword === candidatePassword) {
-    return true;
-  }
-
-  return false;
-}
-
-// -------------------------------------------------------------
-// 8. DATABASE STORES (USERS, FANTASY, PHOTOS, LOCK)
-// -------------------------------------------------------------
-const USERS_FILE = path.join(__dirname, 'users_db.json');
-let memoryUsers = null;
-
-function getUsers() {
-  if (memoryUsers !== null) return memoryUsers;
-  try {
-    if (fs.existsSync(USERS_FILE)) {
-      const data = fs.readFileSync(USERS_FILE, 'utf8');
-      const parsed = JSON.parse(data);
-      memoryUsers = Array.isArray(parsed) ? parsed.filter(u => u && u.email && typeof u.email === 'string' && u.email.includes('@')) : [];
-      return memoryUsers;
-    }
-  } catch (e) {
-    console.error('Error reading users file:', e);
-  }
-  memoryUsers = [];
-  return memoryUsers;
-}
-
-let usersWriteTimer = null;
-function saveUsers(users) {
-  const cleanList = Array.isArray(users) ? users.filter(u => u && u.email && typeof u.email === 'string' && u.email.includes('@')) : [];
-  memoryUsers = cleanList;
-  if (usersWriteTimer) clearTimeout(usersWriteTimer);
-  usersWriteTimer = setTimeout(() => {
-    fs.writeFile(USERS_FILE, JSON.stringify(cleanList, null, 2), 'utf8', (err) => {
-      if (err) console.error('Error asynchronously saving users file:', err);
-    });
-  }, 100);
-}
-
-// -------------------------------------------------------------
-// 9. CONFIGURATION & AUTHENTICATION ENDPOINTS
-// -------------------------------------------------------------
-app.get('/api/config', (req, res) => {
-  res.json({
-    firebaseApiKey: FIREBASE_API_KEY
-  });
-});
-
-app.post('/api/auth/register', (req, res) => {
-  const { name, email, password, passwordHash } = req.body || {};
-  if (!email || (!password && !passwordHash)) {
-    return res.status(400).json({ error: 'Missing required fields' });
-  }
-
-  const cleanEmail = String(email || '').trim().toLowerCase();
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  if (!emailRegex.test(cleanEmail)) {
-    return res.status(400).json({ error: 'Invalid email format', code: 'auth/invalid-email' });
-  }
-  if (cleanEmail.length > 128) {
-    return res.status(400).json({ error: 'Email too long', code: 'auth/email-too-long' });
-  }
-
-  const cleanName = sanitizeString(name || cleanEmail.split('@')[0], 50);
-  if (cleanName.length > 50) {
-    return res.status(400).json({ error: 'Username too long', code: 'auth/username-too-long' });
-  }
-
-  const normalizedAdminCheck = cleanName
-    .toLowerCase()
-    .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
-    .replace(/[@4]/g, 'a')
-    .replace(/[|1!l]/g, 'i')
-    .replace(/[0]/g, 'o')
-    .replace(/[3]/g, 'e')
-    .replace(/[^a-z]/g, '');
-
-  if (normalizedAdminCheck.includes('admin') || cleanName.toLowerCase().includes('admin')) {
-    return res.status(400).json({ 
-      error: 'Username not allowed: contains admin or reserved variations', 
-      code: 'auth/username-reserved-admin' 
-    });
-  }
-
-  if (password && password.length < 6) {
-    return res.status(400).json({ error: 'Password must have at least 6 characters', code: 'auth/weak-password' });
-  }
-  const users = getUsers();
-
-  const existingEmail = users.find(u => (u.email || '').toLowerCase().trim() === cleanEmail);
-  if (existingEmail) {
-    return res.status(400).json({ error: 'Email already in use', code: 'auth/email-already-in-use' });
-  }
-
-  const existingName = users.find(u => (u.displayName || '').toLowerCase().trim() === cleanName.toLowerCase().trim());
-  if (existingName) {
-    return res.status(400).json({ error: 'Username already in use', code: 'auth/username-already-in-use' });
-  }
-
-  const pHash = (passwordHash && passwordHash.startsWith('scrypt$')) 
-    ? passwordHash 
-    : (password ? hashPassword(password) : (passwordHash || ''));
-
-  const userData = {
-    uid: 'user_' + Date.now() + '_' + Math.random().toString(36).substring(2, 7),
-    displayName: cleanName,
-    email: cleanEmail,
-    passwordHash: pHash,
-    createdAt: new Date().toISOString()
-  };
-
-  users.push(userData);
-  saveUsers(users);
-
-  return res.json({ 
-    success: true, 
-    user: {
-      uid: userData.uid,
-      displayName: userData.displayName,
-      email: userData.email,
-      createdAt: userData.createdAt
-    } 
-  });
-});
-
-app.post('/api/auth/login', (req, res) => {
-  const { email, password, passwordHash } = req.body || {};
-  if (!email || (!password && !passwordHash)) {
-    return res.status(400).json({ error: 'Missing required fields' });
-  }
-
-  const cleanEmail = email.trim().toLowerCase();
-  const users = getUsers();
-  const found = users.find(u => (u.email || '').toLowerCase().trim() === cleanEmail);
-
-  if (!found) {
-    return res.status(404).json({ error: 'User not found', code: 'auth/user-not-found' });
-  }
-
-  let match = false;
-  if (password) {
-    match = verifyPassword(password, found.passwordHash || found.password);
-    if (match && (!found.passwordHash || !found.passwordHash.startsWith('scrypt$'))) {
-      found.passwordHash = hashPassword(password);
-      delete found.password;
-      saveUsers(users);
-    }
-  } else if (passwordHash) {
-    match = (found.passwordHash && found.passwordHash === passwordHash);
-  }
-
-  if (!match) {
-    return res.status(401).json({ error: 'Wrong password', code: 'auth/wrong-password' });
-  }
-
-  const isAdmin = PROTECTED_EMAILS.some(pe => pe.toLowerCase() === cleanEmail);
-
-  return res.json({
-    success: true,
-    user: {
-      uid: found.uid,
-      displayName: sanitizeString(found.displayName || cleanEmail.split('@')[0], 50),
-      email: found.email,
-      createdAt: found.createdAt,
-      isAdmin,
-      ...(isAdmin ? { adminToken: generateAdminToken(found.email) } : {})
-    }
-  });
-});
-
-// Requirement 1b: Strict sanitization and validation in /api/auth/sync
-app.post('/api/auth/sync', (req, res) => {
-  const { users } = req.body || {};
-  if (!Array.isArray(users)) {
-    return res.status(400).json({ error: 'Expected array of users' });
-  }
-
-  const currentUsers = getUsers();
-  let updated = false;
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
-  for (const u of users) {
-    if (!u || !u.email || typeof u.email !== 'string') continue;
-    const cleanEmail = u.email.trim().toLowerCase();
-    if (!emailRegex.test(cleanEmail) || cleanEmail.length > 128) continue;
-
-    const cleanName = sanitizeString(u.displayName || cleanEmail.split('@')[0], 50);
-    const idx = currentUsers.findIndex(cu => (cu.email || '').toLowerCase().trim() === cleanEmail);
-    const pHash = u.passwordHash || (u.password ? hashPassword(u.password) : '');
-
-    if (idx >= 0) {
-      if (!currentUsers[idx].passwordHash && pHash) {
-        currentUsers[idx].passwordHash = pHash;
-        updated = true;
-      }
-      if (!currentUsers[idx].displayName && cleanName) {
-        currentUsers[idx].displayName = cleanName;
-        updated = true;
-      }
-    } else {
-      currentUsers.push({
-        uid: sanitizeString(u.uid || ('user_' + Date.now()), 60),
-        displayName: cleanName,
-        email: cleanEmail,
-        passwordHash: pHash,
-        createdAt: sanitizeString(u.createdAt || new Date().toISOString(), 30)
-      });
-      updated = true;
-    }
-  }
-
-  if (updated) {
-    saveUsers(currentUsers);
-  }
-
-  return res.json({ success: true, count: currentUsers.length });
 });
 
 // -------------------------------------------------------------
