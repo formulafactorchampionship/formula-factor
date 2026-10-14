@@ -212,12 +212,16 @@ function getUsers() {
   return memoryUsers;
 }
 
+let usersWriteTimer = null;
 function saveUsers(users) {
   const cleanList = Array.isArray(users) ? users.filter(u => u && u.email && typeof u.email === 'string' && u.email.includes('@')) : [];
   memoryUsers = cleanList;
-  fs.writeFile(USERS_FILE, JSON.stringify(cleanList, null, 2), 'utf8', (err) => {
-    if (err) console.error('Error asynchronously saving users file:', err);
-  });
+  if (usersWriteTimer) clearTimeout(usersWriteTimer);
+  usersWriteTimer = setTimeout(() => {
+    fs.writeFile(USERS_FILE, JSON.stringify(cleanList, null, 2), 'utf8', (err) => {
+      if (err) console.error('Error asynchronously saving users file:', err);
+    });
+  }, 100);
 }
 
 // -------------------------------------------------------------
@@ -421,12 +425,16 @@ function getFantasyTeams() {
   return memoryFantasyTeams;
 }
 
+let fantasyTeamsWriteTimer = null;
 function saveFantasyTeams(teams) {
   const cleanList = Array.isArray(teams) ? teams.filter(t => t && (t.email || t.userId)) : [];
   memoryFantasyTeams = cleanList;
-  fs.writeFile(FANTASY_TEAMS_FILE, JSON.stringify(cleanList, null, 2), 'utf8', (err) => {
-    if (err) console.error('Error saving fantasy teams file:', err);
-  });
+  if (fantasyTeamsWriteTimer) clearTimeout(fantasyTeamsWriteTimer);
+  fantasyTeamsWriteTimer = setTimeout(() => {
+    fs.writeFile(FANTASY_TEAMS_FILE, JSON.stringify(cleanList, null, 2), 'utf8', (err) => {
+      if (err) console.error('Error saving fantasy teams file:', err);
+    });
+  }, 100);
 }
 
 app.get('/api/fantasy/teams', (req, res) => {
@@ -603,8 +611,11 @@ app.get('/api/live-timing', async (req, res) => {
 // -------------------------------------------------------------
 const PHOTOS_FILE = path.join(__dirname, 'photos_db.json');
 let memoryPhotos = null;
+let lastPhotosFirestoreSync = 0;
+const PHOTOS_TTL_MS = 60000; // 60 seconds
 
 function getPhotos() {
+  if (memoryPhotos !== null) return memoryPhotos;
   try {
     if (fs.existsSync(PHOTOS_FILE)) {
       const data = fs.readFileSync(PHOTOS_FILE, 'utf8');
@@ -619,12 +630,16 @@ function getPhotos() {
   return memoryPhotos;
 }
 
+let photosWriteTimer = null;
 function savePhotos(photos) {
   const cleanList = Array.isArray(photos) ? photos.filter(p => p && p.id) : [];
   memoryPhotos = cleanList;
-  fs.writeFile(PHOTOS_FILE, JSON.stringify(cleanList, null, 2), 'utf8', (err) => {
-    if (err) console.error('Error saving photos file:', err);
-  });
+  if (photosWriteTimer) clearTimeout(photosWriteTimer);
+  photosWriteTimer = setTimeout(() => {
+    fs.writeFile(PHOTOS_FILE, JSON.stringify(cleanList, null, 2), 'utf8', (err) => {
+      if (err) console.error('Error saving photos file:', err);
+    });
+  }, 100);
 }
 
 async function mirrorPhotoToFirestore(photo) {
@@ -664,44 +679,51 @@ async function deletePhotoFromFirestore(photoId) {
 
 app.get('/api/carreras/fotos', async (req, res) => {
   let photos = getPhotos();
-  try {
-    const firestoreUrl = `https://firestore.googleapis.com/v1/projects/formula-factor/databases/(default)/documents/carreras_fotos?pageSize=100&key=${FIREBASE_API_KEY}`;
-    const fRes = await fetch(firestoreUrl);
-    if (fRes.ok) {
-      const fData = await fRes.json();
-      if (fData.documents && Array.isArray(fData.documents)) {
-        let changed = false;
-        fData.documents.forEach(doc => {
-          const docId = doc.name.split('/').pop();
-          const fields = doc.fields || {};
-          const exists = photos.find(p => p.id === docId);
-          const rawTimestamp = fields.timestamp?.integerValue ?? fields.timestamp?.doubleValue ?? fields.timestamp?.stringValue;
-          const photoObj = {
-            id: docId,
-            raceId: sanitizeString(fields.raceId?.stringValue || 'barcelona_test', 80),
-            photoUrl: fields.photoUrl?.stringValue || '',
-            caption: sanitizeString(fields.caption?.stringValue || '', 500),
-            author: sanitizeString(fields.author?.stringValue || 'Piloto FFC', 80),
-            status: fields.status?.stringValue || 'pending',
-            createdAt: fields.createdAt?.stringValue || '',
-            timestamp: rawTimestamp ? parseInt(rawTimestamp, 10) : Date.now()
-          };
-          if (!exists) {
-            photos.push(photoObj);
-            changed = true;
-          } else if (exists.status !== photoObj.status || exists.raceId !== photoObj.raceId || exists.caption !== photoObj.caption) {
-            exists.status = photoObj.status;
-            exists.raceId = photoObj.raceId;
-            exists.caption = photoObj.caption;
-            changed = true;
+  const now = Date.now();
+  if (now - lastPhotosFirestoreSync > PHOTOS_TTL_MS) {
+    lastPhotosFirestoreSync = now;
+    (async () => {
+      try {
+        const firestoreUrl = `https://firestore.googleapis.com/v1/projects/formula-factor/databases/(default)/documents/carreras_fotos?pageSize=100&key=${FIREBASE_API_KEY}`;
+        const fRes = await fetch(firestoreUrl);
+        if (fRes.ok) {
+          const fData = await fRes.json();
+          if (fData.documents && Array.isArray(fData.documents)) {
+            let changed = false;
+            const currentPhotos = getPhotos();
+            fData.documents.forEach(doc => {
+              const docId = doc.name.split('/').pop();
+              const fields = doc.fields || {};
+              const exists = currentPhotos.find(p => p.id === docId);
+              const rawTimestamp = fields.timestamp?.integerValue ?? fields.timestamp?.doubleValue ?? fields.timestamp?.stringValue;
+              const photoObj = {
+                id: docId,
+                raceId: sanitizeString(fields.raceId?.stringValue || 'barcelona_test', 80),
+                photoUrl: fields.photoUrl?.stringValue || '',
+                caption: sanitizeString(fields.caption?.stringValue || '', 500),
+                author: sanitizeString(fields.author?.stringValue || 'Piloto FFC', 80),
+                status: fields.status?.stringValue || 'pending',
+                createdAt: fields.createdAt?.stringValue || '',
+                timestamp: rawTimestamp ? parseInt(rawTimestamp, 10) : Date.now()
+              };
+              if (!exists) {
+                currentPhotos.push(photoObj);
+                changed = true;
+              } else if (exists.status !== photoObj.status || exists.raceId !== photoObj.raceId || exists.caption !== photoObj.caption) {
+                exists.status = photoObj.status;
+                exists.raceId = photoObj.raceId;
+                exists.caption = photoObj.caption;
+                changed = true;
+              }
+            });
+            if (changed) {
+              savePhotos(currentPhotos);
+            }
           }
-        });
-        if (changed) {
-          savePhotos(photos);
         }
-      }
-    }
-  } catch (e) {}
+      } catch (e) {}
+    })();
+  }
   photos.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
   return res.json({ success: true, photos });
 });
@@ -734,6 +756,7 @@ app.post('/api/carreras/fotos', async (req, res) => {
   }
 
   savePhotos(photos);
+  lastPhotosFirestoreSync = Date.now();
   mirrorPhotoToFirestore(newEntry);
 
   return res.json({ success: true, photo: newEntry, total: photos.length });
@@ -750,6 +773,7 @@ app.patch('/api/carreras/fotos/:id', requireAdminAuth, async (req, res) => {
     if (caption !== undefined) photos[idx].caption = sanitizeString(caption, 500);
     if (raceId !== undefined) photos[idx].raceId = sanitizeString(raceId, 80);
     savePhotos(photos);
+    lastPhotosFirestoreSync = Date.now();
     mirrorPhotoToFirestore(photos[idx]);
     return res.json({ success: true, photo: photos[idx] });
   }
@@ -763,6 +787,7 @@ app.delete('/api/carreras/fotos/:id', requireAdminAuth, async (req, res) => {
   photos = photos.filter(p => p.id !== photoId);
   if (photos.length !== initialLen) {
     savePhotos(photos);
+    lastPhotosFirestoreSync = Date.now();
   }
   deletePhotoFromFirestore(photoId);
   return res.json({ success: true });

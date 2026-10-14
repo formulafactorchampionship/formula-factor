@@ -1,4 +1,4 @@
-import React, { useRef, useCallback, useEffect } from 'https://esm.sh/react@18';
+import React, { useRef, useCallback, useEffect } from 'https://esm.sh/react@18.3.1';
 
 function parseHSL(hslStr) {
   const match = hslStr.match(/([\d.]+)\s*([\d.]+)%?\s*([\d.]+)%?/);

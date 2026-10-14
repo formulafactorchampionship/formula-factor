@@ -28,32 +28,6 @@ export const FFC_CIRCUITS_DATA = [
     { id: "brazil", name: "GP de Brasil", circuit: "Autódromo José Carlos Pace", location: "Interlagos, Brazil", round: "ROUND 15", date: "TBA", lat: -23.7036, lon: -46.6997 }
 ];
 
-// Mathematical 3D projection helper matching COBE's exact WebGL shader transformation
-function project(lat, lon, phi, theta, r) {
-    const latRad = (lat * Math.PI) / 180;
-    const lonRad = (lon * Math.PI) / 180 - Math.PI;
-    
-    const cos_lat = Math.cos(latRad);
-    const jx = -cos_lat * Math.cos(lonRad);
-    const jy = Math.sin(latRad);
-    const jz = cos_lat * Math.sin(lonRad);
-    
-    const cos_phi = Math.cos(phi);
-    const sin_phi = Math.sin(phi);
-    const cos_theta = Math.cos(theta);
-    const sin_theta = Math.sin(theta);
-    
-    const cx = jx * cos_theta + jz * sin_theta;
-    const cy = jx * sin_theta * sin_phi + jy * cos_phi - jz * cos_theta * sin_phi;
-    const cz = -jx * sin_theta * cos_phi + jy * sin_phi + jz * cos_theta * cos_phi;
-    
-    const scale = 0.8;
-    const screenX = r + cx * r * scale;
-    const screenY = r - cy * r * scale;
-    
-    return { x: screenX, y: screenY, visible: cz > 0.05 };
-}
-
 export function initCobeGlobe(containerId) {
     const container = document.getElementById(containerId);
     if (!container) return;
@@ -85,14 +59,15 @@ export function initCobeGlobe(containerId) {
     }, { threshold: 0.05 });
     io.observe(container);
 
-    document.addEventListener("visibilitychange", () => {
+    const handleVisibilityChange = () => {
         if (document.hidden) {
             isVisibleInViewport = false;
         } else {
             const rect = container.getBoundingClientRect();
             isVisibleInViewport = rect.bottom > 0 && rect.top < window.innerHeight;
         }
-    });
+    };
+    document.addEventListener("visibilitychange", handleVisibilityChange);
 
     const handlePointerDown = (e) => {
         pointerInteracting = { x: e.clientX, y: e.clientY };
@@ -275,6 +250,8 @@ export function initCobeGlobe(containerId) {
         if (globe) {
             try { globe.destroy(); } catch (e) {}
         }
+        io.disconnect();
+        document.removeEventListener("visibilitychange", handleVisibilityChange);
         canvas.removeEventListener("pointerdown", handlePointerDown);
         window.removeEventListener("pointermove", handlePointerMove);
         window.removeEventListener("pointerup", handlePointerUp);

@@ -1,5 +1,5 @@
-import React, { useRef, useEffect, useState } from 'https://esm.sh/react@18';
-import { createRoot } from 'https://esm.sh/react-dom@18/client';
+import React, { useRef, useEffect, useState } from 'https://esm.sh/react@18.3.1';
+import { createRoot } from 'https://esm.sh/react-dom@18.3.1/client';
 import * as THREE from 'https://esm.sh/three@0.155.0';
 
 const LightPillar = ({

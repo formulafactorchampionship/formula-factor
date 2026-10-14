@@ -1,5 +1,5 @@
-import React, { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'https://esm.sh/react@18';
-import { createRoot } from 'https://esm.sh/react-dom@18/client';
+import React, { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'https://esm.sh/react@18.3.1';
+import { createRoot } from 'https://esm.sh/react-dom@18.3.1/client';
 
 // Curated motorsport / simracing action photography (F1, cockpits, circuits)
 // STRICT: NO news cover images (/news_uploads) are included here

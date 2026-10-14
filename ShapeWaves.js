@@ -1,5 +1,5 @@
-import React, { useEffect, useRef, useState } from 'https://esm.sh/react@18';
-import { createRoot } from 'https://esm.sh/react-dom@18/client';
+import React, { useEffect, useRef, useState } from 'https://esm.sh/react@18.3.1';
+import { createRoot } from 'https://esm.sh/react-dom@18.3.1/client';
 
 function createSimplexNoise() {
   const F3 = 1.0 / 3.0;
