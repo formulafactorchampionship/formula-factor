@@ -1,0 +1,4 @@
+users_db.json
+backups/*.json
+*.local
+.env
