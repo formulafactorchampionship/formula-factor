@@ -6,7 +6,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 // Centralized API Key constant
-export const FIREBASE_API_KEY = process.env.FIREBASE_API_KEY || 'AIzaSyAS4RecsGAS4JWUn1d-9_VyqFRKmkF_CNs';
+export const FIREBASE_API_KEY = process.env.FIREBASE_API_KEY || '';
 
 // Protected administrative accounts that MUST NEVER be flagged as fake or deleted
 export const PROTECTED_EMAILS = [
@@ -342,37 +342,6 @@ export async function fetchAllAccounts() {
     console.error('Error fetching fantasy teams for audit:', err.message);
   }
 
-  // 3. Fetch from local users_db.json
-  try {
-    const usersFile = path.join(__dirname, 'users_db.json');
-    if (fs.existsSync(usersFile)) {
-      const users = JSON.parse(fs.readFileSync(usersFile, 'utf8'));
-      if (Array.isArray(users)) {
-        users.forEach(u => {
-          const email = (u.email || '').trim().toLowerCase();
-          if (!email || !email.includes('@')) return;
-          const key = email;
-
-          const existing = accountsMap.get(key) || {
-            key,
-            email: email,
-            displayName: u.displayName || '',
-            createdAt: u.createdAt || '',
-            isVerified: false,
-            sources: []
-          };
-
-          if (!existing.displayName && u.displayName) existing.displayName = u.displayName;
-          existing.userUid = u.uid || '';
-          if (!existing.sources.includes('Users DB')) existing.sources.push('Users DB');
-
-          accountsMap.set(key, existing);
-        });
-      }
-    }
-  } catch (err) {
-    console.error('Error fetching users DB for audit:', err.message);
-  }
 
   const accountList = Array.from(accountsMap.values()).map(acc => {
     const auditRes = auditAccount(acc);
@@ -483,28 +452,6 @@ export async function deleteAccounts(targets) {
     errors.push(`fantasy_teams_db error: ${e.message}`);
   }
 
-  try {
-    const usersFile = path.join(__dirname, 'users_db.json');
-    if (fs.existsSync(usersFile)) {
-      let users = JSON.parse(fs.readFileSync(usersFile, 'utf8'));
-      if (Array.isArray(users)) {
-        const initialCount = users.length;
-        users = users.filter(u => {
-          const uEmail = (u.email || '').toLowerCase().trim();
-          const uid = u.uid || '';
-          if (emailsToDelete.has(uEmail)) return false;
-          if (userUidsToDelete.has(uid)) return false;
-          return true;
-        });
-        if (users.length !== initialCount) {
-          fs.writeFileSync(usersFile, JSON.stringify(users, null, 2), 'utf8');
-          deletedSummary.push({ type: 'users_db', removed: initialCount - users.length });
-        }
-      }
-    }
-  } catch (e) {
-    errors.push(`users_db error: ${e.message}`);
-  }
 
   return {
     success: true,
