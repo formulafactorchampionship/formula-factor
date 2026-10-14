@@ -1,0 +1,9 @@
+[
+  {
+    "uid": "user_1791989058028_ho9fw",
+    "displayName": "SecPilot",
+    "email": "secpilot@testdomainffc.com",
+    "passwordHash": "scrypt$3fbba709a93748cdcce8fc1017aef439035c3bf85613d14aca2fb51b0f8be81550785306958b3f60b6d7e813bbda3ca1fc0cd77852a74993c0479a2ff9d84bc9",
+    "createdAt": "2026-10-14T14:44:18.028Z"
+  }
+]

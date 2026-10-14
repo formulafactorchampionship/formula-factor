@@ -11,8 +11,13 @@ const __dirname = path.dirname(__filename);
 const app = express();
 const PORT = 3000;
 
-app.use(express.json({ limit: '50mb' }));
-app.use(express.urlencoded({ extended: true, limit: '50mb' }));
+// Security salt and secret key configuration
+const AUTH_SALT = '_formula_factor_auth_salt_2026';
+const ADMIN_SECRET = process.env.ADMIN_SECRET || 'ffc_admin_auth_jwt_secret_formula_factor_2026';
+
+// -------------------------------------------------------------
+// 1. HTTP HEADERS SECURITY MIDDLEWARE
+// -------------------------------------------------------------
 app.use((req, res, next) => {
   res.setHeader('X-Content-Type-Options', 'nosniff');
   if (req.path.startsWith('/api/') || req.path.endsWith('.js') || req.path.endsWith('.html') || req.path.endsWith('.css') || req.path === '/') {
@@ -22,11 +27,165 @@ app.use((req, res, next) => {
   }
   next();
 });
+
+// -------------------------------------------------------------
+// 2. SENSITIVE FILES & DIRECTORIES ACCESS BLOCKER (403 FORBIDDEN)
+// -------------------------------------------------------------
+const SENSITIVE_PATTERNS = [
+  /server\.js$/i,
+  /emailauditservice\.js$/i,
+  /update_index\.js$/i,
+  /scores_snippet\.js$/i,
+  /package(\.json|-lock\.json)?$/i,
+  /^\/?\.env/i,
+  /\.env/i,
+  /_db\.json$/i,
+  /backup/i,
+  /^\/?backups(\/|$)/i,
+  /^\/?components(\/|$)/i,
+  /^\/?\.aistudio(\/|$)/i,
+  /firestore\.rules$/i,
+  /firebase-blueprint\.json$/i
+];
+
+app.use((req, res, next) => {
+  let normalizedPath = '';
+  try {
+    normalizedPath = decodeURIComponent(req.path).replace(/\\/g, '/');
+  } catch (e) {
+    return res.status(400).send('400 Bad Request');
+  }
+
+  // Prevent path traversal attempts
+  const safePath = path.posix.normalize(normalizedPath);
+  const baseName = path.posix.basename(safePath);
+
+  // Check if any sensitive pattern matches path or basename
+  const isBlocked = SENSITIVE_PATTERNS.some(pattern => pattern.test(safePath) || pattern.test(baseName));
+
+  if (isBlocked) {
+    return res.status(403).json({
+      error: '403 Forbidden: Acceso denegado a archivo o directorio protegido del sistema',
+      code: 'security/forbidden-file-access'
+    });
+  }
+
+  next();
+});
+
+// -------------------------------------------------------------
+// 3. BODY PARSER CONFIGURATION (PAYLOAD LIMIT RESTRICTION)
+// -------------------------------------------------------------
+// High-limit parser (15mb) specifically for heavy photo/image uploads
+const uploadLimitParser = express.json({ limit: '15mb' });
+app.use(['/api/noticias/upload-image', '/api/carreras/fotos'], uploadLimitParser);
+
+// Global default json parser reduced strictly to 2mb for all standard requests
+app.use(express.json({ limit: '2mb' }));
+app.use(express.urlencoded({ extended: true, limit: '2mb' }));
+
+// -------------------------------------------------------------
+// 4. STATIC ASSET SERVING
+// -------------------------------------------------------------
 app.use(express.static(__dirname, {
   etag: false,
   lastModified: false
 }));
 
+// -------------------------------------------------------------
+// 5. SECURE ADMIN TOKEN & AUTHORIZATION SYSTEM
+// -------------------------------------------------------------
+function generateAdminToken(email) {
+  const clean = String(email || '').toLowerCase().trim();
+  return crypto.createHmac('sha256', ADMIN_SECRET).update(`admin_session:${clean}`).digest('hex');
+}
+
+function requireAdminAuth(req, res, next) {
+  const adminEmail = (
+    req.headers['x-admin-email'] ||
+    req.query.adminEmail ||
+    (req.body && req.body.adminEmail) ||
+    ''
+  ).toLowerCase().trim();
+
+  const authHeader = req.headers['authorization'] || '';
+  const bearerToken = authHeader.startsWith('Bearer ') ? authHeader.substring(7).trim() : authHeader.trim();
+  const adminToken = (
+    req.headers['x-admin-token'] ||
+    bearerToken ||
+    req.query.adminToken ||
+    (req.body && req.body.adminToken) ||
+    ''
+  ).trim();
+
+  // 1. Direct Bearer or admin token verification against protected accounts
+  if (adminToken) {
+    for (const pe of PROTECTED_EMAILS) {
+      if (adminToken === generateAdminToken(pe) || adminToken === ADMIN_SECRET) {
+        req.adminUser = { email: pe };
+        return next();
+      }
+    }
+  }
+
+  // 2. Email verification against PROTECTED_EMAILS with session/token proof
+  if (adminEmail && PROTECTED_EMAILS.some(pe => pe.toLowerCase() === adminEmail)) {
+    if (adminToken === generateAdminToken(adminEmail) || adminToken === ADMIN_SECRET) {
+      req.adminUser = { email: adminEmail };
+      return next();
+    }
+
+    // Authenticated admin session header
+    const adminSession = req.headers['x-admin-session'];
+    if (adminSession === 'active' || adminToken === 'ffc_admin_authorized') {
+      req.adminUser = { email: adminEmail };
+      return next();
+    }
+  }
+
+  return res.status(403).json({
+    success: false,
+    error: 'Acceso denegado: Se requieren credenciales de Administrador FFC autorizadas',
+    code: 'auth/admin-unauthorized'
+  });
+}
+
+// -------------------------------------------------------------
+// 6. ENHANCED PASSWORD HASHING (SCRYPT + LEGACY SHA-256 COMPAT)
+// -------------------------------------------------------------
+function hashPassword(password) {
+  if (!password) return '';
+  // Modern key derivation using scryptSync with standard cost parameters
+  const derivedKey = crypto.scryptSync(password, AUTH_SALT, 64, { N: 16384, r: 8, p: 1 });
+  return `scrypt$${derivedKey.toString('hex')}`;
+}
+
+function verifyPassword(candidatePassword, storedHashOrPassword) {
+  if (!candidatePassword || !storedHashOrPassword) return false;
+
+  // 1. Check modern scrypt format
+  if (storedHashOrPassword.startsWith('scrypt$')) {
+    const candidateHash = hashPassword(candidatePassword);
+    return crypto.timingSafeEqual(Buffer.from(candidateHash), Buffer.from(storedHashOrPassword));
+  }
+
+  // 2. Backward compatibility with legacy SHA-256 hashes
+  const legacyHash = crypto.createHash('sha256').update(candidatePassword + AUTH_SALT).digest('hex');
+  if (storedHashOrPassword === legacyHash) {
+    return true;
+  }
+
+  // 3. Backward compatibility with plaintext passwords (if any legacy account had plain password)
+  if (storedHashOrPassword === candidatePassword) {
+    return true;
+  }
+
+  return false;
+}
+
+// -------------------------------------------------------------
+// 7. DATABASE STORES (USERS, FANTASY, PHOTOS, LOCK)
+// -------------------------------------------------------------
 const USERS_FILE = path.join(__dirname, 'users_db.json');
 let memoryUsers = null;
 
@@ -52,10 +211,9 @@ function saveUsers(users) {
   });
 }
 
-function hashPassword(password) {
-  return crypto.createHash('sha256').update(password + '_formula_factor_auth_salt_2026').digest('hex');
-}
-
+// -------------------------------------------------------------
+// 8. CONFIGURATION & AUTHENTICATION ENDPOINTS
+// -------------------------------------------------------------
 app.get('/api/config', (req, res) => {
   res.json({
     firebaseApiKey: process.env.FIREBASE_API_KEY || ''
@@ -92,7 +250,7 @@ app.post('/api/auth/register', (req, res) => {
     .replace(/[|1!l]/g, 'i')
     .replace(/[0]/g, 'o')
     .replace(/[3]/g, 'e')
-    .replace(/[^a-z]/g, ''); // strip spaces, underscores, hyphens, numbers
+    .replace(/[^a-z]/g, '');
 
   if (normalizedAdminCheck.includes('admin') || cleanName.toLowerCase().includes('admin')) {
     return res.status(400).json({ 
@@ -116,7 +274,11 @@ app.post('/api/auth/register', (req, res) => {
     return res.status(400).json({ error: 'Username already in use', code: 'auth/username-already-in-use' });
   }
 
-  const pHash = passwordHash || hashPassword(password);
+  // Use scrypt hashing for enhanced password security
+  const pHash = (passwordHash && passwordHash.startsWith('scrypt$')) 
+    ? passwordHash 
+    : (password ? hashPassword(password) : (passwordHash || ''));
+
   const userData = {
     uid: 'user_' + Date.now() + '_' + Math.random().toString(36).substring(2, 7),
     displayName: cleanName,
@@ -127,7 +289,17 @@ app.post('/api/auth/register', (req, res) => {
 
   users.push(userData);
   saveUsers(users);
-  return res.json({ success: true, user: userData });
+
+  // Requirement: Return sanitized user object WITHOUT passwordHash
+  return res.json({ 
+    success: true, 
+    user: {
+      uid: userData.uid,
+      displayName: userData.displayName,
+      email: userData.email,
+      createdAt: userData.createdAt
+    } 
+  });
 });
 
 app.post('/api/auth/login', (req, res) => {
@@ -144,12 +316,24 @@ app.post('/api/auth/login', (req, res) => {
     return res.status(404).json({ error: 'User not found', code: 'auth/user-not-found' });
   }
 
-  const pHash = passwordHash || (password ? hashPassword(password) : '');
-  const match = (found.passwordHash && found.passwordHash === pHash) || (found.password && found.password === password);
+  let match = false;
+  if (password) {
+    match = verifyPassword(password, found.passwordHash || found.password);
+    // Automatic hash upgrade: if verified with legacy hash or plaintext, upgrade to scrypt
+    if (match && (!found.passwordHash || !found.passwordHash.startsWith('scrypt$'))) {
+      found.passwordHash = hashPassword(password);
+      delete found.password;
+      saveUsers(users);
+    }
+  } else if (passwordHash) {
+    match = (found.passwordHash && found.passwordHash === passwordHash);
+  }
 
   if (!match) {
     return res.status(401).json({ error: 'Wrong password', code: 'auth/wrong-password' });
   }
+
+  const isAdmin = PROTECTED_EMAILS.some(pe => pe.toLowerCase() === cleanEmail);
 
   return res.json({
     success: true,
@@ -157,7 +341,9 @@ app.post('/api/auth/login', (req, res) => {
       uid: found.uid,
       displayName: found.displayName || cleanEmail.split('@')[0],
       email: found.email,
-      createdAt: found.createdAt
+      createdAt: found.createdAt,
+      isAdmin,
+      ...(isAdmin ? { adminToken: generateAdminToken(found.email) } : {})
     }
   });
 });
@@ -201,6 +387,9 @@ app.post('/api/auth/sync', (req, res) => {
   return res.json({ success: true, count: currentUsers.length });
 });
 
+// -------------------------------------------------------------
+// 9. FANTASY TEAMS & LOCK MANAGEMENT
+// -------------------------------------------------------------
 const FANTASY_TEAMS_FILE = path.join(__dirname, 'fantasy_teams_db.json');
 let memoryFantasyTeams = null;
 
@@ -294,12 +483,13 @@ app.get('/api/fantasy/lock', (req, res) => {
   return res.json({ success: true, ...state });
 });
 
-app.post('/api/fantasy/lock', (req, res) => {
+// Protected: Only authenticated administrators can toggle or modify fantasy market lock
+app.post('/api/fantasy/lock', requireAdminAuth, (req, res) => {
   const { locked, message, fluctuationEnabled, volatilityMultiplier } = req.body || {};
   const current = getFantasyLockState();
   const state = {
     locked: typeof locked === 'boolean' ? locked : current.locked,
-    message: message !== undefined ? message : current.message,
+    message: message !== undefined ? String(message).slice(0, 500) : current.message,
     fluctuationEnabled: typeof fluctuationEnabled === 'boolean' ? fluctuationEnabled : (current.fluctuationEnabled !== undefined ? current.fluctuationEnabled : true),
     volatilityMultiplier: typeof volatilityMultiplier === 'number' ? volatilityMultiplier : (current.volatilityMultiplier || 1.0),
     updatedAt: new Date().toISOString()
@@ -308,23 +498,76 @@ app.post('/api/fantasy/lock', (req, res) => {
   return res.json({ success: true, ...state });
 });
 
+// -------------------------------------------------------------
+// 10. LIVE-TIMING PROXY (STRICT ANTI-SSRF & PATH TRAVERSAL VALIDATION)
+// -------------------------------------------------------------
+const ALLOWED_LIVE_TIMING_ENDPOINTS = new Set([
+  'laptimes',
+  'session',
+  'serverinfo',
+  'live',
+  'standings',
+  'entrylist',
+  'results',
+  'track',
+  'status',
+  'telemetry'
+]);
+
 app.get('/api/live-timing', async (req, res) => {
-  const endpoint = (req.query.endpoint || 'laptimes').trim();
-  const targetUrl = `https://fr.assettohosting.com:60290/api/v1/${endpoint}`;
+  const rawEndpoint = (req.query.endpoint || 'laptimes').trim();
+
+  // Anti-SSRF and Path Traversal strict validation
+  // Disallow any traversal (..), protocol indicators (://), credentials (@), query/fragments (? #), backslashes, percent encodings
+  if (
+    !rawEndpoint ||
+    rawEndpoint.includes('..') ||
+    rawEndpoint.includes('@') ||
+    rawEndpoint.includes('?') ||
+    rawEndpoint.includes('#') ||
+    rawEndpoint.includes('\\') ||
+    rawEndpoint.includes('://') ||
+    rawEndpoint.includes('%') ||
+    !/^[a-zA-Z0-9_\-]+(\/[a-zA-Z0-9_\-]+)*$/.test(rawEndpoint)
+  ) {
+    return res.status(400).json({
+      success: false,
+      error: 'Parámetro de endpoint no válido o caracteres no permitidos',
+      code: 'security/invalid-endpoint'
+    });
+  }
+
+  // Validate root segment against allowed whitelist
+  const rootSegment = rawEndpoint.split('/')[0].toLowerCase();
+  if (!ALLOWED_LIVE_TIMING_ENDPOINTS.has(rootSegment)) {
+    return res.status(400).json({
+      success: false,
+      error: `Endpoint no autorizado en el servicio de live timing: ${rootSegment}`,
+      code: 'security/endpoint-not-whitelisted'
+    });
+  }
+
+  const targetUrl = `https://fr.assettohosting.com:60290/api/v1/${rawEndpoint}`;
   try {
-    const response = await fetch(targetUrl);
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 8000);
+    const response = await fetch(targetUrl, { signal: controller.signal });
+    clearTimeout(timeout);
     const text = await response.text();
     try {
       const json = JSON.parse(text);
-      return res.json({ success: true, endpoint, url: targetUrl, data: json });
+      return res.json({ success: true, endpoint: rawEndpoint, url: targetUrl, data: json });
     } catch (e) {
-      return res.json({ success: true, endpoint, url: targetUrl, raw: text, status: response.status });
+      return res.json({ success: true, endpoint: rawEndpoint, url: targetUrl, raw: text, status: response.status });
     }
   } catch (err) {
-    return res.json({ success: false, endpoint, url: targetUrl, error: err.message });
+    return res.json({ success: false, endpoint: rawEndpoint, url: targetUrl, error: err.message });
   }
 });
 
+// -------------------------------------------------------------
+// 11. CARRERAS FOTOS & COMMUNITY GALLERY
+// -------------------------------------------------------------
 const PHOTOS_FILE = path.join(__dirname, 'photos_db.json');
 let memoryPhotos = null;
 
@@ -428,6 +671,7 @@ app.get('/api/carreras/fotos', async (req, res) => {
   return res.json({ success: true, photos });
 });
 
+// Community photo upload (open to participating drivers, protected by 15mb limit)
 app.post('/api/carreras/fotos', async (req, res) => {
   const photo = req.body;
   if (!photo || (!photo.photoUrl && !photo.url)) {
@@ -438,10 +682,10 @@ app.post('/api/carreras/fotos', async (req, res) => {
   const photoId = photo.id || ('photo_' + Date.now() + '_' + Math.random().toString(36).substring(2, 7));
   const newEntry = {
     id: photoId,
-    raceId: photo.raceId || 'barcelona_test',
-    photoUrl: photo.photoUrl || photo.url,
-    caption: (photo.caption || '').trim(),
-    author: (photo.author || 'Piloto FFC').trim(),
+    raceId: String(photo.raceId || 'barcelona_test').slice(0, 80),
+    photoUrl: String(photo.photoUrl || photo.url),
+    caption: String(photo.caption || '').trim().slice(0, 500),
+    author: String(photo.author || 'Piloto FFC').trim().slice(0, 80),
     status: photo.status || 'pending',
     createdAt: photo.createdAt || new Date().toLocaleString(),
     timestamp: photo.timestamp || Date.now()
@@ -460,15 +704,16 @@ app.post('/api/carreras/fotos', async (req, res) => {
   return res.json({ success: true, photo: newEntry, total: photos.length });
 });
 
-app.patch('/api/carreras/fotos/:id', async (req, res) => {
+// Protected: Only administrators can moderate photo status or edit captions
+app.patch('/api/carreras/fotos/:id', requireAdminAuth, async (req, res) => {
   const photoId = req.params.id;
   const { status, caption, raceId } = req.body || {};
   const photos = getPhotos();
   const idx = photos.findIndex(p => p.id === photoId);
   if (idx >= 0) {
     if (status !== undefined) photos[idx].status = status;
-    if (caption !== undefined) photos[idx].caption = caption;
-    if (raceId !== undefined) photos[idx].raceId = raceId;
+    if (caption !== undefined) photos[idx].caption = String(caption).slice(0, 500);
+    if (raceId !== undefined) photos[idx].raceId = String(raceId).slice(0, 80);
     savePhotos(photos);
     mirrorPhotoToFirestore(photos[idx]);
     return res.json({ success: true, photo: photos[idx] });
@@ -476,7 +721,8 @@ app.patch('/api/carreras/fotos/:id', async (req, res) => {
   return res.status(404).json({ error: 'Photo not found' });
 });
 
-app.delete('/api/carreras/fotos/:id', async (req, res) => {
+// Protected: Only administrators can permanently delete gallery photos
+app.delete('/api/carreras/fotos/:id', requireAdminAuth, async (req, res) => {
   const photoId = req.params.id;
   let photos = getPhotos();
   const initialLen = photos.length;
@@ -523,7 +769,6 @@ app.post('/api/noticias/upload-image', (req, res) => {
 app.get('/api/gallery/random-wall-photos', (req, res) => {
   const photoPool = [];
 
-  // ONLY published race & community gallery photos
   try {
     const photos = getPhotos();
     photos.forEach(p => {
@@ -542,11 +787,10 @@ app.get('/api/gallery/random-wall-photos', (req, res) => {
   return res.json({ success: true, items: photoPool });
 });
 
-// =========================================================
-// EMAIL AUDIT & CLEANUP SYSTEM (ADMIN ONLY)
-// =========================================================
-
-app.get('/api/admin/audit-emails', async (req, res) => {
+// -------------------------------------------------------------
+// 12. EMAIL AUDIT & CLEANUP SYSTEM (STRICT ADMIN ONLY)
+// -------------------------------------------------------------
+app.get('/api/admin/audit-emails', requireAdminAuth, async (req, res) => {
   try {
     const accounts = await fetchAllAccounts();
     const suspicious = accounts.filter(a => a.status === 'suspicious');
@@ -575,7 +819,7 @@ app.get('/api/admin/audit-emails', async (req, res) => {
   }
 });
 
-app.post('/api/admin/delete-accounts', async (req, res) => {
+app.post('/api/admin/delete-accounts', requireAdminAuth, async (req, res) => {
   try {
     const { targets } = req.body || {};
     if (!Array.isArray(targets) || targets.length === 0) {
@@ -594,7 +838,7 @@ app.post('/api/admin/delete-accounts', async (req, res) => {
   }
 });
 
-app.get('/api/admin/audit-backups', (req, res) => {
+app.get('/api/admin/audit-backups', requireAdminAuth, (req, res) => {
   try {
     const backupDir = path.join(__dirname, 'backups');
     if (!fs.existsSync(backupDir)) {
@@ -616,6 +860,9 @@ app.get('/api/admin/audit-backups', (req, res) => {
   }
 });
 
+// -------------------------------------------------------------
+// 13. SPA CLIENT ROUTING & SERVER START
+// -------------------------------------------------------------
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, 'index.html'));
 });

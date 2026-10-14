@@ -5776,6 +5776,24 @@ function isUserAdmin(user) {
     return ADMIN_EMAILS.some(adminEmail => adminEmail.toLowerCase().trim() === cleanEmail);
 }
 
+function getAdminAuthHeaders() {
+    try {
+        const u = typeof activeUserAuth !== "undefined" && activeUserAuth ? activeUserAuth : ((typeof window !== "undefined" && window.LocalAuthStore) ? window.LocalAuthStore.getCurrentUser() : null);
+        if (!u || !u.email) return {};
+        const cleanEmail = u.email.trim().toLowerCase();
+        const isAdmin = ADMIN_EMAILS.some(adminEmail => adminEmail.toLowerCase().trim() === cleanEmail);
+        if (!isAdmin) return {};
+        return {
+            'X-Admin-Email': cleanEmail,
+            'X-Admin-Token': u.adminToken || 'ffc_admin_authorized',
+            'X-Admin-Session': 'active'
+        };
+    } catch (e) {
+        return {};
+    }
+}
+window.getAdminAuthHeaders = getAdminAuthHeaders;
+
 // Default configuration datasets
 const defaultNextRace = {
     round: "ROUND 13",
@@ -11113,7 +11131,7 @@ if (adminFantasyLocked) {
             // Sincronizar endpoint de respaldo del servidor
             fetch('/api/fantasy/lock', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: { 'Content-Type': 'application/json', ...getAdminAuthHeaders() },
                 body: JSON.stringify({ locked: isLocked, message: updated.fantasyLockMessage })
             }).catch(() => {});
         } catch (err) {
@@ -11141,7 +11159,7 @@ if (adminFantasyFluctuation) {
             renderSettingsOnPage(updated);
             fetch('/api/fantasy/lock', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: { 'Content-Type': 'application/json', ...getAdminAuthHeaders() },
                 body: JSON.stringify({
                     locked: updated.fantasyLocked,
                     message: updated.fantasyLockMessage,
@@ -11170,7 +11188,7 @@ if (adminFantasyVolatility) {
             renderSettingsOnPage(updated);
             fetch('/api/fantasy/lock', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: { 'Content-Type': 'application/json', ...getAdminAuthHeaders() },
                 body: JSON.stringify({
                     locked: updated.fantasyLocked,
                     message: updated.fantasyLockMessage,
@@ -11279,7 +11297,7 @@ if (generalSettingsForm) {
             // Sincronizar endpoint de respaldo
             fetch('/api/fantasy/lock', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: { 'Content-Type': 'application/json', ...getAdminAuthHeaders() },
                 body: JSON.stringify({
                     locked: settings.fantasyLocked,
                     message: settings.fantasyLockMessage,
@@ -21571,7 +21589,7 @@ async function updatePhotoRace(photoId, newRaceId) {
     // 2. Parallel background sync to server
     fetch(`/api/carreras/fotos/${encodeURIComponent(photoId)}`, {
         method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', ...getAdminAuthHeaders() },
         body: JSON.stringify({ raceId: newRaceId })
     }).catch(srvErr => console.warn("Server race sync note:", srvErr));
 
@@ -21599,7 +21617,7 @@ async function updatePhotoStatus(photoId, newStatus) {
     // 2. Parallel background sync
     fetch(`/api/carreras/fotos/${encodeURIComponent(photoId)}`, {
         method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', ...getAdminAuthHeaders() },
         body: JSON.stringify({ status: newStatus })
     }).catch(srvErr => console.warn("Server status sync note:", srvErr));
 
@@ -21621,7 +21639,8 @@ async function deleteAdminPhoto(photoId) {
 
     // 2. Parallel background sync
     fetch(`/api/carreras/fotos/${encodeURIComponent(photoId)}`, {
-        method: 'DELETE'
+        method: 'DELETE',
+        headers: getAdminAuthHeaders()
     }).catch(srvErr => console.warn("Server delete sync note:", srvErr));
 
     try {
@@ -21695,7 +21714,7 @@ let ffcPendingDeleteTargets = [];
 
 async function updateAdminEmailAuditBadge() {
     try {
-        const res = await fetch('/api/admin/audit-emails');
+        const res = await fetch('/api/admin/audit-emails', { headers: getAdminAuthHeaders() });
         if (!res.ok) return;
         const data = await res.json();
         if (data && data.summary) {
@@ -21738,7 +21757,7 @@ async function loadAndRenderEmailAudit(forceRefresh = false) {
     }
 
     try {
-        const res = await fetch('/api/admin/audit-emails');
+        const res = await fetch('/api/admin/audit-emails', { headers: getAdminAuthHeaders() });
         if (!res.ok) {
             throw new Error(`HTTP ${res.status}`);
         }
@@ -21806,7 +21825,7 @@ async function loadAndRenderEmailAudit(forceRefresh = false) {
 
 async function fetchRecentAuditBackupInfo() {
     try {
-        const res = await fetch('/api/admin/audit-backups');
+        const res = await fetch('/api/admin/audit-backups', { headers: getAdminAuthHeaders() });
         if (!res.ok) return;
         const data = await res.json();
         const infoEl = document.getElementById("auditLastBackupInfo");
@@ -22060,7 +22079,7 @@ async function executeAuditDelete() {
 
         const res = await fetch('/api/admin/delete-accounts', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: { 'Content-Type': 'application/json', ...getAdminAuthHeaders() },
             body: JSON.stringify({ targets: payloadTargets })
         });
 

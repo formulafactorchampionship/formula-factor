@@ -1,45 +1,111 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
+
+    function isAdmin() {
+      return request.auth != null && (
+        request.auth.token.email.lower() == 'enzo.castillo.lomb@gmail.com' ||
+        request.auth.token.email.lower() == 'formulafactorchampionship@gmail.com'
+      );
+    }
+
+    match /usuarios/{userId} {
+      // Bloquear lectura pública masiva de usuarios y hashes de contraseñas
+      allow list: if isAdmin();
+      // Permitir get de documento individual únicamente al propio usuario autenticado o administradores, o si no contiene passwordHash
+      allow get: if (request.auth != null && (request.auth.uid == userId || isAdmin())) || !('passwordHash' in resource.data);
+      allow delete: if isAdmin();
+      allow create, update: if request.resource.data.email is string 
+        && request.resource.data.email.size() > 3 
+        && request.resource.data.email.size() <= 120
+        && (!('displayName' in request.resource.data) || (request.resource.data.displayName is string && request.resource.data.displayName.size() <= 60 && !request.resource.data.displayName.matches('.*(?i)<script.*')))
+        && (!('password' in request.resource.data))
+        && (!('passwordHash' in request.resource.data) || (request.resource.data.passwordHash is string && request.resource.data.passwordHash.size() <= 256));
+    }
+
     match /pilotos/{pilotId} {
       allow read: if true;
-      allow write: if request.resource.data.keys().size() > 0;
+      allow delete: if isAdmin();
+      allow create, update: if request.resource.data.keys().size() > 0 
+        && request.resource.data.keys().size() <= 40
+        && (!('driver' in request.resource.data) || (request.resource.data.driver is string && request.resource.data.driver.size() <= 100 && !request.resource.data.driver.matches('.*(?i)<script.*')))
+        && (!('team' in request.resource.data) || (request.resource.data.team is string && request.resource.data.team.size() <= 80 && !request.resource.data.team.matches('.*(?i)<script.*')))
+        && (!('country' in request.resource.data) || (request.resource.data.country is string && request.resource.data.country.size() <= 60 && !request.resource.data.country.matches('.*(?i)<script.*')));
     }
+
     match /carreras/{raceId} {
       allow read: if true;
-      allow write: if request.resource.data.keys().size() > 0;
+      allow delete: if isAdmin();
+      allow create, update: if request.resource.data.keys().size() > 0 
+        && request.resource.data.keys().size() <= 40
+        && (!('title' in request.resource.data) || (request.resource.data.title is string && request.resource.data.title.size() <= 120 && !request.resource.data.title.matches('.*(?i)<script.*')))
+        && (!('name' in request.resource.data) || (request.resource.data.name is string && request.resource.data.name.size() <= 120 && !request.resource.data.name.matches('.*(?i)<script.*')))
+        && (!('location' in request.resource.data) || (request.resource.data.location is string && request.resource.data.location.size() <= 120 && !request.resource.data.location.matches('.*(?i)<script.*')))
+        && (!('track' in request.resource.data) || (request.resource.data.track is string && request.resource.data.track.size() <= 120 && !request.resource.data.track.matches('.*(?i)<script.*')));
     }
+
     match /configuracion/{configId} {
       allow read: if true;
-      allow write: if request.resource.data.keys().size() > 0;
+      allow delete: if isAdmin();
+      allow create, update: if request.resource.data.keys().size() > 0 
+        && request.resource.data.keys().size() <= 50
+        && (!('fantasyLockMessage' in request.resource.data) || (request.resource.data.fantasyLockMessage is string && request.resource.data.fantasyLockMessage.size() <= 500 && !request.resource.data.fantasyLockMessage.matches('.*(?i)<script.*')))
+        && (!('broadcastNotice' in request.resource.data) || (request.resource.data.broadcastNotice is string && request.resource.data.broadcastNotice.size() <= 500 && !request.resource.data.broadcastNotice.matches('.*(?i)<script.*')));
     }
-    match /usuarios/{userId} {
-      allow read: if true;
-      allow delete: if false;
-      allow create, update: if request.resource.data.email is string && request.resource.data.email.size() <= 120;
-    }
-    match /fantasy_leaderboard/{teamId} {
-      allow read: if true;
-      allow delete: if false;
-      allow create, update: if request.resource.data.teamName is string && request.resource.data.teamName.size() <= 40 && request.resource.data.teamValue is number && request.resource.data.teamValue <= 85;
-    }
-    match /fantasy_teams/{teamId} {
-      allow read: if true;
-      allow delete: if false;
-      allow create, update: if request.resource.data.teamName is string && request.resource.data.teamName.size() <= 40 && request.resource.data.teamValue is number && request.resource.data.teamValue <= 85;
-    }
+
     match /noticias/{newsId} {
       allow read: if true;
-      allow write: if request.resource.data.keys().size() > 0;
+      allow delete: if isAdmin();
+      allow create, update: if request.resource.data.keys().size() > 0 
+        && request.resource.data.keys().size() <= 30
+        && (!('title' in request.resource.data) || (request.resource.data.title is string && request.resource.data.title.size() <= 200 && !request.resource.data.title.matches('.*(?i)<script.*')))
+        && (!('summary' in request.resource.data) || (request.resource.data.summary is string && request.resource.data.summary.size() <= 1000 && !request.resource.data.summary.matches('.*(?i)<script.*')))
+        && (!('author' in request.resource.data) || (request.resource.data.author is string && request.resource.data.author.size() <= 80 && !request.resource.data.author.matches('.*(?i)<script.*')))
+        && (!('content' in request.resource.data) || (request.resource.data.content is string && request.resource.data.content.size() <= 50000 && !request.resource.data.content.matches('.*(?i)<script.*')));
     }
+
     match /noticias_comentarios/{commentId} {
       allow read: if true;
-      allow create: if request.resource.data.text is string && request.resource.data.text.size() > 0 && request.resource.data.text.size() <= 1000;
-      allow update, delete: if true;
+      allow delete: if isAdmin();
+      allow create: if request.resource.data.text is string 
+        && request.resource.data.text.size() > 0 
+        && request.resource.data.text.size() <= 1000 
+        && !request.resource.data.text.matches('.*(?i)<script.*')
+        && (!('author' in request.resource.data) || (request.resource.data.author is string && request.resource.data.author.size() <= 80 && !request.resource.data.author.matches('.*(?i)<script.*')));
+      allow update: if request.resource.data.text is string 
+        && request.resource.data.text.size() <= 1000 
+        && !request.resource.data.text.matches('.*(?i)<script.*');
     }
+
     match /carreras_fotos/{photoId} {
       allow read: if true;
-      allow write: if request.resource.data.keys().size() > 0;
+      allow delete: if isAdmin();
+      allow create, update: if request.resource.data.keys().size() > 0 
+        && request.resource.data.keys().size() <= 20
+        && (!('caption' in request.resource.data) || (request.resource.data.caption is string && request.resource.data.caption.size() <= 500 && !request.resource.data.caption.matches('.*(?i)<script.*')))
+        && (!('author' in request.resource.data) || (request.resource.data.author is string && request.resource.data.author.size() <= 80 && !request.resource.data.author.matches('.*(?i)<script.*')))
+        && (!('raceId' in request.resource.data) || (request.resource.data.raceId is string && request.resource.data.raceId.size() <= 80 && !request.resource.data.raceId.matches('.*(?i)<script.*')))
+        && (!('photoUrl' in request.resource.data) || (request.resource.data.photoUrl is string && request.resource.data.photoUrl.size() <= 2000000 && !request.resource.data.photoUrl.matches('.*(?i)<script.*')));
+    }
+
+    match /fantasy_leaderboard/{teamId} {
+      allow read: if true;
+      allow delete: if isAdmin();
+      allow create, update: if request.resource.data.teamName is string 
+        && request.resource.data.teamName.size() <= 40 
+        && !request.resource.data.teamName.matches('.*(?i)<script.*')
+        && request.resource.data.teamValue is number 
+        && request.resource.data.teamValue <= 85;
+    }
+
+    match /fantasy_teams/{teamId} {
+      allow read: if true;
+      allow delete: if isAdmin();
+      allow create, update: if request.resource.data.teamName is string 
+        && request.resource.data.teamName.size() <= 40 
+        && !request.resource.data.teamName.matches('.*(?i)<script.*')
+        && request.resource.data.teamValue is number 
+        && request.resource.data.teamValue <= 85;
     }
   }
 }

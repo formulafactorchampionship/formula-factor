@@ -482,6 +482,7 @@ export async function deleteAccounts(targets) {
 
   // 2. Delete from Firestore 'usuarios'
   for (const docId of firestoreDocsToDelete) {
+    if (!docId || !/^[a-zA-Z0-9_.\-]+$/.test(docId)) continue;
     try {
       const deleteUrl = `https://firestore.googleapis.com/v1/projects/formula-factor/databases/(default)/documents/usuarios/${encodeURIComponent(docId)}?key=AIzaSyAS4RecsGAS4JWUn1d-9_VyqFRKmkF_CNs`;
       const res = await fetch(deleteUrl, { method: 'DELETE' });
@@ -500,6 +501,7 @@ export async function deleteAccounts(targets) {
     const altDocId1 = email.replace(/[@.]/g, '_');
     const altDocId2 = email.replace('@', '_');
     for (const altId of [altDocId1, altDocId2]) {
+      if (!/^[a-zA-Z0-9_.\-]+$/.test(altId)) continue;
       if (!firestoreDocsToDelete.has(altId)) {
         try {
           const deleteUrl = `https://firestore.googleapis.com/v1/projects/formula-factor/databases/(default)/documents/usuarios/${encodeURIComponent(altId)}?key=AIzaSyAS4RecsGAS4JWUn1d-9_VyqFRKmkF_CNs`;
