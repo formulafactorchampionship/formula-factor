@@ -110,6 +110,12 @@ app.use((req, res, next) => {
   }
 
   const safePath = path.posix.normalize(normalizedPath);
+
+  // This guard protects STATIC file access only. API endpoints (/api/...) have
+  // their own authentication, and must not be shadowed by file-name patterns
+  // such as /backup/i, which would otherwise block /api/admin/audit-backups.
+  if (safePath === '/api' || safePath.startsWith('/api/')) return next();
+
   const baseName = path.posix.basename(safePath);
   const isBlocked = SENSITIVE_PATTERNS.some(pattern => pattern.test(safePath) || pattern.test(baseName));
 
