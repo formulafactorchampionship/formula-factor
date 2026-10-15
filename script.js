@@ -20872,22 +20872,37 @@ let liveTimingStoredRecordsKey = "";
 let liveTimingStoredRecordsFetchedAt = 0;
 const LIVE_TIMING_STORED_REFRESH_MS = 60000;
 
+// The public site is served by GitHub Pages, which cannot run the relay: there
+// the same records are published as a static JSON file by a scheduled workflow
+// and read straight from the site.
+const LIVE_TIMING_STATIC_RECORDS_URL = "live_timing_records.json";
+let liveTimingStaticRecords = null;
+
 function ltRecordsTrackKey() {
     const session = (liveTimingStatus && liveTimingStatus.SessionInfo) || {};
-    return String(session.Track || "") + "|" + String(session.TrackConfig || "");
+    const track = String(session.Track || "");
+    return track ? track + "|" + String(session.TrackConfig || "") : "";
 }
 
 // The stored values never replace a better live one, so the panel is live while
 // the session runs and falls back to the history once the cars are gone.
 function ltFetchStoredRecords(force) {
+    if (typeof fetch !== "function") return;
+
     const session = (liveTimingStatus && liveTimingStatus.SessionInfo) || {};
     const track = String(session.Track || "");
-    if (!track || typeof fetch !== "function") return;
-
     const key = ltRecordsTrackKey();
     const fresh = (Date.now() - liveTimingStoredRecordsFetchedAt) < LIVE_TIMING_STORED_REFRESH_MS;
-    if (!force && key === liveTimingStoredRecordsKey && fresh) return;
+    if (!force && key && key === liveTimingStoredRecordsKey && fresh) return;
+    if (!force && !key && liveTimingStaticRecords && fresh) return;
     liveTimingStoredRecordsFetchedAt = Date.now();
+
+    if (!track) {
+        // No live session (or the upstream is down): the published file still
+        // knows which circuit was raced last.
+        ltFetchStaticRecords();
+        return;
+    }
 
     const params = new URLSearchParams({ track: track });
     if (session.TrackConfig) params.set("config", String(session.TrackConfig));
@@ -20895,12 +20910,35 @@ function ltFetchStoredRecords(force) {
     fetch("/api/live-timing/records?" + params.toString(), { headers: { Accept: "application/json" } })
         .then(function (response) { return response.ok ? response.json() : null; })
         .then(function (data) {
-            if (!data || !data.success) return;
-            liveTimingStoredRecords = data;
-            liveTimingStoredRecordsKey = String(data.track || "") + "|" + String(data.config || "");
+            if (data && data.success) {
+                liveTimingStoredRecords = data;
+                liveTimingStoredRecordsKey = String(data.track || "") + "|" + String(data.config || "");
+                renderLiveTimingRecords();
+                return;
+            }
+            ltFetchStaticRecords();
+        })
+        .catch(function () { ltFetchStaticRecords(); });
+}
+
+// Static fallback: the file the scheduled workflow commits to the repository.
+function ltFetchStaticRecords() {
+    fetch(LIVE_TIMING_STATIC_RECORDS_URL, { headers: { Accept: "application/json" } })
+        .then(function (response) { return response.ok ? response.json() : null; })
+        .then(function (data) {
+            if (!data || !data.tracks) return;
+            liveTimingStaticRecords = data;
+
+            const live = ltRecordsTrackKey();
+            const wanted = live || String(data.default || "");
+            const entry = data.tracks[wanted];
+            if (!entry) return;
+
+            liveTimingStoredRecords = Object.assign({ success: true, published: true }, entry);
+            liveTimingStoredRecordsKey = wanted;
             renderLiveTimingRecords();
         })
-        .catch(function () { /* the live values still render */ });
+        .catch(function () { /* nothing published for this circuit yet */ });
 }
 
 function ltRecordCandidate(value, name, car, guid, source) {
@@ -20950,7 +20988,10 @@ function renderLiveTimingRecords() {
         if (laps && (!liveLaps || laps.value > liveLaps.value)) liveLaps = laps;
     });
 
-    const stored = (liveTimingStoredRecords && liveTimingStoredRecordsKey === ltRecordsTrackKey())
+    // With a live session the stored values must belong to that same circuit;
+    // without one (upstream down) the panel shows the published history.
+    const liveKey = ltRecordsTrackKey();
+    const stored = (liveTimingStoredRecords && (!liveKey || liveTimingStoredRecordsKey === liveKey))
         ? liveTimingStoredRecords
         : null;
     const storedBest = stored && stored.bestLap

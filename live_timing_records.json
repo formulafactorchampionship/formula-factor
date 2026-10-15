@@ -1,0 +1,105 @@
+{
+  "version": 1,
+  "updatedAt": "2026-10-15T21:44:44.567Z",
+  "default": "rt_fuji_speedway|layout_gp",
+  "tracks": {
+    "rt_fuji_speedway|layout_gp": {
+      "key": "rt_fuji_speedway|layout_gp",
+      "track": "rt_fuji_speedway",
+      "config": "layout_gp",
+      "name": "Fuji Speedway GP",
+      "drivers": 2,
+      "bestLap": {
+        "ms": 77168,
+        "driver": "Diego Pereira",
+        "car": "Formula RSS 2010 V8",
+        "guid": "76561199548642271",
+        "at": "2026-10-15T21:35:22.708Z"
+      },
+      "topSpeed": {
+        "kmh": 314.8,
+        "driver": "Diego Pereira",
+        "car": "Formula RSS 2010 V8",
+        "guid": "76561199548642271",
+        "at": "2026-10-15T21:35:22.708Z"
+      },
+      "laps": {
+        "count": 11,
+        "driver": "Diego Pereira",
+        "car": "Formula RSS 2010 V8",
+        "guid": "76561199548642271",
+        "at": "2026-10-15T21:35:22.708Z"
+      },
+      "lastSeen": "2026-10-15T21:35:22.708Z"
+    },
+    "ks_silverstone|gp_48pits": {
+      "key": "ks_silverstone|gp_48pits",
+      "track": "ks_silverstone",
+      "config": "gp_48pits",
+      "name": null,
+      "drivers": 5,
+      "bestLap": {
+        "ms": 107183,
+        "driver": "IvanR",
+        "car": "Formula RSS 3 2026 V6",
+        "guid": "76561198821953505",
+        "at": "2026-10-12T16:29:00.000Z"
+      },
+      "topSpeed": null,
+      "laps": {
+        "count": 7,
+        "driver": "Admin",
+        "car": "Formula RSS 3 2026 V6",
+        "guid": "76561199525925061",
+        "at": "2026-10-12T14:55:00.000Z"
+      },
+      "lastSeen": "2026-10-12T16:29:00.000Z"
+    },
+    "fujispeedway_2017|": {
+      "key": "fujispeedway_2017|",
+      "track": "fujispeedway_2017",
+      "config": "",
+      "name": null,
+      "drivers": 1,
+      "bestLap": {
+        "ms": 80325,
+        "driver": "Sebinho",
+        "car": "Formula RSS 2010 V8",
+        "guid": "76561199578739987",
+        "at": "2026-10-12T08:51:00.000Z"
+      },
+      "topSpeed": null,
+      "laps": {
+        "count": 4,
+        "driver": "Sebinho",
+        "car": "Formula RSS 2010 V8",
+        "guid": "76561199578739987",
+        "at": "2026-10-12T08:51:00.000Z"
+      },
+      "lastSeen": "2026-10-12T08:51:00.000Z"
+    },
+    "spa|2022": {
+      "key": "spa|2022",
+      "track": "spa",
+      "config": "2022",
+      "name": null,
+      "drivers": 10,
+      "bestLap": {
+        "ms": 105031,
+        "driver": "suforr",
+        "car": "Formula RSS 2010 V8",
+        "guid": "76561199148380051",
+        "at": "2026-10-11T16:11:00.000Z"
+      },
+      "topSpeed": null,
+      "laps": {
+        "count": 21,
+        "driver": "IWantMozaR5",
+        "car": "Formula RSS 2010 V8",
+        "guid": "76561199381231982",
+        "at": "2026-10-11T16:11:00.000Z"
+      },
+      "lastSeen": "2026-10-11T16:11:00.000Z"
+    }
+  }
+}

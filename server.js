@@ -6,6 +6,7 @@ import tls from 'tls';
 import crypto from 'crypto';
 import { fileURLToPath } from 'url';
 import { fetchAllAccounts, deleteAccounts, PROTECTED_EMAILS, FIREBASE_API_KEY } from './emailAuditService.js';
+import { createLiveTimingStore } from './live-timing-store.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -969,7 +970,7 @@ liveTimingUpstream.on('message', (text) => {
     liveTimingLastSnapshot = text;
     // Full state carries the lap times, so this is where the store is fed.
     try {
-      recordLiveTimingSnapshot(JSON.parse(text).Message);
+      liveTimingStore.recordSnapshot(JSON.parse(text).Message);
     } catch (e) { /* malformed snapshot: never break the relay */ }
   }
   for (const client of liveTimingClients) {
@@ -1035,413 +1036,41 @@ app.get('/api/live-timing/stream', (req, res) => {
 });
 
 // -------------------------------------------------------------
-// 11b. LIVE TIMING RECORDS STORE (persisted lap times)
+// 11b. LIVE TIMING RECORDS (persisted lap times + archived results)
 // -------------------------------------------------------------
-// Lap times only travel inside the full RaceControl snapshots (EventType 200);
-// the deltas that follow carry positions only. Every snapshot the relay sees is
-// folded into a small JSON store, so the records panel keeps showing times once
-// the session is over and nobody is on track any more.
-const LIVE_TIMING_DB_FILE = path.join(__dirname, 'live_timing_db.json');
-let memoryLiveTimingDb = null;
-
-function getLiveTimingDb() {
-  if (memoryLiveTimingDb !== null) return memoryLiveTimingDb;
-  try {
-    if (fs.existsSync(LIVE_TIMING_DB_FILE)) {
-      const parsed = JSON.parse(fs.readFileSync(LIVE_TIMING_DB_FILE, 'utf8'));
-      if (parsed && typeof parsed === 'object' && parsed.tracks && typeof parsed.tracks === 'object') {
-        memoryLiveTimingDb = parsed;
-        if (!memoryLiveTimingDb.version) memoryLiveTimingDb.version = 1;
-        return memoryLiveTimingDb;
-      }
-    }
-  } catch (e) {
-    console.error('Error reading live timing db file:', e);
-  }
-  memoryLiveTimingDb = { version: 1, updatedAt: null, tracks: {} };
-  return memoryLiveTimingDb;
-}
-
-let liveTimingDbWriteTimer = null;
-function saveLiveTimingDb() {
-  const store = getLiveTimingDb();
-  store.updatedAt = new Date().toISOString();
-  if (liveTimingDbWriteTimer) clearTimeout(liveTimingDbWriteTimer);
-  liveTimingDbWriteTimer = setTimeout(() => {
-    fs.writeFile(LIVE_TIMING_DB_FILE, JSON.stringify(store, null, 2), 'utf8', (err) => {
-      if (err) console.error('Error saving live timing db file:', err);
-    });
-  }, 400);
-}
-
-function ltToPositiveNumber(value) {
-  const n = Number(value);
-  return isFinite(n) && n > 0 ? n : 0;
-}
-
-function ltTrackKey(track, config) {
-  return String(track || '') + '|' + String(config || '');
-}
-
-// Folds one EventType 200 snapshot into the persistent store.
-function recordLiveTimingSnapshot(snapshot) {
-  if (!snapshot || typeof snapshot !== 'object') return;
-  const session = snapshot.SessionInfo || {};
-  const track = sanitizeString(String(session.Track || ''), 80);
-  if (!track) return;
-
-  const store = getLiveTimingDb();
-  const config = sanitizeString(String(session.TrackConfig || ''), 80);
-  const key = ltTrackKey(track, config);
-  if (!store.tracks[key]) {
-    store.tracks[key] = { track, config, name: '', drivers: {} };
-  }
-  const entry = store.tracks[key];
-  if (!entry.drivers || typeof entry.drivers !== 'object') entry.drivers = {};
-
-  const trackInfo = snapshot.TrackInfo || {};
-  if (trackInfo.name) entry.name = sanitizeString(String(trackInfo.name), 80);
-  entry.lastSession = {
-    name: sanitizeString(String(session.Name || ''), 60),
-    type: Number(session.Type) || 0,
-    at: new Date().toISOString()
-  };
-
-  const sessionId = sanitizeString(String(snapshot.SessionStartTime || ''), 40);
-  const now = new Date().toISOString();
-
-  // DisconnectedDrivers carries the times of the drivers who already left this
-  // session (the panel lists them under "Stored Times"), so both bags are read:
-  // ignoring the second one loses the best laps as soon as somebody disconnects.
-  const drivers = {};
-  [snapshot.ConnectedDrivers, snapshot.DisconnectedDrivers].forEach((bag) => {
-    const bagDrivers = (bag && bag.Drivers) || {};
-    Object.keys(bagDrivers).forEach((guid) => { drivers[guid] = bagDrivers[guid]; });
-  });
-
-  Object.keys(drivers).forEach((guid) => {
-    const driver = drivers[guid] || {};
-    const carInfo = driver.CarInfo || {};
-    const cars = driver.Cars || {};
-    const car = cars[carInfo.CarModel] || cars[Object.keys(cars)[0]];
-    if (!car) return;
-
-    const name = sanitizeString(String(carInfo.DriverName || ''), 60);
-    if (!name || !guid) return;
-
-    const carName = sanitizeString(String(car.CarName || carInfo.CarName || carInfo.CarModel || ''), 60);
-
-    let record = entry.drivers[guid];
-    if (!record) {
-      record = entry.drivers[guid] = {
-        guid: guid,
-        name: name,
-        car: carName,
-        bestLapMs: 0,
-        lastLapMs: 0,
-        topSpeedKmh: 0,
-        laps: 0,
-        sessions: 0,
-        sessionId: '',
-        firstSeen: now,
-        lastSeen: now
-      };
-    }
-
-    if (record.name !== name) record.name = name;
-    if (carName && record.car !== carName) record.car = carName;
-
-    const bestLapMs = Math.round(ltToPositiveNumber(car.BestLap) / 1e6);
-    if (bestLapMs && (!record.bestLapMs || bestLapMs < record.bestLapMs)) record.bestLapMs = bestLapMs;
-
-    const lastLapMs = Math.round(ltToPositiveNumber(car.LastLap) / 1e6);
-    if (lastLapMs) record.lastLapMs = lastLapMs;
-
-    const topSpeed = ltToPositiveNumber(car.TopSpeedBestLap);
-    if (topSpeed > record.topSpeedKmh) record.topSpeedKmh = Math.round(topSpeed * 10) / 10;
-
-    const laps = Math.round(ltToPositiveNumber(car.NumLaps));
-    if (laps > record.laps) record.laps = laps;
-
-    if (sessionId && record.sessionId !== sessionId) {
-      record.sessionId = sessionId;
-      record.sessions = (record.sessions || 0) + 1;
-    }
-    record.lastSeen = now;
-  });
-
-  saveLiveTimingDb();
-}
-
-// Best lap / top speed / most laps across the given track entries.
-function aggregateLiveTimingRecords(entries) {
-  const bestLap = { ms: 0 };
-  const topSpeed = { kmh: 0 };
-  const laps = { count: 0 };
-  const guids = new Set();
-  let lastSeen = null;
-  let name = null;
-
-  entries.forEach((entry) => {
-    if (!entry || !entry.drivers) return;
-    if (entry.name) name = entry.name;
-    Object.keys(entry.drivers).forEach((guid) => {
-      const record = entry.drivers[guid];
-      if (!record) return;
-      guids.add(guid);
-      if (record.lastSeen && (!lastSeen || record.lastSeen > lastSeen)) lastSeen = record.lastSeen;
-
-      if (record.bestLapMs > 0 && (!bestLap.ms || record.bestLapMs < bestLap.ms)) {
-        bestLap.ms = record.bestLapMs;
-        bestLap.driver = record.name;
-        bestLap.car = record.car;
-        bestLap.guid = guid;
-        bestLap.at = record.lastSeen;
-      }
-      if (record.topSpeedKmh > 0 && record.topSpeedKmh > topSpeed.kmh) {
-        topSpeed.kmh = record.topSpeedKmh;
-        topSpeed.driver = record.name;
-        topSpeed.car = record.car;
-        topSpeed.guid = guid;
-        topSpeed.at = record.lastSeen;
-      }
-      if (record.laps > 0 && record.laps > laps.count) {
-        laps.count = record.laps;
-        laps.driver = record.name;
-        laps.car = record.car;
-        laps.guid = guid;
-        laps.at = record.lastSeen;
-      }
-    });
-  });
-
-  return {
-    track: entries.length === 1 ? entries[0].track : null,
-    config: entries.length === 1 ? entries[0].config : null,
-    name: name,
-    drivers: guids.size,
-    bestLap: bestLap.ms ? bestLap : null,
-    topSpeed: topSpeed.kmh ? topSpeed : null,
-    laps: laps.count ? laps : null,
-    lastSeen: lastSeen
-  };
-}
+// The rules (what counts as a valid lap, how sessions are imported, how the
+// stored times are merged) live in live-timing-store.js, shared with the
+// scheduled GitHub Action that publishes the static records the public site
+// reads from GitHub Pages.
+const liveTimingStore = createLiveTimingStore({
+  file: path.join(__dirname, 'live_timing_db.json'),
+  sanitize: sanitizeString,
+  log: console
+});
 
 // Stored records for one circuit (or for every circuit when no track is given).
 app.get('/api/live-timing/records', (req, res) => {
-  const store = getLiveTimingDb();
   const track = sanitizeString(String(req.query.track || ''), 80);
   const config = sanitizeString(String(req.query.config || ''), 80);
-
-  let entries;
-  if (track) {
-    const entry = store.tracks[ltTrackKey(track, config)];
-    entries = entry ? [entry] : [];
-  } else {
-    entries = Object.values(store.tracks);
-  }
+  const store = liveTimingStore.getStore();
 
   return res.json({
     success: true,
-    ...aggregateLiveTimingRecords(entries),
+    ...liveTimingStore.recordsFor(track, config),
     tracks: Object.keys(store.tracks).length,
     import: {
       sessions: Object.keys(store.importedSessions || {}).length,
-      laps: liveTimingImport.laps,
-      at: liveTimingImport.at,
-      error: liveTimingImport.error
+      laps: liveTimingStore.importStatus.laps,
+      at: liveTimingStore.importStatus.at,
+      error: liveTimingStore.importStatus.error
     },
     updatedAt: store.updatedAt
   });
 });
 
-// -------------------------------------------------------------
-// 11c. LIVE TIMING RESULTS IMPORT (laps already on the books)
-// -------------------------------------------------------------
-// The game server archives every session and the panel publishes them as JSON,
-// so the laps raced before this relay ever ran can be folded into the same
-// store. Without this the records panel stays empty until somebody completes a
-// lap while the relay is watching. Importing twice is harmless: a session is
-// remembered by name and skipped from then on.
-const LIVE_TIMING_RESULTS_BASE = 'https://fr.assettohosting.com:60290';
-const LIVE_TIMING_IMPORT_MAX_SESSIONS = 60;
+// How often the archived sessions are re-scanned (the relay is always on, so
+// this is only for sessions that ended while the process was down).
 const LIVE_TIMING_IMPORT_EVERY_MS = 15 * 60 * 1000;
-
-let liveTimingImport = { running: false, at: null, sessions: 0, laps: 0, error: null };
-const liveTimingCarNames = new Map();
-
-async function ltHttpGet(url) {
-  const response = await fetch(url, {
-    headers: {
-      Accept: '*/*',
-      'User-Agent': 'FormulaFactorChampionship/1.0'
-    }
-  });
-  if (!response.ok) throw new Error('HTTP ' + response.status + ' for ' + url);
-  return response;
-}
-
-// "<date>_<type>-time-attack" is the very same session archived a second time.
-function ltSessionIdentity(file) {
-  return String(file || '').replace(/-time-attack$/i, '');
-}
-
-// CarModel is a folder name ("rss_formula_2010"); the display name lives in
-// its UI file, the same one the panel shows.
-async function ltCarDisplayName(model) {
-  const key = String(model || '');
-  if (!key) return '';
-  if (liveTimingCarNames.has(key)) return liveTimingCarNames.get(key);
-
-  let name = key;
-  try {
-    const data = await (await ltHttpGet(
-      LIVE_TIMING_RESULTS_BASE + '/content/cars/' + encodeURIComponent(key) + '/ui/ui_car.json'
-    )).json();
-    if (data && data.name) name = sanitizeString(String(data.name), 60);
-  } catch (e) { /* keep the raw model name */ }
-
-  liveTimingCarNames.set(key, name);
-  return name;
-}
-
-async function importLiveTimingResults() {
-  if (liveTimingImport.running) return liveTimingImport;
-  liveTimingImport = { running: true, at: new Date().toISOString(), sessions: 0, laps: 0, error: null };
-
-  try {
-    const listing = await (await ltHttpGet(LIVE_TIMING_RESULTS_BASE + '/results')).text();
-    const store = getLiveTimingDb();
-    if (!store.importedSessions || typeof store.importedSessions !== 'object') store.importedSessions = {};
-
-    const byIdentity = new Map();
-    const linkRe = /href="\/results\/([A-Za-z0-9_\-]+)"/g;
-    let match;
-    while ((match = linkRe.exec(listing)) !== null) {
-      const file = match[1];
-      const identity = ltSessionIdentity(file);
-      const current = byIdentity.get(identity);
-      if (!current || file.length < current.length) byIdentity.set(identity, file);
-    }
-
-    const pending = [...byIdentity.entries()]
-      .filter(([identity]) => !store.importedSessions[identity])
-      .slice(0, LIVE_TIMING_IMPORT_MAX_SESSIONS);
-
-    for (const [identity, file] of pending) {
-      try {
-        const session = await (await ltHttpGet(
-          LIVE_TIMING_RESULTS_BASE + '/results/download/' + file + '.json'
-        )).json();
-
-        const track = sanitizeString(String(session.TrackName || ''), 80);
-        const laps = Array.isArray(session.Laps) ? session.Laps : [];
-        if (!track) {
-          store.importedSessions[identity] = new Date().toISOString();
-          continue;
-        }
-
-        const config = sanitizeString(String(session.TrackConfig || ''), 80);
-        const key = ltTrackKey(track, config);
-        if (!store.tracks[key]) store.tracks[key] = { track, config, name: '', drivers: {} };
-        const entry = store.tracks[key];
-        if (!entry.drivers || typeof entry.drivers !== 'object') entry.drivers = {};
-
-        const when = Number.isFinite(Date.parse(session.Date))
-          ? new Date(session.Date).toISOString()
-          : new Date().toISOString();
-
-        // Fold the laps per driver first, then upsert each one exactly once.
-        const byDriver = new Map();
-        laps.forEach((lap) => {
-          const guid = String(lap.DriverGuid || '');
-          const lapMs = Math.round(ltToPositiveNumber(lap.LapTime));
-          if (!guid || !lapMs) return;
-
-          let folded = byDriver.get(guid);
-          if (!folded) {
-            folded = {
-              guid: guid,
-              name: sanitizeString(String(lap.DriverName || ''), 60),
-              car: String(lap.CarModel || ''),
-              laps: 0,
-              bestLapMs: 0,
-              lastLapMs: 0,
-              lastTimestamp: -1
-            };
-            byDriver.set(guid, folded);
-          }
-
-          folded.laps += 1;
-          // A lap with cuts is not a valid lap time, exactly like the panel's
-          // "Stored Times" table treats it; it still counts towards the tally.
-          if (!(Number(lap.Cuts) > 0) && (!folded.bestLapMs || lapMs < folded.bestLapMs)) {
-            folded.bestLapMs = lapMs;
-          }
-
-          const timestamp = Number(lap.Timestamp);
-          if (Number.isFinite(timestamp) && timestamp > folded.lastTimestamp) {
-            folded.lastTimestamp = timestamp;
-            folded.lastLapMs = lapMs;
-          }
-          liveTimingImport.laps += 1;
-        });
-
-        for (const folded of byDriver.values()) {
-          if (!folded.name) continue;
-          const car = await ltCarDisplayName(folded.car);
-
-          let record = entry.drivers[folded.guid];
-          if (!record) {
-            record = entry.drivers[folded.guid] = {
-              guid: folded.guid,
-              name: folded.name,
-              car: car,
-              bestLapMs: 0,
-              lastLapMs: 0,
-              topSpeedKmh: 0,
-              laps: 0,
-              sessions: 0,
-              sessionId: '',
-              firstSeen: when,
-              lastSeen: when,
-              imported: true
-            };
-          }
-
-          record.name = folded.name;
-          if (car) record.car = car;
-          if (folded.bestLapMs && (!record.bestLapMs || folded.bestLapMs < record.bestLapMs)) {
-            record.bestLapMs = folded.bestLapMs;
-          }
-          if (folded.lastLapMs) record.lastLapMs = folded.lastLapMs;
-          if (folded.laps > record.laps) record.laps = folded.laps;
-          record.sessions = (record.sessions || 0) + 1;
-          if (!record.firstSeen || when < record.firstSeen) record.firstSeen = when;
-          if (!record.lastSeen || when > record.lastSeen) record.lastSeen = when;
-        }
-
-        store.importedSessions[identity] = when;
-        liveTimingImport.sessions += 1;
-        saveLiveTimingDb();
-      } catch (e) {
-        liveTimingImport.error = String((e && e.message) || e).slice(0, 200);
-      }
-    }
-
-    saveLiveTimingDb();
-  } catch (e) {
-    liveTimingImport.error = String((e && e.message) || e).slice(0, 200);
-  }
-
-  liveTimingImport.running = false;
-  if (liveTimingImport.sessions) {
-    console.log('Live timing: imported ' + liveTimingImport.sessions + ' archived session(s), ' + liveTimingImport.laps + ' lap(s).');
-  } else if (liveTimingImport.error) {
-    console.warn('Live timing: results import failed -', liveTimingImport.error);
-  }
-  return liveTimingImport;
-}
 
 // -------------------------------------------------------------
 // 12. CARRERAS FOTOS & COMMUNITY GALLERY (WITH STRICT SANITIZATION)
@@ -1779,6 +1408,6 @@ app.listen(PORT, '0.0.0.0', () => {
   }
   // Bring in the sessions the panel had already archived, then keep an eye out
   // for new ones (a session that ends while the relay is down would be missed).
-  importLiveTimingResults();
-  setInterval(importLiveTimingResults, LIVE_TIMING_IMPORT_EVERY_MS).unref();
+  liveTimingStore.importArchivedResults();
+  setInterval(() => liveTimingStore.importArchivedResults(), LIVE_TIMING_IMPORT_EVERY_MS).unref();
 });
