@@ -22022,12 +22022,16 @@ function openAuditDeleteConfirmModal(targets) {
         }).join("");
     }
 
+    modal.classList.add("active");
     modal.style.display = "flex";
 }
 
 function closeAuditDeleteConfirmModal() {
     const modal = document.getElementById("auditDeleteConfirmModal");
-    if (modal) modal.style.display = "none";
+    if (modal) {
+        modal.classList.remove("active");
+        modal.style.display = "none";
+    }
     ffcPendingDeleteTargets = [];
 }
 
