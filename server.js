@@ -446,8 +446,8 @@ app.post('/api/auth/register', (req, res) => {
     });
   }
 
-  if (password && password.length < 6) {
-    return res.status(400).json({ error: 'Password must have at least 6 characters', code: 'auth/weak-password' });
+  if (password && password.length < 8) {
+    return res.status(400).json({ error: 'Password must have at least 8 characters', code: 'auth/weak-password' });
   }
   const users = getUsers();
 
@@ -461,9 +461,18 @@ app.post('/api/auth/register', (req, res) => {
     return res.status(400).json({ error: 'Username already in use', code: 'auth/username-already-in-use' });
   }
 
-  const pHash = (passwordHash && passwordHash.startsWith('scrypt$')) 
-    ? passwordHash 
-    : (password ? hashPassword(password) : (passwordHash || ''));
+  // Only accept modern, well-formed hashes supplied by the client. Never store an
+  // arbitrary or plaintext value provided by the caller.
+  const isModernHash = typeof passwordHash === 'string'
+    && (passwordHash.startsWith('scrypt$') || passwordHash.startsWith('pbkdf2$'));
+  let pHash;
+  if (password) {
+    pHash = hashPassword(password); // server-side scrypt is always preferred
+  } else if (isModernHash) {
+    pHash = passwordHash;
+  } else {
+    return res.status(400).json({ error: 'A valid password or password hash is required', code: 'auth/invalid-credentials' });
+  }
 
   const userData = {
     uid: 'user_' + Date.now() + '_' + Math.random().toString(36).substring(2, 7),
@@ -550,7 +559,9 @@ app.post('/api/auth/sync', requireAdminAuth, (req, res) => {
 
     const cleanName = sanitizeString(u.displayName || cleanEmail.split('@')[0], 50);
     const idx = currentUsers.findIndex(cu => (cu.email || '').toLowerCase().trim() === cleanEmail);
-    const pHash = u.passwordHash || (u.password ? hashPassword(u.password) : '');
+    // Only accept modern derived hashes; never trust a plaintext password here.
+    const rawHash = typeof u.passwordHash === 'string' ? u.passwordHash : '';
+    const pHash = (rawHash.startsWith('scrypt$') || rawHash.startsWith('pbkdf2$')) ? rawHash : '';
 
     if (idx >= 0) {
       if (!currentUsers[idx].passwordHash && pHash) {

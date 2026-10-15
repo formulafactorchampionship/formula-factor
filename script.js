@@ -706,7 +706,7 @@ const translations = {
             resetSub: "Introduce tu correo para recibir un enlace oficial para restablecer tu contraseña.",
             labelEmail: "CORREO ELECTRÓNICO",
             labelPassword: "CONTRASEÑA",
-            labelPasswordReg: "CONTRASEÑA (MÍNIMO 6 CARACTERES)",
+            labelPasswordReg: "CONTRASEÑA (MÍNIMO 8 CARACTERES)",
             labelName: "NOMBRE / APODO DE PILOTO",
             forgotLink: "¿Olvidaste tu contraseña?",
             btnCancel: "CANCELAR",
@@ -1284,7 +1284,7 @@ const translations = {
             resetSub: "Enter your email to receive an official password reset link.",
             labelEmail: "EMAIL ADDRESS",
             labelPassword: "PASSWORD",
-            labelPasswordReg: "PASSWORD (MIN. 6 CHARACTERS)",
+            labelPasswordReg: "PASSWORD (MIN. 8 CHARACTERS)",
             labelName: "DRIVER NAME / ALIAS",
             forgotLink: "Forgot your password?",
             btnCancel: "CANCEL",
@@ -12441,23 +12441,88 @@ function getUserDocId(email) {
 }
 
 // Helper: Secure password hashing for multi-device cloud storage
+// Modern password hashing: PBKDF2-SHA256 with a per-user random salt (Web Crypto).
+// Stored format: pbkdf2$<iterations>$<saltBase64>$<hashBase64>
+const PASSWORD_HASH_ITERATIONS = 200000;
+const LEGACY_AUTH_SALT = "_formula_factor_auth_salt_2026";
+
+function bytesToBase64(bytes) {
+    const arr = bytes instanceof Uint8Array ? bytes : new Uint8Array(bytes);
+    let binary = "";
+    for (let i = 0; i < arr.length; i++) binary += String.fromCharCode(arr[i]);
+    return btoa(binary);
+}
+
+function base64ToBytes(b64) {
+    const binary = atob(b64);
+    const bytes = new Uint8Array(binary.length);
+    for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
+    return bytes;
+}
+
+function constantTimeEqual(a, b) {
+    a = String(a);
+    b = String(b);
+    if (a.length !== b.length) return false;
+    let diff = 0;
+    for (let i = 0; i < a.length; i++) diff |= a.charCodeAt(i) ^ b.charCodeAt(i);
+    return diff === 0;
+}
+
+async function derivePasswordBits(password, saltBytes, iterations) {
+    const encoder = new TextEncoder();
+    const keyMaterial = await crypto.subtle.importKey(
+        "raw", encoder.encode(password), { name: "PBKDF2" }, false, ["deriveBits"]
+    );
+    return crypto.subtle.deriveBits(
+        { name: "PBKDF2", salt: saltBytes, iterations, hash: "SHA-256" },
+        keyMaterial,
+        256
+    );
+}
+
 async function hashUserPassword(password) {
     if (!password) return "";
-    try {
-        const encoder = new TextEncoder();
-        const data = encoder.encode(password + "_formula_factor_auth_salt_2026");
-        const hashBuffer = await crypto.subtle.digest('SHA-256', data);
-        const hashArray = Array.from(new Uint8Array(hashBuffer));
-        return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
-    } catch (e) {
-        let hash = 0;
-        for (let i = 0; i < password.length; i++) {
-            hash = ((hash << 5) - hash) + password.charCodeAt(i);
-            hash |= 0;
-        }
-        return "fallback_hash_" + hash;
+    // Never silently store a weak/trivially-guessable hash. If Web Crypto is not
+    // available (non secure context), refuse to produce one.
+    if (!(typeof crypto !== "undefined" && crypto.subtle)) {
+        console.warn("[FFC] Web Crypto unavailable; password hash was not generated.");
+        return "";
     }
+    const salt = crypto.getRandomValues(new Uint8Array(16));
+    const bits = await derivePasswordBits(password, salt, PASSWORD_HASH_ITERATIONS);
+    return `pbkdf2$${PASSWORD_HASH_ITERATIONS}$${bytesToBase64(salt)}$${bytesToBase64(bits)}`;
 }
+
+// Verifies a password against a stored hash. Supports the modern PBKDF2 format
+// and the legacy SHA-256(salt + password) format for previously stored values.
+async function verifyUserPassword(password, storedHash) {
+    if (!password || !storedHash) return false;
+    const stored = String(storedHash);
+    const parts = stored.split("$");
+    if (parts[0] === "pbkdf2" && parts.length === 4) {
+        const iterations = parseInt(parts[1], 10) || PASSWORD_HASH_ITERATIONS;
+        try {
+            const bits = await derivePasswordBits(password, base64ToBytes(parts[2]), iterations);
+            return constantTimeEqual(bytesToBase64(bits), parts[3]);
+        } catch (e) {
+            return false;
+        }
+    }
+    if (/^[0-9a-f]{64}$/i.test(stored)) {
+        // Legacy sha-256 with the old global salt
+        try {
+            const encoder = new TextEncoder();
+            const legacy = await crypto.subtle.digest("SHA-256", encoder.encode(password + LEGACY_AUTH_SALT));
+            const hex = Array.from(new Uint8Array(legacy)).map(b => b.toString(16).padStart(2, "0")).join("");
+            return constantTimeEqual(hex, stored.toLowerCase());
+        } catch (e) {
+            return false;
+        }
+    }
+    return false;
+}
+window.verifyUserPassword = verifyUserPassword;
 
 // Reserved admin username detection (forbids "admin" and any variation: casing, leetspeak, numbers, symbols, spaces)
 function isReservedAdminUsername(name) {
@@ -12496,16 +12561,16 @@ var LocalAuthStore = {
             localStorage.setItem("ffc_registered_users", JSON.stringify(users));
         } catch (e) {}
     },
-    saveCloudUserLocal(user, plainPassword = "") {
+    saveCloudUserLocal(user) {
         try {
             const users = this.getUsers();
             const normalizedEmail = (user.email || "").toLowerCase().trim();
             const idx = users.findIndex(u => (u.email || "").toLowerCase().trim() === normalizedEmail);
+            // SECURITY: never persist plaintext passwords. Only the derived hash.
             const entry = {
                 uid: user.uid,
                 displayName: user.displayName,
                 email: normalizedEmail,
-                password: plainPassword || (idx >= 0 ? users[idx].password : ""),
                 passwordHash: user.passwordHash || (idx >= 0 ? users[idx].passwordHash : ""),
                 createdAt: user.createdAt || new Date().toISOString()
             };
@@ -12541,7 +12606,7 @@ var LocalAuthStore = {
             }
         } catch (e) {}
     },
-    register(displayName, email, password) {
+    async register(displayName, email, password) {
         const cleanEmail = (email || "").toLowerCase().trim();
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         if (!emailRegex.test(cleanEmail)) {
@@ -12559,8 +12624,8 @@ var LocalAuthStore = {
         if (isReservedAdminUsername(cleanName)) {
             throw { code: "auth/username-reserved-admin", message: "Username not allowed: contains admin or reserved variations" };
         }
-        if (password && password.length < 6) {
-            throw { code: "auth/weak-password", message: "Password must have at least 6 characters" };
+        if (password && password.length < 8) {
+            throw { code: "auth/weak-password", message: "Password must have at least 8 characters" };
         }
 
         const users = this.getUsers();
@@ -12578,7 +12643,7 @@ var LocalAuthStore = {
             uid: "user_" + Date.now() + "_" + Math.random().toString(36).substring(2, 7),
             displayName: cleanName,
             email: cleanEmail,
-            password: password,
+            passwordHash: await hashUserPassword(password),
             createdAt: new Date().toISOString()
         };
         users.push(newUser);
@@ -12586,14 +12651,15 @@ var LocalAuthStore = {
         this.setCurrentUser(newUser);
         return newUser;
     },
-    login(email, password) {
+    async login(email, password) {
         const users = this.getUsers();
         const normalizedEmail = email.toLowerCase().trim();
         const found = users.find(u => (u.email || "").toLowerCase().trim() === normalizedEmail);
         if (!found) {
             throw { code: "auth/user-not-found", message: "User not found" };
         }
-        if (found.password && found.password !== password) {
+        const valid = found.passwordHash ? await verifyUserPassword(password, found.passwordHash) : false;
+        if (!valid) {
             throw { code: "auth/wrong-password", message: "Wrong password" };
         }
         this.setCurrentUser(found);
@@ -12625,8 +12691,8 @@ const CloudAuthService = {
         if (isReservedAdminUsername(cleanName)) {
             throw { code: "auth/username-reserved-admin", message: "Username not allowed: contains admin or reserved variations" };
         }
-        if (password && password.length < 6) {
-            throw { code: "auth/weak-password", message: "Password must have at least 6 characters" };
+        if (password && password.length < 8) {
+            throw { code: "auth/weak-password", message: "Password must have at least 8 characters" };
         }
 
         const docId = getUserDocId(cleanEmail);
@@ -12717,8 +12783,8 @@ const CloudAuthService = {
             console.warn("Firestore user setDoc notice:", dbErr);
         }
 
-        // 4. Local storage cache & active session
-        LocalAuthStore.saveCloudUserLocal(cloudUser, password);
+        // 4. Local storage cache & active session (no plaintext password is stored)
+        LocalAuthStore.saveCloudUserLocal(cloudUser);
         LocalAuthStore.setCurrentUser(cloudUser);
         return cloudUser;
     },
@@ -12738,7 +12804,7 @@ const CloudAuthService = {
                     passwordHash: pHash,
                     createdAt: new Date().toISOString()
                 };
-                LocalAuthStore.saveCloudUserLocal(loggedIn, password);
+                LocalAuthStore.saveCloudUserLocal(loggedIn);
                 LocalAuthStore.setCurrentUser(loggedIn);
                 try {
                     await setDoc(doc(db, "usuarios", docId), loggedIn, { merge: true });
@@ -12782,17 +12848,49 @@ const CloudAuthService = {
         }
     },
 
+    // One-time migration: any plaintext password previously cached in localStorage
+    // (legacy behaviour) is converted to a PBKDF2 hash when possible and then
+    // securely deleted, so no plaintext secret remains on the device.
+    async migrateLocalUserSecrets(localUsers) {
+        if (!Array.isArray(localUsers) || localUsers.length === 0) return localUsers;
+        let changed = false;
+        for (const u of localUsers) {
+            if (!u || typeof u !== "object") continue;
+            if (typeof u.password === "string") {
+                if (u.password && !u.passwordHash) {
+                    try { u.passwordHash = await hashUserPassword(u.password); } catch (e) {}
+                }
+                delete u.password;
+                changed = true;
+            }
+        }
+        if (changed) LocalAuthStore.saveUsers(localUsers);
+        return localUsers;
+    },
+
     // Sync any pre-existing local accounts to Firestore & Backend Cloud on initialization
     async syncAllLocalUsersToFirestore() {
         try {
-            const localUsers = LocalAuthStore.getUsers();
+            let localUsers = LocalAuthStore.getUsers();
             if (!localUsers || localUsers.length === 0) return;
 
-            // Sync to backend server
+            // Strip legacy plaintext passwords before anything leaves the device.
+            localUsers = await this.migrateLocalUserSecrets(localUsers);
+
+            // Sync to backend server (derived hashes only, never plaintext passwords).
+            const safeUsers = localUsers
+                .filter(u => u && u.email)
+                .map(u => ({
+                    uid: u.uid,
+                    displayName: u.displayName,
+                    email: u.email,
+                    passwordHash: u.passwordHash || "",
+                    createdAt: u.createdAt
+                }));
             fetch('/api/auth/sync', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ users: localUsers })
+                body: JSON.stringify({ users: safeUsers })
             }).catch(() => {});
 
             // Sync to Firestore
@@ -12802,12 +12900,11 @@ const CloudAuthService = {
                 const userRef = doc(db, "usuarios", docId);
                 const snap = await getDoc(userRef);
                 if (!snap.exists()) {
-                    const pHash = u.passwordHash || (u.password ? await hashUserPassword(u.password) : "");
                     await setDoc(userRef, {
                         uid: u.uid || ("user_" + Date.now()),
                         displayName: u.displayName || u.email.split("@")[0],
                         email: u.email.toLowerCase().trim(),
-                        passwordHash: pHash,
+                        passwordHash: u.passwordHash || "",
                         createdAt: u.createdAt || new Date().toISOString()
                     });
                 }
@@ -12914,7 +13011,7 @@ function getAuthErrorMessage(errCode) {
         return isEn ? "Usernames containing 'admin' or variations are not allowed." : "No se permite usar 'admin' ni ninguna de sus variaciones en el nombre.";
     }
     if (str.includes("weak-password")) {
-        return isEn ? "Password is too weak. Please use at least 6 characters." : "La contraseña es muy débil. Debe tener al menos 6 caracteres.";
+        return isEn ? "Password is too weak. Please use at least 8 characters." : "La contraseña es muy débil. Debe tener al menos 8 caracteres.";
     }
     if (str.includes("user-disabled")) {
         return isEn ? "This account has been disabled." : "Esta cuenta de usuario ha sido deshabilitada.";
@@ -13347,8 +13444,8 @@ if (userRegisterForm) {
             return;
         }
 
-        if (password.length < 6) {
-            showAuthAlert(isEn ? "Password must have at least 6 characters." : "La contraseña debe tener al menos 6 caracteres.");
+        if (password.length < 8) {
+            showAuthAlert(isEn ? "Password must have at least 8 characters." : "La contraseña debe tener al menos 8 caracteres.");
             return;
         }
 
