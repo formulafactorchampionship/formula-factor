@@ -1,3 +1,4 @@
+import './envLoader.js';
 import express from 'express';
 import path from 'path';
 import fs from 'fs';
@@ -11,9 +12,41 @@ const __dirname = path.dirname(__filename);
 const app = express();
 const PORT = 3000;
 
+// -------------------------------------------------------------
+// 0. ADMIN SECRET RESOLUTION
+// -------------------------------------------------------------
+// (.env is loaded first, via ./envLoader.js, before any other module.)
+
 // Security salt and secret key configuration
 const AUTH_SALT = '_formula_factor_auth_salt_2026';
-const ADMIN_SECRET = process.env.ADMIN_API_SECRET || 'ffc_admin_secret_default_2026';
+
+// Admin API secret resolution (there is NO hardcoded fallback):
+//   1) ADMIN_API_SECRET from the environment or .env
+//   2) a persisted local secret file (.admin_secret, gitignored)
+//   3) auto-generated random secret (stored for reuse across restarts)
+const ADMIN_SECRET_FILE = path.join(__dirname, '.admin_secret');
+function resolveAdminSecret() {
+  const fromEnv = (process.env.ADMIN_API_SECRET || '').trim();
+  if (fromEnv) return fromEnv;
+
+  try {
+    if (fs.existsSync(ADMIN_SECRET_FILE)) {
+      const stored = fs.readFileSync(ADMIN_SECRET_FILE, 'utf8').trim();
+      if (stored) return stored;
+    }
+  } catch (e) { /* ignore */ }
+
+  const generated = crypto.randomBytes(48).toString('base64url');
+  try {
+    fs.writeFileSync(ADMIN_SECRET_FILE, generated, { encoding: 'utf8', mode: 0o600 });
+    console.log('[FFC] ADMIN_API_SECRET not set: generated a random secret and stored it in .admin_secret (gitignored).');
+  } catch (e) {
+    console.warn('[FFC] ADMIN_API_SECRET not set and .admin_secret could not be written. Using an in-memory secret.');
+  }
+  return generated;
+}
+let ADMIN_SECRET = resolveAdminSecret();
+const ADMIN_SESSION_TTL_MS = 2 * 60 * 60 * 1000; // 2 hours
 
 // -------------------------------------------------------------
 // 1. STRICT STRING SANITIZATION HELPER
@@ -58,6 +91,7 @@ const SENSITIVE_PATTERNS = [
   /package(\.json|-lock\.json)?$/i,
   /^\/?\.env/i,
   /\.env/i,
+  /\.admin_secret$/i,
   /_db\.json$/i,
   /backup/i,
   /^\/?backups(\/|$)/i,
@@ -107,16 +141,55 @@ app.use(express.static(__dirname, {
 }));
 
 // -------------------------------------------------------------
-// 6. SECURE ADMIN TOKEN & AUTHORIZATION SYSTEM
+// 6. SECURE ADMIN SESSION TOKENS & AUTHORIZATION SYSTEM
+//    Tokens are signed with HMAC-SHA256 and carry an expiry. There is
+//    no hardcoded/backdoor token and no deterministic per-email token.
 // -------------------------------------------------------------
-function generateAdminToken(email) {
-  const clean = String(email || '').toLowerCase().trim();
-  return crypto.createHmac('sha256', ADMIN_SECRET).update(`admin_session:${clean}`).digest('hex');
+function safeEqualStrings(a, b) {
+  const ab = Buffer.from(String(a));
+  const bb = Buffer.from(String(b));
+  if (ab.length !== bb.length) return false;
+  return crypto.timingSafeEqual(ab, bb);
 }
 
-function requireAdminAuth(req, res, next) {
-  const currentSecret = process.env.ADMIN_API_SECRET || ADMIN_SECRET;
+function generateAdminToken(email) {
+  const clean = String(email || '').toLowerCase().trim();
+  const payload = {
+    e: clean,
+    iat: Date.now(),
+    exp: Date.now() + ADMIN_SESSION_TTL_MS,
+    n: crypto.randomBytes(8).toString('hex')
+  };
+  const body = Buffer.from(JSON.stringify(payload)).toString('base64url');
+  const sig = crypto.createHmac('sha256', ADMIN_SECRET).update(body).digest('base64url');
+  return `ffc1.${body}.${sig}`;
+}
 
+function verifyAdminToken(token, expectedEmail) {
+  const parts = String(token || '').split('.');
+  if (parts.length !== 3 || parts[0] !== 'ffc1') return null;
+
+  const body = parts[1];
+  const sig = parts[2];
+  const expectedSig = crypto.createHmac('sha256', ADMIN_SECRET).update(body).digest('base64url');
+  if (!safeEqualStrings(sig, expectedSig)) return null;
+
+  let payload = null;
+  try {
+    payload = JSON.parse(Buffer.from(body, 'base64url').toString('utf8'));
+  } catch (e) {
+    return null;
+  }
+  if (!payload || typeof payload.exp !== 'number' || Date.now() > payload.exp) return null;
+
+  const email = String(payload.e || '').toLowerCase().trim();
+  if (!email || !PROTECTED_EMAILS.some(pe => pe.toLowerCase() === email)) return null;
+  if (expectedEmail && expectedEmail.toLowerCase().trim() !== email) return null;
+
+  return { email };
+}
+
+function extractAdminCredentials(req) {
   const adminEmail = (
     req.headers['x-admin-email'] ||
     req.query.adminEmail ||
@@ -134,6 +207,11 @@ function requireAdminAuth(req, res, next) {
     ''
   ).trim();
 
+  return { adminEmail, adminToken };
+}
+
+function requireAdminAuth(req, res, next) {
+  const { adminEmail, adminToken } = extractAdminCredentials(req);
   if (!adminToken) {
     return res.status(403).json({
       success: false,
@@ -142,23 +220,97 @@ function requireAdminAuth(req, res, next) {
     });
   }
 
-  if (adminToken === currentSecret || adminToken === 'ffc_admin_authorized') {
-    req.adminUser = { email: adminEmail || 'admin@formulafactor.internal' };
-    return next();
+  const verified = verifyAdminToken(adminToken, adminEmail || undefined);
+  if (!verified) {
+    return res.status(403).json({
+      success: false,
+      error: 'Acceso denegado: credenciales de Administrador FFC no válidas o caducadas',
+      code: 'auth/admin-unauthorized'
+    });
   }
 
-  if (adminEmail && PROTECTED_EMAILS.some(pe => pe.toLowerCase() === adminEmail)) {
-    if (adminToken === generateAdminToken(adminEmail)) {
-      req.adminUser = { email: adminEmail };
-      return next();
+  req.adminUser = { email: verified.email };
+  return next();
+}
+
+// -------------------------------------------------------------
+// 6b. FIREBASE ID TOKEN VERIFICATION (authenticated user actions)
+// -------------------------------------------------------------
+const firebaseUserTokenCache = new Map();
+const FIREBASE_TOKEN_CACHE_MS = 5 * 60 * 1000;
+
+async function verifyFirebaseIdToken(idToken) {
+  if (!idToken || typeof idToken !== 'string') return null;
+  try {
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 8000);
+    const response = await fetch(
+      `https://identitytoolkit.googleapis.com/v1/accounts:lookup?key=${FIREBASE_API_KEY}`,
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ idToken }),
+        signal: controller.signal
+      }
+    );
+    clearTimeout(timeout);
+    const data = await response.json().catch(() => null);
+    if (!data || !Array.isArray(data.users) || data.users.length === 0) return null;
+    const u = data.users[0];
+    return {
+      uid: u.localId,
+      email: String(u.email || '').toLowerCase().trim(),
+      name: u.displayName || ''
+    };
+  } catch (e) {
+    console.warn('[FFC] Firebase ID token verification failed:', e.message);
+    return null;
+  }
+}
+
+function extractIdToken(req) {
+  const authHeader = req.headers['authorization'] || '';
+  const bearer = authHeader.startsWith('Bearer ') ? authHeader.substring(7).trim() : authHeader.trim();
+  return String(
+    req.headers['x-id-token'] ||
+    bearer ||
+    (req.body && req.body.idToken) ||
+    ''
+  ).trim();
+}
+
+async function requireFirebaseUser(req, res, next) {
+  try {
+    const idToken = extractIdToken(req);
+    if (!idToken) {
+      return res.status(401).json({ success: false, error: 'Autenticación requerida', code: 'auth/required' });
     }
-  }
 
-  return res.status(403).json({
-    success: false,
-    error: 'Acceso denegado: Se requieren credenciales de Administrador FFC autorizadas',
-    code: 'auth/admin-unauthorized'
-  });
+    const cached = firebaseUserTokenCache.get(idToken);
+    let user = cached && cached.exp > Date.now() ? cached.user : null;
+
+    if (!user) {
+      user = await verifyFirebaseIdToken(idToken);
+      if (user) {
+        firebaseUserTokenCache.set(idToken, { user, exp: Date.now() + FIREBASE_TOKEN_CACHE_MS });
+        if (firebaseUserTokenCache.size > 500) {
+          const now = Date.now();
+          for (const [k, v] of firebaseUserTokenCache) {
+            if (v.exp <= now) firebaseUserTokenCache.delete(k);
+          }
+        }
+      }
+    }
+
+    if (!user || !user.email) {
+      return res.status(401).json({ success: false, error: 'Sesión no válida o caducada', code: 'auth/invalid-token' });
+    }
+
+    req.firebaseUser = user;
+    return next();
+  } catch (e) {
+    return res.status(401).json({ success: false, error: 'Autenticación requerida', code: 'auth/required' });
+  }
 }
 
 // -------------------------------------------------------------
@@ -230,6 +382,25 @@ function saveUsers(users) {
 app.get('/api/config', (req, res) => {
   res.json({
     firebaseApiKey: FIREBASE_API_KEY
+  });
+});
+
+// Exchange a Firebase ID token (from an authorized admin account) for a signed,
+// expiring admin session token. Replaces the previous deterministic/backdoor token.
+app.post('/api/admin/session', async (req, res) => {
+  const { idToken } = req.body || {};
+  const fbUser = await verifyFirebaseIdToken(idToken);
+  if (!fbUser || !fbUser.email) {
+    return res.status(401).json({ success: false, error: 'Sesión de Firebase no válida', code: 'auth/invalid-id-token' });
+  }
+  if (!PROTECTED_EMAILS.some(pe => pe.toLowerCase() === fbUser.email)) {
+    return res.status(403).json({ success: false, error: 'Cuenta sin privilegios de administrador', code: 'auth/not-admin' });
+  }
+  return res.json({
+    success: true,
+    adminToken: generateAdminToken(fbUser.email),
+    email: fbUser.email,
+    expiresIn: ADMIN_SESSION_TTL_MS
   });
 });
 
@@ -443,17 +614,18 @@ app.get('/api/fantasy/teams', (req, res) => {
 });
 
 // Requirement 1a: Strict sanitization and budget validation in POST /api/fantasy/teams
-app.post('/api/fantasy/teams', (req, res) => {
-  const teamData = req.body;
-  if (!teamData || (!teamData.userId && !teamData.email)) {
-    return res.status(400).json({ error: 'Missing team identifier' });
-  }
+app.post('/api/fantasy/teams', requireFirebaseUser, (req, res) => {
+  const teamData = req.body || {};
+
+  // Identity comes exclusively from the verified Firebase session (never from the client body).
+  const cleanEmail = req.firebaseUser.email;
+  const cleanUserId = cleanEmail.toLowerCase().trim().replace(/[^a-z0-9_]/g, '_');
 
   const rawTeamValue = Number(teamData.teamValue);
-  const teamValue = !isNaN(rawTeamValue) ? Math.min(Math.max(rawTeamValue, 0), 100) : 75.0;
-  if (teamValue > 85.0) {
+  if (!isNaN(rawTeamValue) && rawTeamValue > 85.0) {
     return res.status(400).json({ error: 'Tope de presupuesto excedido (máximo 85.0M€)', code: 'fantasy/budget-exceeded' });
   }
+  const teamValue = !isNaN(rawTeamValue) ? Math.min(Math.max(rawTeamValue, 0), 85.0) : 75.0;
 
   const sanitizedTeamName = sanitizeString(teamData.teamName || 'Escudería FFC', 40);
   const sanitizedManagerName = sanitizeString(teamData.managerName || 'Manager FFC', 40);
@@ -463,15 +635,20 @@ app.post('/api/fantasy/teams', (req, res) => {
   const sanitizedDriver3 = sanitizeString(teamData.driver3 || '', 40);
   const sanitizedTurbo = sanitizeString(teamData.turboDriver || '', 40);
 
+  const roundLineups = (teamData.roundLineups && typeof teamData.roundLineups === 'object' && !Array.isArray(teamData.roundLineups))
+    ? JSON.parse(JSON.stringify(teamData.roundLineups))
+    : {};
+
   const teams = getFantasyTeams();
-  const idToMatch = (teamData.userId || teamData.email).toLowerCase().trim();
-  const idx = teams.findIndex(t => 
-    (t.userId && t.userId.toLowerCase().trim() === idToMatch) ||
-    (t.email && t.email.toLowerCase().trim() === idToMatch)
+  const idx = teams.findIndex(t =>
+    (t.userId && t.userId.toLowerCase().trim() === cleanUserId) ||
+    (t.email && t.email.toLowerCase().trim() === cleanEmail)
   );
 
+  // Only whitelisted fields are persisted (no arbitrary client fields are merged in).
   const updatedEntry = {
-    ...teamData,
+    userId: cleanUserId,
+    email: cleanEmail,
     teamName: sanitizedTeamName,
     managerName: sanitizedManagerName,
     team: sanitizedTeam,
@@ -479,12 +656,14 @@ app.post('/api/fantasy/teams', (req, res) => {
     driver2: sanitizedDriver2,
     driver3: sanitizedDriver3,
     turboDriver: sanitizedTurbo,
+    roundLineups: roundLineups,
+    totalPoints: idx >= 0 && typeof teams[idx].totalPoints === 'number' ? teams[idx].totalPoints : 0,
     teamValue: teamValue,
     updatedAt: new Date().toISOString()
   };
 
   if (idx >= 0) {
-    teams[idx] = { ...teams[idx], ...updatedEntry };
+    teams[idx] = updatedEntry;
   } else {
     teams.push(updatedEntry);
   }
@@ -729,23 +908,31 @@ app.get('/api/carreras/fotos', async (req, res) => {
 });
 
 // Requirement 1c: Strict sanitization in POST /api/carreras/fotos
-app.post('/api/carreras/fotos', async (req, res) => {
-  const photo = req.body;
+app.post('/api/carreras/fotos', requireFirebaseUser, async (req, res) => {
+  const photo = req.body || {};
   if (!photo || (!photo.photoUrl && !photo.url)) {
     return res.status(400).json({ error: 'Missing photo data' });
   }
 
   const photos = getPhotos();
-  const photoId = photo.id || ('photo_' + Date.now() + '_' + Math.random().toString(36).substring(2, 7));
+  const photoId = sanitizeString(photo.id || ('photo_' + Date.now() + '_' + crypto.randomBytes(4).toString('hex')), 60);
+
+  // Author and moderation status are derived from the verified session, never from the client.
+  const isAdmin = PROTECTED_EMAILS.some(pe => pe.toLowerCase() === req.firebaseUser.email);
+  const author = sanitizeString(
+    req.firebaseUser.name || (req.firebaseUser.email ? req.firebaseUser.email.split('@')[0] : 'Piloto FFC'),
+    80
+  );
+
   const newEntry = {
-    id: sanitizeString(photoId, 60),
+    id: photoId,
     raceId: sanitizeString(photo.raceId || 'barcelona_test', 80),
     photoUrl: String(photo.photoUrl || photo.url),
     caption: sanitizeString(photo.caption || '', 500),
-    author: sanitizeString(photo.author || 'Piloto FFC', 80),
-    status: photo.status || 'pending',
-    createdAt: photo.createdAt || new Date().toLocaleString(),
-    timestamp: photo.timestamp || Date.now()
+    author: author,
+    status: isAdmin ? 'approved' : 'pending',
+    createdAt: new Date().toLocaleString(),
+    timestamp: Date.now()
   };
 
   const idx = photos.findIndex(p => p.id === photoId);
@@ -793,8 +980,8 @@ app.delete('/api/carreras/fotos/:id', requireAdminAuth, async (req, res) => {
   return res.json({ success: true });
 });
 
-// News image upload endpoint
-app.post('/api/noticias/upload-image', (req, res) => {
+// News image upload endpoint (requires an authenticated user)
+app.post('/api/noticias/upload-image', requireFirebaseUser, (req, res) => {
   const { dataUrl } = req.body || {};
   if (!dataUrl || typeof dataUrl !== 'string') {
     return res.status(400).json({ error: 'Missing image data' });

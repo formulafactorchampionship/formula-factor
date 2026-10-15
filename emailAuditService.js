@@ -6,7 +6,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 // Centralized API Key constant
-export const FIREBASE_API_KEY = process.env.FIREBASE_API_KEY || 'AIzaSyAS4RecsGAS4JWUn1d-9_VyqFRKmkF_CNs';
+export const FIREBASE_API_KEY = process.env.FIREBASE_API_KEY || 'AIzaSyAS4RecsGAs4JWUn1d-9_VyqfRKmkF_CNs';
 
 // Protected administrative accounts that MUST NEVER be flagged as fake or deleted
 export const PROTECTED_EMAILS = [

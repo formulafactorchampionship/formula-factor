@@ -154,7 +154,7 @@ import {
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
 let firebaseConfig = {
-  apiKey: "AIzaSyAS4RecsGAS4JWUn1d-9_VyqFRKmkF_CNs",
+  apiKey: "AIzaSyAS4RecsGAs4JWUn1d-9_VyqfRKmkF_CNs",
   authDomain: "formula-factor.firebaseapp.com",
   projectId: "formula-factor",
   storageBucket: "formula-factor.firebasestorage.app",
@@ -5785,16 +5785,69 @@ function getAdminAuthHeaders() {
         const cleanEmail = u.email.trim().toLowerCase();
         const isAdmin = ADMIN_EMAILS.some(adminEmail => adminEmail.toLowerCase().trim() === cleanEmail);
         if (!isAdmin) return {};
+        const sessionToken = (typeof window !== "undefined" && window.ffcAdminSessionToken) ? window.ffcAdminSessionToken : null;
+        if (!sessionToken) return {};
         return {
             'X-Admin-Email': cleanEmail,
-            'X-Admin-Token': u.adminToken || 'ffc_admin_authorized',
-            'X-Admin-Session': 'active'
+            'X-Admin-Token': sessionToken
         };
     } catch (e) {
         return {};
     }
 }
 window.getAdminAuthHeaders = getAdminAuthHeaders;
+
+// Obtains (and caches) a signed, expiring admin session token from the server by
+// proving the current Firebase identity. Replaces the old hardcoded admin token.
+async function ensureAdminSession(force = false) {
+    try {
+        const u = typeof activeUserAuth !== "undefined" && activeUserAuth ? activeUserAuth : ((typeof window !== "undefined" && window.LocalAuthStore) ? window.LocalAuthStore.getCurrentUser() : null);
+        if (!u || !u.email) return null;
+        const cleanEmail = u.email.trim().toLowerCase();
+        if (!ADMIN_EMAILS.some(adminEmail => adminEmail.toLowerCase().trim() === cleanEmail)) return null;
+
+        const stillValid = window.ffcAdminSessionToken && (window.ffcAdminSessionExpires || 0) - Date.now() > 60000;
+        if (!force && stillValid) return window.ffcAdminSessionToken;
+
+        if (typeof auth === "undefined" || !auth || !auth.currentUser) return window.ffcAdminSessionToken || null;
+
+        const idToken = await auth.currentUser.getIdToken();
+        const res = await fetch('/api/admin/session', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ idToken })
+        });
+        if (!res.ok) {
+            window.ffcAdminSessionToken = null;
+            window.ffcAdminSessionExpires = 0;
+            return null;
+        }
+        const data = await res.json().catch(() => null);
+        if (data && data.adminToken) {
+            window.ffcAdminSessionToken = data.adminToken;
+            window.ffcAdminSessionExpires = Date.now() + (Number(data.expiresIn) || 0);
+            return data.adminToken;
+        }
+        return null;
+    } catch (e) {
+        console.warn("ensureAdminSession error:", e);
+        return null;
+    }
+}
+window.ensureAdminSession = ensureAdminSession;
+
+// Returns an Authorization header carrying the current Firebase ID token,
+// required by authenticated user endpoints (uploads, fantasy saves, ...).
+async function getFirebaseAuthHeader() {
+    try {
+        if (typeof auth !== "undefined" && auth && auth.currentUser) {
+            const idToken = await auth.currentUser.getIdToken();
+            return { 'Authorization': 'Bearer ' + idToken };
+        }
+    } catch (e) {}
+    return {};
+}
+window.getFirebaseAuthHeader = getFirebaseAuthHeader;
 
 // Default configuration datasets
 const defaultNextRace = {
@@ -6182,7 +6235,7 @@ function isAdminAuthenticated() {
 }
 
 // Open and Close Admin Panel
-function openAdminPanel() {
+async function openAdminPanel() {
     if (!isUserAdmin()) {
         const u = typeof activeUserAuth !== "undefined" && activeUserAuth ? activeUserAuth : ((typeof window !== "undefined" && window.LocalAuthStore) ? window.LocalAuthStore.getCurrentUser() : (typeof LocalAuthStore !== "undefined" ? LocalAuthStore.getCurrentUser() : null));
         if (!u || !u.email) {
@@ -6203,6 +6256,12 @@ function openAdminPanel() {
     }
 
     if (!adminPanelOverlay) return;
+
+    // Ensure we hold a valid signed admin session before issuing admin requests.
+    if (typeof ensureAdminSession === "function") {
+        try { await ensureAdminSession(); } catch (e) {}
+    }
+
     try { populateAdminForms(); } catch (e) { console.warn("populateAdminForms error:", e); }
     try { if (typeof updateAdminNewsBadge === "function") updateAdminNewsBadge(); } catch (e) {}
     try { if (typeof renderAdminNewsTab === "function") renderAdminNewsTab(); } catch (e) {}
@@ -12944,6 +13003,14 @@ function renderUserAuthState(user) {
     const dict = translations[currentLanguage] || translations.es;
     const isAdmin = isUserAdmin(user);
 
+    // Fetch (or clear) the signed admin session token based on the current identity.
+    if (user && isAdmin) {
+        if (typeof ensureAdminSession === "function") { ensureAdminSession().catch(() => {}); }
+    } else if (!user) {
+        window.ffcAdminSessionToken = null;
+        window.ffcAdminSessionExpires = 0;
+    }
+
     if (user) {
         // User logged in
         const displayName = user.displayName || (user.email ? user.email.split("@")[0] : "Piloto");
@@ -15495,10 +15562,11 @@ async function saveFantasyTeamToStorage() {
                 cloudFantasyTeams.push(teamPayload);
             }
 
-            // Dual persistence: Server REST API
+            // Dual persistence: Server REST API (requires an authenticated session)
+            const fantasyAuthHeader = (typeof getFirebaseAuthHeader === "function") ? await getFirebaseAuthHeader() : {};
             fetch('/api/fantasy/teams', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: { 'Content-Type': 'application/json', ...fantasyAuthHeader },
                 body: JSON.stringify(teamPayload)
             }).catch(e => console.warn("Failed saving team to server backup:", e));
 
@@ -18475,9 +18543,10 @@ window.handleArticleBodyImageUpload = function(event) {
 
 async function uploadNewsImageToServer(dataUrl) {
     try {
+        const authHeader = (typeof getFirebaseAuthHeader === "function") ? await getFirebaseAuthHeader() : {};
         const res = await fetch('/api/noticias/upload-image', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: { 'Content-Type': 'application/json', ...authHeader },
             body: JSON.stringify({ dataUrl })
         });
         if (res.ok) {
@@ -20849,6 +20918,14 @@ function initPhotoUploadFormHandlers() {
             const urlInputVal = (document.getElementById("photoUrlInput")?.value || "").trim();
             const statusMsg = document.getElementById("uploadStatusMsg");
 
+            // Uploads require an authenticated session (also enforced server-side).
+            if (typeof auth === "undefined" || !auth || !auth.currentUser) {
+                const loginMsg = isEn ? "Please log in to upload photos." : "Inicia sesión para subir fotos.";
+                if (statusMsg) statusMsg.textContent = loginMsg;
+                alert(loginMsg);
+                return;
+            }
+
             // Admins can upload photos directly without moderation
             const initialStatus = userIsAdmin ? "approved" : "pending";
 
@@ -20913,9 +20990,10 @@ function initPhotoUploadFormHandlers() {
                 currentPhotos.unshift(newPhotoData);
 
                 // B. Background Server API sync (persists to photos_db.json + mirrors to Firestore REST)
+                const photoAuthHeader = (typeof getFirebaseAuthHeader === "function") ? await getFirebaseAuthHeader() : {};
                 fetch('/api/carreras/fotos', {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
+                    headers: { 'Content-Type': 'application/json', ...photoAuthHeader },
                     body: JSON.stringify(newPhotoData)
                 }).catch(srvErr => console.warn("Server photo sync warning:", srvErr));
 

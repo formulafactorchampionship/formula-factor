@@ -508,7 +508,7 @@ export async function fetchUploadedPhotosForWall() {
 
   fetchPromises.push(
     fetch('./photos_db.json').then(res => res.ok ? res.json() : null).catch(() => null),
-    fetch('https://firestore.googleapis.com/v1/projects/formula-factor/databases/(default)/documents/carreras_fotos?pageSize=100&key=AIzaSyAS4RecsGAS4JWUn1d-9_VyqFRKmkF_CNs').then(res => res.ok ? res.json() : null).catch(() => null)
+    fetch('https://firestore.googleapis.com/v1/projects/formula-factor/databases/(default)/documents/carreras_fotos?pageSize=100&key=AIzaSyAS4RecsGAs4JWUn1d-9_VyqfRKmkF_CNs').then(res => res.ok ? res.json() : null).catch(() => null)
   );
 
   const results = await Promise.allSettled(fetchPromises);

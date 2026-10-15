@@ -1,4 +1,5 @@
 .env
+.admin_secret
 users_db.json
 *_backup_*.json
 /backups/
