@@ -1,6 +1,7 @@
 .env
 .admin_secret
 users_db.json
+live_timing_db.json
 *_backup_*.json
 /backups/
 node_modules/

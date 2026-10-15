@@ -494,9 +494,31 @@ const translations = {
             races: "CARRERAS",
             photos: "📸 FOTOS",
             news: "NOTICIAS",
+            liveTiming: "LIVE TIMING",
             info: "INFORMACIÓN",
             compare: "COMPARADOR",
             fantasy: "FANTASY"
+        },
+        liveTiming: {
+            kicker: "EN PISTA • DATOS EN TIEMPO REAL",
+            heading: "LIVE <span class=\"gold-gradient\">TIMING</span>",
+            sub: "Clasificación en directo de la sesión en curso en el servidor oficial de Formula Factor Championship.",
+            lblSession: "SESIÓN",
+            lblTrack: "CIRCUITO",
+            lblClock: "TIEMPO RESTANTE",
+            lblTemps: "PISTA / AIRE",
+            thPos: "POS",
+            thDriver: "PILOTO",
+            thCurrent: "ACTUAL",
+            thBest: "MEJOR",
+            thDelta: "Δ",
+            thLaps: "VUELTAS",
+            thSpeed: "V. MÁX",
+            cardDrivers: "EN PISTA AHORA",
+            cardMap: "MAPA EN VIVO",
+            cardRecords: "RÉCORDS",
+            cardRecordsSub: "SESIÓN + HISTÓRICO",
+            mapFootHint: "PASA EL CURSOR SOBRE UN COCHE"
         },
         hero: {
             eyebrow: "TEMPORADA 1 · COMPETICIÓN OFICIAL SIM RACING",
@@ -1072,9 +1094,31 @@ const translations = {
             races: "RACES",
             photos: "📸 PHOTOS",
             news: "NEWS",
+            liveTiming: "LIVE TIMING",
             info: "INFO",
             compare: "COMPARISON",
             fantasy: "FANTASY"
+        },
+        liveTiming: {
+            kicker: "ON TRACK • REAL-TIME DATA",
+            heading: "LIVE <span class=\"gold-gradient\">TIMING</span>",
+            sub: "Live standings for the current session on the official Formula Factor Championship server.",
+            lblSession: "SESSION",
+            lblTrack: "CIRCUIT",
+            lblClock: "TIME LEFT",
+            lblTemps: "TRACK / AIR",
+            thPos: "POS",
+            thDriver: "DRIVER",
+            thCurrent: "CURRENT",
+            thBest: "BEST",
+            thDelta: "Δ",
+            thLaps: "LAPS",
+            thSpeed: "TOP SPD",
+            cardDrivers: "DRIVING NOW",
+            cardMap: "LIVE MAP",
+            cardRecords: "RECORDS",
+            cardRecordsSub: "SESSION + ALL-TIME",
+            mapFootHint: "HOVER A CAR FOR SPEED"
         },
         hero: {
             eyebrow: "SEASON 1 · OFFICIAL SIM RACING COMPETITION",
@@ -1735,12 +1779,32 @@ function applyTranslations(lang) {
     if (navPhotosEl) navPhotosEl.textContent = (dict.nav && dict.nav.photos) || (lang === "en" ? "📸 PHOTOS" : "📸 FOTOS");
     const navN = document.getElementById("navNews");
     if (navN && dict.nav && dict.nav.news) navN.textContent = dict.nav.news;
+    const navLT = document.getElementById("navLiveTiming");
+    if (navLT) navLT.textContent = (dict.nav && dict.nav.liveTiming) || "LIVE TIMING";
     const navI = document.getElementById("navInfo");
     if (navI) navI.textContent = dict.nav.info;
     const navCmp = document.getElementById("navCompareText");
     if (navCmp && dict.nav && dict.nav.compare) navCmp.textContent = dict.nav.compare;
     const navF = document.getElementById("navFantasyText");
     if (navF && dict.nav && dict.nav.fantasy) navF.textContent = dict.nav.fantasy;
+
+    const ltDict = dict.liveTiming;
+    if (ltDict) {
+        // Static live-timing labels are tagged with a data-lt-i18n key.
+        document.querySelectorAll("#live-timing [data-lt-i18n]").forEach(function (el) {
+            const key = el.getAttribute("data-lt-i18n");
+            if (ltDict[key]) el.textContent = ltDict[key];
+        });
+        const ltHeading = document.getElementById("liveTimingHeading");
+        if (ltHeading && ltDict.heading) ltHeading.innerHTML = ltDict.heading;
+        ltUpdateMapEmpty();
+        ltUpdateMapFoot();
+        ltRefreshStatus();
+        // Dynamic strings (records card, session bar) are rebuilt by the renderers.
+        renderLiveTimingSession();
+        renderLiveTimingTable();
+        renderLiveTimingRecords();
+    }
 
     const scenariosDict = dict.scenarios;
     if (scenariosDict) {
@@ -5096,7 +5160,7 @@ window.renderTop3BattleChart = renderTop3BattleChart;
 function switchMainTab(tabName, shouldScroll = true) {
     if (!tabName) tabName = "home";
     tabName = tabName.replace(/^#/, "");
-    if (!["home", "standings", "calendar", "news", "info", "participate"].includes(tabName)) {
+    if (!["home", "standings", "calendar", "news", "live-timing", "info", "participate"].includes(tabName)) {
         tabName = "home";
     }
 
@@ -5109,6 +5173,7 @@ function switchMainTab(tabName, shouldScroll = true) {
     const newsEl = document.getElementById("news");
     const participateEl = document.getElementById("participate");
     const infoEl = document.getElementById("info");
+    const liveTimingEl = document.getElementById("live-timing");
 
     // Close mobile nav drawer if open
     const navLinksEl = document.querySelector(".nav-links");
@@ -5121,6 +5186,13 @@ function switchMainTab(tabName, shouldScroll = true) {
     document.querySelectorAll(".nav-links .nav-item").forEach(a => {
         a.classList.remove("active");
     });
+
+    // Live Timing panel is only visible on its own tab, and only then does it
+    // hold an open connection to the Assetto Hosting race-control websocket.
+    if (liveTimingEl) liveTimingEl.style.display = (tabName === "live-timing") ? "block" : "none";
+    if (typeof window.setLiveTimingTabActive === "function") {
+        window.setLiveTimingTabActive(tabName === "live-timing");
+    }
 
     if (tabName === "home") {
         if (homeEl) homeEl.style.display = "";
@@ -5199,6 +5271,9 @@ function switchMainTab(tabName, shouldScroll = true) {
         } else if (tabName === "news") {
             const navN = document.getElementById("navNews");
             if (navN) navN.classList.add("active");
+        } else if (tabName === "live-timing") {
+            const navLT = document.getElementById("navLiveTiming");
+            if (navLT) navLT.classList.add("active");
         }
     }
 
@@ -5235,7 +5310,7 @@ function initTabNavigation() {
         if (!href || !href.startsWith("#")) return;
 
         const targetTab = href.substring(1);
-        if (["home", "standings", "calendar", "news", "info", "participate"].includes(targetTab)) {
+        if (["home", "standings", "calendar", "news", "live-timing", "info", "participate"].includes(targetTab)) {
             e.preventDefault();
             switchMainTab(targetTab, true);
         }
@@ -5243,14 +5318,14 @@ function initTabNavigation() {
 
     window.addEventListener("hashchange", () => {
         const hash = window.location.hash.replace(/^#/, "");
-        if (["home", "standings", "calendar", "news", "info", "participate"].includes(hash)) {
+        if (["home", "standings", "calendar", "news", "live-timing", "info", "participate"].includes(hash)) {
             switchMainTab(hash, true);
         }
     });
 
     // Check initial hash on load
     const initialHash = window.location.hash.replace(/^#/, "");
-    if (["standings", "calendar", "news", "info", "participate"].includes(initialHash)) {
+    if (["standings", "calendar", "news", "live-timing", "info", "participate"].includes(initialHash)) {
         switchMainTab(initialHash, false);
     } else {
         switchMainTab("home", false);
@@ -20561,121 +20636,822 @@ if (document.readyState === "loading") {
     }
 }
 
-// --- Assetto Hosting Live Timing Integration ---
-let liveTimingPollInterval = null;
-let currentLiveEndpoint = "laptimes";
+// --- Assetto Hosting Live Timing Integration (via /api/live-timing/stream) ---
+// The race-control websocket of the game server rejects any handshake whose
+// Origin is not its own host, so we cannot connect to it straight from the
+// browser. server.js keeps one upstream connection and relays the JSON
+// messages as Server-Sent Events; EventSource reconnects on its own.
+const LIVE_TIMING_STREAM_URL = "/api/live-timing/stream";
 
-async function fetchAndRenderLiveTiming() {
+let liveTimingSource = null;
+let liveTimingTickTimer = null;
+let liveTimingStatus = null;            // last RaceControl snapshot (EventType 200)
+let liveTimingStatusKey = "connecting"; // translation key of the current status pill
+const liveTimingConsumers = new Set();  // "tab" and/or "hero" keep the stream open
+
+function ltIsEnglish() {
+    return typeof currentLanguage !== "undefined" && currentLanguage === "en";
+}
+
+function ltSessionTypeLabel(type) {
+    const labels = ltIsEnglish()
+        ? { 0: "Booking", 1: "Practice", 2: "Qualifying", 3: "Race" }
+        : { 0: "Reserva", 1: "Entrenamientos", 2: "Clasificación", 3: "Carrera" };
+    return labels[type] || (ltIsEnglish() ? "Session" : "Sesión");
+}
+
+function ltPad(value, length) {
+    return String(value).padStart(length || 2, "0");
+}
+
+// milliseconds -> "m:ss.mmm" (or "h:mm:ss.mmm" for long sessions)
+function ltMsToLapTime(totalMs) {
+    const ms = Number(totalMs);
+    if (!isFinite(ms) || ms <= 0) return "--:--.---";
+    const millis = Math.floor(ms % 1000);
+    const totalSeconds = Math.floor(ms / 1000);
+    const seconds = totalSeconds % 60;
+    const minutes = Math.floor(totalSeconds / 60) % 60;
+    const hours = Math.floor(totalSeconds / 3600);
+    if (hours > 0) return hours + ":" + ltPad(minutes) + ":" + ltPad(seconds) + "." + ltPad(millis, 3);
+    return minutes + ":" + ltPad(seconds) + "." + ltPad(millis, 3);
+}
+
+// The API reports lap times in nanoseconds.
+function ltFormatLap(nanoseconds) {
+    const ms = Number(nanoseconds) / 1e6;
+    return (isFinite(ms) && ms > 0) ? ltMsToLapTime(ms) : "--:--.---";
+}
+
+function ltMsToClock(totalMs) {
+    if (!isFinite(totalMs)) return "--:--";
+    const negative = totalMs < 0;
+    const safe = Math.abs(totalMs);
+    const totalSeconds = Math.floor(safe / 1000);
+    const seconds = totalSeconds % 60;
+    const minutes = Math.floor(totalSeconds / 60) % 60;
+    const hours = Math.floor(totalSeconds / 3600);
+    const text = hours > 0
+        ? hours + ":" + ltPad(minutes) + ":" + ltPad(seconds)
+        : ltPad(minutes) + ":" + ltPad(seconds);
+    return (negative ? "-" : "") + text;
+}
+
+function ltStatusText(key) {
+    const isEn = ltIsEnglish();
+    const labels = {
+        connecting: isEn ? "Connecting..." : "Conectando...",
+        reconnecting: isEn ? "Reconnecting..." : "Reconectando...",
+        online: isEn ? "Live connection" : "Conectado en directo",
+        disconnected: isEn ? "Disconnected" : "Desconectado"
+    };
+    return labels[key] || labels.connecting;
+}
+
+function ltSetStatus(state, key) {
+    liveTimingStatusKey = key;
+    const indicator = document.getElementById("liveTimingStatusIndicator");
+    const label = document.getElementById("liveTimingStatusText");
+    if (indicator) indicator.setAttribute("data-state", state);
+    if (label) label.textContent = ltStatusText(key);
+}
+
+// Re-renders the pill after a language switch (the text depends on the language).
+function ltRefreshStatus() {
+    const indicator = document.getElementById("liveTimingStatusIndicator");
+    const state = (indicator && indicator.getAttribute("data-state")) || "connecting";
+    ltSetStatus(state, liveTimingStatusKey);
+}
+
+function ltConnectedDriverList() {
+    const snapshot = liveTimingStatus;
+    if (!snapshot || !snapshot.ConnectedDrivers) return [];
+    const drivers = snapshot.ConnectedDrivers.Drivers || {};
+    const order = Array.isArray(snapshot.ConnectedDrivers.GUIDsInPositionalOrder)
+        ? snapshot.ConnectedDrivers.GUIDsInPositionalOrder.slice()
+        : [];
+    Object.keys(drivers).forEach(guid => {
+        if (order.indexOf(guid) === -1) order.push(guid);
+    });
+    return order
+        .filter(guid => drivers[guid])
+        .map(guid => ({ guid: guid, driver: drivers[guid] }));
+}
+
+function ltDriverLapInfo(driver) {
+    if (!driver) return null;
+    const carInfo = driver.CarInfo || {};
+    const cars = driver.Cars || {};
+    if (cars[carInfo.CarModel]) return cars[carInfo.CarModel];
+    const keys = Object.keys(cars);
+    return keys.length ? cars[keys[0]] : null;
+}
+
+function ltRemainingTime() {
+    const snapshot = liveTimingStatus;
+    if (!snapshot || !snapshot.SessionInfo) return "--:--";
+    const session = snapshot.SessionInfo;
+
+    if (session.Time > 0) {
+        const start = new Date(snapshot.SessionStartTime).getTime();
+        if (!isFinite(start)) return "--:--";
+        const waitMs = (session.WaitTime || 0) / 126.166667 * 1000;
+        return ltMsToClock(session.Time * 60 * 1000 + waitMs - (Date.now() - start));
+    }
+
+    if (session.Laps > 0) {
+        const leader = ltConnectedDriverList()[0];
+        const laps = leader && leader.driver ? (leader.driver.TotalNumLaps || 0) : 0;
+        const left = Math.max(session.Laps - laps, 0);
+        return left + (ltIsEnglish() ? " laps left" : " vueltas");
+    }
+
+    return "--:--";
+}
+
+function renderLiveTimingSession() {
+    const bar = document.getElementById("liveTimingSessionBar");
+    const snapshot = liveTimingStatus;
+    if (!bar) return;
+
+    if (!snapshot || !snapshot.SessionInfo) {
+        bar.style.display = "none";
+        return;
+    }
+    bar.style.display = "flex";
+
+    const session = snapshot.SessionInfo;
+    const track = snapshot.TrackInfo || {};
+    const setText = (id, value) => {
+        const el = document.getElementById(id);
+        if (el) el.textContent = value;
+    };
+
+    setText("liveTimingSessionTitle", "LIVE TIMING · " + ltSessionTypeLabel(session.Type));
+    setText("liveTimingSessionType", ltSessionTypeLabel(session.Type));
+    setText("liveTimingSessionTypeHead", ltSessionTypeLabel(session.Type));
+    setText("liveTimingTrackName", track.name || session.Track || "--");
+    setText("liveTimingClock", ltRemainingTime());
+    setText("liveTimingDriverCount", String(ltConnectedDriverList().length));
+    setText("liveTimingTemps",
+        (session.RoadTemp != null ? Math.round(session.RoadTemp) + "°C" : "--") +
+        " / " +
+        (session.AmbientTemp != null ? Math.round(session.AmbientTemp) + "°C" : "--"));
+}
+
+function renderLiveTimingTable() {
     const tbody = document.getElementById("liveTimingBody");
-    const statusInd = document.getElementById("liveTimingStatusIndicator");
     if (!tbody) return;
 
-    try {
-        const res = await fetch(`/api/live-timing?endpoint=${currentLiveEndpoint}`);
-        const json = await res.json();
-        
-        if (statusInd) {
-            statusInd.innerHTML = `<span class="live-pulse-dot" style="background: #4ade80;"></span> Conectado (/${currentLiveEndpoint})`;
+    const isEn = ltIsEnglish();
+    const emptyRow = text => `<tr><td colspan="7" class="live-timing-empty">${text}</td></tr>`;
+
+    if (!liveTimingStatus) {
+        tbody.innerHTML = emptyRow(isEn ? "Waiting for timing data..." : "Esperando datos de cronometraje...");
+        return;
+    }
+
+    const drivers = ltConnectedDriverList();
+    if (!drivers.length) {
+        tbody.innerHTML = emptyRow(isEn ? "No drivers on track right now." : "No hay pilotos en pista ahora mismo.");
+        return;
+    }
+
+    const sessionStart = liveTimingStatus.SessionStartTime ? new Date(liveTimingStatus.SessionStartTime).getTime() : 0;
+
+    tbody.innerHTML = drivers.map((entry, index) => {
+        const driver = entry.driver || {};
+        const carInfo = driver.CarInfo || {};
+        const lap = ltDriverLapInfo(driver) || {};
+
+        const position = (driver.Position && driver.Position !== 255) ? driver.Position : (index + 1);
+        const name = carInfo.DriverName || (isEn ? "Unknown driver" : "Piloto desconocido");
+        const carName = lap.CarName || carInfo.CarName || carInfo.CarModel || "--";
+
+        // "Current lap" runs locally: time elapsed since the last completed lap.
+        let currentLap = "";
+        const lastLapAt = new Date(lap.LastLapCompletedTime).getTime();
+        if (isFinite(lastLapAt) && isFinite(sessionStart) && lastLapAt > sessionStart) {
+            const elapsed = Date.now() - lastLapAt;
+            if (elapsed >= 0) currentLap = ltMsToLapTime(elapsed);
         }
 
-        if (json && json.success) {
-            const data = json.data !== undefined ? json.data : json.raw;
-            
-            if (!data || (Array.isArray(data) && data.length === 0) || (typeof data === 'object' && Object.keys(data).length === 0)) {
-                tbody.innerHTML = `
-                    <tr>
-                        <td colspan="7" style="text-align: center; color: #8892b0; padding: 32px;">
-                            No hay datos disponibles actualmente en el endpoint <code>/${currentLiveEndpoint}</code>.
-                        </td>
-                    </tr>
-                `;
-                return;
-            }
+        const topSpeed = Number(lap.TopSpeedBestLap) > 0
+            ? Math.round(Number(lap.TopSpeedBestLap)) + " km/h"
+            : "--";
 
-            if (Array.isArray(data)) {
-                tbody.innerHTML = data.map((item, idx) => {
-                    const pos = item.pos || item.position || (idx + 1);
-                    const name = item.driver || item.name || item.driverName || item.playerName || item.username || `Entrada ${pos}`;
-                    const car = item.car || item.team || item.model || item.sessionName || item.track || "Assetto Corsa";
-                    const bestLap = item.lapTime || item.bestLap || item.time || item.bestTime || "--:--.---";
-                    const gap = item.gap || item.interval || item.date || item.status || "-";
-                    const laps = item.laps || item.lapCount || item.playersCount || item.duration || "-";
-                    const status = item.status || item.state || (item.completed !== undefined ? (item.completed ? "COMPLETADO" : "EN CURSO") : "ACTIVO");
-
-                    return `
-                        <tr>
-                            <td style="font-weight: 800; color: var(--gold);">${pos}</td>
-                            <td style="font-weight: 700; color: #fff;">${escapeHtml(String(name))}</td>
-                            <td>${escapeHtml(String(car))}</td>
-                            <td style="font-family: monospace; color: #4ade80;">${escapeHtml(String(bestLap))}</td>
-                            <td style="font-family: monospace; color: #94a3b8;">${escapeHtml(String(gap))}</td>
-                            <td>${escapeHtml(String(laps))}</td>
-                            <td><span class="race-pts-tag active" style="font-size: 11px;">${escapeHtml(String(status))}</span></td>
-                        </tr>
-                    `;
-                }).join("");
-            } else if (typeof data === 'object') {
-                const entries = Object.entries(data);
-                tbody.innerHTML = entries.map(([key, val], idx) => `
-                    <tr>
-                        <td style="font-weight: 800; color: var(--gold);">${idx + 1}</td>
-                        <td style="font-weight: 700; color: #fff;">${escapeHtml(String(key))}</td>
-                        <td colspan="5" style="font-family: monospace; color: #e2e8f0;">${escapeHtml(typeof val === 'object' ? JSON.stringify(val) : String(val))}</td>
-                    </tr>
-                `).join("");
-            } else {
-                tbody.innerHTML = `
-                    <tr>
-                        <td colspan="7" style="padding: 16px; color: #cbd5e1; font-family: monospace; font-size: 13px; white-space: pre-wrap;">
-                            ${escapeHtml(String(data))}
-                        </td>
-                    </tr>
-                `;
-            }
-        } else {
-            tbody.innerHTML = `
-                <tr>
-                    <td colspan="7" style="text-align: center; color: #f85149; padding: 24px;">
-                        Error al obtener datos de la API (${json.error || 'Respuesta vacía'}).
-                    </td>
-                </tr>
-            `;
-        }
-    } catch (e) {
-        tbody.innerHTML = `
-            <tr>
-                <td colspan="7" style="text-align: center; color: #f85149; padding: 24px;">
-                    Error de conexión con el servidor: ${escapeHtml(e.message)}
+        return `
+            <tr class="lt-row">
+                <td class="lt-pos"><span class="lt-pos-num${Number(position) === 1 ? " lt-pos-leader" : ""}">${escapeHtml(String(position))}</span></td>
+                <td class="lt-driver">
+                    <span class="lt-driver-cell">
+                        <span class="lt-driver-bar" style="background:${ltMapColor(entry.guid)}"></span>
+                        <span class="lt-driver-info">
+                            <span class="lt-driver-name">${escapeHtml(String(name).toUpperCase())}</span>
+                            <span class="lt-driver-car">${escapeHtml(String(carName))}</span>
+                        </span>
+                    </span>
                 </td>
+                <td class="lt-time lt-current">
+                    <span class="lt-current-main">${escapeHtml(currentLap || "--:--.---")}</span>
+                    <span class="lt-current-sub">${escapeHtml(ltFormatLap(lap.LastLap))}</span>
+                </td>
+                <td class="lt-time lt-best">${escapeHtml(ltFormatLap(lap.BestLap))}</td>
+                <td class="lt-gap">${escapeHtml(driver.Split || "-")}</td>
+                <td class="lt-laps">${escapeHtml(String(lap.NumLaps || 0))}</td>
+                <td class="lt-speed">${escapeHtml(topSpeed)}</td>
             </tr>
         `;
+    }).join("");
+}
+
+// Stored records: lap times are persisted server-side (live_timing_db.json) so
+// the panel keeps showing times when the session is over and nobody is on track.
+let liveTimingStoredRecords = null;
+let liveTimingStoredRecordsKey = "";
+let liveTimingStoredRecordsFetchedAt = 0;
+const LIVE_TIMING_STORED_REFRESH_MS = 60000;
+
+function ltRecordsTrackKey() {
+    const session = (liveTimingStatus && liveTimingStatus.SessionInfo) || {};
+    return String(session.Track || "") + "|" + String(session.TrackConfig || "");
+}
+
+// The stored values never replace a better live one, so the panel is live while
+// the session runs and falls back to the history once the cars are gone.
+function ltFetchStoredRecords(force) {
+    const session = (liveTimingStatus && liveTimingStatus.SessionInfo) || {};
+    const track = String(session.Track || "");
+    if (!track || typeof fetch !== "function") return;
+
+    const key = ltRecordsTrackKey();
+    const fresh = (Date.now() - liveTimingStoredRecordsFetchedAt) < LIVE_TIMING_STORED_REFRESH_MS;
+    if (!force && key === liveTimingStoredRecordsKey && fresh) return;
+    liveTimingStoredRecordsFetchedAt = Date.now();
+
+    const params = new URLSearchParams({ track: track });
+    if (session.TrackConfig) params.set("config", String(session.TrackConfig));
+
+    fetch("/api/live-timing/records?" + params.toString(), { headers: { Accept: "application/json" } })
+        .then(function (response) { return response.ok ? response.json() : null; })
+        .then(function (data) {
+            if (!data || !data.success) return;
+            liveTimingStoredRecords = data;
+            liveTimingStoredRecordsKey = String(data.track || "") + "|" + String(data.config || "");
+            renderLiveTimingRecords();
+        })
+        .catch(function () { /* the live values still render */ });
+}
+
+function ltRecordCandidate(value, name, car, guid, source) {
+    const number = Number(value);
+    if (!isFinite(number) || number <= 0) return null;
+    return {
+        value: number,
+        name: String(name || "").toUpperCase() || "--",
+        car: String(car || ""),
+        guid: guid,
+        source: source
+    };
+}
+
+function ltPickRecord(live, stored, mode) {
+    if (!live) return stored;
+    if (!stored) return live;
+    return (mode === "min" ? live.value <= stored.value : live.value >= stored.value) ? live : stored;
+}
+
+// Session-wide records card: fastest lap, top speed and most laps, mirroring
+// the "best sectors" panel of the reference dashboard.
+function renderLiveTimingRecords() {
+    const container = document.getElementById("liveTimingRecords");
+    if (!container) return;
+
+    const isEn = ltIsEnglish();
+    const drivers = ltConnectedDriverList();
+
+    let liveBest = null;
+    let liveSpeed = null;
+    let liveLaps = null;
+
+    drivers.forEach(entry => {
+        const driver = entry.driver || {};
+        const carInfo = driver.CarInfo || {};
+        const lap = ltDriverLapInfo(driver) || {};
+        const name = carInfo.DriverName || "";
+        const car = lap.CarName || carInfo.CarName || carInfo.CarModel || "";
+
+        const best = ltRecordCandidate(Number(lap.BestLap) / 1e6, name, car, entry.guid, "live");
+        const speed = ltRecordCandidate(lap.TopSpeedBestLap, name, car, entry.guid, "live");
+        const laps = ltRecordCandidate(lap.NumLaps, name, car, entry.guid, "live");
+
+        if (best && (!liveBest || best.value < liveBest.value)) liveBest = best;
+        if (speed && (!liveSpeed || speed.value > liveSpeed.value)) liveSpeed = speed;
+        if (laps && (!liveLaps || laps.value > liveLaps.value)) liveLaps = laps;
+    });
+
+    const stored = (liveTimingStoredRecords && liveTimingStoredRecordsKey === ltRecordsTrackKey())
+        ? liveTimingStoredRecords
+        : null;
+    const storedBest = stored && stored.bestLap
+        ? ltRecordCandidate(stored.bestLap.ms, stored.bestLap.driver, stored.bestLap.car, stored.bestLap.guid, "stored")
+        : null;
+    const storedSpeed = stored && stored.topSpeed
+        ? ltRecordCandidate(stored.topSpeed.kmh, stored.topSpeed.driver, stored.topSpeed.car, stored.topSpeed.guid, "stored")
+        : null;
+    const storedLaps = stored && stored.laps
+        ? ltRecordCandidate(stored.laps.count, stored.laps.driver, stored.laps.car, stored.laps.guid, "stored")
+        : null;
+
+    const fastest = ltPickRecord(liveBest, storedBest, "min");
+    const fastestSpeed = ltPickRecord(liveSpeed, storedSpeed, "max");
+    const mostLaps = ltPickRecord(liveLaps, storedLaps, "max");
+
+    const driverCell = item => {
+        if (!item) return `<span class="lt-record-driver lt-record-driver-empty">—</span>`;
+        return `<span class="lt-record-driver">
+                <span class="lt-driver-bar" style="background:${ltMapColor(item.guid)}"></span>
+                <span class="lt-driver-info">
+                    <span class="lt-driver-name">${escapeHtml(item.name)}</span>
+                    <span class="lt-driver-car">${escapeHtml(item.car)}</span>
+                </span>
+            </span>`;
+    };
+
+    const sourceTag = item => {
+        if (!item) return `<span class="lt-record-tag lt-record-tag-empty"></span>`;
+        const fromHistory = item.source === "stored";
+        const text = fromHistory
+            ? (isEn ? "ALL-TIME" : "HISTÓRICO")
+            : (isEn ? "LIVE" : "EN VIVO");
+        return `<span class="lt-record-tag lt-record-tag-${fromHistory ? "history" : "live"}">${text}</span>`;
+    };
+
+    // The three rows are always present so the panel keeps its shape before any
+    // driver reports a lap (values stay as placeholders in the meantime).
+    const row = (label, value, item, accent) => `
+        <div class="lt-record-row">
+            <span class="lt-record-key">${label}</span>
+            <span class="lt-record-value lt-accent-${accent}">${escapeHtml(value)}</span>
+            ${driverCell(item)}
+            ${sourceTag(item)}
+        </div>`;
+
+    container.innerHTML =
+        row(isEn ? "BEST LAP" : "MEJOR VUELTA", fastest ? ltMsToLapTime(fastest.value) : "--:--.---", fastest, "purple") +
+        row(isEn ? "TOP SPEED" : "V. MÁXIMA", fastestSpeed ? Math.round(fastestSpeed.value) + " km/h" : "--", fastestSpeed, "green") +
+        row(isEn ? "MOST LAPS" : "MÁS VUELTAS", mostLaps ? String(Math.round(mostLaps.value)) : "--", mostLaps, "amber");
+}
+
+// --- Live track map -------------------------------------------------------
+// Dots are placed exactly like the official Assetto Server Manager live timing
+// page: x = (X + offset_x) / scale_factor and y = (Z + offset_y) / scale_factor,
+// which are then expressed as a percentage of TrackMapData.width/height so the
+// overlay stays glued to the map image at any responsive size.
+const LIVE_TIMING_MAP_BASE = "https://fr.assettohosting.com:60290/content/tracks";
+
+let liveTimingMapTrackKey = "";
+let liveTimingMapImageLoaded = false;
+const liveTimingMapDots = new Map();       // driver GUID -> dot element
+const liveTimingMapPositioned = new Set(); // GUIDs that already reported a position
+let liveTimingMapClamp = { w: 0, h: 0 };   // half a dot, in % of the map box
+
+// Stable colour per driver GUID (randomColor is not available here).
+function ltMapColor(guid) {
+    const text = String(guid == null ? "" : guid);
+    let hue = 0;
+    for (let i = 0; i < text.length; i++) {
+        hue = (hue * 31 + text.charCodeAt(i)) % 360;
+    }
+    return "hsl(" + hue + ", 80%, 60%)";
+}
+
+// Mirrors the server-side driverInitials() used by the game server manager.
+function ltInitials(name) {
+    const text = String(name == null ? "" : name).trim();
+    if (!text) return "";
+    const parts = text.split(" ").filter(Boolean);
+    const last = parts.length ? parts[parts.length - 1] : "";
+    if (last.length >= 3) return last.slice(0, 3).toUpperCase();
+    return text.toUpperCase();
+}
+
+// The game reports (0, 0, 0) until the car sends its first position update.
+function ltHasPosition(vec) {
+    if (!vec) return false;
+    const x = Number(vec.X) || 0;
+    const y = Number(vec.Y) || 0;
+    const z = Number(vec.Z) || 0;
+    return (Math.abs(x) + Math.abs(y) + Math.abs(z)) > 0.5;
+}
+
+function ltTrackMapPosition(vec) {
+    const map = liveTimingStatus && liveTimingStatus.TrackMapData;
+    if (!map || !vec) return null;
+    const width = Number(map.width);
+    const height = Number(map.height);
+    const scale = Number(map.scale_factor);
+    if (!isFinite(width) || !isFinite(height) || !isFinite(scale) || width <= 0 || height <= 0 || scale <= 0) return null;
+    const x = (Number(vec.X) + (Number(map.offset_x) || 0)) / scale;
+    const z = (Number(vec.Z) + (Number(map.offset_y) || 0)) / scale;
+    return { left: (x / width) * 100, top: (z / height) * 100 };
+}
+
+function ltRealtimeInterval() {
+    const value = liveTimingStatus ? Number(liveTimingStatus.CurrentRealtimePosInterval) : NaN;
+    if (!isFinite(value) || value <= 0) return 500;
+    return Math.max(100, Math.min(value, 2000));
+}
+
+function ltTrackMapUrl() {
+    const session = liveTimingStatus && liveTimingStatus.SessionInfo;
+    if (!session || !session.Track) return "";
+    return LIVE_TIMING_MAP_BASE + "/" + encodeURIComponent(session.Track) +
+        (session.TrackConfig ? "/" + encodeURIComponent(session.TrackConfig) : "") + "/map.png";
+}
+
+function ltMapTrackLabel() {
+    const snapshot = liveTimingStatus;
+    const info = (snapshot && snapshot.TrackInfo) || {};
+    const session = (snapshot && snapshot.SessionInfo) || {};
+    return info.name || session.Track || "--";
+}
+
+function ltUpdateMapEmpty() {
+    const empty = document.getElementById("liveTimingMapEmpty");
+    if (!empty) return;
+    const isEn = ltIsEnglish();
+    empty.textContent = empty.getAttribute("data-mode") === "unavailable"
+        ? (isEn ? "Track map not available for this circuit." : "Mapa no disponible para este circuito.")
+        : (isEn ? "Waiting for track map data..." : "Esperando datos del mapa del circuito...");
+}
+
+function ltShowMapStage(isVisible) {
+    const stage = document.getElementById("liveTimingMapStage");
+    const empty = document.getElementById("liveTimingMapEmpty");
+    if (stage) stage.style.display = isVisible ? "block" : "none";
+    if (empty) empty.style.display = isVisible ? "none" : "block";
+}
+
+function ltInitMapImage() {
+    const image = document.getElementById("liveTimingMapImage");
+    if (!image || image.dataset.ltMapBound === "1") return;
+    image.dataset.ltMapBound = "1";
+
+    image.addEventListener("load", function () {
+        liveTimingMapImageLoaded = true;
+        const empty = document.getElementById("liveTimingMapEmpty");
+        if (empty) empty.setAttribute("data-mode", "waiting");
+        ltShowMapStage(true);
+        // Now that the image defines the box, the clamp can be measured.
+        ltRefreshMapClamp();
+        ltRepositionMapDots();
+    });
+
+    image.addEventListener("error", function () {
+        liveTimingMapImageLoaded = false;
+        const empty = document.getElementById("liveTimingMapEmpty");
+        if (empty) empty.setAttribute("data-mode", "unavailable");
+        ltUpdateMapEmpty();
+        ltShowMapStage(false);
+    });
+}
+
+function ltCreateMapDot(guid, driver, index) {
+    if (liveTimingMapDots.has(guid)) return liveTimingMapDots.get(guid);
+    const container = document.getElementById("liveTimingMapDots");
+    if (!container) return null;
+
+    const carInfo = (driver && driver.CarInfo) || {};
+    const dot = document.createElement("span");
+    dot.className = "lt-map-dot";
+    dot.setAttribute("data-guid", guid);
+    dot.style.background = ltMapColor(guid);
+    dot.textContent = carInfo.DriverInitials || ltInitials(carInfo.DriverName) || String((index || 0) + 1);
+    dot.title = carInfo.DriverName || "";
+    dot.style.display = "none";
+    container.appendChild(dot);
+    liveTimingMapDots.set(guid, dot);
+    return dot;
+}
+
+function ltPlaceMapDot(guid, vec) {
+    const dot = liveTimingMapDots.get(guid);
+    if (!dot) return;
+    const pos = ltTrackMapPosition(vec);
+    if (!pos || !isFinite(pos.left) || !isFinite(pos.top)) return;
+    dot.style.left = ltClampMapPercent(pos.left, liveTimingMapClamp.w).toFixed(2) + "%";
+    dot.style.top = ltClampMapPercent(pos.top, liveTimingMapClamp.h).toFixed(2) + "%";
+}
+
+// A dot is centred on the car, so keep its centre at least half a dot away from
+// the map edges (the track itself can reach the border of the image).
+function ltClampMapPercent(value, half) {
+    if (!(half > 0) || !isFinite(value)) return value;
+    const max = 100 - half;
+    if (half > max) return 50;
+    return Math.min(Math.max(value, half), max);
+}
+
+function ltRefreshMapClamp() {
+    const container = document.getElementById("liveTimingMapDots");
+    if (!container) { liveTimingMapClamp = { w: 0, h: 0 }; return; }
+    const sample = container.firstElementChild;
+    const width = container.clientWidth;
+    const height = container.clientHeight;
+    if (!sample || !width || !height) { liveTimingMapClamp = { w: 0, h: 0 }; return; }
+    liveTimingMapClamp = {
+        w: ((sample.offsetWidth || 20) / 2) / width * 100,
+        h: ((sample.offsetHeight || 16) / 2) / height * 100
+    };
+}
+
+function ltRepositionMapDots() {
+    const drivers = (liveTimingStatus && liveTimingStatus.ConnectedDrivers && liveTimingStatus.ConnectedDrivers.Drivers) || {};
+    liveTimingMapDots.forEach(function (dot, guid) {
+        if (!liveTimingMapPositioned.has(guid)) return;
+        const driver = drivers[guid];
+        if (driver && ltHasPosition(driver.LastPos)) ltPlaceMapDot(guid, driver.LastPos);
+    });
+}
+
+function ltSyncMapDot(guid, driver, index) {
+    const dot = ltCreateMapDot(guid, driver, index);
+    if (!dot) return;
+
+    const carInfo = (driver && driver.CarInfo) || {};
+    const initials = carInfo.DriverInitials || ltInitials(carInfo.DriverName);
+    if (initials && dot.textContent !== initials) dot.textContent = initials;
+    dot.title = carInfo.DriverName || "";
+
+    const pos = driver && driver.LastPos;
+    if (ltHasPosition(pos)) {
+        liveTimingMapPositioned.add(guid);
+        ltPlaceMapDot(guid, pos);
+        dot.style.display = "flex";
+    } else if (!liveTimingMapPositioned.has(guid)) {
+        dot.style.display = "none";
     }
 }
 
-// Wire up endpoint selector buttons
-document.addEventListener("DOMContentLoaded", () => {
-    document.querySelectorAll(".live-ep-btn").forEach(btn => {
-        btn.addEventListener("click", () => {
-            document.querySelectorAll(".live-ep-btn").forEach(b => b.classList.remove("active"));
-            btn.classList.add("active");
-            currentLiveEndpoint = btn.getAttribute("data-endpoint") || "laptimes";
-            fetchAndRenderLiveTiming();
-        });
+function renderLiveTimingMapDots() {
+    const container = document.getElementById("liveTimingMapDots");
+    if (!container) return;
+
+    container.style.setProperty("--lt-map-transition", ltRealtimeInterval() + "ms");
+
+    const seen = new Set();
+    ltConnectedDriverList().forEach(function (entry, index) {
+        seen.add(entry.guid);
+        ltSyncMapDot(entry.guid, entry.driver, index);
     });
-});
 
-window.startLiveTimingPoll = function() {
-    if (liveTimingPollInterval) clearInterval(liveTimingPollInterval);
-    fetchAndRenderLiveTiming();
-    liveTimingPollInterval = setInterval(fetchAndRenderLiveTiming, 4000);
-};
+    liveTimingMapDots.forEach(function (dot, guid) {
+        if (seen.has(guid)) return;
+        if (dot.parentNode) dot.parentNode.removeChild(dot);
+        liveTimingMapDots.delete(guid);
+        liveTimingMapPositioned.delete(guid);
+    });
 
-window.stopLiveTimingPoll = function() {
-    if (liveTimingPollInterval) {
-        clearInterval(liveTimingPollInterval);
-        liveTimingPollInterval = null;
+    ltRefreshMapClamp();
+    ltRepositionMapDots();
+    ltUpdateMapFoot();
+}
+
+function ltUpdateMapFoot() {
+    const label = document.getElementById("liveTimingMapFootLeft");
+    if (!label) return;
+    const count = ltConnectedDriverList().length;
+    const isEn = ltIsEnglish();
+    const noun = count === 1
+        ? (isEn ? "CAR" : "COCHE")
+        : (isEn ? "CARS" : "COCHES");
+    label.textContent = count + " " + noun;
+}
+
+function ltClearMapDots() {
+    const container = document.getElementById("liveTimingMapDots");
+    if (container) container.innerHTML = "";
+    liveTimingMapDots.clear();
+    liveTimingMapPositioned.clear();
+}
+
+function resetLiveTimingMap() {
+    const image = document.getElementById("liveTimingMapImage");
+    if (image) image.removeAttribute("src");
+    ltClearMapDots();
+    liveTimingMapTrackKey = "";
+    liveTimingMapImageLoaded = false;
+    const empty = document.getElementById("liveTimingMapEmpty");
+    if (empty) empty.setAttribute("data-mode", "waiting");
+    ltUpdateMapEmpty();
+    ltShowMapStage(false);
+}
+
+function renderLiveTimingMap() {
+    ltInitMapImage();
+
+    const image = document.getElementById("liveTimingMapImage");
+    const trackLabel = document.getElementById("liveTimingMapTrack");
+    const empty = document.getElementById("liveTimingMapEmpty");
+    const snapshot = liveTimingStatus;
+
+    if (!snapshot || !snapshot.SessionInfo) {
+        liveTimingMapTrackKey = "";
+        if (trackLabel) trackLabel.textContent = "--";
+        if (image) image.removeAttribute("src");
+        liveTimingMapImageLoaded = false;
+        if (empty) empty.setAttribute("data-mode", "waiting");
+        ltUpdateMapEmpty();
+        ltShowMapStage(false);
+        return;
+    }
+
+    if (trackLabel) trackLabel.textContent = ltMapTrackLabel();
+
+    const map = snapshot.TrackMapData;
+    const key = [
+        snapshot.SessionInfo.Track || "",
+        snapshot.SessionInfo.TrackConfig || "",
+        map ? map.width : 0,
+        map ? map.height : 0
+    ].join("|");
+
+    if (key !== liveTimingMapTrackKey) {
+        // New circuit (or first snapshot): the previous dots are meaningless.
+        liveTimingMapTrackKey = key;
+        liveTimingMapImageLoaded = false;
+        ltClearMapDots();
+        if (empty) empty.setAttribute("data-mode", "waiting");
+        ltUpdateMapEmpty();
+        ltShowMapStage(false);
+    }
+
+    const url = map ? ltTrackMapUrl() : "";
+    if (!url) {
+        if (image) image.removeAttribute("src");
+        liveTimingMapImageLoaded = false;
+        if (empty) empty.setAttribute("data-mode", "unavailable");
+        ltUpdateMapEmpty();
+        ltShowMapStage(false);
+        return;
+    }
+
+    if (image && image.getAttribute("src") !== url) {
+        image.setAttribute("src", url);
+    }
+
+    if (image && image.complete && image.naturalWidth > 0) {
+        liveTimingMapImageLoaded = true;
+        ltShowMapStage(true);
+    }
+}
+
+function liveTimingTick() {
+    if (!liveTimingStatus) return;
+    renderLiveTimingSession();
+    renderLiveTimingTable();
+    ltFetchStoredRecords(false);
+    renderLiveTimingRecords();
+}
+
+function connectLiveTiming() {
+    if (typeof EventSource === "undefined") return;
+    if (liveTimingSource && liveTimingSource.readyState !== EventSource.CLOSED) return;
+
+    ltSetStatus("connecting", "connecting");
+
+    const source = new EventSource(LIVE_TIMING_STREAM_URL);
+    liveTimingSource = source;
+
+    source.onopen = function () {
+        ltSetStatus("online", "online");
+    };
+
+    source.onmessage = function (event) {
+        handleLiveTimingMessage(event.data);
+    };
+
+    source.addEventListener("status", function (event) {
+        try {
+            const info = JSON.parse(event.data || "{}");
+            if (info && info.connected) {
+                ltSetStatus("online", "online");
+            }
+        } catch (e) { /* ignore */ }
+    });
+
+    source.addEventListener("upstream-connected", function () {
+        ltSetStatus("online", "online");
+    });
+
+    source.addEventListener("upstream-disconnected", function () {
+        ltSetStatus("offline", "reconnecting");
+    });
+
+    source.onerror = function () {
+        if (liveTimingSource !== source) return;
+        // EventSource reconnects automatically; just reflect the current state.
+        if (source.readyState === EventSource.CONNECTING) {
+            ltSetStatus("connecting", "reconnecting");
+        } else if (source.readyState === EventSource.CLOSED) {
+            ltSetStatus("offline", "disconnected");
+        }
+    };
+}
+
+function disconnectLiveTiming() {
+    if (liveTimingSource) {
+        const source = liveTimingSource;
+        liveTimingSource = null;
+        try { source.close(); } catch (e) { /* ignore */ }
+    }
+    ltSetStatus("offline", "disconnected");
+}
+
+function handleLiveTimingMessage(raw) {
+    let message;
+    try { message = JSON.parse(raw); } catch (e) { return; }
+    if (!message || typeof message !== "object") return;
+
+    switch (message.EventType) {
+        case 200: // full snapshot of the current state
+            liveTimingStatus = message.Message || null;
+            renderLiveTimingMap();
+            renderLiveTimingSession();
+            renderLiveTimingTable();
+            ltFetchStoredRecords(true);
+            renderLiveTimingRecords();
+            renderLiveTimingMapDots();
+            break;
+        case 53: { // car position/speed update (every CurrentRealtimePosInterval ms)
+            const update = message.Message;
+            if (!update || !liveTimingStatus) break;
+            const guid = (liveTimingStatus.CarIDToGUID || {})[update.CarID];
+            if (!guid) break;
+
+            const drivers = (liveTimingStatus.ConnectedDrivers && liveTimingStatus.ConnectedDrivers.Drivers) || {};
+            const driver = drivers[guid] || null;
+            if (driver) driver.LastPos = update.Pos;
+
+            const dot = liveTimingMapDots.get(guid) || (driver ? ltCreateMapDot(guid, driver, 0) : null);
+            if (!dot) break;
+
+            liveTimingMapPositioned.add(guid);
+            dot.style.display = "flex";
+            ltPlaceMapDot(guid, update.Pos);
+
+            const velocity = update.Velocity || {};
+            const speed = Math.round(
+                Math.sqrt(Math.pow(Number(velocity.X) || 0, 2) + Math.pow(Number(velocity.Z) || 0, 2)) * 3.6
+            );
+            const name = (driver && driver.CarInfo && driver.CarInfo.DriverName) || "";
+            dot.title = (isFinite(speed) && speed > 0) ? name + " · " + speed + " km/h" : name;
+            break;
+        }
+        default:
+            break;
+    }
+}
+
+function acquireLiveTiming(consumer) {
+    liveTimingConsumers.add(consumer);
+    connectLiveTiming();
+    if (!liveTimingTickTimer) liveTimingTickTimer = setInterval(liveTimingTick, 1000);
+}
+
+function releaseLiveTiming(consumer) {
+    liveTimingConsumers.delete(consumer);
+    if (liveTimingConsumers.size === 0) {
+        if (liveTimingTickTimer) {
+            clearInterval(liveTimingTickTimer);
+            liveTimingTickTimer = null;
+        }
+        disconnectLiveTiming();
+        liveTimingStatus = null;
+        resetLiveTimingMap();
+    }
+}
+
+// Called from switchMainTab(): the socket only stays open while the tab (or the
+// hero live mode) actually needs the timing data.
+window.setLiveTimingTabActive = function (isActive) {
+    if (isActive) {
+        acquireLiveTiming("tab");
+        renderLiveTimingMap();
+        renderLiveTimingSession();
+        renderLiveTimingTable();
+        ltFetchStoredRecords(false);
+        renderLiveTimingRecords();
+        renderLiveTimingMapDots();
+    } else {
+        releaseLiveTiming("tab");
     }
 };
+
+// Kept for the hero "live mode" integration, which also wants timing data.
+window.startLiveTimingPoll = function () { acquireLiveTiming("hero"); };
+window.stopLiveTimingPoll = function () { releaseLiveTiming("hero"); };
 
 
 /* =========================================================

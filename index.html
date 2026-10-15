@@ -29,7 +29,7 @@
         <link rel="preconnect" href="https://esm.sh" crossorigin>
     <link rel="preconnect" href="https://flagcdn.com" crossorigin>
     <link rel="preconnect" href="https://firestore.googleapis.com" crossorigin>
-    <link rel="stylesheet" href="style.css?v=20261015_rc3">
+    <link rel="stylesheet" href="style.css?v=20261015_rc14">
     <link rel="stylesheet" href="BorderGlow.css">
     <link rel="stylesheet" href="LightPillar.css">
     <script>
@@ -170,6 +170,7 @@
             </div>
             <a href="#calendar" id="navCalendar" class="nav-item">CALENDARIO</a>
             <a href="#news" id="navNews" class="nav-item">NOTICIAS</a>
+            <a href="#live-timing" id="navLiveTiming" class="nav-item">LIVE TIMING</a>
             <a href="#fantasy" id="navFantasy" class="nav-item text-amber-400 font-bold" onclick="if(window.openFantasyPortal){window.openFantasyPortal();return false;}">FANTASY</a>
         </nav>
 
@@ -2574,6 +2575,122 @@
         <p id="newsEmptyDesc">No hay artículos que coincidan con los filtros o la búsqueda seleccionada.</p>
         <button type="button" class="btn btn-secondary" id="btnResetNewsFilters">Ver todas las noticias</button>
     </div>
+</section>
+
+
+<!-- =========================================================
+     LIVE TIMING (Assetto Hosting · API race-control)
+======================================================== -->
+<section class="section" id="live-timing" style="display: none;">
+
+    <div class="section-heading">
+        <div>
+            <span class="section-kicker" id="liveTimingKicker" data-lt-i18n="kicker">EN PISTA &bull; DATOS EN TIEMPO REAL</span>
+            <h2 id="liveTimingHeading">LIVE <span class="gold-gradient">TIMING</span></h2>
+        </div>
+        <p id="liveTimingSub" data-lt-i18n="sub">
+            Clasificación en directo de la sesión en curso en el servidor oficial de Formula Factor Championship.
+        </p>
+    </div>
+
+    <div class="live-timing-section">
+
+        <div class="live-timing-header">
+            <div class="live-timing-title-wrap">
+                <span class="live-timing-icon" aria-hidden="true">&#9201;</span>
+                <h3 id="liveTimingSessionTitle">LIVE TIMING</h3>
+            </div>
+            <div class="live-timing-status" id="liveTimingStatusIndicator" data-state="connecting">
+                <span class="live-pulse-dot"></span>
+                <span id="liveTimingStatusText">Conectando...</span>
+            </div>
+        </div>
+
+        <div class="live-timing-session-bar" id="liveTimingSessionBar" style="display: none;">
+            <div class="live-timing-session-item">
+                <span class="live-timing-session-label" data-lt-i18n="lblSession">SESIÓN</span>
+                <strong id="liveTimingSessionType">--</strong>
+            </div>
+            <div class="live-timing-session-item">
+                <span class="live-timing-session-label" data-lt-i18n="lblTrack">CIRCUITO</span>
+                <strong id="liveTimingTrackName">--</strong>
+            </div>
+            <div class="live-timing-session-item">
+                <span class="live-timing-session-label" data-lt-i18n="lblClock">TIEMPO RESTANTE</span>
+                <strong id="liveTimingClock">--:--</strong>
+            </div>
+            <div class="live-timing-session-item">
+                <span class="live-timing-session-label" data-lt-i18n="lblTemps">PISTA / AIRE</span>
+                <strong id="liveTimingTemps">-- / --</strong>
+            </div>
+        </div>
+
+        <div class="live-timing-grid">
+
+            <!-- Driving now -->
+            <div class="lt-card lt-card-drivers">
+                <div class="lt-card-head">
+                    <span class="lt-card-title"><span data-lt-i18n="cardDrivers">EN PISTA AHORA</span><span class="lt-card-count" id="liveTimingDriverCount">0</span></span>
+                    <span class="lt-card-sub" id="liveTimingSessionTypeHead">--</span>
+                </div>
+                <div class="live-timing-table-container">
+                    <table class="live-timing-table">
+                        <thead>
+                            <tr>
+                                <th class="lt-col-pos" data-lt-i18n="thPos">POS</th>
+                                <th class="lt-col-driver" data-lt-i18n="thDriver">PILOTO</th>
+                                <th class="lt-col-time lt-col-current" data-lt-i18n="thCurrent">ACTUAL</th>
+                                <th class="lt-col-time lt-col-best" data-lt-i18n="thBest">MEJOR</th>
+                                <th class="lt-col-gap" data-lt-i18n="thDelta">&Delta;</th>
+                                <th class="lt-col-laps" data-lt-i18n="thLaps">VUELTAS</th>
+                                <th class="lt-col-speed" data-lt-i18n="thSpeed">V. M&Aacute;X</th>
+                            </tr>
+                        </thead>
+                        <tbody id="liveTimingBody">
+                            <tr>
+                                <td colspan="7" class="live-timing-empty">Conectando con el servidor...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="lt-side">
+
+                <!-- Track map -->
+                <div class="lt-card lt-card-map">
+                    <div class="lt-card-head">
+                        <span class="lt-card-title" id="liveTimingMapTitle" data-lt-i18n="cardMap">MAPA EN VIVO</span>
+                        <span class="lt-card-sub" id="liveTimingMapTrack">--</span>
+                    </div>
+                    <div class="live-timing-map-viewport">
+                        <div class="live-timing-map-stage" id="liveTimingMapStage" style="display: none;">
+                            <img class="live-timing-map-image" id="liveTimingMapImage" alt="Mapa del circuito">
+                            <div class="live-timing-map-dots" id="liveTimingMapDots"></div>
+                        </div>
+                        <div class="live-timing-map-empty" id="liveTimingMapEmpty" data-mode="waiting">Esperando datos del mapa del circuito...</div>
+                    </div>
+                    <div class="lt-map-foot">
+                        <span id="liveTimingMapFootLeft">0 COCHES</span>
+                        <span id="liveTimingMapFootRight" data-lt-i18n="mapFootHint">PASA EL CURSOR SOBRE UN COCHE</span>
+                    </div>
+                </div>
+
+                <!-- Session records -->
+                <div class="lt-card lt-card-records">
+                    <div class="lt-card-head">
+                        <span class="lt-card-title" data-lt-i18n="cardRecords">R&Eacute;CORDS</span>
+                        <span class="lt-card-sub" data-lt-i18n="cardRecordsSub">SESI&Oacute;N + HIST&Oacute;RICO</span>
+                    </div>
+                    <div class="lt-records" id="liveTimingRecords"></div>
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
 </section>
 
 
@@ -6018,7 +6135,7 @@
 
 
 
-<script type="module" src="script.js?v=20261015_rc3"></script>
+<script type="module" src="script.js?v=20261015_rc14"></script>
 
 </body>
 </html>

@@ -2,6 +2,7 @@ import './envLoader.js';
 import express from 'express';
 import path from 'path';
 import fs from 'fs';
+import tls from 'tls';
 import crypto from 'crypto';
 import { fileURLToPath } from 'url';
 import { fetchAllAccounts, deleteAccounts, PROTECTED_EMAILS, FIREBASE_API_KEY } from './emailAuditService.js';
@@ -10,7 +11,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const app = express();
-const PORT = 3000;
+const PORT = Number(process.env.PORT) || 3000;
 
 // -------------------------------------------------------------
 // 0. ADMIN SECRET RESOLUTION
@@ -739,68 +740,708 @@ app.post('/api/fantasy/lock', requireAdminAuth, (req, res) => {
 });
 
 // -------------------------------------------------------------
-// 11. LIVE-TIMING PROXY (STRICT ANTI-SSRF & PATH TRAVERSAL VALIDATION)
+// 11. LIVE TIMING RELAY (Assetto Hosting race-control -> SSE)
 // -------------------------------------------------------------
-const ALLOWED_LIVE_TIMING_ENDPOINTS = new Set([
-  'laptimes',
-  'session',
-  'serverinfo',
-  'live',
-  'standings',
-  'entrylist',
-  'results',
-  'track',
-  'status',
-  'telemetry'
-]);
+// The upstream server-manager websocket behind /api/race-control refuses any
+// handshake whose Origin header does not match its own host, so a browser on
+// this domain can never connect to it directly. Instead we keep a single
+// upstream websocket connection here (no Origin is sent, so it is accepted)
+// and fan the JSON messages out to browsers through Server-Sent Events.
+// The upstream client is implemented with tls + RFC6455 framing so no extra
+// dependency is required.
 
-app.get('/api/live-timing', async (req, res) => {
-  const rawEndpoint = (req.query.endpoint || 'laptimes').trim();
+const LIVE_TIMING_HOST = 'fr.assettohosting.com';
+const LIVE_TIMING_PORT = 60290;
+const LIVE_TIMING_PATH = '/api/race-control';
 
-  if (
-    !rawEndpoint ||
-    rawEndpoint.includes('..') ||
-    rawEndpoint.includes('@') ||
-    rawEndpoint.includes('?') ||
-    rawEndpoint.includes('#') ||
-    rawEndpoint.includes('\\') ||
-    rawEndpoint.includes('://') ||
-    rawEndpoint.includes('%') ||
-    !/^[a-zA-Z0-9_\-]+(\/[a-zA-Z0-9_\-]+)*$/.test(rawEndpoint)
-  ) {
-    return res.status(400).json({
-      success: false,
-      error: 'Parámetro de endpoint no válido o caracteres no permitidos',
-      code: 'security/invalid-endpoint'
+function createLiveTimingUpstream() {
+  let socket = null;
+  let buffer = Buffer.alloc(0);
+  let handshakeDone = false;
+  let fragment = null;
+  let retryTimer = null;
+  let retryDelay = 2000;
+  let connected = false;
+  let stopped = true;
+  const listeners = { message: [], status: [] };
+
+  function emit(event, payload) {
+    listeners[event].forEach(fn => {
+      try { fn(payload); } catch (e) { /* listener errors must not break the relay */ }
     });
   }
 
-  const rootSegment = rawEndpoint.split('/')[0].toLowerCase();
-  if (!ALLOWED_LIVE_TIMING_ENDPOINTS.has(rootSegment)) {
-    return res.status(400).json({
-      success: false,
-      error: `Endpoint no autorizado en el servicio de live timing: ${rootSegment}`,
-      code: 'security/endpoint-not-whitelisted'
-    });
-  }
-
-  const targetUrl = `https://fr.assettohosting.com:60290/api/v1/${rawEndpoint}`;
-  try {
-    const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), 8000);
-    const response = await fetch(targetUrl, { signal: controller.signal });
-    clearTimeout(timeout);
-    const text = await response.text();
-    try {
-      const json = JSON.parse(text);
-      return res.json({ success: true, endpoint: rawEndpoint, url: targetUrl, data: json });
-    } catch (e) {
-      return res.json({ success: true, endpoint: rawEndpoint, url: targetUrl, raw: text, status: response.status });
+  function sendFrame(opcode, payload) {
+    if (!socket || !socket.writable) return;
+    const mask = crypto.randomBytes(4);
+    const length = payload.length;
+    let header;
+    if (length < 126) {
+      header = Buffer.alloc(2);
+      header[1] = 0x80 | length;
+    } else if (length < 65536) {
+      header = Buffer.alloc(4);
+      header[1] = 0x80 | 126;
+      header.writeUInt16BE(length, 2);
+    } else {
+      header = Buffer.alloc(10);
+      header[1] = 0x80 | 127;
+      header.writeBigUInt64BE(BigInt(length), 2);
     }
-  } catch (err) {
-    return res.json({ success: false, endpoint: rawEndpoint, url: targetUrl, error: err.message });
+    header[0] = 0x80 | opcode;
+    const masked = Buffer.allocUnsafe(length);
+    for (let i = 0; i < length; i++) {
+      masked[i] = payload[i] ^ mask[i % 4];
+    }
+    try { socket.write(Buffer.concat([header, mask, masked])); } catch (e) { /* ignore */ }
+  }
+
+  function parseFrames() {
+    while (buffer.length >= 2) {
+      const first = buffer[0];
+      const second = buffer[1];
+      const fin = (first & 0x80) !== 0;
+      const opcode = first & 0x0f;
+      const masked = (second & 0x80) !== 0;
+      let length = second & 0x7f;
+      let offset = 2;
+
+      if (length === 126) {
+        if (buffer.length < 4) return;
+        length = buffer.readUInt16BE(2);
+        offset = 4;
+      } else if (length === 127) {
+        if (buffer.length < 10) return;
+        length = Number(buffer.readBigUInt64BE(2));
+        offset = 10;
+      }
+
+      let maskKey = null;
+      if (masked) {
+        if (buffer.length < offset + 4) return;
+        maskKey = buffer.subarray(offset, offset + 4);
+        offset += 4;
+      }
+      if (buffer.length < offset + length) return;
+
+      const payload = Buffer.from(buffer.subarray(offset, offset + length));
+      if (masked && maskKey) {
+        for (let i = 0; i < payload.length; i++) {
+          payload[i] ^= maskKey[i % 4];
+        }
+      }
+      buffer = buffer.subarray(offset + length);
+
+      if (opcode === 0x1 || opcode === 0x2) {
+        if (fin) {
+          if (opcode === 0x1) emit('message', payload.toString('utf8'));
+        } else {
+          fragment = payload;
+        }
+      } else if (opcode === 0x0) {
+        if (fragment) {
+          fragment = Buffer.concat([fragment, payload]);
+          if (fin) {
+            emit('message', fragment.toString('utf8'));
+            fragment = null;
+          }
+        }
+      } else if (opcode === 0x8) { // close
+        try { socket.end(); } catch (e) { /* ignore */ }
+        return;
+      } else if (opcode === 0x9) { // ping -> pong
+        sendFrame(0xA, payload);
+      }
+    }
+  }
+
+  function teardown() {
+    if (socket) {
+      const stale = socket;
+      socket = null;
+      try { stale.destroy(); } catch (e) { /* ignore */ }
+    }
+    buffer = Buffer.alloc(0);
+    handshakeDone = false;
+    fragment = null;
+    if (connected) {
+      connected = false;
+      emit('status', false);
+    }
+  }
+
+  function scheduleReconnect() {
+    if (stopped || retryTimer) return;
+    retryTimer = setTimeout(() => {
+      retryTimer = null;
+      connect();
+    }, retryDelay);
+    retryDelay = Math.min(Math.round(retryDelay * 1.6), 15000);
+  }
+
+  function connect() {
+    if (stopped || socket) return;
+
+    const key = crypto.randomBytes(16).toString('base64');
+    const request =
+      'GET ' + LIVE_TIMING_PATH + ' HTTP/1.1\r\n' +
+      'Host: ' + LIVE_TIMING_HOST + ':' + LIVE_TIMING_PORT + '\r\n' +
+      'Upgrade: websocket\r\n' +
+      'Connection: Upgrade\r\n' +
+      'Sec-WebSocket-Key: ' + key + '\r\n' +
+      'Sec-WebSocket-Version: 13\r\n\r\n';
+
+    const current = tls.connect(
+      { host: LIVE_TIMING_HOST, port: LIVE_TIMING_PORT, servername: LIVE_TIMING_HOST },
+      () => { try { current.write(request); } catch (e) { /* ignore */ } }
+    );
+    socket = current;
+    current.setNoDelay(true);
+
+    current.on('data', (chunk) => {
+      if (!handshakeDone) {
+        buffer = Buffer.concat([buffer, chunk]);
+        const headerEnd = buffer.indexOf('\r\n\r\n');
+        if (headerEnd === -1) return;
+        const head = buffer.subarray(0, headerEnd).toString('latin1');
+        buffer = buffer.subarray(headerEnd + 4);
+        if (!/^HTTP\/1\.1 101/.test(head)) {
+          teardown();
+          scheduleReconnect();
+          return;
+        }
+        handshakeDone = true;
+        connected = true;
+        retryDelay = 2000;
+        emit('status', true);
+      } else {
+        buffer = Buffer.concat([buffer, chunk]);
+      }
+      parseFrames();
+    });
+
+    current.on('error', () => { /* handled by the close event */ });
+    current.on('close', () => {
+      if (socket !== current) return;
+      teardown();
+      scheduleReconnect();
+    });
+  }
+
+  return {
+    on(event, fn) {
+      if (listeners[event]) listeners[event].push(fn);
+    },
+    start() {
+      stopped = false;
+      connect();
+    },
+    stop() {
+      stopped = true;
+      if (retryTimer) {
+        clearTimeout(retryTimer);
+        retryTimer = null;
+      }
+      teardown();
+    }
+  };
+}
+
+const liveTimingUpstream = createLiveTimingUpstream();
+const liveTimingClients = new Set();
+let liveTimingLastMessage = null;
+let liveTimingLastSnapshot = null; // last full RaceControl state (EventType 200)
+let liveTimingUpstreamConnected = false;
+let liveTimingUpstreamStarted = false;
+
+// Lap times are only offered by the upstream while its socket is open, so the
+// relay stays connected around the clock: every session is captured even when
+// nobody has the page open. Set to false to go back to on-demand connections.
+const LIVE_TIMING_CAPTURE_ALWAYS = true;
+
+// The upstream only pushes the full state when something changes, so a browser
+// opening the page mid-session would otherwise wait for the next change.
+const LIVE_TIMING_SNAPSHOT_RE = /^\{\s*"EventType"\s*:\s*200\b/;
+
+liveTimingUpstream.on('message', (text) => {
+  liveTimingLastMessage = text;
+  if (LIVE_TIMING_SNAPSHOT_RE.test(text)) {
+    liveTimingLastSnapshot = text;
+    // Full state carries the lap times, so this is where the store is fed.
+    try {
+      recordLiveTimingSnapshot(JSON.parse(text).Message);
+    } catch (e) { /* malformed snapshot: never break the relay */ }
+  }
+  for (const client of liveTimingClients) {
+    try { client.write('data: ' + text + '\n\n'); } catch (e) { /* client gone */ }
   }
 });
+
+liveTimingUpstream.on('status', (isConnected) => {
+  liveTimingUpstreamConnected = isConnected;
+  if (!isConnected) {
+    liveTimingLastMessage = null;
+    liveTimingLastSnapshot = null;
+  }
+  const eventName = isConnected ? 'upstream-connected' : 'upstream-disconnected';
+  for (const client of liveTimingClients) {
+    try { client.write('event: ' + eventName + '\ndata: {}\n\n'); } catch (e) { /* client gone */ }
+  }
+});
+
+app.get('/api/live-timing/stream', (req, res) => {
+  // The global /api/ middleware already disables caching for this path.
+  res.status(200);
+  res.setHeader('Content-Type', 'text/event-stream; charset=utf-8');
+  res.setHeader('Connection', 'keep-alive');
+  res.setHeader('X-Accel-Buffering', 'no');
+  res.flushHeaders();
+
+  res.write('retry: 3000\n\n');
+  res.write('event: status\ndata: ' + JSON.stringify({ connected: liveTimingUpstreamConnected }) + '\n\n');
+  if (liveTimingLastSnapshot) {
+    // Full state first, so the table and map render immediately.
+    res.write('data: ' + liveTimingLastSnapshot + '\n\n');
+  } else if (liveTimingLastMessage) {
+    res.write('data: ' + liveTimingLastMessage + '\n\n');
+  }
+
+  liveTimingClients.add(res);
+
+  if (!liveTimingUpstreamStarted) {
+    liveTimingUpstreamStarted = true;
+    liveTimingUpstream.start();
+  }
+
+  const keepAlive = setInterval(() => {
+    try { res.write(': keep-alive\n\n'); } catch (e) { /* client gone */ }
+  }, 15000);
+
+  let cleanedUp = false;
+  const cleanup = () => {
+    if (cleanedUp) return;
+    cleanedUp = true;
+    clearInterval(keepAlive);
+    liveTimingClients.delete(res);
+    if (liveTimingClients.size === 0 && !LIVE_TIMING_CAPTURE_ALWAYS) {
+      liveTimingUpstreamStarted = false;
+      liveTimingUpstream.stop();
+    }
+  };
+
+  req.on('close', cleanup);
+  req.on('aborted', cleanup);
+  res.on('close', cleanup);
+});
+
+// -------------------------------------------------------------
+// 11b. LIVE TIMING RECORDS STORE (persisted lap times)
+// -------------------------------------------------------------
+// Lap times only travel inside the full RaceControl snapshots (EventType 200);
+// the deltas that follow carry positions only. Every snapshot the relay sees is
+// folded into a small JSON store, so the records panel keeps showing times once
+// the session is over and nobody is on track any more.
+const LIVE_TIMING_DB_FILE = path.join(__dirname, 'live_timing_db.json');
+let memoryLiveTimingDb = null;
+
+function getLiveTimingDb() {
+  if (memoryLiveTimingDb !== null) return memoryLiveTimingDb;
+  try {
+    if (fs.existsSync(LIVE_TIMING_DB_FILE)) {
+      const parsed = JSON.parse(fs.readFileSync(LIVE_TIMING_DB_FILE, 'utf8'));
+      if (parsed && typeof parsed === 'object' && parsed.tracks && typeof parsed.tracks === 'object') {
+        memoryLiveTimingDb = parsed;
+        if (!memoryLiveTimingDb.version) memoryLiveTimingDb.version = 1;
+        return memoryLiveTimingDb;
+      }
+    }
+  } catch (e) {
+    console.error('Error reading live timing db file:', e);
+  }
+  memoryLiveTimingDb = { version: 1, updatedAt: null, tracks: {} };
+  return memoryLiveTimingDb;
+}
+
+let liveTimingDbWriteTimer = null;
+function saveLiveTimingDb() {
+  const store = getLiveTimingDb();
+  store.updatedAt = new Date().toISOString();
+  if (liveTimingDbWriteTimer) clearTimeout(liveTimingDbWriteTimer);
+  liveTimingDbWriteTimer = setTimeout(() => {
+    fs.writeFile(LIVE_TIMING_DB_FILE, JSON.stringify(store, null, 2), 'utf8', (err) => {
+      if (err) console.error('Error saving live timing db file:', err);
+    });
+  }, 400);
+}
+
+function ltToPositiveNumber(value) {
+  const n = Number(value);
+  return isFinite(n) && n > 0 ? n : 0;
+}
+
+function ltTrackKey(track, config) {
+  return String(track || '') + '|' + String(config || '');
+}
+
+// Folds one EventType 200 snapshot into the persistent store.
+function recordLiveTimingSnapshot(snapshot) {
+  if (!snapshot || typeof snapshot !== 'object') return;
+  const session = snapshot.SessionInfo || {};
+  const track = sanitizeString(String(session.Track || ''), 80);
+  if (!track) return;
+
+  const store = getLiveTimingDb();
+  const config = sanitizeString(String(session.TrackConfig || ''), 80);
+  const key = ltTrackKey(track, config);
+  if (!store.tracks[key]) {
+    store.tracks[key] = { track, config, name: '', drivers: {} };
+  }
+  const entry = store.tracks[key];
+  if (!entry.drivers || typeof entry.drivers !== 'object') entry.drivers = {};
+
+  const trackInfo = snapshot.TrackInfo || {};
+  if (trackInfo.name) entry.name = sanitizeString(String(trackInfo.name), 80);
+  entry.lastSession = {
+    name: sanitizeString(String(session.Name || ''), 60),
+    type: Number(session.Type) || 0,
+    at: new Date().toISOString()
+  };
+
+  const sessionId = sanitizeString(String(snapshot.SessionStartTime || ''), 40);
+  const now = new Date().toISOString();
+
+  // DisconnectedDrivers carries the times of the drivers who already left this
+  // session (the panel lists them under "Stored Times"), so both bags are read:
+  // ignoring the second one loses the best laps as soon as somebody disconnects.
+  const drivers = {};
+  [snapshot.ConnectedDrivers, snapshot.DisconnectedDrivers].forEach((bag) => {
+    const bagDrivers = (bag && bag.Drivers) || {};
+    Object.keys(bagDrivers).forEach((guid) => { drivers[guid] = bagDrivers[guid]; });
+  });
+
+  Object.keys(drivers).forEach((guid) => {
+    const driver = drivers[guid] || {};
+    const carInfo = driver.CarInfo || {};
+    const cars = driver.Cars || {};
+    const car = cars[carInfo.CarModel] || cars[Object.keys(cars)[0]];
+    if (!car) return;
+
+    const name = sanitizeString(String(carInfo.DriverName || ''), 60);
+    if (!name || !guid) return;
+
+    const carName = sanitizeString(String(car.CarName || carInfo.CarName || carInfo.CarModel || ''), 60);
+
+    let record = entry.drivers[guid];
+    if (!record) {
+      record = entry.drivers[guid] = {
+        guid: guid,
+        name: name,
+        car: carName,
+        bestLapMs: 0,
+        lastLapMs: 0,
+        topSpeedKmh: 0,
+        laps: 0,
+        sessions: 0,
+        sessionId: '',
+        firstSeen: now,
+        lastSeen: now
+      };
+    }
+
+    if (record.name !== name) record.name = name;
+    if (carName && record.car !== carName) record.car = carName;
+
+    const bestLapMs = Math.round(ltToPositiveNumber(car.BestLap) / 1e6);
+    if (bestLapMs && (!record.bestLapMs || bestLapMs < record.bestLapMs)) record.bestLapMs = bestLapMs;
+
+    const lastLapMs = Math.round(ltToPositiveNumber(car.LastLap) / 1e6);
+    if (lastLapMs) record.lastLapMs = lastLapMs;
+
+    const topSpeed = ltToPositiveNumber(car.TopSpeedBestLap);
+    if (topSpeed > record.topSpeedKmh) record.topSpeedKmh = Math.round(topSpeed * 10) / 10;
+
+    const laps = Math.round(ltToPositiveNumber(car.NumLaps));
+    if (laps > record.laps) record.laps = laps;
+
+    if (sessionId && record.sessionId !== sessionId) {
+      record.sessionId = sessionId;
+      record.sessions = (record.sessions || 0) + 1;
+    }
+    record.lastSeen = now;
+  });
+
+  saveLiveTimingDb();
+}
+
+// Best lap / top speed / most laps across the given track entries.
+function aggregateLiveTimingRecords(entries) {
+  const bestLap = { ms: 0 };
+  const topSpeed = { kmh: 0 };
+  const laps = { count: 0 };
+  const guids = new Set();
+  let lastSeen = null;
+  let name = null;
+
+  entries.forEach((entry) => {
+    if (!entry || !entry.drivers) return;
+    if (entry.name) name = entry.name;
+    Object.keys(entry.drivers).forEach((guid) => {
+      const record = entry.drivers[guid];
+      if (!record) return;
+      guids.add(guid);
+      if (record.lastSeen && (!lastSeen || record.lastSeen > lastSeen)) lastSeen = record.lastSeen;
+
+      if (record.bestLapMs > 0 && (!bestLap.ms || record.bestLapMs < bestLap.ms)) {
+        bestLap.ms = record.bestLapMs;
+        bestLap.driver = record.name;
+        bestLap.car = record.car;
+        bestLap.guid = guid;
+        bestLap.at = record.lastSeen;
+      }
+      if (record.topSpeedKmh > 0 && record.topSpeedKmh > topSpeed.kmh) {
+        topSpeed.kmh = record.topSpeedKmh;
+        topSpeed.driver = record.name;
+        topSpeed.car = record.car;
+        topSpeed.guid = guid;
+        topSpeed.at = record.lastSeen;
+      }
+      if (record.laps > 0 && record.laps > laps.count) {
+        laps.count = record.laps;
+        laps.driver = record.name;
+        laps.car = record.car;
+        laps.guid = guid;
+        laps.at = record.lastSeen;
+      }
+    });
+  });
+
+  return {
+    track: entries.length === 1 ? entries[0].track : null,
+    config: entries.length === 1 ? entries[0].config : null,
+    name: name,
+    drivers: guids.size,
+    bestLap: bestLap.ms ? bestLap : null,
+    topSpeed: topSpeed.kmh ? topSpeed : null,
+    laps: laps.count ? laps : null,
+    lastSeen: lastSeen
+  };
+}
+
+// Stored records for one circuit (or for every circuit when no track is given).
+app.get('/api/live-timing/records', (req, res) => {
+  const store = getLiveTimingDb();
+  const track = sanitizeString(String(req.query.track || ''), 80);
+  const config = sanitizeString(String(req.query.config || ''), 80);
+
+  let entries;
+  if (track) {
+    const entry = store.tracks[ltTrackKey(track, config)];
+    entries = entry ? [entry] : [];
+  } else {
+    entries = Object.values(store.tracks);
+  }
+
+  return res.json({
+    success: true,
+    ...aggregateLiveTimingRecords(entries),
+    tracks: Object.keys(store.tracks).length,
+    import: {
+      sessions: Object.keys(store.importedSessions || {}).length,
+      laps: liveTimingImport.laps,
+      at: liveTimingImport.at,
+      error: liveTimingImport.error
+    },
+    updatedAt: store.updatedAt
+  });
+});
+
+// -------------------------------------------------------------
+// 11c. LIVE TIMING RESULTS IMPORT (laps already on the books)
+// -------------------------------------------------------------
+// The game server archives every session and the panel publishes them as JSON,
+// so the laps raced before this relay ever ran can be folded into the same
+// store. Without this the records panel stays empty until somebody completes a
+// lap while the relay is watching. Importing twice is harmless: a session is
+// remembered by name and skipped from then on.
+const LIVE_TIMING_RESULTS_BASE = 'https://fr.assettohosting.com:60290';
+const LIVE_TIMING_IMPORT_MAX_SESSIONS = 60;
+const LIVE_TIMING_IMPORT_EVERY_MS = 15 * 60 * 1000;
+
+let liveTimingImport = { running: false, at: null, sessions: 0, laps: 0, error: null };
+const liveTimingCarNames = new Map();
+
+async function ltHttpGet(url) {
+  const response = await fetch(url, {
+    headers: {
+      Accept: '*/*',
+      'User-Agent': 'FormulaFactorChampionship/1.0'
+    }
+  });
+  if (!response.ok) throw new Error('HTTP ' + response.status + ' for ' + url);
+  return response;
+}
+
+// "<date>_<type>-time-attack" is the very same session archived a second time.
+function ltSessionIdentity(file) {
+  return String(file || '').replace(/-time-attack$/i, '');
+}
+
+// CarModel is a folder name ("rss_formula_2010"); the display name lives in
+// its UI file, the same one the panel shows.
+async function ltCarDisplayName(model) {
+  const key = String(model || '');
+  if (!key) return '';
+  if (liveTimingCarNames.has(key)) return liveTimingCarNames.get(key);
+
+  let name = key;
+  try {
+    const data = await (await ltHttpGet(
+      LIVE_TIMING_RESULTS_BASE + '/content/cars/' + encodeURIComponent(key) + '/ui/ui_car.json'
+    )).json();
+    if (data && data.name) name = sanitizeString(String(data.name), 60);
+  } catch (e) { /* keep the raw model name */ }
+
+  liveTimingCarNames.set(key, name);
+  return name;
+}
+
+async function importLiveTimingResults() {
+  if (liveTimingImport.running) return liveTimingImport;
+  liveTimingImport = { running: true, at: new Date().toISOString(), sessions: 0, laps: 0, error: null };
+
+  try {
+    const listing = await (await ltHttpGet(LIVE_TIMING_RESULTS_BASE + '/results')).text();
+    const store = getLiveTimingDb();
+    if (!store.importedSessions || typeof store.importedSessions !== 'object') store.importedSessions = {};
+
+    const byIdentity = new Map();
+    const linkRe = /href="\/results\/([A-Za-z0-9_\-]+)"/g;
+    let match;
+    while ((match = linkRe.exec(listing)) !== null) {
+      const file = match[1];
+      const identity = ltSessionIdentity(file);
+      const current = byIdentity.get(identity);
+      if (!current || file.length < current.length) byIdentity.set(identity, file);
+    }
+
+    const pending = [...byIdentity.entries()]
+      .filter(([identity]) => !store.importedSessions[identity])
+      .slice(0, LIVE_TIMING_IMPORT_MAX_SESSIONS);
+
+    for (const [identity, file] of pending) {
+      try {
+        const session = await (await ltHttpGet(
+          LIVE_TIMING_RESULTS_BASE + '/results/download/' + file + '.json'
+        )).json();
+
+        const track = sanitizeString(String(session.TrackName || ''), 80);
+        const laps = Array.isArray(session.Laps) ? session.Laps : [];
+        if (!track) {
+          store.importedSessions[identity] = new Date().toISOString();
+          continue;
+        }
+
+        const config = sanitizeString(String(session.TrackConfig || ''), 80);
+        const key = ltTrackKey(track, config);
+        if (!store.tracks[key]) store.tracks[key] = { track, config, name: '', drivers: {} };
+        const entry = store.tracks[key];
+        if (!entry.drivers || typeof entry.drivers !== 'object') entry.drivers = {};
+
+        const when = Number.isFinite(Date.parse(session.Date))
+          ? new Date(session.Date).toISOString()
+          : new Date().toISOString();
+
+        // Fold the laps per driver first, then upsert each one exactly once.
+        const byDriver = new Map();
+        laps.forEach((lap) => {
+          const guid = String(lap.DriverGuid || '');
+          const lapMs = Math.round(ltToPositiveNumber(lap.LapTime));
+          if (!guid || !lapMs) return;
+
+          let folded = byDriver.get(guid);
+          if (!folded) {
+            folded = {
+              guid: guid,
+              name: sanitizeString(String(lap.DriverName || ''), 60),
+              car: String(lap.CarModel || ''),
+              laps: 0,
+              bestLapMs: 0,
+              lastLapMs: 0,
+              lastTimestamp: -1
+            };
+            byDriver.set(guid, folded);
+          }
+
+          folded.laps += 1;
+          // A lap with cuts is not a valid lap time, exactly like the panel's
+          // "Stored Times" table treats it; it still counts towards the tally.
+          if (!(Number(lap.Cuts) > 0) && (!folded.bestLapMs || lapMs < folded.bestLapMs)) {
+            folded.bestLapMs = lapMs;
+          }
+
+          const timestamp = Number(lap.Timestamp);
+          if (Number.isFinite(timestamp) && timestamp > folded.lastTimestamp) {
+            folded.lastTimestamp = timestamp;
+            folded.lastLapMs = lapMs;
+          }
+          liveTimingImport.laps += 1;
+        });
+
+        for (const folded of byDriver.values()) {
+          if (!folded.name) continue;
+          const car = await ltCarDisplayName(folded.car);
+
+          let record = entry.drivers[folded.guid];
+          if (!record) {
+            record = entry.drivers[folded.guid] = {
+              guid: folded.guid,
+              name: folded.name,
+              car: car,
+              bestLapMs: 0,
+              lastLapMs: 0,
+              topSpeedKmh: 0,
+              laps: 0,
+              sessions: 0,
+              sessionId: '',
+              firstSeen: when,
+              lastSeen: when,
+              imported: true
+            };
+          }
+
+          record.name = folded.name;
+          if (car) record.car = car;
+          if (folded.bestLapMs && (!record.bestLapMs || folded.bestLapMs < record.bestLapMs)) {
+            record.bestLapMs = folded.bestLapMs;
+          }
+          if (folded.lastLapMs) record.lastLapMs = folded.lastLapMs;
+          if (folded.laps > record.laps) record.laps = folded.laps;
+          record.sessions = (record.sessions || 0) + 1;
+          if (!record.firstSeen || when < record.firstSeen) record.firstSeen = when;
+          if (!record.lastSeen || when > record.lastSeen) record.lastSeen = when;
+        }
+
+        store.importedSessions[identity] = when;
+        liveTimingImport.sessions += 1;
+        saveLiveTimingDb();
+      } catch (e) {
+        liveTimingImport.error = String((e && e.message) || e).slice(0, 200);
+      }
+    }
+
+    saveLiveTimingDb();
+  } catch (e) {
+    liveTimingImport.error = String((e && e.message) || e).slice(0, 200);
+  }
+
+  liveTimingImport.running = false;
+  if (liveTimingImport.sessions) {
+    console.log('Live timing: imported ' + liveTimingImport.sessions + ' archived session(s), ' + liveTimingImport.laps + ' lap(s).');
+  } else if (liveTimingImport.error) {
+    console.warn('Live timing: results import failed -', liveTimingImport.error);
+  }
+  return liveTimingImport;
+}
 
 // -------------------------------------------------------------
 // 12. CARRERAS FOTOS & COMMUNITY GALLERY (WITH STRICT SANITIZATION)
@@ -1131,4 +1772,13 @@ app.get('*', (req, res) => {
 
 app.listen(PORT, '0.0.0.0', () => {
   console.log(`Server running on http://0.0.0.0:${PORT}`);
+  if (LIVE_TIMING_CAPTURE_ALWAYS && !liveTimingUpstreamStarted) {
+    liveTimingUpstreamStarted = true;
+    liveTimingUpstream.start();
+    console.log('Live timing relay running in always-on capture mode.');
+  }
+  // Bring in the sessions the panel had already archived, then keep an eye out
+  // for new ones (a session that ends while the relay is down would be missed).
+  importLiveTimingResults();
+  setInterval(importLiveTimingResults, LIVE_TIMING_IMPORT_EVERY_MS).unref();
 });
