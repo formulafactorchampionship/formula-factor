@@ -265,13 +265,16 @@ export function auditAccount(account) {
   };
 }
 
-export async function fetchAllAccounts() {
+export async function fetchAllAccounts(idToken = '') {
   const accountsMap = new Map();
+  const firestoreHeaders = idToken ? { Authorization: 'Bearer ' + idToken } : {};
 
-  // 1. Fetch from Firestore 'usuarios' collection using centralized API key
+  // 1. Fetch from Firestore 'usuarios' collection. Listing requires admin
+  //    privileges, so an authenticated (admin) ID token is forwarded when
+  //    available; without it the call is denied and skipped.
   try {
     const firestoreUrl = `https://firestore.googleapis.com/v1/projects/formula-factor/databases/(default)/documents/usuarios?pageSize=300&key=${FIREBASE_API_KEY}`;
-    const res = await fetch(firestoreUrl);
+    const res = await fetch(firestoreUrl, { headers: firestoreHeaders });
     if (res.ok) {
       const data = await res.json();
       if (data.documents && Array.isArray(data.documents)) {
@@ -402,10 +405,12 @@ export function createBackupSnapshot(data, label = 'audit_cleanup') {
   }
 }
 
-export async function deleteAccounts(targets) {
+export async function deleteAccounts(targets, idToken = '') {
   if (!Array.isArray(targets) || targets.length === 0) {
     return { success: false, error: 'No accounts provided for deletion' };
   }
+
+  const firestoreHeaders = idToken ? { Authorization: 'Bearer ' + idToken } : {};
 
   const validTargets = targets.filter(t => {
     const email = (t.email || '').toLowerCase().trim();
@@ -416,7 +421,7 @@ export async function deleteAccounts(targets) {
     return { success: false, error: 'Cannot delete protected administrator accounts' };
   }
 
-  const allCurrentAccounts = await fetchAllAccounts();
+  const allCurrentAccounts = await fetchAllAccounts(idToken);
   const backupRes = createBackupSnapshot({
     timestamp: new Date().toISOString(),
     targetsToDelete: validTargets,
@@ -435,7 +440,7 @@ export async function deleteAccounts(targets) {
     if (!docId || !/^[a-zA-Z0-9_.\-]+$/.test(docId)) continue;
     try {
       const deleteUrl = `https://firestore.googleapis.com/v1/projects/formula-factor/databases/(default)/documents/usuarios/${encodeURIComponent(docId)}?key=${FIREBASE_API_KEY}`;
-      const res = await fetch(deleteUrl, { method: 'DELETE' });
+      const res = await fetch(deleteUrl, { method: 'DELETE', headers: firestoreHeaders });
       if (res.ok) {
         deletedSummary.push({ type: 'firestore', docId });
       } else {
@@ -454,7 +459,7 @@ export async function deleteAccounts(targets) {
       if (!firestoreDocsToDelete.has(altId)) {
         try {
           const deleteUrl = `https://firestore.googleapis.com/v1/projects/formula-factor/databases/(default)/documents/usuarios/${encodeURIComponent(altId)}?key=${FIREBASE_API_KEY}`;
-          await fetch(deleteUrl, { method: 'DELETE' });
+          await fetch(deleteUrl, { method: 'DELETE', headers: firestoreHeaders });
         } catch (e) {}
       }
     }

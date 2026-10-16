@@ -1128,7 +1128,8 @@ app.get('/api/gallery/random-wall-photos', (req, res) => {
 // -------------------------------------------------------------
 app.get('/api/admin/audit-emails', requireAdminAuth, async (req, res) => {
   try {
-    const accounts = await fetchAllAccounts();
+    // Forward the admin's Firebase ID token so Firestore allows listing 'usuarios'.
+    const accounts = await fetchAllAccounts(extractIdToken(req));
     const suspicious = accounts.filter(a => a.status === 'suspicious');
     const clean = accounts.filter(a => a.status === 'clean');
 
@@ -1162,7 +1163,7 @@ app.post('/api/admin/delete-accounts', requireAdminAuth, async (req, res) => {
       return res.status(400).json({ success: false, error: 'No targets specified for deletion' });
     }
 
-    const result = await deleteAccounts(targets);
+    const result = await deleteAccounts(targets, extractIdToken(req));
     if (!result.success) {
       return res.status(400).json(result);
     }

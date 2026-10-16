@@ -3242,9 +3242,6 @@ function setTimezone(tzId) {
     if (typeof activeUserAuth !== "undefined" && activeUserAuth && activeUserAuth.uid && typeof db !== "undefined") {
         try {
             setDoc(doc(db, "usuarios", activeUserAuth.uid), { timezone: tzId }, { merge: true }).catch(() => {});
-            if (activeUserAuth.email && typeof getUserDocId === "function") {
-                setDoc(doc(db, "usuarios", getUserDocId(activeUserAuth.email)), { timezone: tzId }, { merge: true }).catch(() => {});
-            }
         } catch (e) {}
     }
 
@@ -5871,6 +5868,16 @@ function getAdminAuthHeaders() {
     }
 }
 window.getAdminAuthHeaders = getAdminAuthHeaders;
+
+// Admin API headers that ALSO carry the Firebase ID token. Some admin
+// operations (e.g. the email audit) need the server to read Firestore on the
+// admin's behalf, which requires proving the admin's Firebase identity.
+async function getAdminApiHeaders() {
+    const base = getAdminAuthHeaders();
+    const fb = await getFirebaseAuthHeader();
+    return { ...base, ...fb };
+}
+window.getAdminApiHeaders = getAdminApiHeaders;
 
 // Obtains (and caches) a signed, expiring admin session token from the server by
 // proving the current Firebase identity. Replaces the old hardcoded admin token.
@@ -10641,8 +10648,10 @@ function initFirestoreListeners() {
         console.error("Error subscribing to 'carreras' collection:", error);
     });
 
-    // 4. Synchronize 'usuarios' collection in real-time for verified drivers & claimed accounts
-    onSnapshot(collection(db, "usuarios"), (snapshot) => {
+    // 4. Synchronize the PUBLIC user directory ('usuarios_publicos') in real-time
+    //    for verified drivers & claimed accounts. This collection is world-readable
+    //    and contains no personal data (no email, no password).
+    onSnapshot(collection(db, "usuarios_publicos"), (snapshot) => {
         if (!snapshot || snapshot.empty) return;
         if (typeof window !== "undefined") {
             if (!window.globalVerifiedUsersMap) window.globalVerifiedUsersMap = new Map();
@@ -10657,7 +10666,7 @@ function initFirestoreListeners() {
                     if (typeof window !== "undefined" && window.globalVerifiedUsersMap) {
                         window.globalVerifiedUsersMap.set(norm, {
                             driver: driverName,
-                            email: uData.email || null,
+                            email: null,
                             uid: uData.uid || docSnap.id,
                             isVerified: uData.isVerified !== false,
                             verifiedAt: uData.verifiedAt || null,
@@ -11585,6 +11594,7 @@ if (adminSaveDriversBtn) {
                     try {
                         if (activeUserAuth && activeUserAuth.uid) {
                             setDoc(doc(db, "usuarios", activeUserAuth.uid), { claimedDriver: ren.newName }, { merge: true });
+                            syncPublicUserDoc(activeUserAuth.uid, { claimedDriver: ren.newName });
                         }
                     } catch (e) {}
                 }
@@ -12509,10 +12519,39 @@ if (adminResetDefaultBtn) {
    USER AUTHENTICATION (EMAIL & PASSWORD) — FORMULA FACTOR
 ========================================================= */
 
-// Helper: Standardized document ID for user emails in Firestore
-function getUserDocId(email) {
-    if (!email) return "";
-    return email.trim().toLowerCase().replace(/[^a-z0-9_.-]/g, '_');
+// Fields that are safe to publish on the public driver cards. This list must
+// NEVER contain personal data such as the email or any password material,
+// because 'usuarios_publicos' is world-readable.
+const PUBLIC_USER_FIELDS = [
+    "uid", "displayName", "claimedDriver", "claimedTeam", "claimedDriverId",
+    "isVerified", "verifiedAt", "avatarUrl", "cardColor", "customFlag", "flag",
+    "bio", "socialTwitch", "socialYoutube", "socialTwitter", "socialDiscord"
+];
+
+// Build the public subset of a user profile (no email, no password).
+function buildPublicUserPayload(data, uidOverride) {
+    const out = {};
+    if (data && typeof data === "object") {
+        PUBLIC_USER_FIELDS.forEach(field => {
+            if (data[field] !== undefined) out[field] = data[field];
+        });
+    }
+    const uid = uidOverride || (data && data.uid);
+    if (uid) out.uid = uid;
+    out.updatedAt = new Date().toISOString();
+    return out;
+}
+
+// Mirror the public subset of a user profile into 'usuarios_publicos/{uid}'.
+// This collection is world-readable, so it must never hold email or hashes.
+// Failures are swallowed: the public card is a nice-to-have, not critical.
+function syncPublicUserDoc(uid, data) {
+    if (!uid || typeof db === "undefined") return Promise.resolve();
+    try {
+        return setDoc(doc(db, "usuarios_publicos", uid), buildPublicUserPayload(data, uid), { merge: true }).catch(() => {});
+    } catch (e) {
+        return Promise.resolve();
+    }
 }
 
 // Helper: Secure password hashing for multi-device cloud storage
@@ -12770,18 +12809,13 @@ const CloudAuthService = {
             throw { code: "auth/weak-password", message: "Password must have at least 8 characters" };
         }
 
-        const docId = getUserDocId(cleanEmail);
         const pHash = await hashUserPassword(password);
 
-        // 0. Check Firestore database for existing email or username
+        // 0. Username uniqueness is checked against the public user directory
+        //    ('usuarios_publicos', keyed by uid). Email uniqueness is enforced
+        //    by Firebase Auth itself in step 1, so no email is read here.
         try {
-            const emailQuery = query(collection(db, "usuarios"), where("email", "==", cleanEmail));
-            const emailSnap = await getDocs(emailQuery);
-            if (!emailSnap.empty) {
-                throw { code: "auth/email-already-in-use", message: "Email already in use" };
-            }
-
-            const nameQuery = query(collection(db, "usuarios"), where("displayName", "==", cleanName));
+            const nameQuery = query(collection(db, "usuarios_publicos"), where("displayName", "==", cleanName));
             const nameSnap = await getDocs(nameQuery);
             if (!nameSnap.empty) {
                 throw { code: "auth/username-already-in-use", message: "Username already in use" };
@@ -12843,20 +12877,30 @@ const CloudAuthService = {
             }
             const sData = await sRes.json().catch(() => null);
             if (sData && sData.user && sData.user.uid) {
-                cloudUser.uid = sData.user.uid;
+                // Keep the Firebase Auth uid as the canonical key for Firestore
+                // (owner-only rules depend on it); remember the server id aside.
+                cloudUser.serverUid = sData.user.uid;
             }
         } catch (sErr) {
             if (sErr.code) throw sErr;
             console.warn("Server auth register notice:", sErr);
         }
 
-        // 3. Direct Cloud Firestore write
+        // 3. Direct Cloud Firestore write. Private account data goes to
+        //    'usuarios/{uid}' (owner + admin only); the public driver card is
+        //    mirrored to 'usuarios_publicos/{uid}' (world-readable, no email
+        //    and no password material).
         try {
-            const userRef = doc(db, "usuarios", docId);
-            await setDoc(userRef, cloudUser, { merge: true });
+            await setDoc(doc(db, "usuarios", cloudUser.uid), {
+                uid: cloudUser.uid,
+                displayName: cloudUser.displayName,
+                email: cloudUser.email,
+                createdAt: cloudUser.createdAt
+            }, { merge: true });
         } catch (dbErr) {
             console.warn("Firestore user setDoc notice:", dbErr);
         }
+        await syncPublicUserDoc(cloudUser.uid, { displayName: cloudUser.displayName, isVerified: false });
 
         // 4. Local storage cache & active session (no plaintext password is stored)
         LocalAuthStore.saveCloudUserLocal(cloudUser);
@@ -12866,7 +12910,6 @@ const CloudAuthService = {
 
     async loginUser(email, password) {
         const cleanEmail = email.trim().toLowerCase();
-        const docId = getUserDocId(cleanEmail);
         const pHash = await hashUserPassword(password);
 
         try {
@@ -12882,8 +12925,14 @@ const CloudAuthService = {
                 LocalAuthStore.saveCloudUserLocal(loggedIn);
                 LocalAuthStore.setCurrentUser(loggedIn);
                 try {
-                    await setDoc(doc(db, "usuarios", docId), loggedIn, { merge: true });
+                    await setDoc(doc(db, "usuarios", loggedIn.uid), {
+                        uid: loggedIn.uid,
+                        displayName: loggedIn.displayName,
+                        email: loggedIn.email,
+                        lastLoginAt: new Date().toISOString()
+                    }, { merge: true });
                 } catch (e) {}
+                syncPublicUserDoc(loggedIn.uid, { displayName: loggedIn.displayName });
                 return loggedIn;
             }
         } catch (fbErr) {
@@ -12898,20 +12947,14 @@ const CloudAuthService = {
         if (cleanEmail === "enzo.castillo.lomb@gmail.com") {
             return true;
         }
-        const docId = getUserDocId(cleanEmail);
 
         try {
             await sendPasswordResetEmail(auth, cleanEmail);
             return true;
         } catch (e) {
-            try {
-                const userRef = doc(db, "usuarios", docId);
-                const snap = await getDoc(userRef);
-                if (snap.exists()) {
-                    return true;
-                }
-            } catch (dbErr) {}
-
+            // The private 'usuarios' collection is owner/admin-only now, so it can
+            // no longer be used to probe whether an email is registered. Fall back
+            // to the local credential cache for legacy device-only accounts.
             try {
                 const localUsers = LocalAuthStore.getUsers();
                 if (localUsers.some(u => (u.email || "").toLowerCase().trim() === cleanEmail)) {
@@ -12968,20 +13011,24 @@ const CloudAuthService = {
                 body: JSON.stringify({ users: safeUsers })
             }).catch(() => {});
 
-            // Sync to Firestore
-            for (const u of localUsers) {
-                if (!u || !u.email) continue;
-                const docId = getUserDocId(u.email);
-                const userRef = doc(db, "usuarios", docId);
-                const snap = await getDoc(userRef);
-                if (!snap.exists()) {
-                    await setDoc(userRef, {
-                        uid: u.uid || ("user_" + Date.now()),
-                        displayName: u.displayName || u.email.split("@")[0],
-                        email: u.email.toLowerCase().trim(),
-                        passwordHash: u.passwordHash || "",
-                        createdAt: u.createdAt || new Date().toISOString()
-                    });
+            // Sync to Firestore: only the currently signed-in account, keyed by
+            // its Firebase uid, so it works with the owner-only security rules.
+            // (Never write password material to Firestore.)
+            const authUser = (typeof auth !== "undefined" && auth) ? auth.currentUser : null;
+            if (authUser && authUser.uid) {
+                const me = localUsers.find(u => (u.email || "").toLowerCase().trim() === (authUser.email || "").toLowerCase().trim());
+                if (me) {
+                    try {
+                        await setDoc(doc(db, "usuarios", authUser.uid), {
+                            uid: authUser.uid,
+                            displayName: me.displayName || (authUser.email || "").split("@")[0],
+                            email: (authUser.email || "").toLowerCase().trim(),
+                            createdAt: me.createdAt || new Date().toISOString()
+                        }, { merge: true });
+                        await syncPublicUserDoc(authUser.uid, { displayName: me.displayName });
+                    } catch (dbSyncErr) {
+                        console.warn("Background Firestore user sync notice:", dbSyncErr);
+                    }
                 }
             }
         } catch (e) {
@@ -13323,19 +13370,11 @@ onAuthStateChanged(auth, (user) => {
         unsubscribeUserDoc = onSnapshot(userDocRef, (snap) => {
             if (snap.exists()) {
                 activeUserData = { ...snap.data(), ...activeUserData };
+                // Keep the public driver card in sync with the private profile.
+                syncPublicUserDoc(user.uid, snap.data());
                 if (typeof renderUserClaimState === "function") {
                     renderUserClaimState(activeUserData);
                 }
-            } else if (user.email) {
-                const emailDocRef = doc(db, "usuarios", getUserDocId(user.email));
-                getDoc(emailDocRef).then(eSnap => {
-                    if (eSnap.exists()) {
-                        activeUserData = { ...eSnap.data(), ...activeUserData };
-                        if (typeof renderUserClaimState === "function") {
-                            renderUserClaimState(activeUserData);
-                        }
-                    }
-                }).catch(() => {});
             }
             syncUserClaimWithPilotos();
         });
@@ -13347,29 +13386,16 @@ onAuthStateChanged(auth, (user) => {
         const local = LocalAuthStore.getCurrentUser();
         if (local) {
             renderUserAuthState(local);
-            const userUid = local.uid || "";
-            const userEmail = local.email || "";
-
-            if (userUid) {
-                getDoc(doc(db, "usuarios", userUid)).then(snap => {
-                    if (snap.exists()) {
-                        activeUserData = snap.data();
-                        renderUserClaimState(activeUserData);
-                    } else if (userEmail) {
-                        getDoc(doc(db, "usuarios", getUserDocId(userEmail))).then(eSnap => {
-                            if (eSnap.exists()) {
-                                activeUserData = eSnap.data();
-                                renderUserClaimState(activeUserData);
-                            }
-                            syncUserClaimWithPilotos();
-                        }).catch(() => syncUserClaimWithPilotos());
-                    } else {
-                        syncUserClaimWithPilotos();
-                    }
-                }).catch(() => syncUserClaimWithPilotos());
-            } else {
-                syncUserClaimWithPilotos();
+            // Without a Firebase session the private 'usuarios' document cannot be
+            // read (owner/admin only). Hydrate from the cached local profile and
+            // reconcile with the public pilot data.
+            if (!activeUserData) {
+                activeUserData = { ...local };
             }
+            if (typeof renderUserClaimState === "function") {
+                renderUserClaimState(activeUserData);
+            }
+            syncUserClaimWithPilotos();
         } else {
             activeUserData = null;
             renderUserAuthState(null);
@@ -13742,17 +13768,13 @@ if (userClaimForm) {
                 verifiedAt: new Date().toISOString()
             };
 
-            // 2. Update user doc by UID
+            // 2. Update user doc by UID (owner-only) and mirror the public card
             const userRef = doc(db, "usuarios", activeUserAuth.uid);
             batch.set(userRef, claimPayload, { merge: true });
 
-            // 3. Update user doc by Email Doc ID for cross-resolution
-            if (activeUserAuth.email) {
-                const userRef2 = doc(db, "usuarios", getUserDocId(activeUserAuth.email));
-                batch.set(userRef2, claimPayload, { merge: true });
-            }
-
             await batch.commit();
+
+            syncPublicUserDoc(activeUserAuth.uid, claimPayload);
 
             if (userClaimCodeInput) userClaimCodeInput.value = "";
             if (userClaimNotice) {
@@ -13836,11 +13858,10 @@ if (userUnlinkDriverBtn) {
             };
 
             batch.set(doc(db, "usuarios", activeUserAuth.uid), unlinkPayload, { merge: true });
-            if (activeUserAuth.email) {
-                batch.set(doc(db, "usuarios", getUserDocId(activeUserAuth.email)), unlinkPayload, { merge: true });
-            }
 
             await batch.commit();
+
+            syncPublicUserDoc(activeUserAuth.uid, unlinkPayload);
 
             if (currentPilotos && (driverDocId || activeUserData.claimedDriver)) {
                 const targetP = currentPilotos.find(p => (p.id || getPilotDocId(p.driver)) === driverDocId || (activeUserData.claimedDriver && normalizeDriverKey(p.driver) === normalizeDriverKey(activeUserData.claimedDriver)));
@@ -13879,6 +13900,27 @@ async function refreshAdminVerificationData() {
                 }
                 usersSnap.forEach(uDoc => {
                     const uData = uDoc.data();
+                    // Only mirror docs that carry a real uid. This guarantees the
+                    // public directory is never keyed by an email address (which
+                    // would leak it through the document id).
+                    const publicUid = (uData && uData.uid) ? uData.uid : null;
+                    if (publicUid) {
+                        // Mirror the public driver card (never email/password).
+                        syncPublicUserDoc(publicUid, uData);
+                        // One-time migration: legacy docs were keyed by the email
+                        // address. Re-write them under the uid so owner-only rules
+                        // work and no email leaks through the document id.
+                        if (uDoc.id !== publicUid) {
+                            const migrated = {
+                                ...buildPublicUserPayload(uData, publicUid),
+                                email: uData.email || null,
+                                createdAt: uData.createdAt || null,
+                                timezone: uData.timezone || null,
+                                isVerified: uData.isVerified === true
+                            };
+                            setDoc(doc(db, "usuarios", publicUid), migrated, { merge: true }).catch(() => {});
+                        }
+                    }
                     if (uData && (uData.isVerified || uData.claimedDriver)) {
                         const dName = uData.claimedDriver || (uData.isVerified ? (uData.displayName || uDoc.id) : null);
                         if (dName) {
@@ -14123,16 +14165,19 @@ function renderAdminVerifyTab(filterTerm = "") {
                         claimedTeam: null
                     }, { merge: true });
                 }
-                if (pilot && pilot.claimedByEmail) {
-                    batch.set(doc(db, "usuarios", getUserDocId(pilot.claimedByEmail)), {
+
+                await batch.commit();
+
+                // Keep the world-readable driver card in sync with the (now
+                // unlinked) private profile. Documents are keyed by uid only.
+                if (pilot && pilot.claimedByUid) {
+                    syncPublicUserDoc(pilot.claimedByUid, {
                         isVerified: false,
                         claimedDriver: null,
                         claimedDriverId: null,
                         claimedTeam: null
-                    }, { merge: true });
+                    });
                 }
-
-                await batch.commit();
 
                 if (pilot) {
                     pilot.verificationCode = null;
@@ -14691,15 +14736,14 @@ if (userCardEditForm) {
             // 1. Update document in 'pilotos' collection
             batch.set(doc(db, "pilotos", pilotDocId), customPayload, { merge: true });
 
-            // 2. Update document in 'usuarios' collection by UID
+            // 2. Update private user document (owner-only) by UID
             batch.set(doc(db, "usuarios", activeUserAuth.uid), customPayload, { merge: true });
 
-            // 3. Update document in 'usuarios' collection by Email Doc ID
-            if (activeUserAuth.email) {
-                batch.set(doc(db, "usuarios", getUserDocId(activeUserAuth.email)), customPayload, { merge: true });
-            }
-
             await batch.commit();
+
+            // 3. Mirror the public subset (avatar, colours, bio, socials) into the
+            //    world-readable 'usuarios_publicos' collection.
+            syncPublicUserDoc(activeUserAuth.uid, customPayload);
 
             // Update in-memory pilot data in currentPilotos
             const targetP = (currentPilotos || []).find(p => (p.id || getPilotDocId(p.driver)) === pilotDocId || normalizeDriverKey(p.driver) === normalizeDriverKey(pilotName));
@@ -15744,17 +15788,20 @@ async function saveFantasyTeamToStorage() {
 
             // Sync with Cloud Firestore
             if (typeof db !== "undefined") {
-                // 1. Update user profile document
-                try {
-                    await setDoc(doc(db, "usuarios", cleanDocId), {
-                        fantasyTeam: {
-                            ...dataToSave,
-                            totalPoints: metrics.totalPts,
-                            teamValue: metrics.spent
-                        }
-                    }, { merge: true });
-                } catch (errUser) {
-                    console.warn("Firestore error updating user fantasy team:", errUser);
+                // 1. Update user profile document (private, keyed by uid only;
+                //    an email-keyed doc is not owner-writable under the rules).
+                if (user.uid) {
+                    try {
+                        await setDoc(doc(db, "usuarios", user.uid), {
+                            fantasyTeam: {
+                                ...dataToSave,
+                                totalPoints: metrics.totalPts,
+                                teamValue: metrics.spent
+                            }
+                        }, { merge: true });
+                    } catch (errUser) {
+                        console.warn("Firestore error updating user fantasy team:", errUser);
+                    }
                 }
 
                 // 2. Update fantasy leaderboard document
@@ -15777,10 +15824,10 @@ async function syncUserFantasyTeamFromCloud(user) {
         const cleanDocId = user.email.toLowerCase().trim().replace(/[^a-z0-9_]/g, "_");
         let teamData = null;
 
-        // 1. Try Firestore usuarios collection
-        if (typeof db !== "undefined") {
+        // 1. Try Firestore usuarios collection (private doc keyed by uid only)
+        if (typeof db !== "undefined" && user.uid) {
             try {
-                const snap = await getDoc(doc(db, "usuarios", cleanDocId));
+                const snap = await getDoc(doc(db, "usuarios", user.uid));
                 if (snap.exists() && snap.data().fantasyTeam) {
                     teamData = snap.data().fantasyTeam;
                 }
@@ -22723,7 +22770,7 @@ let ffcPendingDeleteTargets = [];
 
 async function updateAdminEmailAuditBadge() {
     try {
-        const res = await fetch('/api/admin/audit-emails', { headers: getAdminAuthHeaders() });
+        const res = await fetch('/api/admin/audit-emails', { headers: await getAdminApiHeaders() });
         if (!res.ok) return;
         const data = await res.json();
         if (data && data.summary) {
@@ -22766,7 +22813,7 @@ async function loadAndRenderEmailAudit(forceRefresh = false) {
     }
 
     try {
-        const res = await fetch('/api/admin/audit-emails', { headers: getAdminAuthHeaders() });
+        const res = await fetch('/api/admin/audit-emails', { headers: await getAdminApiHeaders() });
         if (!res.ok) {
             throw new Error(`HTTP ${res.status}`);
         }
@@ -23092,7 +23139,7 @@ async function executeAuditDelete() {
 
         const res = await fetch('/api/admin/delete-accounts', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json', ...getAdminAuthHeaders() },
+            headers: { 'Content-Type': 'application/json', ...(await getAdminApiHeaders()) },
             body: JSON.stringify({ targets: payloadTargets })
         });
 
