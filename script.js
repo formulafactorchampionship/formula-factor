@@ -141,7 +141,8 @@ import {
     query,
     where,
     limit,
-    orderBy
+    orderBy,
+    deleteField
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 import {
     getAuth,
@@ -13751,15 +13752,15 @@ if (userClaimForm) {
                 claimedTeam: matchedDriverData.team || "Independent",
                 claimedDriverId: matchedDriverDoc.id,
                 isVerified: true,
+                // Stored only in the private 'usuarios' doc; the security rules use
+                // it to prove the linked account owns a consumed claim token.
+                claimCode: rawCode,
                 verifiedAt: new Date().toISOString()
             };
 
-            // Update the private user profile (owner-only) and mirror the public
-            // driver card. The public 'pilotos' document is NOT written to.
-            await setDoc(doc(db, "usuarios", activeUserAuth.uid), claimPayload, { merge: true });
-            await syncPublicUserDoc(activeUserAuth.uid, claimPayload);
-
-            // Consume the token so nobody else can reuse the same code.
+            // Consume the token FIRST: the security rules validate the private
+            // profile write against the already-consumed token. Re-running is safe
+            // (if it is already bound to this same user the claim still validates).
             if (codeSnap.exists()) {
                 try {
                     await setDoc(codeRef, {
@@ -13772,6 +13773,11 @@ if (userClaimForm) {
                     console.warn("No se pudo consumir el código de verificación:", tokenErr);
                 }
             }
+
+            // Update the private user profile (owner-only) and mirror the public
+            // driver card. The public 'pilotos' document is NOT written to.
+            await setDoc(doc(db, "usuarios", activeUserAuth.uid), claimPayload, { merge: true });
+            await syncPublicUserDoc(activeUserAuth.uid, claimPayload);
 
             if (userClaimCodeInput) userClaimCodeInput.value = "";
             if (userClaimNotice) {
@@ -15825,6 +15831,13 @@ async function saveFantasyTeamToStorage() {
                 updatedAt: new Date().toISOString()
             };
 
+            // Anything persisted (server API + world-readable 'fantasy_leaderboard')
+            // must NOT contain the email address. The Firestore copy also deletes
+            // any legacy email value already stored on the document.
+            const persistPayload = { ...teamPayload };
+            delete persistPayload.email;
+            const firestorePayload = { ...persistPayload, email: deleteField() };
+
             const existingIdx = cloudFantasyTeams.findIndex(t => 
                 (t.userId && t.userId === cleanDocId) ||
                 (t.email && t.email.toLowerCase() === user.email.toLowerCase())
@@ -15840,7 +15853,7 @@ async function saveFantasyTeamToStorage() {
             fetch('/api/fantasy/teams', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json', ...fantasyAuthHeader },
-                body: JSON.stringify(teamPayload)
+                body: JSON.stringify(persistPayload)
             }).catch(e => console.warn("Failed saving team to server backup:", e));
 
             // Sync with Cloud Firestore
@@ -15863,7 +15876,7 @@ async function saveFantasyTeamToStorage() {
 
                 // 2. Update fantasy leaderboard document
                 try {
-                    await setDoc(doc(db, "fantasy_leaderboard", cleanDocId), teamPayload, { merge: true });
+                    await setDoc(doc(db, "fantasy_leaderboard", cleanDocId), firestorePayload, { merge: true });
                 } catch (errLb) {
                     console.warn("Firestore error updating fantasy leaderboard:", errLb);
                 }
@@ -22194,7 +22207,10 @@ if (document.readyState === "loading") {
 // Periodic and Source Synchronization for Photos
 async function syncPhotosFromSources() {
     try {
-        const res = await fetch('/api/carreras/fotos');
+        // Send the Firebase ID token so admins get pending photos; everyone else
+        // only receives approved ones from the server.
+        const authHeader = (typeof getFirebaseAuthHeader === "function") ? await getFirebaseAuthHeader() : {};
+        const res = await fetch('/api/carreras/fotos', { headers: authHeader });
         if (res.ok) {
             const data = await res.json();
             if (data && Array.isArray(data.photos)) {
@@ -22212,7 +22228,9 @@ window.syncPhotosFromSources = syncPhotosFromSources;
 
 // Real-time Firestore listener for photos
 try {
-    onSnapshot(collection(db, "carreras_fotos"), (snapshot) => {
+    // Public listeners only subscribe to approved photos; admins additionally get
+    // pending ones from the server sync above.
+    onSnapshot(query(collection(db, "carreras_fotos"), where("status", "==", "approved")), (snapshot) => {
         const fetched = [];
         snapshot.forEach((docSnap) => {
             fetched.push({ id: docSnap.id, ...docSnap.data() });

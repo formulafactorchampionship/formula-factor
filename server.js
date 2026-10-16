@@ -629,7 +629,8 @@ function saveFantasyTeams(teams) {
 }
 
 app.get('/api/fantasy/teams', (req, res) => {
-  const teams = getFantasyTeams();
+  // Never expose participant email addresses on this unauthenticated endpoint.
+  const teams = getFantasyTeams().map(({ email, ...rest }) => rest);
   return res.json({ success: true, teams });
 });
 
@@ -948,6 +949,17 @@ async function deletePhotoFromFirestore(photoId) {
 }
 
 app.get('/api/carreras/fotos', async (req, res) => {
+  // Approved photos are public; pending/rejected ones are admin-only. Detect an
+  // admin caller by the Firebase ID token (best effort).
+  let isAdmin = false;
+  try {
+    const idToken = extractIdToken(req);
+    if (idToken) {
+      const fbUser = await verifyFirebaseIdToken(idToken);
+      isAdmin = Boolean(fbUser && fbUser.email && PROTECTED_EMAILS.some(pe => pe.toLowerCase() === fbUser.email));
+    }
+  } catch (e) { /* treat as non-admin */ }
+
   let photos = getPhotos();
   const now = Date.now();
   if (now - lastPhotosFirestoreSync > PHOTOS_TTL_MS) {
@@ -995,7 +1007,8 @@ app.get('/api/carreras/fotos', async (req, res) => {
     })();
   }
   photos.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
-  return res.json({ success: true, photos });
+  const visiblePhotos = isAdmin ? photos : photos.filter(p => p.status === 'approved' || !p.status);
+  return res.json({ success: true, photos: visiblePhotos });
 });
 
 // Requirement 1c: Strict sanitization in POST /api/carreras/fotos

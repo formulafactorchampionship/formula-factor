@@ -17,6 +17,44 @@ service cloud.firestore {
       return isSignedIn() && request.auth.uid == uid;
     }
 
+    // ---- Verification integrity helpers ---------------------------------
+    // A write "asserts verification" when it marks the account verified or links
+    // it to an official driver. Only admins, or owners who consumed a claim
+    // token, may do that.
+    function assertsVerification(data) {
+      return (('isVerified' in data) && data.isVerified == true)
+          || (('claimedDriver' in data) && data.claimedDriver is string && data.claimedDriver.size() > 0);
+    }
+
+    // A verification is only valid when backed by a claim token this user has
+    // consumed (pilotos_privado/{code}.usedByUid == uid) for that same driver.
+    function claimTokenValid(uid, code, driver) {
+      return code is string
+        && code.matches('^[A-Za-z0-9_-]{1,60}$')
+        && driver is string
+        && exists(/databases/$(database)/documents/pilotos_privado/$(code))
+        && get(/databases/$(database)/documents/pilotos_privado/$(code)).data.usedByUid == uid
+        && get(/databases/$(database)/documents/pilotos_privado/$(code)).data.driver == driver;
+    }
+
+    // Owner writes to the PRIVATE account doc: allowed unless they assert
+    // verification, in which case they must already be verified or present a
+    // valid claim token.
+    function privateWriteOk(uid) {
+      return !assertsVerification(request.resource.data)
+          || (exists(/databases/$(database)/documents/usuarios/$(uid))
+              && get(/databases/$(database)/documents/usuarios/$(uid)).data.isVerified == true)
+          || claimTokenValid(uid, request.resource.data.claimCode, request.resource.data.claimedDriver);
+    }
+
+    // Owner writes to the PUBLIC card: verification fields are only accepted when
+    // the private account doc is already verified (which is itself gated above).
+    function publicWriteOk(uid) {
+      return !assertsVerification(request.resource.data)
+          || (exists(/databases/$(database)/documents/usuarios/$(uid))
+              && get(/databases/$(database)/documents/usuarios/$(uid)).data.isVerified == true);
+    }
+
     // ---------------------------------------------------------------------
     // PUBLIC driver cards. Contains only non-personal data that is meant to
     // be shown on the public website (display name, verified flag, avatar,
@@ -25,7 +63,7 @@ service cloud.firestore {
     // ---------------------------------------------------------------------
     match /usuarios_publicos/{uid} {
       allow read: if true;
-      allow create, update: if isSelf(uid) || isAdmin();
+      allow create, update: if isAdmin() || (isSelf(uid) && publicWriteOk(uid));
       allow delete: if isAdmin();
     }
 
@@ -37,7 +75,7 @@ service cloud.firestore {
     match /usuarios/{uid} {
       allow get: if isSelf(uid) || isAdmin();
       allow list: if isAdmin();
-      allow create, update: if isSelf(uid) || isAdmin();
+      allow create, update: if isAdmin() || (isSelf(uid) && privateWriteOk(uid));
       allow delete: if isAdmin();
     }
 
@@ -90,22 +128,28 @@ service cloud.firestore {
       allow delete, create, update: if isAdmin();
     }
 
+    // Comments: anyone signed in may post, but only the author (or an admin) may
+    // edit or delete their own comment. The author uid is bound to the session.
     match /noticias_comentarios/{commentId} {
       allow read: if true;
-      allow delete: if isAdmin();
+      allow delete: if isAdmin() || (isSignedIn() && resource.data.authorUid == request.auth.uid);
       allow create: if isSignedIn()
+        && request.resource.data.authorUid == request.auth.uid
         && request.resource.data.text is string
         && request.resource.data.text.size() > 0
-        && request.resource.data.text.size() <= 1000
-        && !request.resource.data.text.matches('.*(?i)<script.*');
-      allow update: if isSignedIn()
+        && request.resource.data.text.size() <= 1000;
+      allow update: if isAdmin() || (isSignedIn()
+        && resource.data.authorUid == request.auth.uid
+        && request.resource.data.authorUid == request.auth.uid
         && request.resource.data.text is string
-        && request.resource.data.text.size() <= 1000
-        && !request.resource.data.text.matches('.*(?i)<script.*');
+        && request.resource.data.text.size() <= 1000);
     }
 
+    // Photos: approved ones are public; pending/rejected are admin-only. Public
+    // list queries MUST filter by status == 'approved'.
     match /carreras_fotos/{photoId} {
-      allow read: if true;
+      allow get: if true;
+      allow list: if isAdmin() || resource.data.status == 'approved';
       allow delete: if isAdmin();
       allow create, update: if isSignedIn()
         && request.resource.data.keys().size() <= 20
@@ -117,6 +161,7 @@ service cloud.firestore {
       allow read: if true;
       allow delete: if isAdmin();
       allow create, update: if isSignedIn()
+        && !('email' in request.resource.data)
         && request.resource.data.teamName is string
         && request.resource.data.teamName.size() <= 40
         && !request.resource.data.teamName.matches('.*(?i)<script.*')
@@ -128,6 +173,7 @@ service cloud.firestore {
       allow read: if true;
       allow delete: if isAdmin();
       allow create, update: if isSignedIn()
+        && !('email' in request.resource.data)
         && request.resource.data.teamName is string
         && request.resource.data.teamName.size() <= 40
         && !request.resource.data.teamName.matches('.*(?i)<script.*')
