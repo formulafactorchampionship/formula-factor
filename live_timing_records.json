@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-10-16T02:54:06.050Z",
+  "updatedAt": "2026-10-16T07:37:50.116Z",
   "default": "rt_fuji_speedway|layout_gp",
   "tracks": {
     "rt_fuji_speedway|layout_gp": {
@@ -14,23 +14,23 @@
         "driver": "Diego Pereira",
         "car": "Formula RSS 2010 V8",
         "guid": "76561199548642271",
-        "at": "2026-10-16T02:54:04.101Z"
+        "at": "2026-10-16T07:37:48.122Z"
       },
       "topSpeed": {
         "kmh": 315,
         "driver": "IWantMozaR5",
         "car": "Formula RSS 2010 V8",
         "guid": "76561199381231982",
-        "at": "2026-10-16T02:54:04.101Z"
+        "at": "2026-10-16T07:37:48.122Z"
       },
       "laps": {
-        "count": 14,
+        "count": 15,
         "driver": "IWantMozaR5",
         "car": "Formula RSS 2010 V8",
         "guid": "76561199381231982",
-        "at": "2026-10-16T02:54:04.101Z"
+        "at": "2026-10-16T07:37:48.122Z"
       },
-      "lastSeen": "2026-10-16T02:54:04.101Z"
+      "lastSeen": "2026-10-16T07:37:48.122Z"
     },
     "ks_silverstone|gp_48pits": {
       "key": "ks_silverstone|gp_48pits",
