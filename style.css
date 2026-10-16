@@ -9500,6 +9500,16 @@ footer {
     min-width: 0;
 }
 
+.lt-driver-name-row {
+    display: flex;
+    align-items: center;
+    min-width: 0;
+}
+
+.lt-driver-name-row .lt-driver-name {
+    min-width: 0;
+}
+
 .lt-driver-name {
     font-family: var(--lt-cond);
     font-size: 16px;
@@ -9581,14 +9591,18 @@ footer {
 .live-timing-map-viewport {
     position: relative;
     padding: 10px 10px 4px;
+    overflow: hidden;
     background:
         radial-gradient(circle at 50% 0%, rgba(255, 255, 255, 0.05), transparent 72%),
         rgba(6, 10, 16, 0.5);
 }
 
+/* Focusing a driver pans/zooms the whole stage; the transform is set from JS. */
 .live-timing-map-stage {
     position: relative;
     width: 100%;
+    transform-origin: 50% 50%;
+    transition: transform 0.45s cubic-bezier(0.22, 0.61, 0.36, 1);
 }
 
 .live-timing-map-image {
@@ -9604,6 +9618,11 @@ footer {
     position: absolute;
     inset: 0;
     pointer-events: none;
+}
+
+/* While a driver is focused every other car fades into the background. */
+.live-timing-map-dots.has-focus .lt-map-dot:not(.is-selected) {
+    opacity: 0.4;
 }
 
 .lt-map-dot {
@@ -9624,10 +9643,44 @@ footer {
     letter-spacing: 0.4px;
     line-height: 1;
     color: #07101b;
+    cursor: pointer;
     pointer-events: auto;
-    transform: translate(-50%, -50%);
-    transition: left var(--lt-map-transition, 500ms) linear, top var(--lt-map-transition, 500ms) linear;
+    /* The map stage is zoomed on focus, so the dot cancels the zoom out to keep
+       a constant on-screen size. */
+    transform: translate(-50%, -50%) scale(calc(1 / var(--lt-map-zoom, 1)));
+    transition: left var(--lt-map-transition, 500ms) linear, top var(--lt-map-transition, 500ms) linear, transform 0.45s cubic-bezier(0.22, 0.61, 0.36, 1);
     will-change: left, top;
+}
+
+.lt-map-dot:hover {
+    box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.65), 0 2px 10px rgba(0, 0, 0, 0.8);
+    z-index: 5;
+}
+
+/* Extra tag (name + speed) that only the focused car shows. */
+.lt-map-dot-tag {
+    display: none;
+    margin-left: 5px;
+    padding-left: 5px;
+    border-left: 1px solid rgba(0, 0, 0, 0.35);
+    font-family: var(--lt-cond);
+    font-size: 9.5px;
+    font-weight: 800;
+    letter-spacing: 0.3px;
+    white-space: nowrap;
+}
+
+.lt-map-dot.is-selected {
+    height: 22px;
+    min-width: 26px;
+    border-radius: 11px;
+    padding: 0 9px;
+    z-index: 6;
+    box-shadow: 0 0 0 2px #ffffff, 0 0 16px rgba(255, 255, 255, 0.55), 0 3px 12px rgba(0, 0, 0, 0.8);
+}
+
+.lt-map-dot.is-selected .lt-map-dot-tag {
+    display: inline-block;
 }
 
 .live-timing-map-empty {
@@ -9738,6 +9791,255 @@ footer {
     padding: 0;
 }
 
+/* --- Row interactivity & enrichment ------------------------------------- */
+.live-timing-table tbody tr.lt-row {
+    cursor: pointer;
+    transition: background 0.15s ease, box-shadow 0.15s ease;
+}
+
+.live-timing-table tbody tr.lt-row.is-selected td {
+    background: rgba(214, 180, 92, 0.1);
+}
+
+.live-timing-table tbody tr.lt-row.is-selected td:first-child {
+    box-shadow: inset 3px 0 0 #e8c766;
+}
+
+/* Status pills next to the driver name (pits / DRS / blue flag). */
+.lt-flags {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    margin-left: 7px;
+    vertical-align: middle;
+}
+
+.lt-flag {
+    font-family: var(--lt-mono);
+    font-size: 8.5px;
+    font-weight: 800;
+    letter-spacing: 0.1em;
+    line-height: 1;
+    padding: 3px 5px;
+    border-radius: 4px;
+    text-transform: uppercase;
+    white-space: nowrap;
+}
+
+.lt-flag-pit { color: #6ea8ff; background: rgba(110, 168, 255, 0.16); }
+.lt-flag-drs { color: #7ed957; background: rgba(126, 217, 87, 0.16); }
+.lt-flag-blue { color: #fbbf24; background: rgba(251, 191, 36, 0.18); }
+.lt-flag-in { color: #f85149; background: rgba(248, 81, 73, 0.16); }
+
+/* Thin bar that shows how far through the lap the car is. */
+.lt-spline {
+    display: block;
+    width: 100%;
+    min-width: 74px;
+    height: 3px;
+    margin-top: 5px;
+    border-radius: 2px;
+    background: rgba(255, 255, 255, 0.1);
+    overflow: hidden;
+}
+
+.lt-spline-fill {
+    display: block;
+    height: 100%;
+    width: 0%;
+    border-radius: 2px;
+    background: linear-gradient(90deg, #d6b45c, #e8c766);
+    transition: width 0.5s linear;
+}
+
+.lt-gap-main { display: block; }
+
+.lt-gap-sub,
+.lt-speed-sub {
+    display: block;
+    margin-top: 2px;
+    font-size: 10.5px;
+    font-weight: 600;
+    color: var(--lt-muted-2);
+}
+
+.lt-speed-sub { color: var(--lt-muted-2); }
+
+.lt-flag-tyre { color: var(--lt-muted); background: rgba(255, 255, 255, 0.08); }
+
+/* --- Focused-driver panel ----------------------------------------------- */
+.lt-focus {
+    border-top: 1px solid var(--lt-line);
+    background: linear-gradient(180deg, rgba(23, 30, 42, 0.6) 0%, rgba(10, 15, 22, 0.75) 100%);
+    padding: 12px 16px 14px;
+    animation: ltFocusIn 0.25s ease;
+}
+
+@keyframes ltFocusIn {
+    from { opacity: 0; transform: translateY(-6px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.lt-focus-head {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+.lt-focus-id {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+    min-width: 0;
+    flex: 1 1 auto;
+}
+
+.lt-focus-name {
+    font-family: var(--lt-cond);
+    font-size: 17px;
+    font-weight: 800;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: #ffffff;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.lt-focus-car {
+    font-family: "Inter", sans-serif;
+    font-size: 11px;
+    color: var(--lt-muted-2);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.lt-focus-pos {
+    font-family: var(--lt-mono);
+    font-size: 18px;
+    font-weight: 800;
+    color: #e8c766;
+}
+
+.lt-focus-close {
+    font-family: var(--lt-mono);
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--lt-muted);
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--lt-line-strong);
+    border-radius: 6px;
+    padding: 5px 8px;
+    cursor: pointer;
+    transition: color 0.2s ease, border-color 0.2s ease, background 0.2s ease;
+}
+
+.lt-focus-close:hover {
+    color: #ffffff;
+    border-color: rgba(255, 255, 255, 0.4);
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.lt-focus-flags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+    margin-bottom: 10px;
+}
+
+.lt-focus-flags:empty { display: none; margin: 0; }
+
+.lt-focus-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 8px 12px;
+}
+
+.lt-focus-item {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+}
+
+.lt-focus-key {
+    font-family: var(--lt-mono);
+    font-size: 8.5px;
+    font-weight: 700;
+    letter-spacing: 0.13em;
+    text-transform: uppercase;
+    color: var(--lt-muted-2);
+}
+
+.lt-focus-val {
+    font-family: var(--lt-mono);
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--lt-text);
+    white-space: nowrap;
+    font-variant-numeric: tabular-nums;
+}
+
+.lt-focus-track {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 12px;
+}
+
+.lt-focus-spline {
+    flex: 1 1 auto;
+    height: 4px;
+    border-radius: 2px;
+    background: rgba(255, 255, 255, 0.1);
+    overflow: hidden;
+}
+
+.lt-focus-spline-fill {
+    display: block;
+    height: 100%;
+    width: 0%;
+    border-radius: 2px;
+    background: linear-gradient(90deg, #d6b45c, #e8c766);
+    transition: width 0.5s linear;
+}
+
+.lt-focus-sectors {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 12px;
+}
+
+.lt-focus-sectors:empty { display: none; margin: 0; }
+
+.lt-sector-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-family: var(--lt-mono);
+    font-size: 10px;
+    font-weight: 700;
+    padding: 4px 7px;
+    border-radius: 5px;
+    background: rgba(255, 255, 255, 0.05);
+    color: var(--lt-muted);
+    font-variant-numeric: tabular-nums;
+}
+
+.lt-sector-chip-faster { color: var(--lt-green); background: rgba(126, 217, 87, 0.12); }
+.lt-sector-chip-slower { color: var(--lt-amber); background: rgba(238, 176, 63, 0.12); }
+.lt-sector-chip-equal { color: var(--lt-muted); }
+
+.lt-sector-chip-index {
+    color: var(--lt-muted-2);
+    font-weight: 800;
+}
+
 /* --- Responsive --------------------------------------------------------- */
 /* Two-column regime with a narrow drivers card: keep the essentials only. */
 @media (min-width: 981px) and (max-width: 1140px) {
@@ -9830,6 +10132,33 @@ footer {
         flex: 1 1 120px;
         min-width: 110px;
         padding: 9px 11px;
+    }
+
+    .lt-focus-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .lt-focus-name {
+        font-size: 15px;
+    }
+
+    .lt-spline {
+        min-width: 56px;
+    }
+}
+
+@media (max-width: 480px) {
+    .lt-focus-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 8px 10px;
+    }
+
+    .lt-focus-pos {
+        font-size: 16px;
+    }
+
+    .lt-focus-close {
+        padding: 5px 6px;
     }
 }
 

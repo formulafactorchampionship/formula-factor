@@ -2674,9 +2674,67 @@
                         </div>
                         <div class="live-timing-map-empty" id="liveTimingMapEmpty" data-mode="waiting">Esperando datos del mapa del circuito...</div>
                     </div>
+
+                    <!-- Focused driver: opened by clicking a row in the table or a car on the map -->
+                    <div class="lt-focus" id="liveTimingFocus" style="display: none;">
+                        <div class="lt-focus-head">
+                            <span class="lt-driver-bar" id="liveTimingFocusBar"></span>
+                            <span class="lt-focus-id">
+                                <span class="lt-focus-name" id="liveTimingFocusName">--</span>
+                                <span class="lt-focus-car" id="liveTimingFocusCar">--</span>
+                            </span>
+                            <span class="lt-focus-pos" id="liveTimingFocusPos">--</span>
+                            <button type="button" class="lt-focus-close" id="liveTimingFocusClose" data-lt-i18n="focusShowAll">VER TODOS</button>
+                        </div>
+                        <div class="lt-focus-flags" id="liveTimingFocusFlags"></div>
+                        <div class="lt-focus-grid">
+                            <div class="lt-focus-item">
+                                <span class="lt-focus-key" data-lt-i18n="focusSpeed">VELOCIDAD</span>
+                                <strong class="lt-focus-val lt-accent-green" id="liveTimingFocusSpeed">--</strong>
+                            </div>
+                            <div class="lt-focus-item">
+                                <span class="lt-focus-key" data-lt-i18n="focusBest">MEJOR VUELTA</span>
+                                <strong class="lt-focus-val lt-accent-purple" id="liveTimingFocusBest">--:--.---</strong>
+                            </div>
+                            <div class="lt-focus-item">
+                                <span class="lt-focus-key" data-lt-i18n="focusLast">ÚLTIMA</span>
+                                <strong class="lt-focus-val" id="liveTimingFocusLast">--:--.---</strong>
+                            </div>
+                            <div class="lt-focus-item">
+                                <span class="lt-focus-key" data-lt-i18n="focusTop">V. MÁX</span>
+                                <strong class="lt-focus-val" id="liveTimingFocusTop">--</strong>
+                            </div>
+                            <div class="lt-focus-item">
+                                <span class="lt-focus-key" data-lt-i18n="focusLaps">VUELTAS</span>
+                                <strong class="lt-focus-val" id="liveTimingFocusLaps">0</strong>
+                            </div>
+                            <div class="lt-focus-item">
+                                <span class="lt-focus-key" data-lt-i18n="focusGap">INTERVALO</span>
+                                <strong class="lt-focus-val lt-accent-amber" id="liveTimingFocusGap">--</strong>
+                            </div>
+                            <div class="lt-focus-item">
+                                <span class="lt-focus-key" data-lt-i18n="focusDelta">Δ MEJOR</span>
+                                <strong class="lt-focus-val" id="liveTimingFocusDelta">--</strong>
+                            </div>
+                            <div class="lt-focus-item">
+                                <span class="lt-focus-key" data-lt-i18n="focusTyre">NEUMÁTICO</span>
+                                <strong class="lt-focus-val" id="liveTimingFocusTyre">--</strong>
+                            </div>
+                            <div class="lt-focus-item">
+                                <span class="lt-focus-key" data-lt-i18n="focusPing">PING</span>
+                                <strong class="lt-focus-val" id="liveTimingFocusPing">--</strong>
+                            </div>
+                        </div>
+                        <div class="lt-focus-track">
+                            <span class="lt-focus-key" data-lt-i18n="focusSpline">PISTA</span>
+                            <span class="lt-focus-spline"><span class="lt-focus-spline-fill" id="liveTimingFocusSplineFill"></span></span>
+                        </div>
+                        <div class="lt-focus-sectors" id="liveTimingFocusSectors"></div>
+                    </div>
+
                     <div class="lt-map-foot">
                         <span id="liveTimingMapFootLeft">0 COCHES</span>
-                        <span id="liveTimingMapFootRight" data-lt-i18n="mapFootHint">PASA EL CURSOR SOBRE UN COCHE</span>
+                        <span id="liveTimingMapFootRight" data-lt-i18n="mapFootHint">CLICK EN UN PILOTO PARA VER SUS DATOS</span>
                     </div>
                 </div>
 
@@ -6139,7 +6197,7 @@
 
 
 
-<script type="module" src="script.js?v=20261015_rc19"></script>
+<script type="module" src="script.js?v=20261016_rc20"></script>
 
 </body>
 </html>

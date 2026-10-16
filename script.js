@@ -519,7 +519,18 @@ const translations = {
             cardMap: "MAPA EN VIVO",
             cardRecords: "RÉCORDS",
             cardRecordsSub: "SESIÓN + HISTÓRICO",
-            mapFootHint: "PASA EL CURSOR SOBRE UN COCHE"
+            mapFootHint: "CLICK EN UN PILOTO PARA VER SUS DATOS",
+            focusSpeed: "VELOCIDAD",
+            focusBest: "MEJOR VUELTA",
+            focusLast: "ÚLTIMA",
+            focusTop: "V. MÁX",
+            focusLaps: "VUELTAS",
+            focusGap: "INTERVALO",
+            focusDelta: "Δ MEJOR",
+            focusTyre: "NEUMÁTICO",
+            focusPing: "PING",
+            focusSpline: "PISTA",
+            focusShowAll: "VER TODOS"
         },
         hero: {
             eyebrow: "TEMPORADA 1 · COMPETICIÓN OFICIAL SIM RACING",
@@ -1119,7 +1130,18 @@ const translations = {
             cardMap: "LIVE MAP",
             cardRecords: "RECORDS",
             cardRecordsSub: "SESSION + ALL-TIME",
-            mapFootHint: "HOVER A CAR FOR SPEED"
+            mapFootHint: "CLICK A DRIVER TO SEE THEIR DATA",
+            focusSpeed: "SPEED",
+            focusBest: "BEST LAP",
+            focusLast: "LAST",
+            focusTop: "TOP SPD",
+            focusLaps: "LAPS",
+            focusGap: "GAP",
+            focusDelta: "Δ BEST",
+            focusTyre: "TYRE",
+            focusPing: "PING",
+            focusSpline: "TRACK",
+            focusShowAll: "SHOW ALL"
         },
         hero: {
             eyebrow: "SEASON 1 · OFFICIAL SIM RACING COMPETITION",
@@ -1800,11 +1822,13 @@ function applyTranslations(lang) {
         if (ltHeading && ltDict.heading) ltHeading.innerHTML = ltDict.heading;
         ltUpdateMapEmpty();
         ltUpdateMapFoot();
+        ltUpdateMapFootSelection();
         ltRefreshStatus();
         // Dynamic strings (records card, session bar) are rebuilt by the renderers.
         renderLiveTimingSession();
         renderLiveTimingTable();
         renderLiveTimingRecords();
+        renderLiveTimingFocus();
     }
 
     const scenariosDict = dict.scenarios;
@@ -20943,6 +20967,77 @@ function renderLiveTimingSession() {
         (session.AmbientTemp != null ? Math.round(session.AmbientTemp) + "°C" : "--"));
 }
 
+// Signed difference in seconds for the DeltaToBest / split sub-lines.
+function ltSignedDelta(nanoseconds) {
+    const ms = Number(nanoseconds) / 1e6;
+    if (!isFinite(ms) || ms === 0) return "";
+    const sign = ms > 0 ? "+" : "-";
+    const abs = Math.abs(ms);
+    if (abs < 60000) return sign + (abs / 1000).toFixed(3);
+    return sign + ltMsToLapTime(abs);
+}
+
+// Status pills shown next to the driver name (pits / DRS / blue flag).
+function ltDriverFlags(driver) {
+    const isEn = ltIsEnglish();
+    const pills = [];
+    if (driver && driver.IsInPits) pills.push('<span class="lt-flag lt-flag-pit">' + (isEn ? "PIT" : "BOX") + "</span>");
+    if (driver && driver.DRSActive) pills.push('<span class="lt-flag lt-flag-drs">DRS</span>');
+    if (driver && driver.BlueFlag) pills.push('<span class="lt-flag lt-flag-blue">' + (isEn ? "BLUE" : "AZUL") + "</span>");
+    return pills.length ? '<span class="lt-flags">' + pills.join("") + "</span>" : "";
+}
+
+// 0..100 position of the car along the lap (NormalisedSplinePos is 0..1).
+function ltSplinePercent(driver) {
+    const value = Number(driver && driver.NormalisedSplinePos);
+    if (!isFinite(value)) return null;
+    const pct = value <= 1 ? value * 100 : value;
+    return Math.min(100, Math.max(0, pct));
+}
+
+// Current-lap sector deltas against the driver's own best sectors.
+function ltSectorChips(car) {
+    if (!car) return "";
+    const isEn = ltIsEnglish();
+    const current = car.CurrentLapSplits || {};
+    const best = car.BestSplits || {};
+    const indexes = Object.keys(current)
+        .map(function (key) { return Number(key); })
+        .filter(function (n) { return isFinite(n); })
+        .sort(function (a, b) { return a - b; })
+        .slice(0, 3);
+
+    const chips = [];
+    indexes.forEach(function (idx, order) {
+        const cur = current[idx] || current[String(idx)];
+        const ref = best[idx] || best[String(idx)];
+        if (!cur) return;
+
+        let text = "--";
+        let cls = "lt-sector-chip-equal";
+        // A cut sector is not a comparable time, so it is flagged instead.
+        if (Number(cur.Cuts) > 0) {
+            cls = "lt-sector-chip-slower";
+            text = isEn ? "CUT" : "CORTE";
+        } else if (ref && Number(cur.SplitTime) > 0 && Number(ref.SplitTime) > 0) {
+            const delta = (Number(cur.SplitTime) - Number(ref.SplitTime)) / 1e6;
+            if (isFinite(delta)) {
+                text = (delta > 0 ? "+" : "") + (delta / 1000).toFixed(3);
+                cls = delta <= -5 ? "lt-sector-chip-faster" : (delta >= 5 ? "lt-sector-chip-slower" : "lt-sector-chip-equal");
+            }
+        }
+
+        chips.push(
+            '<span class="lt-sector-chip ' + cls + '">' +
+            '<span class="lt-sector-chip-index">S' + (order + 1) + "</span>" +
+            escapeHtml(text) +
+            "</span>"
+        );
+    });
+
+    return chips.join("");
+}
+
 function renderLiveTimingTable() {
     const tbody = document.getElementById("liveTimingBody");
     if (!tbody) return;
@@ -20987,15 +21082,31 @@ function renderLiveTimingTable() {
         const topSpeed = Number(lap.TopSpeedBestLap) > 0
             ? Math.round(Number(lap.TopSpeedBestLap)) + " km/h"
             : "--";
+        const thisLapSpeed = Number(lap.TopSpeedThisLap) > 0
+            ? Math.round(Number(lap.TopSpeedThisLap)) + " km/h"
+            : "";
+
+        const spline = ltSplinePercent(driver);
+        const splineBar = (spline === null) ? "" :
+            `<span class="lt-spline" aria-hidden="true"><span class="lt-spline-fill" style="width:${spline.toFixed(1)}%"></span></span>`;
+
+        const deltaBest = ltSignedDelta(driver.DeltaToBest);
+        const deltaSub = deltaBest
+            ? `<span class="lt-gap-sub">ΔB ${escapeHtml(deltaBest)}</span>`
+            : "";
+
+        const selected = (String(entry.guid) === String(liveTimingSelectedGuid)) ? " is-selected" : "";
 
         return `
-            <tr class="lt-row">
+            <tr class="lt-row${selected}" data-guid="${escapeHtml(String(entry.guid))}">
                 <td class="lt-pos"><span class="lt-pos-num${Number(position) === 1 ? " lt-pos-leader" : ""}">${escapeHtml(String(position))}</span></td>
                 <td class="lt-driver">
                     <span class="lt-driver-cell">
                         <span class="lt-driver-bar" style="background:${ltMapColor(entry.guid)}"></span>
                         <span class="lt-driver-info">
-                            <span class="lt-driver-name">${escapeHtml(String(name).toUpperCase())}</span>
+                            <span class="lt-driver-name-row">
+                                <span class="lt-driver-name">${escapeHtml(String(name).toUpperCase())}</span>${ltDriverFlags(driver)}
+                            </span>
                             <span class="lt-driver-car">${escapeHtml(String(carName))}</span>
                         </span>
                     </span>
@@ -21003,14 +21114,17 @@ function renderLiveTimingTable() {
                 <td class="lt-time lt-current">
                     <span class="lt-current-main">${escapeHtml(currentLap || "--:--.---")}</span>
                     <span class="lt-current-sub">${escapeHtml(ltFormatLap(lap.LastLap))}</span>
+                    ${splineBar}
                 </td>
                 <td class="lt-time lt-best">${escapeHtml(ltFormatLap(lap.BestLap))}</td>
-                <td class="lt-gap">${escapeHtml(driver.Split || "-")}</td>
+                <td class="lt-gap"><span class="lt-gap-main">${escapeHtml(driver.Split || "-")}</span>${deltaSub}</td>
                 <td class="lt-laps">${escapeHtml(String(lap.NumLaps || 0))}</td>
-                <td class="lt-speed">${escapeHtml(topSpeed)}</td>
+                <td class="lt-speed">${escapeHtml(topSpeed)}${thisLapSpeed ? `<span class="lt-speed-sub">${escapeHtml(thisLapSpeed)}</span>` : ""}</td>
             </tr>
         `;
     }).join("");
+
+    ltUpdateMapFocusClasses();
 }
 
 // Stored records: lap times are persisted server-side (live_timing_db.json) so
@@ -21221,6 +21335,8 @@ let liveTimingMapImageLoaded = false;
 const liveTimingMapDots = new Map();       // driver GUID -> dot element
 const liveTimingMapPositioned = new Set(); // GUIDs that already reported a position
 let liveTimingMapClamp = { w: 0, h: 0 };   // half a dot, in % of the map box
+let liveTimingSelectedGuid = null;         // driver focused from the table / the map
+const LIVE_TIMING_MAP_ZOOM = 2;            // stage zoom while a driver is focused
 
 // Stable colour per driver GUID (randomColor is not available here).
 function ltMapColor(guid) {
@@ -21341,6 +21457,7 @@ function ltInitMapImage() {
         // Now that the image defines the box, the clamp can be measured.
         ltRefreshMapClamp();
         ltRepositionMapDots();
+        if (liveTimingSelectedGuid) ltApplyMapFocus();
     });
 
     image.addEventListener("error", function () {
@@ -21362,12 +21479,36 @@ function ltCreateMapDot(guid, driver, index) {
     dot.className = "lt-map-dot";
     dot.setAttribute("data-guid", guid);
     dot.style.background = ltMapColor(guid);
-    dot.textContent = carInfo.DriverInitials || ltInitials(carInfo.DriverName) || String((index || 0) + 1);
     dot.title = carInfo.DriverName || "";
+
+    const initials = document.createElement("span");
+    initials.className = "lt-map-dot-initials";
+    initials.textContent = carInfo.DriverInitials || ltInitials(carInfo.DriverName) || String((index || 0) + 1);
+    dot.appendChild(initials);
+
+    // Only the focused car shows this (name + live speed).
+    const tag = document.createElement("span");
+    tag.className = "lt-map-dot-tag";
+    dot.appendChild(tag);
+
     dot.style.display = "none";
     container.appendChild(dot);
     liveTimingMapDots.set(guid, dot);
     return dot;
+}
+
+// Name + speed shown on the focused dot.
+function ltRefreshDotTag(guid) {
+    const dot = liveTimingMapDots.get(guid);
+    if (!dot) return;
+    const tag = dot.querySelector(".lt-map-dot-tag");
+    if (!tag) return;
+    const entry = ltDriverEntryByGuid(guid);
+    const driver = entry && entry.driver;
+    if (!driver) { tag.textContent = ""; return; }
+    const name = (driver.CarInfo && driver.CarInfo.DriverName) || "";
+    const speed = Number(driver.__ltSpeedKmh);
+    tag.textContent = name + ((isFinite(speed) && speed > 0) ? " · " + Math.round(speed) + " km/h" : "");
 }
 
 function ltPlaceMapDot(guid, vec) {
@@ -21416,8 +21557,10 @@ function ltSyncMapDot(guid, driver, index) {
 
     const carInfo = (driver && driver.CarInfo) || {};
     const initials = carInfo.DriverInitials || ltInitials(carInfo.DriverName);
-    if (initials && dot.textContent !== initials) dot.textContent = initials;
+    const initialsEl = dot.querySelector(".lt-map-dot-initials");
+    if (initials && initialsEl && initialsEl.textContent !== initials) initialsEl.textContent = initials;
     dot.title = carInfo.DriverName || "";
+    if (String(guid) === String(liveTimingSelectedGuid)) ltRefreshDotTag(guid);
 
     const pos = driver && driver.LastPos;
     if (ltHasPosition(pos)) {
@@ -21451,6 +21594,7 @@ function renderLiveTimingMapDots() {
     ltRefreshMapClamp();
     ltRepositionMapDots();
     ltUpdateMapFoot();
+    ltUpdateMapFocusClasses();
 }
 
 function ltUpdateMapFoot() {
@@ -21546,6 +21690,10 @@ function renderLiveTimingMap() {
         liveTimingMapTrackKey = key;
         liveTimingMapImageLoaded = false;
         ltClearMapDots();
+        liveTimingSelectedGuid = null;
+        ltClearMapFocus();
+        renderLiveTimingFocus();
+        ltUpdateMapFootSelection();
         if (empty) empty.setAttribute("data-mode", "waiting");
         ltUpdateMapEmpty();
         ltShowMapStage(false);
@@ -21571,16 +21719,236 @@ function renderLiveTimingMap() {
     }
 }
 
+// -------------------------------------------------------------
+// Focused driver (click a row or a car): zoom the map and show its numbers.
+// -------------------------------------------------------------
+function ltDriverEntryByGuid(guid) {
+    if (!guid) return null;
+    const wanted = String(guid);
+    const matches = ltConnectedDriverList().filter(function (entry) {
+        return String(entry.guid) === wanted;
+    });
+    return matches.length ? matches[0] : null;
+}
+
+function ltSelectedEntry() {
+    return ltDriverEntryByGuid(liveTimingSelectedGuid);
+}
+
+function ltUpdateMapFootSelection() {
+    const right = document.getElementById("liveTimingMapFootRight");
+    if (!right) return;
+    const entry = ltSelectedEntry();
+    if (entry) {
+        const carInfo = (entry.driver && entry.driver.CarInfo) || {};
+        right.textContent = (carInfo.DriverName || "") + (ltIsEnglish() ? " · FOCUSED" : " · EN FOCO");
+    } else {
+        right.textContent = ltIsEnglish()
+            ? "CLICK A DRIVER TO SEE THEIR DATA"
+            : "CLICK EN UN PILOTO PARA VER SUS DATOS";
+    }
+}
+
+// Undoes the zoom/pane without touching the selection highlight.
+function ltResetMapTransform() {
+    const stage = document.getElementById("liveTimingMapStage");
+    if (stage) stage.style.transform = "";
+    const dots = document.getElementById("liveTimingMapDots");
+    if (dots) dots.style.setProperty("--lt-map-zoom", "1");
+}
+
+function ltClearMapFocus() {
+    ltResetMapTransform();
+    const dots = document.getElementById("liveTimingMapDots");
+    if (dots) dots.classList.remove("has-focus");
+}
+
+// Zooms and pans the stage so the focused car stays in the middle of the map.
+function ltApplyMapFocus() {
+    const stage = document.getElementById("liveTimingMapStage");
+    if (!stage) return;
+
+    const entry = ltSelectedEntry();
+    const pos = entry && entry.driver && entry.driver.LastPos;
+    const point = (pos && ltHasPosition(pos)) ? ltTrackMapPosition(pos) : null;
+    if (!point || !isFinite(point.left) || !isFinite(point.top)) {
+        // No position yet: leave the selection but do not zoom into nowhere.
+        ltResetMapTransform();
+        return;
+    }
+
+    const width = stage.clientWidth || 0;
+    const height = stage.clientHeight || 0;
+    if (!width || !height) return;
+
+    const zoom = LIVE_TIMING_MAP_ZOOM;
+    // The focused car is clamped so the zoomed window never shows a blank gap.
+    const min = 0.5 / zoom;
+    const max = 1 - min;
+    const fx = Math.min(Math.max(point.left / 100, min), max);
+    const fy = Math.min(Math.max(point.top / 100, min), max);
+
+    const tx = zoom * (0.5 - fx) * width;
+    const ty = zoom * (0.5 - fy) * height;
+    stage.style.transform = "translate(" + tx.toFixed(1) + "px, " + ty.toFixed(1) + "px) scale(" + zoom + ")";
+
+    const dots = document.getElementById("liveTimingMapDots");
+    if (dots) dots.style.setProperty("--lt-map-zoom", String(zoom));
+}
+
+function ltUpdateMapFocusClasses() {
+    // Drop the focus when the driver is no longer in the session.
+    if (liveTimingSelectedGuid && !ltSelectedEntry()) {
+        liveTimingSelectedGuid = null;
+        ltClearMapFocus();
+        renderLiveTimingFocus();
+        ltUpdateMapFootSelection();
+    }
+
+    const dots = document.getElementById("liveTimingMapDots");
+    if (dots) dots.classList.toggle("has-focus", !!liveTimingSelectedGuid);
+    liveTimingMapDots.forEach(function (dot, guid) {
+        dot.classList.toggle("is-selected", String(guid) === String(liveTimingSelectedGuid));
+    });
+}
+
+function ltSelectDriver(guid) {
+    if (!guid) return;
+    liveTimingSelectedGuid = (String(guid) === String(liveTimingSelectedGuid)) ? null : String(guid);
+    renderLiveTimingTable();
+    ltUpdateMapFocusClasses();
+    if (liveTimingSelectedGuid) ltRefreshDotTag(liveTimingSelectedGuid);
+    ltApplyMapFocus();
+    renderLiveTimingFocus();
+    ltUpdateMapFootSelection();
+}
+
+function ltClearDriverFocus() {
+    liveTimingSelectedGuid = null;
+    ltClearMapFocus();
+    renderLiveTimingTable();
+    renderLiveTimingFocus();
+    ltUpdateMapFootSelection();
+}
+
+function ltFocusValue(id, text) {
+    const el = document.getElementById(id);
+    if (el) el.textContent = text;
+}
+
+function renderLiveTimingFocus() {
+    const panel = document.getElementById("liveTimingFocus");
+    if (!panel) return;
+
+    const entry = ltSelectedEntry();
+    if (!entry) {
+        panel.style.display = "none";
+        return;
+    }
+
+    const isEn = ltIsEnglish();
+    panel.style.display = "block";
+
+    const driver = entry.driver || {};
+    const carInfo = driver.CarInfo || {};
+    const car = ltDriverLapInfo(driver) || {};
+
+    const name = carInfo.DriverName || (isEn ? "Unknown driver" : "Piloto desconocido");
+    const carName = car.CarName || carInfo.CarName || carInfo.CarModel || "--";
+    const position = (driver.Position && driver.Position !== 255) ? driver.Position : "--";
+
+    const bar = document.getElementById("liveTimingFocusBar");
+    if (bar) bar.style.background = ltMapColor(entry.guid);
+
+    ltFocusValue("liveTimingFocusName", String(name).toUpperCase());
+    ltFocusValue("liveTimingFocusCar", String(carName));
+    ltFocusValue("liveTimingFocusPos", "P" + position);
+
+    const speed = Number(driver.__ltSpeedKmh);
+    ltFocusValue("liveTimingFocusSpeed", (isFinite(speed) && speed > 0) ? Math.round(speed) + " km/h" : "--");
+    ltFocusValue("liveTimingFocusBest", ltFormatLap(car.BestLap));
+    ltFocusValue("liveTimingFocusLast", ltFormatLap(car.LastLap));
+    ltFocusValue("liveTimingFocusTop", Number(car.TopSpeedBestLap) > 0 ? Math.round(Number(car.TopSpeedBestLap)) + " km/h" : "--");
+    ltFocusValue("liveTimingFocusLaps", String(car.NumLaps || 0));
+    ltFocusValue("liveTimingFocusGap", driver.Split || "--");
+    const delta = ltSignedDelta(driver.DeltaToBest);
+    ltFocusValue("liveTimingFocusDelta", delta || "--");
+    ltFocusValue("liveTimingFocusTyre", carInfo.Tyres || car.TyreBestLap || "--");
+    const ping = Number(driver.Ping);
+    ltFocusValue("liveTimingFocusPing", (isFinite(ping) && ping >= 0) ? Math.round(ping) + " ms" : "--");
+
+    const spline = ltSplinePercent(driver);
+    const fill = document.getElementById("liveTimingFocusSplineFill");
+    if (fill) fill.style.width = (spline === null ? 0 : spline).toFixed(1) + "%";
+
+    const flags = document.getElementById("liveTimingFocusFlags");
+    if (flags) {
+        const pills = [];
+        if (driver.IsInPits) pills.push('<span class="lt-flag lt-flag-pit">' + (isEn ? "IN PITS" : "EN BOXES") + "</span>");
+        if (driver.DRSActive) pills.push('<span class="lt-flag lt-flag-drs">DRS</span>');
+        if (driver.BlueFlag) pills.push('<span class="lt-flag lt-flag-blue">' + (isEn ? "BLUE FLAG" : "BANDERA AZUL") + "</span>");
+        if (carInfo.Tyres) pills.push('<span class="lt-flag lt-flag-tyre">' + escapeHtml(String(carInfo.Tyres)) + "</span>");
+        flags.innerHTML = pills.join("");
+    }
+
+    const sectors = document.getElementById("liveTimingFocusSectors");
+    if (sectors) sectors.innerHTML = ltSectorChips(car);
+}
+
+// Row / car / close-button clicks. Bound once, delegated so re-rendering the
+// table body does not need new listeners.
+function ltInitLiveTimingInteractions() {
+    const tbody = document.getElementById("liveTimingBody");
+    if (tbody && tbody.dataset.ltBound !== "1") {
+        tbody.dataset.ltBound = "1";
+        tbody.addEventListener("click", function (event) {
+            const row = event.target.closest ? event.target.closest("tr[data-guid]") : null;
+            if (!row) return;
+            ltSelectDriver(row.getAttribute("data-guid"));
+        });
+    }
+
+    const dots = document.getElementById("liveTimingMapDots");
+    if (dots && dots.dataset.ltBound !== "1") {
+        dots.dataset.ltBound = "1";
+        dots.addEventListener("click", function (event) {
+            const dot = event.target.closest ? event.target.closest(".lt-map-dot[data-guid]") : null;
+            if (!dot) return;
+            ltSelectDriver(dot.getAttribute("data-guid"));
+        });
+    }
+
+    const close = document.getElementById("liveTimingFocusClose");
+    if (close && close.dataset.ltBound !== "1") {
+        close.dataset.ltBound = "1";
+        close.addEventListener("click", function () { ltClearDriverFocus(); });
+    }
+
+    if (!ltInitLiveTimingInteractions.resizeBound) {
+        ltInitLiveTimingInteractions.resizeBound = true;
+        window.addEventListener("resize", function () {
+            if (liveTimingSelectedGuid) ltApplyMapFocus();
+        });
+    }
+}
+
 function liveTimingTick() {
     if (!liveTimingStatus) return;
     renderLiveTimingSession();
     renderLiveTimingTable();
     ltFetchStoredRecords(false);
     renderLiveTimingRecords();
+    if (liveTimingSelectedGuid) {
+        renderLiveTimingFocus();
+        ltApplyMapFocus();
+    }
 }
 
 function connectLiveTiming() {
     if (typeof EventSource === "undefined") return;
+
+    ltInitLiveTimingInteractions();
+
     if (liveTimingSource && liveTimingSource.readyState !== EventSource.CLOSED) return;
 
     ltSetStatus("connecting", "connecting");
@@ -21675,6 +22043,19 @@ function handleLiveTimingMessage(raw) {
             const driver = drivers[guid] || null;
             if (driver) driver.LastPos = update.Pos;
 
+            const velocity = update.Velocity || {};
+            const speed = Math.round(
+                Math.sqrt(Math.pow(Number(velocity.X) || 0, 2) + Math.pow(Number(velocity.Z) || 0, 2)) * 3.6
+            );
+            if (driver && isFinite(speed)) driver.__ltSpeedKmh = speed;
+
+            // The focused car follows the live position too (camera-like pan).
+            if (String(guid) === String(liveTimingSelectedGuid)) {
+                ltRefreshDotTag(guid);
+                ltApplyMapFocus();
+                ltFocusValue("liveTimingFocusSpeed", (isFinite(speed) && speed > 0) ? speed + " km/h" : "--");
+            }
+
             const dot = liveTimingMapDots.get(guid) || (driver ? ltCreateMapDot(guid, driver, 0) : null);
             if (!dot) break;
 
@@ -21682,10 +22063,6 @@ function handleLiveTimingMessage(raw) {
             dot.style.display = "flex";
             ltPlaceMapDot(guid, update.Pos);
 
-            const velocity = update.Velocity || {};
-            const speed = Math.round(
-                Math.sqrt(Math.pow(Number(velocity.X) || 0, 2) + Math.pow(Number(velocity.Z) || 0, 2)) * 3.6
-            );
             const name = (driver && driver.CarInfo && driver.CarInfo.DriverName) || "";
             dot.title = (isFinite(speed) && speed > 0) ? name + " · " + speed + " km/h" : name;
             break;
@@ -21710,6 +22087,10 @@ function releaseLiveTiming(consumer) {
         }
         disconnectLiveTiming();
         liveTimingStatus = null;
+        liveTimingSelectedGuid = null;
+        ltClearMapFocus();
+        renderLiveTimingFocus();
+        ltUpdateMapFootSelection();
         resetLiveTimingMap();
     }
 }
