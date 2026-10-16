@@ -7951,7 +7951,7 @@ function openDriverStatsModal(driverName) {
             a.rel = "noopener noreferrer";
             const userStr = data.socialTwitch.trim().replace("https://twitch.tv/", "").replace("https://www.twitch.tv/", "").replace("@", "");
             a.href = data.socialTwitch.startsWith("http") ? data.socialTwitch : `https://twitch.tv/${userStr}`;
-            a.innerHTML = `👾 Twitch: ${userStr}`;
+            a.textContent = `👾 Twitch: ${userStr}`;
             if (data.cardColor) a.style.borderColor = `${data.cardColor}60`;
             socialGrid.appendChild(a);
         }
@@ -7964,7 +7964,7 @@ function openDriverStatsModal(driverName) {
             a.rel = "noopener noreferrer";
             const ytStr = data.socialYoutube.trim().replace("https://youtube.com/", "").replace("https://www.youtube.com/", "");
             a.href = data.socialYoutube.startsWith("http") ? data.socialYoutube : `https://youtube.com/${ytStr}`;
-            a.innerHTML = `📺 YouTube: ${ytStr}`;
+            a.textContent = `📺 YouTube: ${ytStr}`;
             if (data.cardColor) a.style.borderColor = `${data.cardColor}60`;
             socialGrid.appendChild(a);
         }
@@ -7977,7 +7977,7 @@ function openDriverStatsModal(driverName) {
             a.rel = "noopener noreferrer";
             const twStr = data.socialTwitter.trim().replace("https://x.com/", "").replace("https://twitter.com/", "").replace("@", "");
             a.href = data.socialTwitter.startsWith("http") ? data.socialTwitter : `https://x.com/${twStr}`;
-            a.innerHTML = `🐦 @${twStr}`;
+            a.textContent = `🐦 @${twStr}`;
             if (data.cardColor) a.style.borderColor = `${data.cardColor}60`;
             socialGrid.appendChild(a);
         }
@@ -7986,7 +7986,7 @@ function openDriverStatsModal(driverName) {
             count++;
             const span = document.createElement("span");
             span.className = "social-pill social-pill-discord";
-            span.innerHTML = `💬 Discord: ${data.socialDiscord.trim()}`;
+            span.textContent = `💬 Discord: ${data.socialDiscord.trim()}`;
             if (data.cardColor) span.style.borderColor = `${data.cardColor}60`;
             socialGrid.appendChild(span);
         }
@@ -20159,26 +20159,29 @@ function renderCommentsList(comments, newsId) {
     const deleteTitle = currentLanguage === "en" ? "Delete comment" : "Eliminar comentario";
 
     container.innerHTML = comments.map(c => {
-        const initial = (c.authorName || "U").charAt(0).toUpperCase();
-        const dateFormatted = formatNewsDateTime(c.createdAt);
+        // All comment fields are user-controlled, so they MUST be escaped before
+        // being interpolated into HTML (prevents stored XSS).
+        const initial = escapeHtml((c.authorName || "U").charAt(0).toUpperCase());
+        const dateFormatted = escapeHtml(formatNewsDateTime(c.createdAt));
+        const safeCommentId = escapeHtml(c.id);
         const canDelete = userIsAdmin || (u && u.email && c.authorEmail && u.email.toLowerCase() === c.authorEmail.toLowerCase());
 
         const deleteBtnMarkup = canDelete 
-            ? `<button type="button" class="btn-delete-comment" data-comment-id="${c.id}" data-news-id="${newsId}" title="${deleteTitle}">🗑️</button>` 
+            ? `<button type="button" class="btn-delete-comment" data-comment-id="${safeCommentId}" data-news-id="${escapeHtml(newsId)}" title="${escapeHtml(deleteTitle)}">🗑️</button>` 
             : ``;
 
         return `
-            <div class="news-comment-item" id="comment_${c.id}">
+            <div class="news-comment-item" id="comment_${safeCommentId}">
                 <div class="news-comment-avatar">${initial}</div>
                 <div class="news-comment-content">
                     <div class="news-comment-top">
                         <div style="display: flex; align-items: center; gap: 8px;">
-                            <span class="news-comment-author-name">${c.authorName || authorFallback}</span>
+                            <span class="news-comment-author-name">${escapeHtml(c.authorName || authorFallback)}</span>
                             <span class="news-comment-date">${dateFormatted}</span>
                         </div>
                         ${deleteBtnMarkup}
                     </div>
-                    <div class="news-comment-text">${c.text || ""}</div>
+                    <div class="news-comment-text">${escapeHtml(c.text || "")}</div>
                 </div>
             </div>
         `;
@@ -22294,7 +22297,7 @@ function renderGlobalPhotoGrid() {
                 <img src="${escapeHtml(photo.photoUrl)}" alt="${escapeHtml(photo.caption || (isEn ? "FFC Photo" : "Foto FFC"))}" loading="lazy">
                 <span class="photo-card-badge">${escapeHtml(raceLabel)}</span>
                 ${pendingBadge}
-                <button type="button" class="photo-card-dl-btn" title="${dlTitleText}" onclick="event.stopPropagation(); window.downloadPhoto('${escapeHtml(photo.photoUrl)}', 'ffc-${photo.raceId}-${photo.id}.jpg')" style="position: absolute; top: 8px; right: 8px; background: rgba(0,0,0,0.7); color: #fff; border: 1px solid rgba(255,255,255,0.3); border-radius: 4px; padding: 3px 7px; font-size: 11px; font-weight: 700; cursor: pointer; z-index: 2; transition: all 0.2s;">⬇️ ${dlBtnText}</button>
+                <button type="button" class="photo-card-dl-btn" title="${dlTitleText}" style="position: absolute; top: 8px; right: 8px; background: rgba(0,0,0,0.7); color: #fff; border: 1px solid rgba(255,255,255,0.3); border-radius: 4px; padding: 3px 7px; font-size: 11px; font-weight: 700; cursor: pointer; z-index: 2; transition: all 0.2s;">⬇️ ${dlBtnText}</button>
             </div>
             <div class="photo-card-content">
                 <div class="photo-card-caption">${escapeHtml(photo.caption || noDescText)}</div>
@@ -22304,6 +22307,13 @@ function renderGlobalPhotoGrid() {
                 </div>
             </div>
         `;
+        const dlBtn = card.querySelector(".photo-card-dl-btn");
+        if (dlBtn) {
+            dlBtn.addEventListener("click", (ev) => {
+                ev.stopPropagation();
+                window.downloadPhoto(photo.photoUrl, `ffc-${photo.raceId || "carrera"}-${photo.id || Date.now()}.jpg`);
+            });
+        }
         card.addEventListener("click", () => openPhotoLightbox(photo));
         grid.appendChild(card);
     });
@@ -22352,7 +22362,7 @@ function renderRaceModalPhotoGallery(raceKey) {
             <div class="photo-card-thumb" style="position: relative;">
                 <img src="${escapeHtml(photo.photoUrl)}" alt="${escapeHtml(photo.caption || (isEn ? "Race photo" : "Foto de carrera"))}" loading="lazy">
                 ${pendingBadge}
-                <button type="button" class="photo-card-dl-btn" title="${dlTitleText}" onclick="event.stopPropagation(); window.downloadPhoto('${escapeHtml(photo.photoUrl)}', 'ffc-${photo.raceId}-${photo.id}.jpg')" style="position: absolute; top: 8px; right: 8px; background: rgba(0,0,0,0.7); color: #fff; border: 1px solid rgba(255,255,255,0.3); border-radius: 4px; padding: 3px 7px; font-size: 11px; font-weight: 700; cursor: pointer; z-index: 2; transition: all 0.2s;">⬇️ ${dlBtnText}</button>
+                <button type="button" class="photo-card-dl-btn" title="${dlTitleText}" style="position: absolute; top: 8px; right: 8px; background: rgba(0,0,0,0.7); color: #fff; border: 1px solid rgba(255,255,255,0.3); border-radius: 4px; padding: 3px 7px; font-size: 11px; font-weight: 700; cursor: pointer; z-index: 2; transition: all 0.2s;">⬇️ ${dlBtnText}</button>
             </div>
             <div class="photo-card-content">
                 <div class="photo-card-caption">${escapeHtml(photo.caption || noDescText)}</div>
@@ -22362,6 +22372,13 @@ function renderRaceModalPhotoGallery(raceKey) {
                 </div>
             </div>
         `;
+        const dlBtn = card.querySelector(".photo-card-dl-btn");
+        if (dlBtn) {
+            dlBtn.addEventListener("click", (ev) => {
+                ev.stopPropagation();
+                window.downloadPhoto(photo.photoUrl, `ffc-${photo.raceId || "carrera"}-${photo.id || Date.now()}.jpg`);
+            });
+        }
         card.addEventListener("click", () => openPhotoLightbox(photo));
         grid.appendChild(card);
     });
