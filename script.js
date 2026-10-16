@@ -20972,8 +20972,12 @@ function ltFetchStaticRecords() {
             // This page reads the published file, so there may be no relay behind
             // it: "disconnected" would be misleading, and the sections below
             // still have something to show.
+            //
+            // With a relay configured the pill is left to the stream though: the
+            // first seconds of a cold start would otherwise read "no live feed"
+            // and then flip to "live", when what is happening is a connection.
             if (!liveTimingStatus && ltArchivedMode()) {
-                ltSetStatus("archived", "archived");
+                if (!LIVE_TIMING_RELAY_BASE) ltSetStatus("archived", "archived");
                 renderLiveTimingTable();
                 renderLiveTimingMap();
             }
