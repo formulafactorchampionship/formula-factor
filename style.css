@@ -9277,6 +9277,19 @@ footer {
     border-color: rgba(248, 81, 73, 0.35);
 }
 
+/* Static host with no relay behind it: there is nothing to connect to, so the
+   pill states it calmly instead of looking like a failure. */
+.live-timing-status[data-state="archived"] {
+    color: var(--lt-muted);
+    background: rgba(255, 255, 255, 0.04);
+    border-color: var(--lt-line-strong);
+}
+
+.live-timing-status[data-state="archived"] .live-pulse-dot {
+    animation: none;
+    box-shadow: none;
+}
+
 @keyframes ltPulseAnim {
     0% { transform: scale(0.9); box-shadow: 0 0 0 0 currentColor; }
     70% { transform: scale(1.1); box-shadow: 0 0 0 7px transparent; }

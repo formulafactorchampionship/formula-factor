@@ -20636,18 +20636,41 @@ if (document.readyState === "loading") {
     }
 }
 
-// --- Assetto Hosting Live Timing Integration (via /api/live-timing/stream) ---
+// --- Assetto Hosting Live Timing Integration (via /api/live-timing/relay) ---
 // The race-control websocket of the game server rejects any handshake whose
 // Origin is not its own host, so we cannot connect to it straight from the
-// browser. server.js keeps one upstream connection and relays the JSON
-// messages as Server-Sent Events; EventSource reconnects on its own.
-const LIVE_TIMING_STREAM_URL = "/api/live-timing/stream";
+// browser. A relay keeps one upstream connection and rebroadcasts the JSON as
+// Server-Sent Events; EventSource reconnects on its own.
+//
+// The relay runs next to the site in development, but the public site is static
+// (GitHub Pages), so there it lives on Cloud Run: the address is set in
+// index.html (<meta name="ffc-live-timing-relay">) and everything else works
+// the same. Leaving it empty means "same origin".
+const LIVE_TIMING_RELAY_BASE = (function () {
+    const meta = document.querySelector('meta[name="ffc-live-timing-relay"]');
+    const value = meta ? String(meta.getAttribute("content") || "").trim() : "";
+    return value.replace(/\/+$/, "");
+})();
+
+const LIVE_TIMING_STREAM_URL = LIVE_TIMING_RELAY_BASE + "/api/live-timing/stream";
+const LIVE_TIMING_RECORDS_URL = LIVE_TIMING_RELAY_BASE + "/api/live-timing/records";
 
 let liveTimingSource = null;
 let liveTimingTickTimer = null;
 let liveTimingStatus = null;            // last RaceControl snapshot (EventType 200)
 let liveTimingStatusKey = "connecting"; // translation key of the current status pill
+// The published records file answered, so this page is being served statically.
+let liveTimingPublished = false;
+// A relay answered this page at least once during the current connection.
+let liveTimingStreamOpened = false;
 const liveTimingConsumers = new Set();  // "tab" and/or "hero" keep the stream open
+
+// Archived mode = static hosting (published records arrive) and no relay: there
+// is nothing to connect to, so the section explains itself instead of looking
+// broken with a red "disconnected".
+function ltArchivedMode() {
+    return liveTimingPublished && !liveTimingStreamOpened;
+}
 
 function ltIsEnglish() {
     return typeof currentLanguage !== "undefined" && currentLanguage === "en";
@@ -20703,7 +20726,8 @@ function ltStatusText(key) {
         connecting: isEn ? "Connecting..." : "Conectando...",
         reconnecting: isEn ? "Reconnecting..." : "Reconectando...",
         online: isEn ? "Live connection" : "Conectado en directo",
-        disconnected: isEn ? "Disconnected" : "Desconectado"
+        disconnected: isEn ? "Disconnected" : "Desconectado",
+        archived: isEn ? "No live feed" : "Sin retransmisión"
     };
     return labels[key] || labels.connecting;
 }
@@ -20807,7 +20831,11 @@ function renderLiveTimingTable() {
     const emptyRow = text => `<tr><td colspan="7" class="live-timing-empty">${text}</td></tr>`;
 
     if (!liveTimingStatus) {
-        tbody.innerHTML = emptyRow(isEn ? "Waiting for timing data..." : "Esperando datos de cronometraje...");
+        tbody.innerHTML = emptyRow(ltArchivedMode()
+            ? (isEn
+                ? "No live session right now. The stored best times are below."
+                : "No hay sesión en directo ahora mismo. Abajo tienes los mejores tiempos guardados.")
+            : (isEn ? "Waiting for timing data..." : "Esperando datos de cronometraje..."));
         return;
     }
 
@@ -20907,10 +20935,13 @@ function ltFetchStoredRecords(force) {
     const params = new URLSearchParams({ track: track });
     if (session.TrackConfig) params.set("config", String(session.TrackConfig));
 
-    fetch("/api/live-timing/records?" + params.toString(), { headers: { Accept: "application/json" } })
+    fetch(LIVE_TIMING_RECORDS_URL + "?" + params.toString(), { headers: { Accept: "application/json" } })
         .then(function (response) { return response.ok ? response.json() : null; })
         .then(function (data) {
-            if (data && data.success) {
+            // A relay with nothing stored for this circuit must not blank the
+            // card: the published file still knows the times.
+            const hasValues = data && data.success && (data.bestLap || data.topSpeed || data.laps);
+            if (hasValues) {
                 liveTimingStoredRecords = data;
                 liveTimingStoredRecordsKey = String(data.track || "") + "|" + String(data.config || "");
                 renderLiveTimingRecords();
@@ -20928,6 +20959,7 @@ function ltFetchStaticRecords() {
         .then(function (data) {
             if (!data || !data.tracks) return;
             liveTimingStaticRecords = data;
+            liveTimingPublished = true;
 
             const live = ltRecordsTrackKey();
             const wanted = live || String(data.default || "");
@@ -20936,6 +20968,15 @@ function ltFetchStaticRecords() {
 
             liveTimingStoredRecords = Object.assign({ success: true, published: true }, entry);
             liveTimingStoredRecordsKey = wanted;
+
+            // This page reads the published file, so there may be no relay behind
+            // it: "disconnected" would be misleading, and the sections below
+            // still have something to show.
+            if (!liveTimingStatus && ltArchivedMode()) {
+                ltSetStatus("archived", "archived");
+                renderLiveTimingTable();
+                renderLiveTimingMap();
+            }
             renderLiveTimingRecords();
         })
         .catch(function () { /* nothing published for this circuit yet */ });
@@ -21107,8 +21148,26 @@ function ltRealtimeInterval() {
 function ltTrackMapUrl() {
     const session = liveTimingStatus && liveTimingStatus.SessionInfo;
     if (!session || !session.Track) return "";
-    return LIVE_TIMING_MAP_BASE + "/" + encodeURIComponent(session.Track) +
-        (session.TrackConfig ? "/" + encodeURIComponent(session.TrackConfig) : "") + "/map.png";
+    return ltTrackMapUrlFor(session.Track, session.TrackConfig);
+}
+
+function ltTrackMapUrlFor(track, config) {
+    if (!track) return "";
+    return LIVE_TIMING_MAP_BASE + "/" + encodeURIComponent(track) +
+        (config ? "/" + encodeURIComponent(config) : "") + "/map.png";
+}
+
+// The circuit of the last session the site has stored times for (published file).
+function ltPublishedTrack() {
+    const data = liveTimingStaticRecords;
+    if (!data || !data.tracks) return null;
+    const entry = data.tracks[String(data.default || "")];
+    if (!entry || !entry.track) return null;
+    return {
+        track: String(entry.track),
+        config: String(entry.config || ""),
+        name: entry.name || ""
+    };
 }
 
 function ltMapTrackLabel() {
@@ -21122,9 +21181,20 @@ function ltUpdateMapEmpty() {
     const empty = document.getElementById("liveTimingMapEmpty");
     if (!empty) return;
     const isEn = ltIsEnglish();
-    empty.textContent = empty.getAttribute("data-mode") === "unavailable"
-        ? (isEn ? "Track map not available for this circuit." : "Mapa no disponible para este circuito.")
-        : (isEn ? "Waiting for track map data..." : "Esperando datos del mapa del circuito...");
+    const mode = empty.getAttribute("data-mode");
+
+    if (mode === "unavailable") {
+        empty.textContent = isEn ? "Track map not available for this circuit." : "Mapa no disponible para este circuito.";
+        return;
+    }
+    if (mode === "archived") {
+        const published = ltPublishedTrack();
+        const name = (published && (published.name || published.track)) || "";
+        empty.textContent = (isEn ? "No live session right now." : "Sin sesión en directo ahora mismo.") +
+            (name ? (isEn ? " Last circuit: " : " Último circuito: ") + name + "." : "");
+        return;
+    }
+    empty.textContent = isEn ? "Waiting for track map data..." : "Esperando datos del mapa del circuito...";
 }
 
 function ltShowMapStage(isVisible) {
@@ -21298,6 +21368,35 @@ function renderLiveTimingMap() {
     const snapshot = liveTimingStatus;
 
     if (!snapshot || !snapshot.SessionInfo) {
+        // Published mode (static host): show the circuit of the last stored
+        // session, without cars, instead of an empty box.
+        const published = ltArchivedMode() ? ltPublishedTrack() : null;
+        if (published) {
+            const publishedKey = "published|" + published.track + "|" + published.config;
+            if (publishedKey !== liveTimingMapTrackKey) {
+                liveTimingMapTrackKey = publishedKey;
+                liveTimingMapImageLoaded = false;
+                ltClearMapDots();
+            }
+
+            const publishedUrl = ltTrackMapUrlFor(published.track, published.config);
+            if (trackLabel) trackLabel.textContent = published.name || published.track;
+            if (empty) empty.setAttribute("data-mode", "archived");
+            ltUpdateMapEmpty();
+
+            if (image && publishedUrl && image.getAttribute("src") !== publishedUrl) {
+                image.setAttribute("src", publishedUrl);
+            }
+            if (image && image.complete && image.naturalWidth > 0) {
+                liveTimingMapImageLoaded = true;
+                ltShowMapStage(true);
+            } else {
+                ltShowMapStage(false);
+            }
+            ltUpdateMapFoot();
+            return;
+        }
+
         liveTimingMapTrackKey = "";
         if (trackLabel) trackLabel.textContent = "--";
         if (image) image.removeAttribute("src");
@@ -21364,8 +21463,12 @@ function connectLiveTiming() {
 
     const source = new EventSource(LIVE_TIMING_STREAM_URL);
     liveTimingSource = source;
+    liveTimingStreamOpened = false;
 
     source.onopen = function () {
+        // A relay answered this page: whatever is on screen came from a live
+        // host, so the calm "no live feed" state no longer applies.
+        liveTimingStreamOpened = true;
         ltSetStatus("online", "online");
     };
 
@@ -21376,8 +21479,11 @@ function connectLiveTiming() {
     source.addEventListener("status", function (event) {
         try {
             const info = JSON.parse(event.data || "{}");
+            liveTimingStreamOpened = true;
             if (info && info.connected) {
                 ltSetStatus("online", "online");
+            } else {
+                ltSetStatus("offline", "reconnecting");
             }
         } catch (e) { /* ignore */ }
     });
@@ -21392,6 +21498,12 @@ function connectLiveTiming() {
 
     source.onerror = function () {
         if (liveTimingSource !== source) return;
+        // On a static host (GitHub Pages) there is no relay to reach: keep the
+        // calm "no live feed" state instead of a red "disconnected".
+        if (ltArchivedMode() && !liveTimingStatus) {
+            ltSetStatus("archived", "archived");
+            return;
+        }
         // EventSource reconnects automatically; just reflect the current state.
         if (source.readyState === EventSource.CONNECTING) {
             ltSetStatus("connecting", "reconnecting");
@@ -21407,7 +21519,11 @@ function disconnectLiveTiming() {
         liveTimingSource = null;
         try { source.close(); } catch (e) { /* ignore */ }
     }
-    ltSetStatus("offline", "disconnected");
+    if (ltArchivedMode()) {
+        ltSetStatus("archived", "archived");
+    } else {
+        ltSetStatus("offline", "disconnected");
+    }
 }
 
 function handleLiveTimingMessage(raw) {

@@ -15,12 +15,11 @@
 import fs from 'fs';
 import tls from 'tls';
 import crypto from 'crypto';
+import { LIVE_TIMING_UPSTREAM } from './live-timing-upstream.js';
 
-export const LIVE_TIMING_UPSTREAM = {
-  host: 'fr.assettohosting.com',
-  port: 60290,
-  path: '/api/race-control'
-};
+// The websocket client (and the upstream address it talks to) lives in
+// live-timing-upstream.js, shared with the Cloud Run relay.
+export { LIVE_TIMING_UPSTREAM };
 
 // The panel that fronts the game server publishes both the live snapshot and
 // the archived sessions (and the raw content: maps, car UI files...).

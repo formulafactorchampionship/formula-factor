@@ -1,0 +1,22 @@
+# Files uploaded to Cloud Build for `gcloud run deploy --source .`.
+# The image only needs Dockerfile, live-timing-upstream.js,
+# live-timing-store.js and relay/, so everything heavy or private stays out.
+.git/
+.github/
+node_modules/
+backups/
+news_uploads/
+components/
+photos_db.json
+fantasy_teams_db.json
+live_timing_db.json
+*.png
+*.jpg
+*.jpeg
+*.webp
+*.mp4
+*.zip
+.env
+.env.*
+.admin_secret
+users_db.json
