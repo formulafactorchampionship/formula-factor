@@ -71,32 +71,34 @@ compila en la nube con Cloud Build.
 
 Desde la raíz del repositorio:
 
-```powershell
+```bash
 gcloud auth login
 gcloud projects list                       # el ID del proyecto de Firebase
 gcloud config set project TU_PROJECT_ID
 
 gcloud services enable run.googleapis.com cloudbuild.googleapis.com artifactregistry.googleapis.com
 
-gcloud run deploy ffc-live-relay `
-  --source . `
-  --region europe-west1 `
-  --allow-unauthenticated `
-  --timeout 3600 `
-  --memory 256Mi `
-  --cpu 1 `
-  --min-instances 0 `
-  --max-instances 1 `
-  --port 8080 `
-  --set-env-vars "ALLOWED_ORIGINS=https://formulafactorchampionship.eu,https://formulafactorchampionship.github.io,http://localhost:3000"
+# Las variables van en un fichero: --set-env-vars usa la coma como separador y
+# ALLOWED_ORIGINS es una lista separada por comas, así que ahí no cabe.
+cat > relay-vars.yaml <<'EOF'
+ALLOWED_ORIGINS: "https://formulafactorchampionship.eu,https://formulafactorchampionship.github.io,http://localhost:3000"
+EOF
+
+gcloud run deploy ffc-live-relay --source . --region europe-west1 --allow-unauthenticated \
+  --timeout 3600 --memory 256Mi --cpu 1 --min-instances 0 --max-instances 1 --port 8080 \
+  --env-vars-file relay-vars.yaml
 ```
 
-En Cloud Shell (bash) lo mismo en una línea, cambiando las `` ` `` por `\`.
+En PowerShell, cambia las `` \ `` finales por `` ` `` y el `cat > ... <<'EOF'` por
+`Set-Content relay-vars.yaml 'ALLOWED_ORIGINS: "https://…"'`.
+
+> Alternativa a un fichero: `--set-env-vars "^@^ALLOWED_ORIGINS=https://a@https://b"`,
+> donde el separador pasa a ser `@`.
 
 Al terminar, la CLI imprime la `Service URL`, del estilo
 `https://ffc-live-relay-xxxxxxxxxx-ew.a.run.app`. Comprobar que responde:
 
-```powershell
+```bash
 curl https://ffc-live-relay-xxxxxxxxxx-ew.a.run.app/health
 ```
 
