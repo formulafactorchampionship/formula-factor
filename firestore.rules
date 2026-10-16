@@ -51,9 +51,28 @@ service cloud.firestore {
         && (!('passwordHash' in request.resource.data) || (request.resource.data.passwordHash is string && request.resource.data.passwordHash.size() <= 256));
     }
 
+    // Public driver cards (name, team, points, colours...). Reads are open so
+    // the website can render them; writes are admin-only.
     match /pilotos/{pilotId} {
       allow read: if true;
       allow delete, create, update: if isAdmin();
+    }
+
+    // Private per-pilot verification data. The document id IS the verification
+    // code, so a signed-in user who knows the exact code can read just that
+    // token (get) but can never enumerate the collection (list is admin-only).
+    // Holds the code and the linked account (email/uid); NEVER expose these on
+    // the public 'pilotos' documents.
+    match /pilotos_privado/{code} {
+      allow get: if true;
+      allow list: if isAdmin();
+      allow create, delete: if isAdmin();
+      // A signed-in user may consume an unused token, binding it to themselves.
+      allow update: if isAdmin() || (
+        isSignedIn()
+        && request.resource.data.usedByUid == request.auth.uid
+        && resource.data.usedByUid == null
+      );
     }
 
     match /carreras/{raceId} {

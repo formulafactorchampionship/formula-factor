@@ -11218,9 +11218,7 @@ if (adminSaveStandingsBtn) {
                     customFlag: p.customFlag || p.flag || getOfficialDriverFlag(p.driver)
                 };
                 if (p.isVerified !== undefined) pPayload.isVerified = p.isVerified;
-                if (p.claimedByEmail) pPayload.claimedByEmail = p.claimedByEmail;
                 if (p.claimedByUid) pPayload.claimedByUid = p.claimedByUid;
-                if (p.verificationCode) pPayload.verificationCode = p.verificationCode;
 
                 batch.set(docRef, pPayload, { merge: true });
             });
@@ -11543,8 +11541,6 @@ if (adminSaveDriversBtn) {
                 if (existingPilot) {
                     if (existingPilot.pts !== undefined) updateData.pts = existingPilot.pts;
                     if (existingPilot.pos !== undefined) updateData.pos = existingPilot.pos;
-                    if (existingPilot.verificationCode) updateData.verificationCode = existingPilot.verificationCode;
-                    if (existingPilot.claimedByEmail) updateData.claimedByEmail = existingPilot.claimedByEmail;
                     if (existingPilot.claimedByUid) updateData.claimedByUid = existingPilot.claimedByUid;
                     if (existingPilot.isVerified !== undefined) updateData.isVerified = existingPilot.isVerified;
                     if (existingPilot.avatarUrl) updateData.avatarUrl = existingPilot.avatarUrl;
@@ -11998,9 +11994,7 @@ async function recalculateAndSyncStandings(racesMap = raceResults) {
                 customFlag: p.customFlag || p.flag || getOfficialDriverFlag(p.driver)
             };
             if (p.isVerified !== undefined) pPayload.isVerified = p.isVerified;
-            if (p.claimedByEmail) pPayload.claimedByEmail = p.claimedByEmail;
             if (p.claimedByUid) pPayload.claimedByUid = p.claimedByUid;
-            if (p.verificationCode) pPayload.verificationCode = p.verificationCode;
 
             batch.set(docRef, pPayload, { merge: true });
         });
@@ -13641,9 +13635,20 @@ const userClaimedDriverName = document.getElementById("userClaimedDriverName");
 const userClaimedTeamName = document.getElementById("userClaimedTeamName");
 const userUnlinkDriverBtn = document.getElementById("userUnlinkDriverBtn");
 
-// Helper: Generate unique verification code
+// Helper: Generate unique verification code.
+// High entropy (32^8 ≈ 1.1e12) so the code cannot be brute-forced by trying to
+// read tokens from the private 'pilotos_privado' collection.
 function generateDriverVerificationCode() {
-    return "FF-" + Math.floor(100000 + Math.random() * 900000);
+    const alphabet = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789"; // no ambiguous 0/O/1/I
+    let body = "";
+    try {
+        const bytes = new Uint8Array(8);
+        crypto.getRandomValues(bytes);
+        for (let i = 0; i < 8; i++) body += alphabet[bytes[i] % alphabet.length];
+    } catch (e) {
+        for (let i = 0; i < 8; i++) body += alphabet[Math.floor(Math.random() * alphabet.length)];
+    }
+    return "FF-" + body;
 }
 
 // Render claim state inside user profile dropdown
@@ -13696,18 +13701,25 @@ if (userClaimForm) {
         }
 
         try {
-            // Query Firestore 'pilotos' collection for code
-            const q = query(collection(db, "pilotos"), where("verificationCode", "==", rawCode));
-            const querySnap = await getDocs(q);
+            // The verification code IS the document id in the admin-only
+            // 'pilotos_privado' collection. Knowing the exact code lets a
+            // signed-in user read its token, but the collection cannot be listed.
+            const codeRef = doc(db, "pilotos_privado", rawCode);
+            const codeSnap = await getDoc(codeRef);
 
             let matchedDriverDoc = null;
             let matchedDriverData = null;
 
-            if (!querySnap.empty) {
-                matchedDriverDoc = querySnap.docs[0];
-                matchedDriverData = matchedDriverDoc.data();
+            if (codeSnap.exists()) {
+                const cData = codeSnap.data() || {};
+                matchedDriverDoc = { id: cData.pilotId || getPilotDocId(cData.driver) };
+                matchedDriverData = {
+                    driver: cData.driver,
+                    team: cData.team || "Independent",
+                    claimedByUid: cData.claimedByUid || cData.usedByUid || null
+                };
             } else {
-                // Fallback check in memory
+                // Legacy in-memory fallback (codes are no longer public).
                 const foundInLocal = (currentPilotos || []).find(p => (p.verificationCode || "").toUpperCase() === rawCode);
                 if (foundInLocal) {
                     matchedDriverData = foundInLocal;
@@ -13715,7 +13727,7 @@ if (userClaimForm) {
                 }
             }
 
-            if (!matchedDriverData || !matchedDriverDoc) {
+            if (!matchedDriverData || !matchedDriverDoc || !matchedDriverData.driver) {
                 if (userClaimNotice) {
                     userClaimNotice.textContent = "❌ Código inválido. Solicita un código válido a hermesalo o adriii.lr en Discord.";
                     userClaimNotice.style.color = "#f85149";
@@ -13731,32 +13743,6 @@ if (userClaimForm) {
                 return;
             }
 
-            // Save in Firestore with writeBatch
-            const batch = writeBatch(db);
-
-            // 1. Update driver doc in 'pilotos'
-            const pilotRef = doc(db, "pilotos", matchedDriverDoc.id);
-            batch.set(pilotRef, {
-                driver: matchedDriverData.driver,
-                team: matchedDriverData.team || "Independent",
-                claimedByEmail: activeUserAuth.email,
-                claimedByUid: activeUserAuth.uid,
-                isVerified: true,
-                verifiedAt: new Date().toISOString()
-            }, { merge: true });
-
-            const standardPilotId = getPilotDocId(matchedDriverData.driver);
-            if (standardPilotId && standardPilotId !== matchedDriverDoc.id) {
-                batch.set(doc(db, "pilotos", standardPilotId), {
-                    driver: matchedDriverData.driver,
-                    team: matchedDriverData.team || "Independent",
-                    claimedByEmail: activeUserAuth.email,
-                    claimedByUid: activeUserAuth.uid,
-                    isVerified: true,
-                    verifiedAt: new Date().toISOString()
-                }, { merge: true });
-            }
-
             const claimPayload = {
                 uid: activeUserAuth.uid,
                 email: activeUserAuth.email,
@@ -13768,13 +13754,24 @@ if (userClaimForm) {
                 verifiedAt: new Date().toISOString()
             };
 
-            // 2. Update user doc by UID (owner-only) and mirror the public card
-            const userRef = doc(db, "usuarios", activeUserAuth.uid);
-            batch.set(userRef, claimPayload, { merge: true });
+            // Update the private user profile (owner-only) and mirror the public
+            // driver card. The public 'pilotos' document is NOT written to.
+            await setDoc(doc(db, "usuarios", activeUserAuth.uid), claimPayload, { merge: true });
+            await syncPublicUserDoc(activeUserAuth.uid, claimPayload);
 
-            await batch.commit();
-
-            syncPublicUserDoc(activeUserAuth.uid, claimPayload);
+            // Consume the token so nobody else can reuse the same code.
+            if (codeSnap.exists()) {
+                try {
+                    await setDoc(codeRef, {
+                        usedByUid: activeUserAuth.uid,
+                        claimedByUid: activeUserAuth.uid,
+                        claimedByEmail: activeUserAuth.email,
+                        usedAt: new Date().toISOString()
+                    }, { merge: true });
+                } catch (tokenErr) {
+                    console.warn("No se pudo consumir el código de verificación:", tokenErr);
+                }
+            }
 
             if (userClaimCodeInput) userClaimCodeInput.value = "";
             if (userClaimNotice) {
@@ -13969,13 +13966,51 @@ async function refreshAdminVerificationData() {
                         const target = currentPilotos.find(p => (p.id || getPilotDocId(p.driver)) === pDoc.id || normalizeDriverKey(p.driver) === norm);
                         if (target) {
                             if (pData.isVerified !== undefined) target.isVerified = !!pData.isVerified;
-                            if (pData.claimedByEmail !== undefined) target.claimedByEmail = pData.claimedByEmail;
                             if (pData.claimedByUid !== undefined) target.claimedByUid = pData.claimedByUid;
-                            if (pData.verificationCode !== undefined) target.verificationCode = pData.verificationCode;
                         }
+                    }
+                    // Clean up legacy PII/secrets that predate the split into the
+                    // admin-only 'pilotos_privado' collection.
+                    if (pData.verificationCode || pData.claimedByEmail) {
+                        setDoc(doc(db, "pilotos", pDoc.id), { verificationCode: null, claimedByEmail: null }, { merge: true }).catch(() => {});
                     }
                 });
             }
+
+            // 3. Re-hydrate verification codes and linked account emails from the
+            //    admin-only 'pilotos_privado' collection (document id = code).
+            const privSnap = await getDocs(collection(db, "pilotos_privado"));
+            privSnap.forEach(codeDoc => {
+                const cData = codeDoc.data() || {};
+                const code = codeDoc.id;
+                const pId = cData.pilotId || getPilotDocId(cData.driver || "");
+                const dName = cData.driver || pId;
+                if (!dName) return;
+                const norm = normalizeDriverKey(dName);
+                const isUsed = Boolean(cData.usedByUid);
+
+                if (Array.isArray(currentPilotos)) {
+                    const target = currentPilotos.find(p =>
+                        (p.id || getPilotDocId(p.driver)) === pId ||
+                        normalizeDriverKey(p.driver) === norm);
+                    if (target) {
+                        if (!isUsed) target.verificationCode = code;
+                        if (cData.claimedByEmail) target.claimedByEmail = cData.claimedByEmail;
+                        if (cData.claimedByUid) target.claimedByUid = cData.claimedByUid;
+                        if (isUsed) target.isVerified = true;
+                    }
+                }
+
+                if (isUsed && typeof window !== "undefined" && window.globalVerifiedUsersMap) {
+                    const existing = window.globalVerifiedUsersMap.get(norm) || {};
+                    window.globalVerifiedUsersMap.set(norm, {
+                        ...existing,
+                        driver: dName,
+                        uid: cData.claimedByUid || cData.usedByUid || existing.uid || null,
+                        isVerified: true
+                    });
+                }
+            });
         }
     } catch (err) {
         console.warn("Notice: refreshAdminVerificationData encountered non-blocking error:", err);
@@ -14168,6 +14203,26 @@ function renderAdminVerifyTab(filterTerm = "") {
 
                 await batch.commit();
 
+                // Delete any verification tokens for this pilot from the
+                // admin-only 'pilotos_privado' collection (matched by id or name).
+                try {
+                    const codeQueries = [query(collection(db, "pilotos_privado"), where("pilotId", "==", pId))];
+                    if (pilot && pilot.driver) {
+                        codeQueries.push(query(collection(db, "pilotos_privado"), where("driver", "==", pilot.driver)));
+                    }
+                    const seen = new Set();
+                    const delBatch = writeBatch(db);
+                    for (const q of codeQueries) {
+                        const privSnap = await getDocs(q);
+                        privSnap.forEach(d => {
+                            if (!seen.has(d.id)) { seen.add(d.id); delBatch.delete(d.ref); }
+                        });
+                    }
+                    if (seen.size) await delBatch.commit();
+                } catch (privErr) {
+                    console.warn("No se pudieron eliminar los códigos privados:", privErr);
+                }
+
                 // Keep the world-readable driver card in sync with the (now
                 // unlinked) private profile. Documents are keyed by uid only.
                 if (pilot && pilot.claimedByUid) {
@@ -14211,23 +14266,25 @@ async function generateAndSaveCodeForPilotId(pId) {
             adminGenerateNotice.style.color = "#8b949e";
         }
 
-        // Save directly to Firestore with merge: true to avoid crashes
-        const batch = writeBatch(db);
-        batch.set(doc(db, "pilotos", pId), {
+        // Store the code in the admin-only 'pilotos_privado' collection. The
+        // document id IS the code, so a signed-in user can look up a token by
+        // presenting the exact code but cannot enumerate the collection. The
+        // public 'pilotos' document is NOT touched (no code, no email there).
+        const altId = getPilotDocId(pilot.driver);
+        const pilotIds = [pId];
+        if (altId && altId !== pId) pilotIds.push(altId);
+
+        await setDoc(doc(db, "pilotos_privado", newCode), {
+            pilotId: pId,
+            pilotIds,
             driver: pilot.driver,
             team: pilot.team || "Independent",
-            verificationCode: newCode
-        }, { merge: true });
-
-        const altId = getPilotDocId(pilot.driver);
-        if (altId && altId !== pId) {
-            batch.set(doc(db, "pilotos", altId), {
-                driver: pilot.driver,
-                team: pilot.team || "Independent",
-                verificationCode: newCode
-            }, { merge: true });
-        }
-        await batch.commit();
+            createdAt: new Date().toISOString(),
+            createdBy: (activeUserAuth && activeUserAuth.email) || null,
+            claimedByEmail: null,
+            claimedByUid: null,
+            usedByUid: null
+        });
 
         pilot.verificationCode = newCode;
 
