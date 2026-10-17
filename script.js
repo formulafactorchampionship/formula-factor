@@ -266,6 +266,51 @@ function escapeHTML(str) {
 window.escapeHtml = escapeHtml;
 window.escapeHTML = escapeHTML;
 
+// URLs that may be rendered into href/src attributes. Blocks javascript:,
+// data:text/html, vbscript: and protocol-relative URLs. Allows site-relative
+// paths, http(s) and (for images) data:image payloads.
+function isSafeHttpUrl(url) {
+    if (typeof url !== "string") return false;
+    const u = url.trim();
+    if (!u || u.length > 4000) return false;
+    if (u.startsWith("/")) return !u.startsWith("//");
+    return /^https?:\/\//i.test(u);
+}
+function safeImageSrc(url) {
+    if (typeof url !== "string") return "";
+    const u = url.trim();
+    if (!u || u.length > 5000000) return "";
+    if (u.startsWith("/")) return u.startsWith("//") ? "" : u;
+    if (/^https?:\/\//i.test(u)) return u;
+    if (/^data:image\/(png|jpe?g|webp|gif);base64,/i.test(u)) return u;
+    // SVG presets (data:image/svg+xml) are allowed: SVG loaded through <img>
+    // never executes scripts. Never use these URLs as href/markup.
+    if (/^data:image\/svg\+xml(;charset=utf-8|;utf8)?,/i.test(u)) return u;
+    if (/^data:image\/svg\+xml;base64,/i.test(u)) return u;
+    return "";
+}
+// Strips active content from admin-authored article HTML while keeping
+// formatting tags (p, br, strong, em, a, img, lists, headings...).
+function sanitizeArticleHtml(html) {
+    if (typeof html !== "string") return "";
+    let out = String(html);
+    out = out.replace(/<!--[\s\S]*?-->/g, "");
+    out = out.replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script\s*>/gi, "");
+    out = out.replace(/<\/?(iframe|object|embed|form|base|link|meta|frame|frameset|applet)\b[^>]*>/gi, "");
+    out = out.replace(/\son[a-z]+\s*=\s*"[^"]*"/gi, "");
+    out = out.replace(/\son[a-z]+\s*=\s*'[^']*'/gi, "");
+    out = out.replace(/\son[a-z]+\s*=\s*[^\s>]+/gi, "");
+    out = out.replace(/(href|src|xlink:href)\s*=\s*(["'])\s*javascript:/gi, "$1=$2");
+    out = out.replace(/(href|src|xlink:href)\s*=\s*(["'])\s*vbscript:/gi, "$1=$2");
+    out = out.replace(/(href|src|xlink:href)\s*=\s*(["'])\s*data\s*:\s*text\/html/gi, "$1=$2");
+    out = out.replace(/(href|src)\s*=\s*javascript:/gi, "$1=");
+    out = out.replace(/(href|src)\s*=\s*vbscript:/gi, "$1=");
+    return out;
+}
+window.isSafeHttpUrl = isSafeHttpUrl;
+window.safeImageSrc = safeImageSrc;
+window.sanitizeArticleHtml = sanitizeArticleHtml;
+
 /* =========================================================
    TIMEZONE & COUNTDOWN (MADRID BASE TIME)
 ========================================================= */
@@ -330,6 +375,7 @@ function getSavedRaceTimestamp() {
 let raceDate = getSavedRaceTimestamp();
 
 function updateCountdown() {
+    if (typeof document !== "undefined" && document.hidden) return;
     const daysEl = document.getElementById("days");
     const hoursEl = document.getElementById("hours");
     const minsEl = document.getElementById("mins");
@@ -373,7 +419,7 @@ function updateCountdown() {
             standardViewEl.classList.add("is-starting-soon");
             if (topTextEl) topTextEl.textContent = `${raceTitleStr} STARTING SOON`;
             if (startingSoonTitleEl) {
-                startingSoonTitleEl.innerHTML = `${raceTitleStr}<br><span>STARTING SOON</span>`;
+                startingSoonTitleEl.innerHTML = `${escapeHtml(raceTitleStr)}<br><span>STARTING SOON</span>`;
             }
             if (countdownEl) countdownEl.classList.add("countdown-massive");
         } else {
@@ -453,7 +499,7 @@ if (navbar) {
             navbar.style.background = "rgba(7, 9, 13, 0.94)";
         }
 
-    });
+    }, { passive: true });
 
 }
 
@@ -4071,9 +4117,10 @@ function refreshAllCalendarCards() {
 
         // Replay button on card if replayUrl exists
         let replayBtn = card.querySelector(".card-replay-btn");
-        const rUrl = (rData && rData.replayUrl && rData.replayUrl.trim() !== "") 
-            ? rData.replayUrl.trim() 
+        const rawRUrl = (rData && rData.replayUrl && rData.replayUrl.trim() !== "")
+            ? rData.replayUrl.trim()
             : (seasonRacesMeta[key]?.replayUrl || defaultRaceResults[key]?.replayUrl || "");
+        const rUrl = isSafeHttpUrl(rawRUrl) ? rawRUrl : "";
 
         if (rUrl !== "") {
             if (!replayBtn) {
@@ -4302,7 +4349,8 @@ function selectCalendarRound(raceKey, sessionType = "race") {
 
     // COMPLETED RACE VIEW
     if (isCompleted) {
-        const replayUrl = (race.replayUrl && race.replayUrl.trim() !== "") ? race.replayUrl.trim() : (meta.replayUrl || "");
+        const rawReplayUrl = (race.replayUrl && race.replayUrl.trim() !== "") ? race.replayUrl.trim() : (meta.replayUrl || "");
+        const replayUrl = isSafeHttpUrl(rawReplayUrl) ? rawReplayUrl : "";
         const replayBtnHtml = replayUrl ? `
             <a href="${escapeHtml(replayUrl)}" target="_blank" rel="noopener noreferrer" class="detail-action-btn btn-highlights" title="${isEn ? "Watch race replay" : "Ver repetición oficial"}">
                 <svg viewBox="0 0 24 24" width="13" height="13" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
@@ -4420,7 +4468,7 @@ function selectCalendarRound(raceKey, sessionType = "race") {
                         <td>
                             <div class="driver-name-cell" style="--team-border-col: ${teamHex};">
                                 <span class="driver-meta-flag">${getDriverFlagHtml(d.driver, 18)}</span>
-                                <span class="driver-name-text driver-clickable" onclick="if(typeof openDriverStatsModal === 'function') openDriverStatsModal('${escapeHtml(d.driver)}')" title="${isEn ? `View stats for ${escapeHtml(d.driver)}` : `Ver estadísticas de ${escapeHtml(d.driver)}`}">
+                                <span class="driver-name-text driver-clickable" data-driver="${escapeHtml(d.driver)}" title="${isEn ? `View stats for ${escapeHtml(d.driver)}` : `Ver estadísticas de ${escapeHtml(d.driver)}`}">
                                     ${escapeHtml(d.driver)}
                                 </span>
                                 ${badgeHtml}
@@ -5612,7 +5660,7 @@ function openRace(raceKey, highlightDriver = null) {
 
     // Handle Replay Link in Modal
     if (resultReplayBtn) {
-        if (race.replayUrl && race.replayUrl.trim() !== "") {
+        if (race.replayUrl && race.replayUrl.trim() !== "" && isSafeHttpUrl(race.replayUrl.trim())) {
             resultReplayBtn.href = race.replayUrl.trim();
             resultReplayBtn.style.display = "inline-flex";
             if (resultReplayText) {
@@ -6420,7 +6468,7 @@ function renderNextRaceOnPage(race) {
     if (nextRaceRoundEl) nextRaceRoundEl.textContent = race.round;
     if (nextRaceTitleEl) {
         if (race.title && race.title.includes(" GP")) {
-            nextRaceTitleEl.innerHTML = `${race.title.replace(" GP", "")}<br>GP`;
+            nextRaceTitleEl.innerHTML = `${escapeHtml(race.title.replace(" GP", ""))}<br>GP`;
         } else {
             nextRaceTitleEl.textContent = race.title || "";
         }
@@ -7902,8 +7950,9 @@ function openDriverStatsModal(driverName) {
     const avatarBox = document.getElementById("driverModalAvatarBox");
     const avatarImg = document.getElementById("driverModalAvatarImg");
     if (avatarBox && avatarImg) {
-        if (data.avatarUrl && data.avatarUrl.trim()) {
-            avatarImg.src = data.avatarUrl.trim();
+        const safeAvatar = safeImageSrc(data.avatarUrl);
+        if (safeAvatar) {
+            avatarImg.src = safeAvatar;
             avatarBox.style.display = "block";
             if (data.cardColor) {
                 avatarBox.style.borderColor = data.cardColor;
@@ -19403,29 +19452,30 @@ function renderPublicNewsSection() {
             ? `<span class="news-card-edited-tag" title="${currentLanguage === 'en' ? 'Article has been edited' : 'Artículo editado'}">${currentLanguage === 'en' ? 'Edited' : 'Editado'}</span>`
             : ``;
 
-        const imageMarkup = article.imageUrl 
-            ? `<img src="${encodeURI(article.imageUrl)}" alt="${encodeURI(title)}" class="news-card-img" loading="lazy" onerror="this.onerror=null; this.parentElement.innerHTML='<div class=\\'news-card-img-fallback\\'><span class=\\'news-fallback-icon\\'></span><span class=\\'news-fallback-brand\\'>FORMULA FACTOR</span></div>';">`
+        const safeCardImg = safeImageSrc(article.imageUrl);
+        const imageMarkup = safeCardImg
+            ? `<img src="${escapeHtml(safeCardImg)}" alt="${escapeHtml(title)}" class="news-card-img" loading="lazy" referrerpolicy="no-referrer" onerror="this.onerror=null; this.parentElement.innerHTML='<div class=\\'news-card-img-fallback\\'><span class=\\'news-fallback-icon\\'></span><span class=\\'news-fallback-brand\\'>FORMULA FACTOR</span></div>';">`
             : `<div class="news-card-img-fallback"><span class="news-fallback-icon"></span><span class="news-fallback-brand">FORMULA FACTOR</span></div>`;
 
         return `
-            <article class="news-card" data-article-id="${article.id}" tabindex="0" role="button" aria-label="${currentLanguage === 'en' ? 'Read' : 'Leer'} ${title}">
+            <article class="news-card" data-article-id="${escapeHtml(article.id)}" tabindex="0" role="button" aria-label="${currentLanguage === 'en' ? 'Read' : 'Leer'} ${escapeHtml(title)}">
                 <div class="news-card-img-wrap">
-                    <span class="news-card-cat-badge ${catClass}">${translatedCat}</span>
+                    <span class="news-card-cat-badge ${escapeHtml(catClass)}">${escapeHtml(translatedCat)}</span>
                     ${imageMarkup}
                 </div>
                 <div class="news-card-body">
                     <div class="news-card-date-row">
-                        <span>${dateFormatted}</span>
+                        <span>${escapeHtml(dateFormatted)}</span>
                         <span>&bull;</span>
-                        <span>⏱️ ${readingTime}</span>
+                        <span>⏱️ ${escapeHtml(readingTime)}</span>
                         ${editedBadge ? `<span>&bull;</span>` + editedBadge : ``}
                     </div>
-                    <h3 class="news-card-title">${title}</h3>
-                    <p class="news-card-summary">${summary || ""}</p>
+                    <h3 class="news-card-title">${escapeHtml(title)}</h3>
+                    <p class="news-card-summary">${escapeHtml(summary) || ""}</p>
                     <div class="news-card-footer">
                         <div class="news-card-author-chip">
-                            <div class="news-author-mini-avatar">${initial}</div>
-                            <span class="news-author-mini-name">${article.authorName || authorFallback}</span>
+                            <div class="news-author-mini-avatar">${escapeHtml(initial)}</div>
+                            <span class="news-author-mini-name">${escapeHtml(article.authorName) || escapeHtml(authorFallback)}</span>
                         </div>
                         <div class="news-card-comments-pill">
                             <span></span>
@@ -20691,19 +20741,14 @@ function renderArticleModalContent(article, lang) {
     if (bodyEl) {
         // If content contains rich HTML tags, sanitize and render directly
         if (/<[a-z][\s\S]*>/i.test(content)) {
-            // Strip scripts and risky attributes
-            const cleanHtml = content
-                .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, "")
-                .replace(/on\w+="[^"]*"/g, "")
-                .replace(/on\w+='[^']*'/g, "");
-            bodyEl.innerHTML = cleanHtml;
+            bodyEl.innerHTML = sanitizeArticleHtml(content);
         } else {
-            // Plain text legacy format
+            // Plain text legacy format (escaped: never raw HTML)
             const paragraphs = (content || "")
                 .split(/\n\n+/)
                 .map(p => p.trim())
                 .filter(p => p.length > 0);
-            bodyEl.innerHTML = paragraphs.map(p => `<p>${p.replace(/\n/g, "<br>")}</p>`).join("");
+            bodyEl.innerHTML = paragraphs.map(p => `<p>${escapeHtml(p).replace(/\n/g, "<br>")}</p>`).join("");
         }
     }
 }
@@ -20738,11 +20783,13 @@ function openNewsArticleModal(articleId) {
     }
 
     if (imgEl) {
-        if (article.imageUrl) {
-            imgEl.src = encodeURI(article.imageUrl);
+        const safeModalImg = safeImageSrc(article.imageUrl);
+        if (safeModalImg) {
+            imgEl.src = safeModalImg;
             imgEl.style.display = "block";
         } else {
             imgEl.style.display = "none";
+            imgEl.removeAttribute("src");
         }
     }
 

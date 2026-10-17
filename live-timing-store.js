@@ -57,9 +57,12 @@ export function ltSessionIdentity(file) {
 
 async function httpGet(url) {
   const response = await fetch(url, {
-    headers: { Accept: '*/*', 'User-Agent': 'FormulaFactorChampionship/1.0' }
+    headers: { Accept: '*/*', 'User-Agent': 'FormulaFactorChampionship/1.0' },
+    signal: AbortSignal.timeout(15000)
   });
   if (!response.ok) throw new Error('HTTP ' + response.status + ' for ' + url);
+  const len = Number(response.headers.get('content-length') || 0);
+  if (len > 10 * 1024 * 1024) throw new Error('Response too large for ' + url);
   return response;
 }
 

@@ -20,4 +20,7 @@ live_timing_db.json
 .env
 .env.*
 .admin_secret
+serviceAccountKey.json
+relay-vars.yaml
 users_db.json
+*_backup_*.json

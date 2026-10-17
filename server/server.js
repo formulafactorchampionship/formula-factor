@@ -63,6 +63,9 @@ function sanitizeString(str, maxLength = 250) {
     .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '')
     .replace(/<[^>]*>?/gm, '')
     .replace(/javascript:/gi, '')
+    .replace(/vbscript:/gi, '')
+    .replace(/data\s*:\s*text\/html/gi, '')
+    .replace(/(^|[\s"'`])on[a-z]+\s*=/gi, '$1')
     .replace(/onerror\s*=/gi, '')
     .replace(/onload\s*=/gi, '')
     .replace(/onclick\s*=/gi, '')
@@ -70,11 +73,64 @@ function sanitizeString(str, maxLength = 250) {
   return cleaned.slice(0, maxLength);
 }
 
+// Only these URL shapes are ever rendered into <img src> / <a href>.
+// Blocks javascript:, data:text/html, vbscript: and protocol-relative URLs.
+function isSafePhotoUrl(value) {
+  if (typeof value !== 'string') return false;
+  const v = value.trim();
+  if (!v || v.length > 5000000) return false;
+  if (v.startsWith('/')) return !v.startsWith('//');
+  if (/^https?:\/\//i.test(v)) return true;
+  if (/^data:image\/(png|jpe?g|webp|gif);base64,/i.test(v)) return true;
+  // SVG avatars (helmet presets) render via <img>, where scripts never run.
+  if (/^data:image\/svg\+xml(;charset=utf-8|;utf8)?,/i.test(v)) return true;
+  if (/^data:image\/svg\+xml;base64,/i.test(v)) return true;
+  return false;
+}
+
+// Bounds-checks the fantasy per-round lineups object: max 60 rounds, plain
+// objects only, sanitized short strings/numbers. Anything else is dropped.
+function sanitizeRoundLineups(input) {
+  const out = {};
+  if (!input || typeof input !== 'object' || Array.isArray(input)) return out;
+  for (const k of Object.keys(input).slice(0, 60)) {
+    const v = input[k];
+    if (!v || typeof v !== 'object' || Array.isArray(v)) continue;
+    const entry = {};
+    for (const [sk, sv] of Object.entries(v).slice(0, 20)) {
+      const cleanSub = sanitizeString(sk, 40);
+      if (typeof sv === 'string') entry[cleanSub] = sanitizeString(sv, 40);
+      else if (typeof sv === 'number' && isFinite(sv)) entry[cleanSub] = sv;
+      else if (typeof sv === 'boolean') entry[cleanSub] = sv;
+    }
+    out[sanitizeString(k, 80)] = entry;
+  }
+  return out;
+}
+
+// Sniffs the real image format from magic bytes (client-declared ext is not
+// trusted). Returns 'png' | 'jpg' | 'webp' | 'gif' | null.
+function detectImageExt(buffer) {
+  if (!buffer || buffer.length < 4) return null;
+  if (buffer.length >= 8 && buffer[0] === 0x89 && buffer[1] === 0x50 && buffer[2] === 0x4E && buffer[3] === 0x47) return 'png';
+  if (buffer[0] === 0xFF && buffer[1] === 0xD8 && buffer[2] === 0xFF) return 'jpg';
+  if (buffer.length >= 12 && buffer.toString('ascii', 0, 4) === 'RIFF' && buffer.toString('ascii', 8, 12) === 'WEBP') return 'webp';
+  if (buffer.length >= 6 && (buffer.toString('ascii', 0, 6) === 'GIF87a' || buffer.toString('ascii', 0, 6) === 'GIF89a')) return 'gif';
+  return null;
+}
+
+app.disable('x-powered-by');
+
 // -------------------------------------------------------------
 // 2. HTTP HEADERS & CACHE-CONTROL MIDDLEWARE
 // -------------------------------------------------------------
 app.use((req, res, next) => {
   res.setHeader('X-Content-Type-Options', 'nosniff');
+  res.setHeader('X-Frame-Options', 'SAMEORIGIN');
+  res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
+  res.setHeader('X-DNS-Prefetch-Control', 'off');
+  res.setHeader('Permissions-Policy', 'camera=(), microphone=(), geolocation=()');
+  res.setHeader('Strict-Transport-Security', 'max-age=31536000');
   const p = req.path;
   if (p.startsWith('/api/') || p.endsWith('.html') || p === '/') {
     res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
@@ -143,6 +199,36 @@ app.use(express.json({ limit: '2mb' }));
 app.use(express.urlencoded({ extended: true, limit: '2mb' }));
 
 // -------------------------------------------------------------
+// 4b. LIGHTWEIGHT RATE LIMITER (auth & admin session endpoints)
+// -------------------------------------------------------------
+// In-memory sliding window: 30 requests per 10 minutes per IP+path.
+// Protects login/register/session from brute force without new deps.
+const authRateBuckets = new Map();
+function authRateLimit(req, res, next) {
+  try {
+    const ip = String((req.ip || (req.socket && req.socket.remoteAddress) || 'unknown')).slice(0, 80);
+    const key = ip + '|' + req.path;
+    const now = Date.now();
+    const WINDOW_MS = 10 * 60 * 1000;
+    const MAX_HITS = 30;
+    let bucket = authRateBuckets.get(key);
+    if (!bucket || (now - bucket.start) > WINDOW_MS) bucket = { start: now, count: 0 };
+    bucket.count += 1;
+    authRateBuckets.set(key, bucket);
+    if (authRateBuckets.size > 2000) {
+      for (const [k, v] of authRateBuckets) {
+        if ((now - v.start) > WINDOW_MS) authRateBuckets.delete(k);
+      }
+    }
+    if (bucket.count > MAX_HITS) {
+      return res.status(429).json({ error: 'Too many requests, try again later', code: 'auth/rate-limited' });
+    }
+  } catch (e) { /* limiter must never break auth */ }
+  return next();
+}
+app.use(['/api/auth/login', '/api/auth/register', '/api/admin/session'], authRateLimit);
+
+// -------------------------------------------------------------
 // 5. STATIC ASSET SERVING
 // -------------------------------------------------------------
 app.use(express.static(ROOT, {
@@ -200,9 +286,11 @@ function verifyAdminToken(token, expectedEmail) {
 }
 
 function extractAdminCredentials(req) {
+  // Tokens travel in headers only (never in the URL: query strings end up in
+  // logs, proxies and browser history). The body fallback stays for POST
+  // clients that cannot set custom headers.
   const adminEmail = (
     req.headers['x-admin-email'] ||
-    req.query.adminEmail ||
     (req.body && req.body.adminEmail) ||
     ''
   ).toLowerCase().trim();
@@ -212,7 +300,6 @@ function extractAdminCredentials(req) {
   const adminToken = (
     req.headers['x-admin-token'] ||
     bearerToken ||
-    req.query.adminToken ||
     (req.body && req.body.adminToken) ||
     ''
   ).trim();
@@ -296,13 +383,14 @@ async function requireFirebaseUser(req, res, next) {
       return res.status(401).json({ success: false, error: 'Autenticación requerida', code: 'auth/required' });
     }
 
-    const cached = firebaseUserTokenCache.get(idToken);
+    const cacheKey = crypto.createHash('sha256').update(idToken).digest('hex');
+    const cached = firebaseUserTokenCache.get(cacheKey);
     let user = cached && cached.exp > Date.now() ? cached.user : null;
 
     if (!user) {
       user = await verifyFirebaseIdToken(idToken);
       if (user) {
-        firebaseUserTokenCache.set(idToken, { user, exp: Date.now() + FIREBASE_TOKEN_CACHE_MS });
+        firebaseUserTokenCache.set(cacheKey, { user, exp: Date.now() + FIREBASE_TOKEN_CACHE_MS });
         if (firebaseUserTokenCache.size > 500) {
           const now = Date.now();
           for (const [k, v] of firebaseUserTokenCache) {
@@ -663,9 +751,7 @@ app.post('/api/fantasy/teams', requireFirebaseUser, (req, res) => {
   const sanitizedDriver3 = sanitizeString(teamData.driver3 || '', 40);
   const sanitizedTurbo = sanitizeString(teamData.turboDriver || '', 40);
 
-  const roundLineups = (teamData.roundLineups && typeof teamData.roundLineups === 'object' && !Array.isArray(teamData.roundLineups))
-    ? JSON.parse(JSON.stringify(teamData.roundLineups))
-    : {};
+  const roundLineups = sanitizeRoundLineups(teamData.roundLineups);
 
   const teams = getFantasyTeams();
   const idx = teams.findIndex(t =>
@@ -1081,10 +1167,15 @@ app.post('/api/carreras/fotos', requireFirebaseUser, async (req, res) => {
     80
   );
 
+  const rawPhotoUrl = String(photo.photoUrl || photo.url || '').trim();
+  if (!isSafePhotoUrl(rawPhotoUrl)) {
+    return res.status(400).json({ error: 'Invalid photo URL or format' });
+  }
+
   const newEntry = {
     id: photoId,
     raceId: sanitizeString(photo.raceId || 'barcelona_test', 80),
-    photoUrl: String(photo.photoUrl || photo.url),
+    photoUrl: rawPhotoUrl,
     caption: sanitizeString(photo.caption || '', 500),
     author: author,
     status: isAdmin ? 'approved' : 'pending',
@@ -1113,7 +1204,13 @@ app.patch('/api/carreras/fotos/:id', requireAdminAuth, async (req, res) => {
   const photos = getPhotos();
   const idx = photos.findIndex(p => p.id === photoId);
   if (idx >= 0) {
-    if (status !== undefined) photos[idx].status = String(status);
+    if (status !== undefined) {
+      const cleanStatus = String(status);
+      if (!['pending', 'approved', 'rejected'].includes(cleanStatus)) {
+        return res.status(400).json({ error: 'Invalid photo status' });
+      }
+      photos[idx].status = cleanStatus;
+    }
     if (caption !== undefined) photos[idx].caption = sanitizeString(caption, 500);
     if (raceId !== undefined) photos[idx].raceId = sanitizeString(raceId, 80);
     savePhotos(photos);
@@ -1150,10 +1247,16 @@ app.post('/api/noticias/upload-image', requireFirebaseUser, (req, res) => {
       return res.status(400).json({ error: 'Invalid data URL format' });
     }
 
-    const rawExt = matches[1].toLowerCase();
-    const ext = rawExt === 'jpeg' ? 'jpg' : (rawExt === 'png' ? 'png' : (rawExt === 'webp' ? 'webp' : 'jpg'));
     const buffer = Buffer.from(matches[2], 'base64');
-    const filename = `news_${Date.now()}_${crypto.randomBytes(4).toString('hex')}.${ext}`;
+    if (buffer.length === 0 || buffer.length > 8 * 1024 * 1024) {
+      return res.status(413).json({ error: 'Image too large (max 8MB decoded)' });
+    }
+    // Trust magic bytes, not the client-declared MIME subtype.
+    const ext = detectImageExt(buffer);
+    if (!ext) {
+      return res.status(400).json({ error: 'Unsupported image format (png/jpg/webp/gif only)' });
+    }
+    const filename = `news_${Date.now()}_${crypto.randomBytes(8).toString('hex')}.${ext}`;
     const uploadDir = path.join(ROOT, 'news_uploads');
     if (!fs.existsSync(uploadDir)) {
       fs.mkdirSync(uploadDir, { recursive: true });
@@ -1213,8 +1316,7 @@ app.get('/api/admin/audit-emails', requireAdminAuth, async (req, res) => {
     return res.json({
       success: true,
       summary,
-      accounts,
-      protectedEmails: PROTECTED_EMAILS
+      accounts
     });
   } catch (err) {
     console.error('Error during email audit:', err);
@@ -1255,7 +1357,7 @@ app.get('/api/admin/audit-backups', requireAdminAuth, (req, res) => {
         size: stat.size,
         createdAt: stat.birthtime || stat.mtime
       };
-    }).sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+    }).sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)).slice(0, 100);
 
     return res.json({ success: true, backups });
   } catch (err) {

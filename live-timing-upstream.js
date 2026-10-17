@@ -64,6 +64,12 @@ export function createLiveTimingUpstream(options = {}) {
     try { socket.write(Buffer.concat([header, mask, masked])); } catch (e) { /* ignore */ }
   }
 
+  // DoS guardrails: a malicious or wedged peer must not be able to grow
+  // our buffers without bound or stall us on a bogus giant frame.
+  const MAX_HANDSHAKE_BYTES = 65536;
+  const MAX_FRAME_BYTES = 16 * 1024 * 1024;
+  const WS_GUID = '258EAFA5-E914-47DA-95CA-C5AB0DC85B11';
+
   function parseFrames() {
     while (buffer.length >= 2) {
       const first = buffer[0];
@@ -80,9 +86,13 @@ export function createLiveTimingUpstream(options = {}) {
         offset = 4;
       } else if (length === 127) {
         if (buffer.length < 10) return;
-        length = Number(buffer.readBigUInt64BE(2));
+        const big = buffer.readBigUInt64BE(2);
+        if (big > BigInt(MAX_FRAME_BYTES)) { teardown(); scheduleReconnect(); return; }
+        length = Number(big);
         offset = 10;
       }
+
+      if (length > MAX_FRAME_BYTES) { teardown(); scheduleReconnect(); return; }
 
       let maskKey = null;
       if (masked) {
@@ -140,10 +150,13 @@ export function createLiveTimingUpstream(options = {}) {
 
   function scheduleReconnect() {
     if (stopped || retryTimer) return;
+    // Full jitter on top of the exponential backoff so a fleet of relays
+    // does not hammer the upstream in lockstep after an outage.
+    const jitter = Math.floor(Math.random() * 1000);
     retryTimer = setTimeout(() => {
       retryTimer = null;
       connect();
-    }, retryDelay);
+    }, retryDelay + jitter);
     retryDelay = Math.min(Math.round(retryDelay * 1.6), 15000);
   }
 
@@ -160,20 +173,35 @@ export function createLiveTimingUpstream(options = {}) {
       'Sec-WebSocket-Version: 13\r\n\r\n';
 
     const current = tls.connect(
-      { host: host, port: port, servername: host },
+      { host: host, port: port, servername: host, timeout: 10000, minVersion: 'TLSv1.2' },
       () => { try { current.write(request); } catch (e) { /* ignore */ } }
     );
     socket = current;
     current.setNoDelay(true);
+    current.setTimeout(10000);
+    current.on('timeout', () => { try { current.destroy(); } catch (e) { /* ignore */ } });
 
     current.on('data', (chunk) => {
       if (!handshakeDone) {
         buffer = Buffer.concat([buffer, chunk]);
+        if (buffer.length > MAX_HANDSHAKE_BYTES) {
+          teardown();
+          scheduleReconnect();
+          return;
+        }
         const headerEnd = buffer.indexOf('\r\n\r\n');
         if (headerEnd === -1) return;
         const head = buffer.subarray(0, headerEnd).toString('latin1');
         buffer = buffer.subarray(headerEnd + 4);
         if (!/^HTTP\/1\.1 101/.test(head)) {
+          teardown();
+          scheduleReconnect();
+          return;
+        }
+        // RFC6455: prove the peer owns this handshake, not just any 101.
+        const acceptMatch = head.match(/^sec-websocket-accept:\s*(.+)$/im);
+        const expectedAccept = crypto.createHash('sha1').update(key + WS_GUID).digest('base64');
+        if (!acceptMatch || acceptMatch[1].trim() !== expectedAccept) {
           teardown();
           scheduleReconnect();
           return;
@@ -184,6 +212,11 @@ export function createLiveTimingUpstream(options = {}) {
         emit('status', true);
       } else {
         buffer = Buffer.concat([buffer, chunk]);
+        if (buffer.length > MAX_FRAME_BYTES + 16) {
+          teardown();
+          scheduleReconnect();
+          return;
+        }
       }
       parseFrames();
     });

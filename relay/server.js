@@ -47,6 +47,10 @@ const upstream = createLiveTimingUpstream({
 const store = createLiveTimingStore({ file: '', autoWrite: false, log: console });
 
 const clients = new Set();
+// Upper bound so one bad actor opening N EventSources cannot pin the
+// instance (and the Cloud Run bill). Browsers auto-retry on 503 thanks to
+// the `retry:` field, so legit viewers just reconnect a moment later.
+const MAX_CLIENTS = Number(process.env.MAX_SSE_CLIENTS) || 500;
 let lastSnapshot = null;      // last full state, handed to clients connecting mid-session
 let snapshotAt = 0;
 let started = false;
@@ -112,8 +116,14 @@ function stopUpstreamWhenIdle() {
 // -------------------------------------------------------------
 async function seedPublishedRecords() {
   try {
-    const response = await fetch(PUBLISHED_RECORDS_URL, { headers: { Accept: 'application/json' } });
+    const response = await fetch(PUBLISHED_RECORDS_URL, {
+      headers: { Accept: 'application/json' },
+      signal: AbortSignal.timeout(15000)
+    });
     if (!response.ok) return;
+    if (response.headers.get('content-type') && !String(response.headers.get('content-type')).includes('json')) return;
+    const len = Number(response.headers.get('content-length') || 0);
+    if (len > 5 * 1024 * 1024) return;
     const data = await response.json();
     const seeded = store.seedFromPublished(data);
     if (seeded) console.log('records: carried over ' + seeded + ' stored value(s) from the published file');
@@ -150,10 +160,16 @@ function sendJson(req, res, status, payload) {
 }
 
 function handleStream(req, res) {
+  if (clients.size >= MAX_CLIENTS) {
+    sendJson(req, res, 503, { success: false, error: 'relay busy, retry soon' });
+    return;
+  }
   applyCors(req, res);
   res.writeHead(200, {
     'Content-Type': 'text/event-stream; charset=utf-8',
-    'Cache-Control': 'no-cache, no-transform',
+    'Cache-Control': 'no-store, no-transform',
+    'X-Content-Type-Options': 'nosniff',
+    'Referrer-Policy': 'no-referrer',
     'X-Accel-Buffering': 'no'
   });
 

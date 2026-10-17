@@ -269,17 +269,17 @@ export function initCalendarBorderGlow() {
       card.style.setProperty(k, v);
     }
 
-    // Wrap inner contents safely without recreating React roots
-    const innerHTML = card.innerHTML;
-    card.innerHTML = '';
-
+    // Wrap inner contents by moving the live nodes (no innerHTML round-trip:
+    // serializing would drop listeners and could re-fire inline handlers).
     const edgeLight = document.createElement('span');
     edgeLight.className = 'edge-light';
-    card.appendChild(edgeLight);
 
     const innerDiv = document.createElement('div');
     innerDiv.className = 'border-glow-inner calendar-card-inner-wrapper';
-    innerDiv.innerHTML = innerHTML;
+    while (card.firstChild) {
+      innerDiv.appendChild(card.firstChild);
+    }
+    card.appendChild(edgeLight);
     card.appendChild(innerDiv);
   });
 }
