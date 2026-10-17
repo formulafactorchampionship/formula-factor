@@ -4,10 +4,10 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "node server.js",
+    "dev": "node server/server.js",
     "build": "echo 'No build step required'",
-    "lint": "node --check server.js && node --check envLoader.js && node --check script.js && node --check race-results-import.js",
-    "start": "node server.js"
+    "lint": "node --check server/server.js && node --check server/envLoader.js && node --check server/race-results-import.js && node --check script.js",
+    "start": "node server/server.js"
   },
   "dependencies": {
     "cobe": "^2.0.1",

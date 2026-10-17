@@ -15,16 +15,18 @@
 // the repository itself (live_timing_db.json stays a local runtime file).
 //
 // Usage:
-//   node build-live-timing-records.mjs [--offline] [--no-snapshot]
+//   node server/build-live-timing-records.mjs [--offline] [--no-snapshot]
 //                                      [--db <file>] [--out <file>]
 //                                      [--timeout <ms>]
 
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import { createLiveTimingStore, fetchLiveTimingSnapshot } from './live-timing-store.js';
+import { createLiveTimingStore, fetchLiveTimingSnapshot } from '../live-timing-store.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
+// The published records and the runtime store live in the repository root.
+const ROOT = path.join(__dirname, '..');
 
 function option(name, fallback) {
   const index = process.argv.indexOf('--' + name);
@@ -35,8 +37,8 @@ function option(name, fallback) {
 
 const offline = option('offline', false) === true;
 const withSnapshot = !offline && option('no-snapshot', false) !== true;
-const dbFile = path.resolve(__dirname, String(option('db', 'live_timing_db.json')));
-const outFile = path.resolve(__dirname, String(option('out', 'live_timing_records.json')));
+const dbFile = path.resolve(ROOT, String(option('db', 'live_timing_db.json')));
+const outFile = path.resolve(ROOT, String(option('out', 'live_timing_records.json')));
 const timeout = Number(option('timeout', 20000)) || 20000;
 
 const store = createLiveTimingStore({ file: dbFile, autoWrite: false });

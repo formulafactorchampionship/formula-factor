@@ -5,10 +5,10 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const ROOT = path.join(__dirname, '..');
 
-function loadDotEnvFile(fileName) {
+function loadDotEnvFile(envPath) {
   try {
-    const envPath = path.join(__dirname, fileName);
     if (!fs.existsSync(envPath)) return;
     const content = fs.readFileSync(envPath, 'utf8');
     for (const line of content.split(/\r?\n/)) {
@@ -26,4 +26,4 @@ function loadDotEnvFile(fileName) {
   } catch (e) { /* ignore malformed .env */ }
 }
 
-loadDotEnvFile('.env');
+loadDotEnvFile(path.join(ROOT, '.env'));

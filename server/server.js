@@ -6,12 +6,14 @@ import tls from 'tls';
 import crypto from 'crypto';
 import { fileURLToPath } from 'url';
 import { fetchAllAccounts, deleteAccounts, PROTECTED_EMAILS, FIREBASE_API_KEY } from './emailAuditService.js';
-import { createLiveTimingStore } from './live-timing-store.js';
-import { createLiveTimingUpstream } from './live-timing-upstream.js';
+import { createLiveTimingStore } from '../live-timing-store.js';
+import { createLiveTimingUpstream } from '../live-timing-upstream.js';
 import { listArchivedSessions, fetchRaceImport } from './race-results-import.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
+// The site and its data live in the repository root, one level above server/.
+const ROOT = path.join(__dirname, '..');
 
 const app = express();
 const PORT = Number(process.env.PORT) || 3000;
@@ -28,7 +30,7 @@ const AUTH_SALT = '_formula_factor_auth_salt_2026';
 //   1) ADMIN_API_SECRET from the environment or .env
 //   2) a persisted local secret file (.admin_secret, gitignored)
 //   3) auto-generated random secret (stored for reuse across restarts)
-const ADMIN_SECRET_FILE = path.join(__dirname, '.admin_secret');
+const ADMIN_SECRET_FILE = path.join(ROOT, '.admin_secret');
 function resolveAdminSecret() {
   const fromEnv = (process.env.ADMIN_API_SECRET || '').trim();
   if (fromEnv) return fromEnv;
@@ -89,6 +91,7 @@ app.use((req, res, next) => {
 // -------------------------------------------------------------
 const SENSITIVE_PATTERNS = [
   /server\.js$/i,
+  /^\/?server(\/|$)/i,
   /emailauditservice\.js$/i,
   /package(\.json|-lock\.json)?$/i,
   /^\/?\.env/i,
@@ -142,7 +145,7 @@ app.use(express.urlencoded({ extended: true, limit: '2mb' }));
 // -------------------------------------------------------------
 // 5. STATIC ASSET SERVING
 // -------------------------------------------------------------
-app.use(express.static(__dirname, {
+app.use(express.static(ROOT, {
   etag: false,
   lastModified: false
 }));
@@ -352,7 +355,7 @@ function verifyPassword(candidatePassword, storedHashOrPassword) {
 // -------------------------------------------------------------
 // 8. DATABASE STORES (USERS, FANTASY, PHOTOS, LOCK)
 // -------------------------------------------------------------
-const USERS_FILE = path.join(__dirname, 'users_db.json');
+const USERS_FILE = path.join(ROOT, 'users_db.json');
 let memoryUsers = null;
 
 function getUsers() {
@@ -595,7 +598,7 @@ app.post('/api/auth/sync', requireAdminAuth, (req, res) => {
 // -------------------------------------------------------------
 // 10. FANTASY TEAMS & LOCK MANAGEMENT (WITH STRICT SANITIZATION)
 // -------------------------------------------------------------
-const FANTASY_TEAMS_FILE = path.join(__dirname, 'fantasy_teams_db.json');
+const FANTASY_TEAMS_FILE = path.join(ROOT, 'fantasy_teams_db.json');
 let memoryFantasyTeams = null;
 
 function getFantasyTeams() {
@@ -691,7 +694,7 @@ app.post('/api/fantasy/teams', requireFirebaseUser, (req, res) => {
   return res.json({ success: true, team: updatedEntry, total: teams.length });
 });
 
-const FANTASY_LOCK_FILE = path.join(__dirname, 'fantasy_lock_db.json');
+const FANTASY_LOCK_FILE = path.join(ROOT, 'fantasy_lock_db.json');
 let memoryFantasyLock = null;
 
 function getFantasyLockState() {
@@ -846,7 +849,7 @@ app.get('/api/live-timing/stream', (req, res) => {
 // scheduled GitHub Action that publishes the static records the public site
 // reads from GitHub Pages.
 const liveTimingStore = createLiveTimingStore({
-  file: path.join(__dirname, 'live_timing_db.json'),
+  file: path.join(ROOT, 'live_timing_db.json'),
   sanitize: sanitizeString,
   log: console
 });
@@ -924,7 +927,7 @@ app.get('/api/admin/results/draft', requireAdminAuth, async (req, res) => {
 // -------------------------------------------------------------
 // 12. CARRERAS FOTOS & COMMUNITY GALLERY (WITH STRICT SANITIZATION)
 // -------------------------------------------------------------
-const PHOTOS_FILE = path.join(__dirname, 'photos_db.json');
+const PHOTOS_FILE = path.join(ROOT, 'photos_db.json');
 let memoryPhotos = null;
 let lastPhotosFirestoreSync = 0;
 const PHOTOS_TTL_MS = 60000; // 60 seconds
@@ -1145,7 +1148,7 @@ app.post('/api/noticias/upload-image', requireFirebaseUser, (req, res) => {
     const ext = rawExt === 'jpeg' ? 'jpg' : (rawExt === 'png' ? 'png' : (rawExt === 'webp' ? 'webp' : 'jpg'));
     const buffer = Buffer.from(matches[2], 'base64');
     const filename = `news_${Date.now()}_${crypto.randomBytes(4).toString('hex')}.${ext}`;
-    const uploadDir = path.join(__dirname, 'news_uploads');
+    const uploadDir = path.join(ROOT, 'news_uploads');
     if (!fs.existsSync(uploadDir)) {
       fs.mkdirSync(uploadDir, { recursive: true });
     }
@@ -1234,7 +1237,7 @@ app.post('/api/admin/delete-accounts', requireAdminAuth, async (req, res) => {
 
 app.get('/api/admin/audit-backups', requireAdminAuth, (req, res) => {
   try {
-    const backupDir = path.join(__dirname, 'backups');
+    const backupDir = path.join(ROOT, 'backups');
     if (!fs.existsSync(backupDir)) {
       return res.json({ success: true, backups: [] });
     }
@@ -1258,7 +1261,7 @@ app.get('/api/admin/audit-backups', requireAdminAuth, (req, res) => {
 // 14. SPA CLIENT ROUTING & SERVER START
 // -------------------------------------------------------------
 app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, 'index.html'));
+  res.sendFile(path.join(ROOT, 'index.html'));
 });
 
 app.listen(PORT, '0.0.0.0', () => {

@@ -22,7 +22,7 @@ import {
   cleanText,
   ltToPositiveNumber,
   ltSessionIdentity
-} from './live-timing-store.js';
+} from '../live-timing-store.js';
 
 export { LIVE_TIMING_RESULTS_BASE };
 

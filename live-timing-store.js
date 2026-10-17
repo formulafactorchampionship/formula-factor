@@ -2,7 +2,7 @@
 // Live timing store: persisted lap times + archived results importer.
 // -------------------------------------------------------------
 // Shared by two very different processes:
-//   - server.js ............ keeps a socket open 24/7 and folds every full
+//   - server/server.js ..... keeps a socket open 24/7 and folds every full
 //                            snapshot into the store, serving the endpoints
 //                            the site uses when it is served by Node.
 //   - build-live-timing-records.mjs ... runs from the scheduled GitHub Action

@@ -31,7 +31,7 @@ jobs:
           node-version: '22'
 
       - name: Refresh stored lap times
-        run: node build-live-timing-records.mjs --timeout 25000
+        run: node server/build-live-timing-records.mjs --timeout 25000
 
       - name: Publish changes
         run: |
