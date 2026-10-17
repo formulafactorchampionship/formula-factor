@@ -13663,6 +13663,18 @@ footer {
     font-size: 24px;
 }
 
+.slot-team-logo-icon svg,
+.market-card-team-icon svg {
+    width: 26px;
+    height: 26px;
+    color: var(--gold-light, #f1d78a);
+}
+
+.slot-empty-icon svg {
+    width: 30px;
+    height: 30px;
+}
+
 .slot-name-block {
     flex: 1;
     overflow: hidden;

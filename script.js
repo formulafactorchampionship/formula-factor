@@ -2649,7 +2649,7 @@ function applyTranslations(lang) {
         if (fBadge) fBadge.textContent = dict.fantasy.seasonBadge;
 
         const fEyebrow = document.getElementById("fantasyHeroEyebrow");
-        if (fEyebrow) fEyebrow.innerHTML = `<span></span> ${dict.fantasy.heroEyebrow}`;
+        if (fEyebrow) fEyebrow.innerHTML = `<span><i data-lucide="trophy" aria-hidden="true"></i></span> ${dict.fantasy.heroEyebrow}`;
 
         const fTitle = document.getElementById("fantasyHeroTitle");
         if (fTitle) fTitle.innerHTML = dict.fantasy.heroTitle;
@@ -10523,7 +10523,7 @@ function initFirestoreListeners() {
                     ? String(data.number).trim().replace(/^#/, "")
                     : (getDriverDorsalNumber(dName) || ""));
 
-            driverMap.set(norm, {
+            driverMap.set(docSnap.id, {
                 id: docSnap.id,
                 driver: data.driver || docSnap.id,
                 team: data.team || "Independent",
@@ -12465,7 +12465,23 @@ function calculateAllStandingsFromRaces(racesMap = raceResults, baseDriverList =
 }
 
 async function recalculateAndSyncStandings(racesMap = raceResults) {
-    const baseList = (currentPilotos && currentPilotos.length > 0) ? currentPilotos : defaultStandings;
+    // Never shrink the roster: recalculate from every driver already known (current
+    // list, defaults and anyone appearing in a race), so a partial or failed load
+    // cannot drop added drivers from the standings.
+    const known = new Map();
+    const addDrivers = (arr) => (arr || []).forEach((d) => {
+        if (d && d.driver) known.set(normalizeDriverKey(d.driver), d);
+    });
+    addDrivers(currentPilotos);
+    addDrivers(defaultStandings);
+    Object.values(racesMap || {}).forEach((race) => {
+        (race && Array.isArray(race.drivers) ? race.drivers : []).forEach((d) => {
+            if (d && d.driver && !known.has(normalizeDriverKey(d.driver))) {
+                known.set(normalizeDriverKey(d.driver), { driver: d.driver, team: d.team || getDriverTeam(d.driver) });
+            }
+        });
+    });
+    const baseList = Array.from(known.values());
     const newStandings = calculateAllStandingsFromRaces(racesMap, baseList);
 
     try {
@@ -16033,7 +16049,7 @@ function renderAdminMarketSentimentWidget() {
                 <div style="font-size: 11px; color: #f85149; font-weight: 700; margin-top: 2px;">${maxDownDriver ? maxDownDriver.flu.deltaFormatted : '+0.0M€'} (${maxDownDriver ? maxDownDriver.flu.currentPrice.toFixed(1) : 0}M€)</div>
             </div>
             <div style="background: rgba(210, 153, 34, 0.08); border: 1px solid rgba(210, 153, 34, 0.25); border-radius: 8px; padding: 10px;">
-                <div style="font-size: 10px; text-transform: uppercase; color: #d29922; font-weight: 700; margin-bottom: 4px;">Escudería Destacada</div>
+                <div style="font-size: 10px; text-transform: uppercase; color: #d29922; font-weight: 700; margin-bottom: 4px;"><i data-lucide="factory" aria-hidden="true"></i> Escudería Destacada</div>
                 <div style="font-weight: 700; font-size: 13px; color: #f0f6fc; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${maxUpTeam ? escapeHtml(maxUpTeam.name) : '--'}</div>
                 <div style="font-size: 11px; color: #d29922; font-weight: 700; margin-top: 2px;">${maxUpTeam ? maxUpTeam.flu.deltaFormatted : '+0.0M€'} (${maxUpTeam ? maxUpTeam.flu.currentPrice.toFixed(1) : 0}M€)</div>
             </div>
@@ -16472,6 +16488,21 @@ function loadFantasyTeamFromStorage() {
 var cloudFantasyTeams = [];
 var isFantasyLeaderboardListening = false;
 
+// Merges fantasy team lists (by id) so data from both Firestore collections —
+// or from the server backup — never overwrites a richer entry.
+function mergeFantasyTeams(list) {
+    const keyOf = (t) => t && (t.id || t.userId || t.managerName || t.teamName);
+    const map = new Map();
+    (Array.isArray(cloudFantasyTeams) ? cloudFantasyTeams : []).forEach((t) => { const k = keyOf(t); if (k) map.set(k, t); });
+    (Array.isArray(list) ? list : []).forEach((t) => {
+        const k = keyOf(t);
+        if (!k) return;
+        map.set(k, { ...(map.get(k) || {}), ...t });
+    });
+    cloudFantasyTeams = Array.from(map.values());
+    return cloudFantasyTeams;
+}
+
 function initFantasyLeaderboardRealtime() {
     if (isFantasyLeaderboardListening) return;
     isFantasyLeaderboardListening = true;
@@ -16481,7 +16512,7 @@ function initFantasyLeaderboardRealtime() {
         .then(r => r.json())
         .then(data => {
             if (data && Array.isArray(data.teams) && data.teams.length > 0) {
-                cloudFantasyTeams = data.teams;
+                mergeFantasyTeams(data.teams);
                 if (typeof ffcFantasyState !== "undefined" && ffcFantasyState.activeSubTab === "leaderboard") {
                     renderFantasyLeaderboard();
                 }
@@ -16489,29 +16520,35 @@ function initFantasyLeaderboardRealtime() {
         })
         .catch(() => {});
 
-    // 2. Real-time Firebase Firestore synchronization
+    // 2. Real-time Firebase Firestore synchronization. The app writes to
+    //    'fantasy_leaderboard', but older entries may live in 'fantasy_teams',
+    //    so both collections are watched and merged.
     if (typeof db !== "undefined") {
-        try {
-            onSnapshot(collection(db, "fantasy_leaderboard"), (snapshot) => {
-                const list = [];
-                snapshot.forEach(docSnap => {
-                    const data = docSnap.data();
-                    if (data && (data.teamName || data.managerName)) {
-                        list.push({ ...data, id: docSnap.id });
+        const listen = (collectionName) => {
+            try {
+                onSnapshot(collection(db, collectionName), (snapshot) => {
+                    const list = [];
+                    snapshot.forEach(docSnap => {
+                        const data = docSnap.data();
+                        if (data && (data.teamName || data.managerName)) {
+                            list.push({ ...data, id: docSnap.id });
+                        }
+                    });
+                    if (list.length > 0) {
+                        mergeFantasyTeams(list);
                     }
+                    if (typeof ffcFantasyState !== "undefined" && ffcFantasyState.activeSubTab === "leaderboard") {
+                        renderFantasyLeaderboard();
+                    }
+                }, (err) => {
+                    console.warn("Firestore error on " + collectionName + " snapshot:", err);
                 });
-                if (list.length > 0) {
-                    cloudFantasyTeams = list;
-                }
-                if (typeof ffcFantasyState !== "undefined" && ffcFantasyState.activeSubTab === "leaderboard") {
-                    renderFantasyLeaderboard();
-                }
-            }, (err) => {
-                console.warn("Firestore error on fantasy_leaderboard snapshot:", err);
-            });
-        } catch (e) {
-            console.warn("Error setting up fantasy_leaderboard listener:", e);
-        }
+            } catch (e) {
+                console.warn("Error setting up " + collectionName + " listener:", e);
+            }
+        };
+        listen("fantasy_leaderboard");
+        listen("fantasy_teams");
     }
 }
 window.initFantasyLeaderboardRealtime = initFantasyLeaderboardRealtime;
@@ -16944,7 +16981,7 @@ function renderSlotCard(containerId, slotType, slotIndex, currentItem, pts, isTu
     if (!currentItem) {
         // Empty Slot State
         const label = slotType === "driver" ? (isEn ? `Driver ${slotIndex}` : `Piloto ${slotIndex}`) : (isEn ? "Constructor" : "Constructor");
-        const icon = slotType === "driver" ? "" : "";
+        const icon = slotType === "driver" ? '<i data-lucide="car" aria-hidden="true"></i>' : '<i data-lucide="factory" aria-hidden="true"></i>';
         const btnText = isLocked 
             ? (isEn ? "Market Locked" : "Mercado Bloqueado") 
             : (isLogged ? (isEn ? "Go to Market" : "Ir al Mercado") : (isEn ? "Log In" : "Iniciar Sesión"));
@@ -16955,7 +16992,7 @@ function renderSlotCard(containerId, slotType, slotIndex, currentItem, pts, isTu
 
         container.innerHTML = `
             <div class="slot-empty-body" onclick="${btnClick}">
-                <div class="slot-empty-icon">${isLocked ? "" : (isLogged ? icon : "")}</div>
+                <div class="slot-empty-icon">${isLocked ? '<i data-lucide="lock" aria-hidden="true"></i>' : (isLogged ? icon : '<i data-lucide="lock" aria-hidden="true"></i>')}</div>
                 <div class="slot-empty-title">${isLocked ? `${label} (${isEn ? "Locked" : "Bloqueado"})` : (isLogged ? `+ ${isEn ? "Sign " + label : "Fichar " + label}` : `${label} ${isEn ? "Locked" : "Bloqueado"}`)}</div>
                 <div class="slot-empty-sub">${isLocked ? (isEn ? "Lineups frozen during race" : "Alineaciones congeladas por carrera") : (isLogged ? (isEn ? "Vacant slot available" : "Vacante disponible") : (isEn ? "Log in to sign" : "Inicia sesión para fichar"))}</div>
                 <button type="button" class="slot-empty-btn ${lockBtnClass}">${btnText}</button>
@@ -16989,8 +17026,8 @@ function renderSlotCard(containerId, slotType, slotIndex, currentItem, pts, isTu
                     </div>
                     <div class="slot-avatar-wrap">
                         ${avatarUrl 
-                            ? `<img src="${escapeHtml(avatarUrl)}" class="slot-avatar-img" alt="${escapeHtml(currentItem)}" onerror="this.outerHTML='<div class=\\'slot-team-logo-icon\\'></div>'">`
-                            : `<div class="slot-team-logo-icon"></div>`
+                            ? `<img src="${escapeHtml(avatarUrl)}" class="slot-avatar-img" alt="${escapeHtml(currentItem)}" onerror="this.outerHTML='<div class=\\'slot-team-logo-icon\\'><i data-lucide=&quot;car&quot;></i></div>'">`
+                            : `<div class="slot-team-logo-icon"><i data-lucide="car" aria-hidden="true"></i></div>`
                         }
                         <div class="slot-name-block">
                             <div class="slot-item-name" title="${escapeHtml(currentItem)}">${flag} ${escapeHtml(currentItem)}</div>
@@ -17028,7 +17065,7 @@ function renderSlotCard(containerId, slotType, slotIndex, currentItem, pts, isTu
                         ${sellBtnHtml}
                     </div>
                     <div class="slot-avatar-wrap">
-                        <div class="slot-team-logo-icon"></div>
+                        <div class="slot-team-logo-icon"><i data-lucide="factory" aria-hidden="true"></i></div>
                         <div class="slot-name-block">
                             <div class="slot-item-name" title="${escapeHtml(currentItem)}">${escapeHtml(currentItem)}</div>
                             <span class="ranking-team-pill ${getTeamClass(currentItem)}"><span class="team-dot"></span>Constructor</span>
@@ -17347,10 +17384,10 @@ function renderFantasyMarketGrid() {
                 <div class="market-card-top">
                     ${isDriver 
                         ? (item.avatarUrl 
-                            ? `<img src="${escapeHtml(item.avatarUrl)}" class="market-card-avatar" alt="${escapeHtml(item.name)}" onerror="this.outerHTML='<div class=\\'market-card-team-icon\\'></div>'">`
-                            : `<div class="market-card-team-icon"></div>`
+                            ? `<img src="${escapeHtml(item.avatarUrl)}" class="market-card-avatar" alt="${escapeHtml(item.name)}" onerror="this.outerHTML='<div class=\\'market-card-team-icon\\'><i data-lucide=&quot;car&quot;></i></div>'">`
+                            : `<div class="market-card-team-icon"><i data-lucide="car" aria-hidden="true"></i></div>`
                         )
-                        : `<div class="market-card-team-icon"></div>`
+                        : `<div class="market-card-team-icon"><i data-lucide="factory" aria-hidden="true"></i></div>`
                     }
                     <div class="market-card-info">
                         <div class="market-card-name" title="${escapeHtml(item.name)}">${getFlagHtml(item.flag, 16)} ${escapeHtml(item.name)}</div>
@@ -17409,21 +17446,24 @@ async function renderFantasyLeaderboard() {
     // 2. If cloud cache is empty (e.g. initial cold load in incognito), fetch from Firestore or server
     if (teamsList.length === 0) {
         if (typeof db !== "undefined") {
-            try {
-                const snap = await getDocs(collection(db, "fantasy_leaderboard"));
-                if (!snap.empty) {
-                    snap.forEach(d => {
-                        const data = d.data();
-                        if (data && (data.teamName || data.managerName)) {
-                            teamsList.push({ ...data, id: d.id });
+            for (const col of ["fantasy_leaderboard", "fantasy_teams"]) {
+                if (teamsList.length > 0) break;
+                try {
+                    const snap = await getDocs(collection(db, col));
+                    if (!snap.empty) {
+                        snap.forEach(d => {
+                            const data = d.data();
+                            if (data && (data.teamName || data.managerName)) {
+                                teamsList.push({ ...data, id: d.id });
+                            }
+                        });
+                        if (teamsList.length > 0) {
+                            mergeFantasyTeams(teamsList);
                         }
-                    });
-                    if (teamsList.length > 0) {
-                        cloudFantasyTeams = [...teamsList];
                     }
+                } catch (e) {
+                    console.warn("Could not load fantasy data from " + col + ":", e);
                 }
-            } catch (e) {
-                console.warn("Could not load fantasy leaderboard from cloud:", e);
             }
         }
 
@@ -17521,7 +17561,7 @@ async function renderFantasyLeaderboard() {
         tbody.innerHTML = `
             <tr>
                 <td colspan="5" style="text-align: center; padding: 48px 20px; color: #94a3b8;">
-                    <div style="font-size: 32px; margin-bottom: 8px;"></div>
+                    <div style="font-size: 32px; margin-bottom: 8px;"><i data-lucide="trophy" aria-hidden="true"></i></div>
                     <div style="font-size: 15px; font-weight: 700; color: #f1f5f9; margin-bottom: 4px;">${isEn ? "No registered teams yet" : "Aún no hay escuderías registradas"}</div>
                     <div style="font-size: 13px; color: #64748b;">${isLogged ? (isEn ? "Set up your lineup in 'My Team' to lead the standings!" : "¡Configura tu alineación en 'Mi Escudería' para liderar la clasificación!") : (isEn ? "Log in with your account to create your team and compete in the league." : "Inicia sesión con tu cuenta para crear tu equipo y competir en la liga.")}</div>
                 </td>
