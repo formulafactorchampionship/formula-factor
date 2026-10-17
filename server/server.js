@@ -334,18 +334,30 @@ function hashPassword(password) {
 
 function verifyPassword(candidatePassword, storedHashOrPassword) {
   if (!candidatePassword || !storedHashOrPassword) return false;
+  if (typeof candidatePassword !== 'string' || typeof storedHashOrPassword !== 'string') return false;
 
   if (storedHashOrPassword.startsWith('scrypt$')) {
-    const candidateHash = hashPassword(candidatePassword);
-    return crypto.timingSafeEqual(Buffer.from(candidateHash), Buffer.from(storedHashOrPassword));
+    let candidateHash;
+    try {
+      candidateHash = hashPassword(candidatePassword);
+    } catch (e) {
+      return false;
+    }
+    const a = Buffer.from(candidateHash);
+    const b = Buffer.from(storedHashOrPassword);
+    if (a.length !== b.length) return false;
+    try {
+      return crypto.timingSafeEqual(a, b);
+    } catch (e) {
+      return false;
+    }
   }
 
+  // Legacy SHA256 hashes are still verified to allow migration,
+  // then upgraded to scrypt on successful login. Plaintext
+  // passwords are NEVER accepted.
   const legacyHash = crypto.createHash('sha256').update(candidatePassword + AUTH_SALT).digest('hex');
   if (storedHashOrPassword === legacyHash) {
-    return true;
-  }
-
-  if (storedHashOrPassword === candidatePassword) {
     return true;
   }
 
@@ -415,8 +427,8 @@ app.post('/api/admin/session', async (req, res) => {
 });
 
 app.post('/api/auth/register', (req, res) => {
-  const { name, email, password, passwordHash } = req.body || {};
-  if (!email || (!password && !passwordHash)) {
+  const { name, email, password } = req.body || {};
+  if (!email || !password) {
     return res.status(400).json({ error: 'Missing required fields' });
   }
 
@@ -465,17 +477,13 @@ app.post('/api/auth/register', (req, res) => {
     return res.status(400).json({ error: 'Username already in use', code: 'auth/username-already-in-use' });
   }
 
-  // Only accept modern, well-formed hashes supplied by the client. Never store an
-  // arbitrary or plaintext value provided by the caller.
-  const isModernHash = typeof passwordHash === 'string'
-    && (passwordHash.startsWith('scrypt$') || passwordHash.startsWith('pbkdf2$'));
+  // Passwords are always hashed server-side with scrypt. Client-supplied
+  // hashes are never accepted or stored (prevents hash-fixation/replay).
   let pHash;
-  if (password) {
-    pHash = hashPassword(password); // server-side scrypt is always preferred
-  } else if (isModernHash) {
-    pHash = passwordHash;
+  if (typeof password === 'string' && password.length >= 8) {
+    pHash = hashPassword(password); // server-side scrypt is always used
   } else {
-    return res.status(400).json({ error: 'A valid password or password hash is required', code: 'auth/invalid-credentials' });
+    return res.status(400).json({ error: 'A valid password is required', code: 'auth/invalid-credentials' });
   }
 
   const userData = {
@@ -501,8 +509,8 @@ app.post('/api/auth/register', (req, res) => {
 });
 
 app.post('/api/auth/login', (req, res) => {
-  const { email, password, passwordHash } = req.body || {};
-  if (!email || (!password && !passwordHash)) {
+  const { email, password } = req.body || {};
+  if (!email || !password) {
     return res.status(400).json({ error: 'Missing required fields' });
   }
 
@@ -515,15 +523,13 @@ app.post('/api/auth/login', (req, res) => {
   }
 
   let match = false;
-  if (password) {
-    match = verifyPassword(password, found.passwordHash || found.password);
+  if (typeof password === 'string') {
+    match = verifyPassword(password, found.passwordHash || '');
     if (match && (!found.passwordHash || !found.passwordHash.startsWith('scrypt$'))) {
       found.passwordHash = hashPassword(password);
       delete found.password;
       saveUsers(users);
     }
-  } else if (passwordHash) {
-    match = (found.passwordHash && found.passwordHash === passwordHash);
   }
 
   if (!match) {
