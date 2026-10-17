@@ -4900,7 +4900,10 @@ function renderHomeTop3Podium() {
             if (cardEl && driverData) {
                 cardEl.setAttribute("data-driver", driverData.driver);
                 cardEl.setAttribute("title", `Ver estadísticas de ${driverData.driver}`);
-                cardEl.setAttribute("onclick", `if(window.openDriverComparison){window.openDriverComparison('${driverData.driver}');}`);
+                // Opens the driver card (public profile), like the rest of the site.
+                // Any stale inline "open comparator" handler from previous renders is cleared.
+                cardEl.classList.add("driver-card-clickable");
+                cardEl.removeAttribute("onclick");
                 
                 // Avatar initial letter
                 const avatarLetter = cardEl.querySelector(".avatar-letter");
@@ -7457,7 +7460,7 @@ function getDynamicSeasonMatrixData() {
             }
 
             const racePos = Number(driverEntry.pos) || 0;
-            const basePts = F1_POINTS_MAP[racePos] || 0;
+            const basePts = (typeof F1_POINTS_MAP !== "undefined" ? F1_POINTS_MAP[racePos] : 0) || 0;
 
             // Check Fastest Lap (+1 pt bonus)
             let isFL = false;
@@ -8186,6 +8189,9 @@ function openDriverStatsModal(driverName) {
     overlay.classList.add("active");
     overlay.setAttribute("aria-hidden", "false");
     document.body.style.overflow = "hidden";
+
+    // The card doubles as the public profile: give it a shareable deep link.
+    setDriverProfileHash(data.driver);
 }
 
 function closeDriverStatsModal() {
@@ -8195,6 +8201,7 @@ function closeDriverStatsModal() {
     overlay.classList.remove("active");
     overlay.setAttribute("aria-hidden", "true");
     document.body.style.overflow = "";
+    clearDriverProfileHash();
 }
 
 function initDriverStatsModal() {
@@ -8283,6 +8290,130 @@ function initDriverStatsModal() {
         }
     });
 }
+
+// ==============================================
+// PUBLIC DRIVER PROFILE (shareable deep link, #piloto/<slug>)
+// ==============================================
+// The driver card already merges the public driver data (colour, avatar, bio,
+// socials, verified flag) with the championship stats. Here it also gets its own
+// URL, so it can be shared straight to Discord/WhatsApp and opened on load.
+
+function driverSlug(name) {
+    return String(name || "").trim().toLowerCase()
+        .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+        .replace(/[^a-z0-9]+/g, "-")
+        .replace(/^-+|-+$/g, "");
+}
+
+function findDriverNameBySlug(slug) {
+    const target = String(slug || "").trim().toLowerCase();
+    if (!target) return null;
+    const names = new Set();
+    try { getAllDriverList().forEach((d) => { if (d && d.driver) names.add(d.driver); }); } catch (e) {}
+    try { (typeof currentStandings !== "undefined" && currentStandings ? currentStandings : []).forEach((d) => { if (d && d.driver) names.add(d.driver); }); } catch (e) {}
+    try { (typeof currentPilotos !== "undefined" && currentPilotos ? currentPilotos : []).forEach((p) => { if (p && p.driver) names.add(p.driver); }); } catch (e) {}
+    for (const name of names) {
+        if (driverSlug(name) === target) return name;
+    }
+    return null;
+}
+
+function driverProfileUrl(name) {
+    return window.location.origin + window.location.pathname + "#piloto/" + driverSlug(name);
+}
+
+function setDriverProfileHash(name) {
+    const hash = "#piloto/" + driverSlug(name);
+    try {
+        if (window.location.hash !== hash) window.history.pushState(null, "", hash);
+    } catch (e) {
+        try { window.location.hash = hash; } catch (err) {}
+    }
+    try { document.title = name + " · Formula Factor Championship"; } catch (e) {}
+}
+
+function clearDriverProfileHash() {
+    try { document.title = "Formula Factor Championship | FFC"; } catch (e) {}
+    if (/^#piloto\//.test(window.location.hash)) {
+        try { window.history.pushState(null, "", window.location.pathname); } catch (e) {
+            try { window.location.hash = ""; } catch (err) {}
+        }
+    }
+}
+
+let pendingProfileTries = 0;
+
+function openDriverProfileFromHash() {
+    const match = String(window.location.hash || "").match(/^#piloto\/(.+)$/);
+    if (!match) return false;
+    const name = findDriverNameBySlug(decodeURIComponent(match[1]));
+    if (!name) return false;
+    openDriverStatsModal(name);
+    return true;
+}
+
+// Standings load asynchronously, so a deep link may arrive before the data does.
+function runDriverProfileDeepLink() {
+    const match = String(window.location.hash || "").match(/^#piloto\/(.+)$/);
+    if (!match) return;
+    if (openDriverProfileFromHash()) return;
+    if (pendingProfileTries > 40) return; // ~10s, then give up quietly
+    pendingProfileTries++;
+    setTimeout(runDriverProfileDeepLink, 250);
+}
+
+async function shareDriverProfileLink() {
+    const name = currentOpenModalDriver;
+    if (!name) return;
+    const url = driverProfileUrl(name);
+    const label = document.getElementById("lblDriverModalShareBtn");
+    const original = label ? label.textContent : "";
+    const feedback = (text) => {
+        if (!label) return;
+        label.textContent = text;
+        setTimeout(() => { if (label) label.textContent = original; }, 2000);
+    };
+
+    try {
+        if (navigator.share) {
+            await navigator.share({ title: name + " · FFC", url });
+            return;
+        }
+    } catch (e) { /* cancelled / unsupported: fall through to copy */ }
+
+    try {
+        await navigator.clipboard.writeText(url);
+        feedback("ENLACE COPIADO");
+    } catch (e) {
+        window.prompt("Copia el enlace de la tarjeta:", url);
+    }
+}
+
+function initDriverProfileDeepLink() {
+    const shareBtn = document.getElementById("btnDriverModalShare");
+    if (shareBtn) {
+        shareBtn.addEventListener("click", (e) => {
+            e.stopPropagation();
+            shareDriverProfileLink();
+        });
+    }
+
+    window.addEventListener("hashchange", () => {
+        if (/^#piloto\//.test(window.location.hash)) {
+            runDriverProfileDeepLink();
+        } else {
+            const overlay = document.getElementById("driverModalOverlay");
+            if (overlay && overlay.classList.contains("active")) closeDriverStatsModal();
+        }
+    });
+
+    window.openDriverProfileFromHash = openDriverProfileFromHash;
+    runDriverProfileDeepLink();
+}
+
+// Deferred: opening the driver card reaches code that is not ready during the
+// module's own evaluation, so the deep link only runs once the page has settled.
+setTimeout(initDriverProfileDeepLink, 0);
 
 // ==============================================
 // MINI TARJETA DE ESTADÍSTICAS DE EQUIPO (MODAL)

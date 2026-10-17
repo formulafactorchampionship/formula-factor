@@ -33,7 +33,7 @@
         <link rel="preconnect" href="https://esm.sh" crossorigin>
     <link rel="preconnect" href="https://flagcdn.com" crossorigin>
     <link rel="preconnect" href="https://firestore.googleapis.com" crossorigin>
-    <link rel="stylesheet" href="style.css?v=20261017_rc30">
+    <link rel="stylesheet" href="style.css?v=20261017_rc34">
     <link rel="stylesheet" href="BorderGlow.css">
     <link rel="stylesheet" href="LightPillar.css">
     <script>
@@ -816,7 +816,7 @@
 
     <div class="home-top3-container" id="homeTop3Container">
         <!-- P2: Muntii -->
-        <div class="home-top3-card podium-p2 driver-card-clickable" data-driver="Muntii" title="Ver estadísticas de Muntii" onclick="if(window.openDriverComparison){window.openDriverComparison('Muntii');}">
+        <div class="home-top3-card podium-p2 driver-card-clickable" data-driver="Muntii" title="Ver estadísticas de Muntii">
             <div class="podium-rank-pill">P2</div>
             <div class="podium-avatar">
                 <span class="avatar-letter">M</span>
@@ -831,7 +831,7 @@
         </div>
 
         <!-- P1: Dieguiosk (Hero) -->
-        <div class="home-top3-card podium-p1 driver-card-clickable" data-driver="Dieguiosk" title="Ver estadísticas de Dieguiosk" onclick="if(window.openDriverComparison){window.openDriverComparison('Dieguiosk');}">
+        <div class="home-top3-card podium-p1 driver-card-clickable" data-driver="Dieguiosk" title="Ver estadísticas de Dieguiosk">
             <div class="podium-crown-badge">LÍDER DEL MUNDIAL</div>
             <div class="podium-rank-pill pill-gold">P1</div>
             <div class="podium-avatar avatar-p1">
@@ -847,7 +847,7 @@
         </div>
 
         <!-- P3: Suforr -->
-        <div class="home-top3-card podium-p3 driver-card-clickable" data-driver="Suforr" title="Ver estadísticas de Suforr" onclick="if(window.openDriverComparison){window.openDriverComparison('Suforr');}">
+        <div class="home-top3-card podium-p3 driver-card-clickable" data-driver="Suforr" title="Ver estadísticas de Suforr">
             <div class="podium-rank-pill">P3</div>
             <div class="podium-avatar">
                 <span class="avatar-letter">S</span>
@@ -3747,6 +3747,10 @@
                 <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M9.01 14H2v2h7.01v3L13 15l-3.99-4v3zm5.98-1v-3H22V8h-7.01V5L11 9l3.99 4z"/></svg>
                 <span id="lblDriverModalCompareBtn">COMPARAR CON OTRO PILOTO</span>
             </button>
+            <button type="button" class="btn-driver-modal-share" id="btnDriverModalShare" title="Copiar el enlace público de esta tarjeta">
+                <i data-lucide="share-2" aria-hidden="true"></i>
+                <span id="lblDriverModalShareBtn">COPIAR ENLACE</span>
+            </button>
         </div>
     </div>
 </div>
@@ -6261,7 +6265,7 @@
 
 
 
-<script type="module" src="script.js?v=20261017_rc30"></script>
+<script type="module" src="script.js?v=20261017_rc34"></script>
 
 </body>
 </html>
