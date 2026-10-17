@@ -5,6 +5,7 @@ users_db.json
 fantasy_teams_db.json
 fantasy_lock_db.json
 live_timing_db.json
+photos_db.json
 *_backup_*.json
 /backups/
 node_modules/

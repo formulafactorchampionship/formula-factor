@@ -90,8 +90,6 @@ app.use((req, res, next) => {
 const SENSITIVE_PATTERNS = [
   /server\.js$/i,
   /emailauditservice\.js$/i,
-  /update_index\.js$/i,
-  /scores_snippet\.js$/i,
   /package(\.json|-lock\.json)?$/i,
   /^\/?\.env/i,
   /\.env/i,
@@ -99,7 +97,6 @@ const SENSITIVE_PATTERNS = [
   /_db\.json$/i,
   /backup/i,
   /^\/?backups(\/|$)/i,
-  /^\/?components(\/|$)/i,
   /^\/?\.aistudio(\/|$)/i,
   /firestore\.rules$/i,
   /firebase-blueprint\.json$/i

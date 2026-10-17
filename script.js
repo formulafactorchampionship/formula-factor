@@ -22,15 +22,15 @@ window.safeGetLocalJSON = safeGetLocalJSON;
 // Initialize interactive background layers safely via dynamic imports
 const handleInitBackgrounds = () => {
     try {
-        import('./ShapeWaves.js?v=20261014').then(m => m.initShapeWavesBackground && m.initShapeWavesBackground()).catch(e => console.warn("ShapeWaves init:", e));
+        import('./components/ShapeWaves.js?v=20261014').then(m => m.initShapeWavesBackground && m.initShapeWavesBackground()).catch(e => console.warn("ShapeWaves init:", e));
     } catch (e) {}
 
     try {
-        import('./BorderGlow.js?v=20261014').then(m => m.initCalendarBorderGlow && m.initCalendarBorderGlow()).catch(e => console.warn("BorderGlow init:", e));
+        import('./components/BorderGlow.js?v=20261014').then(m => m.initCalendarBorderGlow && m.initCalendarBorderGlow()).catch(e => console.warn("BorderGlow init:", e));
     } catch (e) {}
     
     try {
-        import('./SideRays.js?v=20261014').then(m => {
+        import('./components/SideRays.js?v=20261014').then(m => {
             if (m.initSideRaysBackground) {
                 try {
                     m.initSideRaysBackground("hero-siderays-bg", {
@@ -73,7 +73,7 @@ const handleInitBackgrounds = () => {
             const pillarObserver = new IntersectionObserver((entries, obs) => {
                 if (entries[0].isIntersecting) {
                     obs.disconnect();
-                    import('./LightPillar.js?v=20261014').then(m => {
+                    import('./components/LightPillar.js?v=20261014').then(m => {
                         if (m.initLightPillar) {
                             try {
                                 m.initLightPillar("unified-lightpillar-bg", {
@@ -96,7 +96,7 @@ const handleInitBackgrounds = () => {
             }, { rootMargin: '300px' });
             pillarObserver.observe(targetPillar);
         } else {
-            import('./LightPillar.js?v=20261014').then(m => {
+            import('./components/LightPillar.js?v=20261014').then(m => {
                 if (m.initLightPillar) {
                     try {
                         m.initLightPillar("unified-lightpillar-bg", {
@@ -8892,7 +8892,7 @@ function initTeamStatsModal() {
 ========================================================= */
 function initInteractiveChampionshipMap() {
     try {
-        import('./CobeGlobe.js?v=20261014').then(m => {
+        import('./components/CobeGlobe.js?v=20261014').then(m => {
             if (m.initCobeGlobe) {
                 m.initCobeGlobe("hero-cobe-globe-container");
             }
