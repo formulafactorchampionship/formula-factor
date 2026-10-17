@@ -889,10 +889,9 @@ const LIVE_TIMING_IMPORT_EVERY_MS = 15 * 60 * 1000;
 app.get('/api/admin/results/sessions', requireAdminAuth, async (req, res) => {
   try {
     const sessions = await listArchivedSessions();
-    // Only the session types that can produce a usable classification.
-    const usable = sessions
-      .filter((session) => session.type === 'RACE' || session.type === 'QUALIFY')
-      .slice(0, 40);
+    // Every archived session type, newest first. The panel decides what each one
+    // is good for (races import the full result; qualifying imports the grid).
+    const usable = sessions.slice(0, 60);
     return res.json({ success: true, sessions: usable });
   } catch (err) {
     return res.status(502).json({

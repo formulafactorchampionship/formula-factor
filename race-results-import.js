@@ -302,19 +302,31 @@ export async function fetchRaceImport(name) {
 
   let poleLap = null;
   let poleSession = null;
+  let qualifying = [];
   try {
     const pole = await findPoleForRace(draft, sessions);
-    if (pole && pole.draft && pole.draft.fastestLap && pole.draft.fastestLap.ms) {
-      poleLap = pole.draft.fastestLap;
-      poleSession = pole.name;
+    if (pole && pole.draft) {
+      if (pole.draft.fastestLap && pole.draft.fastestLap.ms) {
+        poleLap = pole.draft.fastestLap;
+        poleSession = pole.name;
+      }
+      // The whole qualifying classification, in its own order (the grid).
+      qualifying = (pole.draft.entries || []).map((entry) => ({
+        pos: entry.pos,
+        driver: entry.driver,
+        guid: entry.guid,
+        bestLapMs: entry.bestLapMs,
+        status: entry.status
+      }));
     }
-  } catch (e) { /* pole is optional: never block the race import */ }
+  } catch (e) { /* pole/qualifying are optional: never block the race import */ }
 
   return {
     sessionFile: raceName,
     sessionType: sessionTypeFromName(raceName),
     draft,
     poleLap,
-    poleSession
+    poleSession,
+    qualifying
   };
 }

@@ -33,7 +33,7 @@
         <link rel="preconnect" href="https://esm.sh" crossorigin>
     <link rel="preconnect" href="https://flagcdn.com" crossorigin>
     <link rel="preconnect" href="https://firestore.googleapis.com" crossorigin>
-    <link rel="stylesheet" href="style.css?v=20261017_rc34">
+    <link rel="stylesheet" href="style.css?v=20261017_rc36">
     <link rel="stylesheet" href="BorderGlow.css">
     <link rel="stylesheet" href="LightPillar.css">
     <script>
@@ -3583,6 +3583,7 @@
         <div class="race-modal-tabs">
             <button type="button" class="race-tab-btn active" id="raceTabResultsBtn" onclick="switchRaceModalTab('results')"><svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor" class="inline-block align-middle" style="display:inline-block; vertical-align:middle; margin-right:4px;"><path d="M14.4 6L14 4H5v17h2v-7h5.6l.4 2h7V6h-5.6z"/></svg>Resultados Oficiales</button>
             <button type="button" class="race-tab-btn" id="raceTabGalleryBtn" onclick="switchRaceModalTab('gallery')"><svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor" class="inline-block align-middle" style="display:inline-block; vertical-align:middle; margin-right:4px;"><circle cx="12" cy="12" r="3.2"/><path d="M9 2L7.17 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2h-3.17L15 2H9zm3 15c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5z"/></svg>Galería de Fotos (<span id="raceModalPhotoCount">0</span>)</button>
+            <button type="button" class="race-tab-btn" id="raceTabQualifyingBtn" onclick="switchRaceModalTab('qualifying')" style="display: none;"><i data-lucide="timer" aria-hidden="true" style="vertical-align: middle; margin-right: 4px;"></i>Clasificación</button>
         </div>
 
         <div id="raceResultsTabContent">
@@ -3621,6 +3622,30 @@
             </div>
 
         </div>
+        </div>
+
+        <div id="raceQualifyingTabContent" style="display: none;">
+            <div class="result-section">
+                <div class="result-section-title">
+                    <div class="result-title-row">
+                        <span id="resultQualifyingTitle">CLASIFICACIÓN · PARRILLA</span>
+                    </div>
+                    <small id="resultQualifyingSub">ORDEN DE CLASIFICACIÓN</small>
+                </div>
+                <div class="result-table-wrapper">
+                    <table class="result-table">
+                        <thead>
+                            <tr>
+                                <th id="thQualiPos">POS.</th>
+                                <th id="thQualiDriver">PILOTO</th>
+                                <th id="thQualiTeam">EQUIPO</th>
+                                <th id="thQualiTime">TIEMPO</th>
+                            </tr>
+                        </thead>
+                        <tbody id="qualifyingRows"></tbody>
+                    </table>
+                </div>
+            </div>
         </div>
 
         <div id="raceGalleryTabContent" style="display: none;" class="race-gallery-tab-content">
@@ -4626,6 +4651,27 @@
                                 <!-- Generated with <select> for drivers -->
                             </tbody>
                         </table>
+                    </div>
+
+                    <!-- Previsualización (solo lectura) de la clasificación importada -->
+                    <div class="admin-qualifying-preview" id="adminQualifyingPreview" style="display: none;">
+                        <div class="admin-qualifying-header">
+                            <span class="admin-qualifying-title">CLASIFICACIÓN IMPORTADA (PARRILLA)</span>
+                            <span class="admin-qualifying-count" id="adminQualifyingCount"></span>
+                        </div>
+                        <div class="admin-table-wrapper">
+                            <table class="admin-table">
+                                <thead>
+                                    <tr>
+                                        <th style="width: 60px;">POS</th>
+                                        <th>PILOTO</th>
+                                        <th>EQUIPO</th>
+                                        <th style="width: 120px;">TIEMPO</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="adminQualifyingRows"></tbody>
+                            </table>
+                        </div>
                     </div>
 
                     <div class="admin-save-bar">
@@ -6265,7 +6311,7 @@
 
 
 
-<script type="module" src="script.js?v=20261017_rc34"></script>
+<script type="module" src="script.js?v=20261017_rc36"></script>
 
 </body>
 </html>

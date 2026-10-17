@@ -6947,6 +6947,13 @@ button {
     color: var(--gold-light);
 }
 
+.qualifying-time {
+    font-family: "JetBrains Mono", monospace;
+    font-size: 13px;
+    font-weight: 600;
+    color: #cbd5e1;
+}
+
 .status-dnf,
 .status-dns,
 .status-dsq {
@@ -9193,6 +9200,36 @@ footer {
 
 .admin-import-error {
     color: #f85149;
+}
+
+.admin-qualifying-preview {
+    margin: 14px 0 6px;
+    border: 1px solid rgba(214, 180, 92, 0.22);
+    border-radius: 6px;
+    padding: 12px 14px;
+    background: rgba(255, 255, 255, 0.02);
+}
+
+.admin-qualifying-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+.admin-qualifying-title {
+    font-family: "Barlow Condensed", sans-serif;
+    font-weight: 800;
+    letter-spacing: 0.6px;
+    text-transform: uppercase;
+    color: var(--gold-light, #f1d78a);
+    font-size: 14px;
+}
+
+.admin-qualifying-count {
+    font-size: 12px;
+    color: #8f98a8;
 }
 
 /* Session picker modal (import from the game server) */

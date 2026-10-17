@@ -5682,6 +5682,9 @@ function openRace(raceKey, highlightDriver = null) {
         }
     }
 
+    renderRaceQualifying(race);
+    if (typeof window.switchRaceModalTab === "function") window.switchRaceModalTab("results");
+
     raceOverlay.classList.add("active");
     document.body.classList.add("modal-open");
 
@@ -10253,6 +10256,7 @@ function populateRaceResultsEditor(raceKey) {
     // Position rows: if race has drivers, render them; otherwise render empty table state
     const driversToRender = Array.isArray(race.drivers) && race.drivers.length > 0 ? race.drivers : [];
     renderRacePositionsTable(driversToRender);
+    renderAdminQualifyingPreview(raceKey);
 }
 
 // Official GP Presets Map for Quick Loader
@@ -12010,7 +12014,10 @@ function importDriverKey(name) {
         .normalize("NFD").replace(/[\u0300-\u036f]/g, "");
 }
 
-function showRaceImportBanner(draft, unmatched, poleLap, poleSession) {
+// Qualifying grid imported for a race, kept here until the admin saves the race.
+let pendingQualifying = null;
+
+function showRaceImportBanner(draft, unmatched, poleLap, poleSession, qualifying, sessionType) {
     if (!adminImportBanner) return;
     const icon = (name) => `<i data-lucide="${name}" aria-hidden="true"></i>`;
     const infoBits = [];
@@ -12021,9 +12028,16 @@ function showRaceImportBanner(draft, unmatched, poleLap, poleSession) {
 
     const lines = [`<div class="admin-import-banner-line"><strong>Sesión importada:</strong> ${infoBits.join(" · ")}</div>`];
 
+    if (sessionType === "QUALIFY") {
+        lines.push(`<div class="admin-import-banner-line">${icon("timer")} Sesión de clasificación: se ha importado la parrilla y la pole (el orden de llegada no se ha tocado).</div>`);
+    }
+
     if (poleLap && poleLap.ms) {
         const from = poleSession ? ` <span style="opacity:0.7;">(desde ${escapeHtml(String(poleSession))})</span>` : "";
         lines.push(`<div class="admin-import-banner-line">${icon("flag")} Pole: <strong>${escapeHtml(String(poleLap.driver))}</strong> · ${escapeHtml(ltMsToLapTime(poleLap.ms))}${from}</div>`);
+    }
+    if (Array.isArray(qualifying) && qualifying.length) {
+        lines.push(`<div class="admin-import-banner-line">${icon("list-ordered")} Clasificación: <strong>${qualifying.length}</strong> pilotos (parrilla)</div>`);
     }
     if (draft.approximate) {
         lines.push(`<div class="admin-import-banner-line admin-import-warn">${icon("alert-triangle")} La sesión no traía clasificación final: el orden se ha reconstruido por vueltas completadas. Revísalo con atención.</div>`);
@@ -12037,6 +12051,39 @@ function showRaceImportBanner(draft, unmatched, poleLap, poleSession) {
     adminImportBanner.innerHTML = lines.join("");
     adminImportBanner.style.display = "block";
     refreshIcons();
+}
+
+// Read-only preview of the qualifying grid in the admin panel: whatever was just
+// imported for this race, or the one already stored.
+function renderAdminQualifyingPreview(raceKey) {
+    const box = document.getElementById("adminQualifyingPreview");
+    const rowsEl = document.getElementById("adminQualifyingRows");
+    const countEl = document.getElementById("adminQualifyingCount");
+    if (!box || !rowsEl) return;
+
+    let list = null;
+    if (pendingQualifying && pendingQualifying.raceKey === raceKey) {
+        list = pendingQualifying.list;
+    } else if (raceResults[raceKey] && Array.isArray(raceResults[raceKey].qualifying)) {
+        list = raceResults[raceKey].qualifying;
+    }
+
+    if (!Array.isArray(list) || list.length === 0) {
+        box.style.display = "none";
+        rowsEl.innerHTML = "";
+        if (countEl) countEl.textContent = "";
+        return;
+    }
+
+    box.style.display = "block";
+    if (countEl) countEl.textContent = list.length + " pilotos";
+    rowsEl.innerHTML = list.map((entry) => `
+        <tr>
+            <td style="text-align: center; font-weight: 800; color: var(--gold);">${escapeHtml(String(entry.pos))}</td>
+            <td>${escapeHtml(entry.driver)}</td>
+            <td>${escapeHtml(entry.team || "")}</td>
+            <td class="qualifying-time">${escapeHtml(entry.time || "--:--.---")}</td>
+        </tr>`).join("");
 }
 
 function showRaceImportError(msg) {
@@ -12075,19 +12122,39 @@ async function runRaceImport(sessionName) {
         }
 
         const draft = data.draft || {};
-        const entries = Array.isArray(draft.entries) ? draft.entries : [];
-        if (!entries.length) {
-            throw new Error("La sesión no contiene pilotos que se puedan clasificar.");
+        const sessionType = data.sessionType || "RACE";
+        const isRace = sessionType === "RACE";
+        const isQualify = sessionType === "QUALIFY";
+
+        if (!isRace && !isQualify) {
+            showRaceImportError(`Esta sesión (${sessionType}) no tiene resultados importables. Elige una CARRERA o una CLASIFICACIÓN.`);
+            return;
         }
 
+        const entries = Array.isArray(draft.entries) ? draft.entries : [];
+        const qualiEntries = Array.isArray(data.qualifying) ? data.qualifying : [];
+        if (isRace && !entries.length) {
+            throw new Error("La sesión no contiene pilotos que se puedan clasificar.");
+        }
+        if (isQualify && !qualiEntries.length) {
+            throw new Error("La clasificación no contiene pilotos.");
+        }
+
+        const confirmBody = isRace
+            ? `Sesión: ${data.sessionFile || "—"} · ${draft.track || "circuito desconocido"}\n` +
+              `Pilotos detectados: ${entries.length}\n` +
+              (data.poleLap ? `Pole detectada: ${data.poleLap.driver}\n` : "") +
+              (qualiEntries.length ? `Clasificación (parrilla): ${qualiEntries.length} pilotos\n` : "") +
+              "\nSe rellenarán el orden de llegada, la vuelta rápida" + (data.poleLap ? ", la pole" : "") +
+              " y la parrilla de la carrera seleccionada. No se guarda nada hasta que pulses «Guardar Resultados de Carrera»."
+            : `Clasificación: ${data.sessionFile || "—"} · ${draft.track || "circuito desconocido"}\n` +
+              `Pilotos clasificados: ${qualiEntries.length}\n` +
+              "\nSe importará SOLO la pole y la parrilla; el orden de llegada de la carrera no se toca.";
+
         const confirmed = await showAppConfirm(
-            "Importar resultados del servidor",
-            `Sesión: ${data.sessionFile || "—"} · ${draft.track || "circuito desconocido"}\n` +
-            `Pilotos detectados: ${entries.length}\n` +
-            (data.poleLap ? `Pole detectada: ${data.poleLap.driver}\n` : "") +
-            "\nSe rellenarán el orden de llegada" + (data.poleLap ? ", la vuelta rápida y la pole" : " y la vuelta rápida") +
-            " de la carrera seleccionada arriba. No se guarda nada hasta que pulses «Guardar Resultados de Carrera».",
-            "Rellenar tabla",
+            isRace ? "Importar resultados del servidor" : "Importar clasificación del servidor",
+            confirmBody,
+            isRace ? "Rellenar tabla" : "Importar parrilla",
             "Cancelar"
         );
         if (!confirmed) return;
@@ -12098,37 +12165,55 @@ async function runRaceImport(sessionName) {
             if (d && d.driver) known.set(importDriverKey(d.driver), d.driver);
         });
 
-        const tableList = [];
-        const unmatched = [];
-        entries.forEach((entry) => {
-            const official = known.get(importDriverKey(entry.driver));
-            const driver = official || entry.driver;
-            if (!official) unmatched.push(entry.driver);
-            const status = entry.status === "DSQ" ? "DSQ" : (entry.status === "DNF" ? "DNF" : "FINISHED");
-            tableList.push({
-                driver: driver,
-                team: getDriverTeam(driver),
-                status: status
+        const unmatched = new Set();
+        const raceKeyForImport = adminSelectRace ? adminSelectRace.value : "";
+
+        // 1. Race finishing order — only for an actual race session.
+        if (isRace) {
+            const tableList = [];
+            entries.forEach((entry) => {
+                const official = known.get(importDriverKey(entry.driver));
+                const driver = official || entry.driver;
+                if (!official) unmatched.add(entry.driver);
+                const status = entry.status === "DSQ" ? "DSQ" : (entry.status === "DNF" ? "DNF" : "FINISHED");
+                tableList.push({ driver: driver, team: getDriverTeam(driver), status: status });
             });
-        });
+            renderRacePositionsTable(tableList);
 
-        renderRacePositionsTable(tableList);
-
-        // Fastest lap of the race, when the session reported one.
-        if (draft.fastestLap && draft.fastestLap.ms) {
-            const flName = known.get(importDriverKey(draft.fastestLap.driver)) || draft.fastestLap.driver;
-            populateDriverSelect(adminFastestDriver, flName, "-- Seleccionar Piloto con Vuelta Rápida --");
-            if (adminFastestTime) adminFastestTime.value = ltMsToLapTime(draft.fastestLap.ms);
+            // Fastest lap of the race.
+            if (draft.fastestLap && draft.fastestLap.ms) {
+                const flName = known.get(importDriverKey(draft.fastestLap.driver)) || draft.fastestLap.driver;
+                populateDriverSelect(adminFastestDriver, flName, "-- Seleccionar Piloto con Vuelta Rápida --");
+                if (adminFastestTime) adminFastestTime.value = ltMsToLapTime(draft.fastestLap.ms);
+            }
         }
 
-        // Pole, taken from the qualifying session that belongs to this race.
+        // 2. Pole (from the race's qualifying, or from the chosen qualifying session).
         if (data.poleLap && data.poleLap.ms) {
             const poleName = known.get(importDriverKey(data.poleLap.driver)) || data.poleLap.driver;
             populateDriverSelect(adminPoleDriver, poleName, "-- Seleccionar Piloto en Pole --");
             if (adminPoleTime) adminPoleTime.value = ltMsToLapTime(data.poleLap.ms);
         }
 
-        showRaceImportBanner(draft, unmatched, data.poleLap, data.poleSession);
+        // 3. Qualifying grid.
+        if (qualiEntries.length) {
+            const qualifyingList = qualiEntries.map((entry) => {
+                const official = known.get(importDriverKey(entry.driver)) || entry.driver;
+                if (!official) unmatched.add(entry.driver);
+                return {
+                    pos: entry.pos,
+                    driver: official,
+                    team: getDriverTeam(official),
+                    time: entry.bestLapMs ? ltMsToLapTime(entry.bestLapMs) : ""
+                };
+            });
+            pendingQualifying = { raceKey: raceKeyForImport, list: qualifyingList };
+        } else {
+            pendingQualifying = null;
+        }
+
+        showRaceImportBanner(draft, Array.from(unmatched), data.poleLap, data.poleSession, data.qualifying, sessionType);
+        renderAdminQualifyingPreview(raceKeyForImport);
     } catch (err) {
         console.error("Error importing race results:", err);
         showRaceImportError("No se pudo importar: " + (err && err.message ? err.message : err));
@@ -12151,9 +12236,13 @@ function showRaceImportPickerModal(sessions) {
 
     const items = sessions.map((s, index) => {
         const isRace = s.type === "RACE";
-        const badge = isRace
-            ? '<i data-lucide="flag" aria-hidden="true"></i> CARRERA'
-            : (s.type === "QUALIFY" ? '<i data-lucide="timer" aria-hidden="true"></i> CLASIFICACIÓN' : escapeHtml(String(s.type)));
+        const typeLabels = {
+            RACE: '<i data-lucide="flag" aria-hidden="true"></i> CARRERA',
+            QUALIFY: '<i data-lucide="timer" aria-hidden="true"></i> CLASIFICACIÓN',
+            PRACTICE: '<i data-lucide="wrench" aria-hidden="true"></i> PRÁCTICAS',
+            TIME_ATTACK: '<i data-lucide="stopwatch" aria-hidden="true"></i> TIME ATTACK'
+        };
+        const badge = typeLabels[s.type] || escapeHtml(String(s.type));
         const track = s.track ? escapeHtml(String(s.track)) : "Circuito sin identificar";
         const entrants = (s.track && s.entrants) ? ` · ${s.entrants} pilotos` : "";
         return `<button type="button" class="race-import-pick-item${index === 0 ? " is-latest" : ""}" data-session="${escapeHtml(String(s.name))}">
@@ -12172,7 +12261,7 @@ function showRaceImportPickerModal(sessions) {
                 <h3 class="custom-confirm-title">Importar sesión del servidor</h3>
             </div>
             <div class="custom-confirm-body">
-                <p>Elige la sesión que quieres importar. Coge la <strong>CARRERA</strong> correcta para no traerte una sesión de pruebas.</p>
+                <p>Elige la sesión que quieres importar. Las <strong>CARRERAS</strong> traen el resultado completo; las <strong>CLASIFICACIONES</strong>, la parrilla y la pole.</p>
                 <div class="race-import-pick-list">${items}</div>
             </div>
             <div class="custom-confirm-actions">
@@ -12214,10 +12303,10 @@ async function openRaceImportPicker() {
             throw new Error((data && data.error) || ("HTTP " + res.status));
         }
 
-        // Only races carry a classification to import.
-        const sessions = (Array.isArray(data.sessions) ? data.sessions : []).filter((s) => s.type === "RACE");
+        // Every session type is listed; the panel decides what each one imports.
+        const sessions = Array.isArray(data.sessions) ? data.sessions : [];
         if (!sessions.length) {
-            throw new Error("El servidor no tiene ninguna carrera archivada.");
+            throw new Error("El servidor no tiene ninguna sesión archivada.");
         }
 
         showRaceImportPickerModal(sessions);
@@ -12505,6 +12594,14 @@ async function persistRaceResultsFromEditor(raceKey, chosenStatus) {
         drivers: drivers
     };
 
+    // Qualifying grid: the freshly imported one, or the one already stored (so a
+    // normal edit does not wipe it).
+    const existingQualifying = (raceResults[raceKey] && Array.isArray(raceResults[raceKey].qualifying)) ? raceResults[raceKey].qualifying : null;
+    const qualifyingToStore = (pendingQualifying && pendingQualifying.raceKey === raceKey) ? pendingQualifying.list : existingQualifying;
+    if (Array.isArray(qualifyingToStore) && qualifyingToStore.length) {
+        updatedRace.qualifying = qualifyingToStore;
+    }
+
     try {
         if (raceResultsSaveNotice) {
             raceResultsSaveNotice.textContent = "Guardando resultados, actualizando calendario y recalculando clasificación...";
@@ -12513,6 +12610,7 @@ async function persistRaceResultsFromEditor(raceKey, chosenStatus) {
         await setDoc(doc(db, "carreras", raceKey), updatedRace);
 
         raceResults[raceKey] = updatedRace;
+        if (pendingQualifying && pendingQualifying.raceKey === raceKey) pendingQualifying = null;
 
         // If marked as UPCOMING / PRÓXIMA, automatically ensure all previous races are marked as COMPLETED
         if (status === "UPCOMING") {
@@ -12823,6 +12921,8 @@ async function resetCurrentRace() {
 
     const confirmed = await showAppConfirm(`Restablecer ${meta.title}`, confirmMsg, "Sí, Restablecer Carrera", "Cancelar");
     if (!confirmed) return;
+
+    pendingQualifying = null;
 
     const resetRaceData = {
         round: meta.round,
@@ -23483,28 +23583,57 @@ window.deleteCurrentLightboxPhoto = async function() {
 };
 
 window.switchRaceModalTab = function(tabName) {
-    const resultsBtn = document.getElementById("raceTabResultsBtn");
-    const galleryBtn = document.getElementById("raceTabGalleryBtn");
-    const resultsContent = document.getElementById("raceResultsTabContent");
-    const galleryContent = document.getElementById("raceGalleryTabContent");
+    const tabs = {
+        results: { btn: document.getElementById("raceTabResultsBtn"), content: document.getElementById("raceResultsTabContent") },
+        qualifying: { btn: document.getElementById("raceTabQualifyingBtn"), content: document.getElementById("raceQualifyingTabContent") },
+        gallery: { btn: document.getElementById("raceTabGalleryBtn"), content: document.getElementById("raceGalleryTabContent") }
+    };
 
-    if (!resultsBtn || !galleryBtn || !resultsContent || !galleryContent) return;
+    Object.keys(tabs).forEach((key) => {
+        const tab = tabs[key];
+        if (!tab.btn || !tab.content) return;
+        const on = key === tabName;
+        tab.btn.classList.toggle("active", on);
+        tab.content.style.display = on ? "block" : "none";
+    });
 
-    if (tabName === 'results') {
-        resultsBtn.classList.add("active");
-        galleryBtn.classList.remove("active");
-        resultsContent.style.display = "block";
-        galleryContent.style.display = "none";
-    } else {
-        galleryBtn.classList.add("active");
-        resultsBtn.classList.remove("active");
-        galleryContent.style.display = "block";
-        resultsContent.style.display = "none";
-        if (typeof currentOpenRaceKey !== "undefined" && currentOpenRaceKey) {
-            renderRaceModalPhotoGallery(currentOpenRaceKey);
-        }
+    if (tabName === "gallery" && typeof currentOpenRaceKey !== "undefined" && currentOpenRaceKey) {
+        renderRaceModalPhotoGallery(currentOpenRaceKey);
     }
 };
+
+// Qualifying (grid) table inside the race modal. The data comes from the import
+// (the panel's QUALIFY session); it is only shown when the race has one.
+function renderRaceQualifying(race) {
+    const btn = document.getElementById("raceTabQualifyingBtn");
+    const rowsEl = document.getElementById("qualifyingRows");
+    const isEn = typeof currentLanguage !== "undefined" && currentLanguage === "en";
+    const qualifying = (race && Array.isArray(race.qualifying)) ? race.qualifying : [];
+
+    if (btn) btn.style.display = qualifying.length ? "inline-flex" : "none";
+
+    // If the qualifying tab is open for a race that has none, fall back to results.
+    if (!qualifying.length && btn && btn.classList.contains("active")) {
+        switchRaceModalTab("results");
+    }
+
+    if (!rowsEl) return;
+    rowsEl.innerHTML = "";
+
+    if (!qualifying.length) return;
+
+    const driverTitle = isEn ? "View driver stats" : "Ver estadísticas del piloto";
+    qualifying.forEach((entry) => {
+        const row = document.createElement("tr");
+        row.innerHTML = `
+            <td class="result-position">${escapeHtml(String(entry.pos))}</td>
+            <td>${getDriverFlagHtml(entry.driver, 16)} <span class="driver-clickable" data-driver="${escapeHtml(entry.driver)}" title="${driverTitle}">${escapeHtml(entry.driver)}</span></td>
+            <td class="${getTeamClass(entry.team)}">${escapeHtml(entry.team || "")}</td>
+            <td class="qualifying-time">${escapeHtml(entry.time || "--:--.---")}</td>
+        `;
+        rowsEl.appendChild(row);
+    });
+}
 
 // Remove any upload button from calendar cards (uploads are only allowed inside race details modal or admin panel)
 function cleanCalendarCardsUploadButtons() {
