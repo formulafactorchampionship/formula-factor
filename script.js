@@ -493,7 +493,7 @@ const translations = {
             standings: "CLASIFICACIÓN",
             calendar: "CALENDARIO",
             races: "CARRERAS",
-            photos: "📸 FOTOS",
+            photos: "FOTOS",
             news: "NOTICIAS",
             liveTiming: "LIVE TIMING",
             info: "INFORMACIÓN",
@@ -583,8 +583,8 @@ const translations = {
             thOutcomeTitle: "Desenlace del Título",
             thOutcomeSub: "Estado del campeonato:",
             footerNote: "* Con estos resultados matemáticos frente a Munt., Dieguiosk asegura el título de pilotos 2026 en Fuji Speedway. Puntuación oficial F1 (25-18-15-12-10-8-6-4-2-1 + 1 pt VR).",
-            fastestLap: "⚡ VUELTA RÁPIDA",
-            champTag: "🏆 CAMPEÓN DEL MUNDO",
+            fastestLap: "VUELTA RÁPIDA",
+            champTag: "CAMPEÓN DEL MUNDO",
             postponeTag: "⏳ SE APLAZA A AUSTIN (R14)",
             muntReq1: "3º o peor",
             muntReq2: "4º o peor",
@@ -762,37 +762,37 @@ const translations = {
             codePlaceholder: "Código (ej: FF-8A9201)",
             submitBtn: "Vincular",
             verifiedTag: "PILOTO VERIFICADO",
-            unlinkBtn: "🔓 Desvincular Piloto",
-            customizeBtn: "🎨 Personalizar Tarjeta",
-            viewCardBtn: "👁️ Ver Tarjeta"
+            unlinkBtn: "Desvincular piloto",
+            customizeBtn: "Personalizar tarjeta",
+            viewCardBtn: "Ver tarjeta"
         },
         cardEditor: {
-            title: "🎨 PERSONALIZAR TU TARJETA DE PILOTO",
+            title: "PERSONALIZAR TU TARJETA DE PILOTO",
             desc: "Los cambios se guardarán en Firebase y se reflejarán públicamente en tu ficha de piloto.",
             previewLabel: "VISTA PREVIA EN TIEMPO REAL DE TU TARJETA",
             liveBadge: "EN VIVO",
-            verifiedTag: "VERIFICADO ✅",
+            verifiedTag: "VERIFICADO",
             group1: "COLOR DE TU TARJETA & ESCUDERÍA",
             customColorLabel: "O elige cualquier color:",
             group2: "FOTO DE PERFIL O AVATAR",
             avatarPresetLabel: "Avatares FFC:",
-            btnTriggerAvatarFile: "📁 Subir desde tu equipo (PC/Móvil)",
+            btnTriggerAvatarFile: "Subir desde tu equipo (PC/Móvil)",
             avatarUploadOr: "o pega un enlace de imagen:",
             group3: "NACIONALIDAD OFICIAL DEL PILOTO",
-            lockedBadge: "🔒 OFICIAL FFC",
+            lockedBadge: "OFICIAL FFC",
             officialFlagNotice: "El país está fijado por la FIA/FFC en base a tu inscripción oficial y no se puede modificar.",
             group4: "BIOGRAFÍA Y PERIFÉRICOS",
             bioSuggestLabel: "Ideas rápidas:",
             bioPlaceholder: "Resumen de tu estilo de conducción, periféricos, aspiraciones en FFC...",
             group5: "REDES SOCIALES & CONTACTO",
-            saveBtn: "⚡ Guardar Cambios en Firebase",
-            viewBtn: "👁️ Ver Tarjeta"
+            saveBtn: "Guardar cambios",
+            viewBtn: "Ver tarjeta"
         },
         fantasy: {
             backBtn: "Volver a la Web Principal",
             statusLive: "● EN VIVO",
             seasonBadge: "TEMPORADA 1 · OFICIAL",
-            heroEyebrow: "🏆 FFC FANTASY LEAGUE · OFICIAL",
+            heroEyebrow: "FFC FANTASY LEAGUE · OFICIAL",
             heroTitle: "CREA TU <span class=\"gold-gradient\">ESCUDERÍA</span>",
             heroDesc: "Administra tu presupuesto de 75.0M€, ficha a 3 pilotos de la parrilla oficial y 1 constructor, y compite contra la comunidad sumando los puntos reales de cada Gran Premio disputado.",
             authTitle: "INICIA SESIÓN PARA JUGAR",
@@ -815,12 +815,12 @@ const translations = {
             saveBtn: "Guardar",
             resetBtn: "Reiniciar Equipo",
             goToMarketBtn: "+ Fichar en el Mercado",
-            infoStripText: "<strong>Regla FFC Fantasy:</strong> Tu alineación debe incluir exactamente 3 pilotos y 1 constructor dentro del tope de 75.0M€. Pulsa el botón <strong>⭐ Turbo Driver</strong> en cualquiera de tus 3 pilotos para duplicar (x2) sus puntos en cada Gran Premio oficial.",
+            infoStripText: "<strong>Regla FFC Fantasy:</strong> Tu alineación debe incluir exactamente 3 pilotos y 1 constructor dentro del tope de 75.0M€. Pulsa el botón <strong>Turbo Driver</strong> en cualquiera de tus 3 pilotos para duplicar (x2) sus puntos en cada Gran Premio oficial.",
             filterAll: "Todos",
             filterDrivers: "Pilotos",
             filterTeams: "Constructores",
-            filterRising: "🔥 En Alza (▲)",
-            filterFalling: "📉 En Oferta (▼)",
+            filterRising: "En Alza (▲)",
+            filterFalling: "En Oferta (▼)",
             filterAffordable: "Asequibles (≤ Presupuesto)",
             searchPlaceholder: "Buscar por nombre o escudería...",
             sortPriceDesc: "Precio: Mayor a Menor",
@@ -856,12 +856,12 @@ const translations = {
             heading: "NOTICIAS Y <span class=\"gold-gradient\">NOVEDADES</span>",
             description: "Sigue de cerca las crónicas oficiales de carrera, anuncios de fichajes, comunicados de pilotos y artículos aportados por la comunidad. ¡Envía tu propia noticia para que sea publicada!",
             catAll: "Todas",
-            catRaces: "🏆 Carreras",
-            catTransfers: "🔄 Fichajes",
-            catDrivers: "🏎️ Pilotos",
-            catReports: "📝 Crónicas",
-            catCommunity: "👥 Comunidad",
-            catTech: "⚙️ Técnica",
+            catRaces: "Carreras",
+            catTransfers: "Fichajes",
+            catDrivers: "Pilotos",
+            catReports: "Crónicas",
+            catCommunity: "Comunidad",
+            catTech: "Técnica",
             searchPlaceholder: "Buscar noticias...",
             btnSubmit: "Enviar Noticia",
             emptyTitleFiltered: "No se encontraron noticias",
@@ -870,17 +870,17 @@ const translations = {
             emptyDescNoArticles: "¡Sé el primero en proponer un artículo o redactar un comunicado oficial para la comunidad!",
             btnResetFilters: "Ver todas las noticias",
             modalBadge: "PRENSA • COMUNIDAD FFC",
-            modalTitle: "✍️ ENVIAR NOTICIA A LA COMUNIDAD",
+            modalTitle: "ENVIAR NOTICIA A LA COMUNIDAD",
             modalSubtitle: "Comparte una crónica de carrera, un análisis técnico, un comunicado de escudería o un artículo. Una vez revisada y aprobada por los administradores, se publicará en la web oficial.",
             labelTitle: 'Título de la Noticia <span class="required-star">*</span>',
             placeholderTitle: "Ej: Espectacular remontada de Dieguiosk en Monza bajo la lluvia",
             labelCategory: 'Categoría <span class="required-star">*</span>',
-            catOptionRaces: "🏆 Carreras",
-            catOptionTransfers: "🔄 Fichajes",
-            catOptionDrivers: "🏎️ Pilotos",
-            catOptionReports: "📝 Crónicas",
-            catOptionCommunity: "👥 Comunidad",
-            catOptionTech: "⚙️ Análisis Técnico",
+            catOptionRaces: "Carreras",
+            catOptionTransfers: "Fichajes",
+            catOptionDrivers: "Pilotos",
+            catOptionReports: "Crónicas",
+            catOptionCommunity: "Comunidad",
+            catOptionTech: "Análisis Técnico",
             labelAuthor: 'Autor (Tu Usuario) <span class="required-star">*</span>',
             placeholderAuthor: "Nombre de tu cuenta registrada",
             labelSummary: "Resumen Breve (1-2 frases)",
@@ -893,17 +893,17 @@ const translations = {
             hintContent: "Puedes separar tus ideas en distintos párrafos. Se respetarán los saltos de línea al publicarse.",
             moderationNotice: "<strong>Aviso de Moderación:</strong> Todas las noticias pasan por un proceso de revisión por los administradores antes de ser visibles públicamente para asegurar la calidad y el respeto en la liga.",
             btnCancel: "Cancelar",
-            btnSubmitAction: "<span>🚀</span> Enviar para Revisión",
-            btnEditArticle: "✏️ Editar Noticia",
-            shareBtn: "🔗 Copiar enlace",
-            commentsHeading: "💬 COMENTARIOS DE LA COMUNIDAD",
+            btnSubmitAction: "<span></span> Enviar para Revisión",
+            btnEditArticle: "Editar Noticia",
+            shareBtn: "Copiar enlace",
+            commentsHeading: "COMENTARIOS DE LA COMUNIDAD",
             commentAuthorPlaceholder: "Tu nombre / apodo",
             commentTextPlaceholder: "Escribe un comentario sobre esta noticia...",
-            commentSubmitBtn: "<span>💬</span> Publicar Comentario",
+            commentSubmitBtn: "<span></span> Publicar Comentario",
             noComments: "No hay comentarios todavía. ¡Sé el primero en opinar sobre esta noticia!",
             officialBadge: "OFICIAL FFC",
             compare: {
-                title: "⚔️ COMPARADOR DE PILOTOS",
+                title: "COMPARADOR DE PILOTOS",
                 sub: "Análisis cara a cara: duelo directo en pista, puntos, victorias, ritmo y fiabilidad",
                 presets: "DUELOS RECOMENDADOS:",
                 driverA: "PILOTO A (ESQUINA ROJA)",
@@ -945,32 +945,32 @@ const translations = {
                     fantasyValue: "VALOR FANTASY FFC"
                 },
                 skills: {
-                    racePace: "🏎️ RITMO DE CARRERA",
+                    racePace: "RITMO DE CARRERA",
                     qualyPace: "⏱️ RITMO DE CLASIFICACIÓN",
-                    reliability: "🛡️ FIABILIDAD MECÁNICA",
-                    consistency: "🎯 REGULARIDAD EN TOP 10",
-                    podiumEff: "🏆 EFECTIVIDAD EN PODIOS"
+                    reliability: "FIABILIDAD MECÁNICA",
+                    consistency: "REGULARIDAD EN TOP 10",
+                    podiumEff: "EFECTIVIDAD EN PODIOS"
                 },
                 photos: {
                     galleryKicker: "COMUNIDAD FFC",
                     galleryTitle: "GALERÍA DE FOTOS POR CARRERA",
                     uploadNewBtn: "+ Subir Nueva Foto",
                     filterLabel: "Filtrar por Gran Premio:",
-                    allGps: "🏁 Todas las Carreras y GPs",
+                    allGps: "Todas las Carreras y GPs",
                     emptyTitle: "No hay fotos en esta categoría todavía",
                     emptyDesc: "¡Sé el primero en compartir tus capturas de esta carrera con la comunidad!",
                     uploadFirstBtn: "Subir primera foto",
                     modalKicker: "ASISTENTE DE SUBIDA FFC",
                     modalTitle: "SUBIR FOTO DE SIMRACING",
-                    adminNotice: "🛡️ <strong>Modo Administrador Activo:</strong> Las fotos que subas se publicarán aprobadas automáticamente sin necesidad de moderación previa.",
+                    adminNotice: "<strong>Modo Administrador Activo:</strong> Las fotos que subas se publicarán aprobadas automáticamente sin necesidad de moderación previa.",
                     loginPromptTitle: "Inicia sesión para subir fotos",
                     loginPromptDesc: "Debes iniciar sesión con tu cuenta de Formula Factor para compartir tus capturas en la galería oficial.",
                     loginPromptBtn: "Iniciar Sesión / Registrarse",
                     labelRace: "Gran Premio / Carrera pasada *",
                     selectRacePlaceholder: "-- Selecciona una carrera --",
                     labelMethod: "Método de Subida de Imagen *",
-                    methodFile: "📁 Archivo Local (PC / Móvil)",
-                    methodUrl: "🔗 Enlace URL Directo",
+                    methodFile: "Archivo Local (PC / Móvil)",
+                    methodUrl: "Enlace URL Directo",
                     fileLabel: "Seleccionar Imágenes (Puedes subir varias a la vez)",
                     fileHint: "Selecciona una o más fotos. Se preserva la máxima calidad y resolución original.",
                     urlLabel: "Pegar Enlace de Imagen (Discord, Imgur, Postimages...)",
@@ -979,13 +979,13 @@ const translations = {
                     captionPlaceholder: "Ej: Salida curva 1, Batalla por el podio...",
                     btnCancel: "Cancelar",
                     btnSubmit: "Subir foto",
-                    homeBannerBadge: "📸 COMUNIDAD FFC",
+                    homeBannerBadge: "COMUNIDAD FFC",
                     homeBannerTitle: "GALERÍA FOTOGRÁFICA DE LAS CARRERAS",
                     homeBannerDesc: "Explora las capturas, adelantamientos épicos, podios y momentos en pista subidos por la comunidad.",
-                    homeBannerBtn: "📸 Ver Galería Completa de Fotos",
+                    homeBannerBtn: "Ver Galería Completa de Fotos",
                     closeGalleryAria: "Cerrar galería",
                     closeUploadAria: "Cerrar subida",
-                    raceTabGallery: "📸 Galería de Fotos",
+                    raceTabGallery: "Galería de Fotos",
                     raceGalleryTitle: "Galería Fotográfica de la Carrera",
                     raceGalleryDesc: "Capturas, podios y momentos en pista subidos por la comunidad.",
                     raceUploadBtn1: "+ Subir Foto a este GP",
@@ -993,8 +993,8 @@ const translations = {
                     raceEmptyDesc: "¡Sé el primero en subir una foto de esta carrera!",
                     raceUploadBtn2: "Subir foto ahora",
                     lightboxCloseAria: "Cerrar visor",
-                    lightboxDownload: "⬇️ Descargar Foto",
-                    lightboxDelete: "🗑️ Eliminar",
+                    lightboxDownload: "Descargar Foto",
+                    lightboxDelete: "Eliminar",
                     lightboxUploadedBy: "Subido por",
                     deleteConfirm: "¿Estás seguro de que deseas eliminar esta foto de la galería?"
                 },
@@ -1006,7 +1006,7 @@ const translations = {
                     footerDiscord: "Discord Oficial",
                     footerRules: "Reglamento FFC",
                     cookieBanner: {
-                        text: "<strong>🍪 Uso de Cookies y Almacenamiento Local:</strong> FFC utiliza cookies técnicas y almacenamiento local esenciales para la autenticación, la Liga Fantasy y el correcto funcionamiento de la plataforma. Puedes consultar nuestra ",
+                        text: "<strong>Uso de Cookies y Almacenamiento Local:</strong> FFC utiliza cookies técnicas y almacenamiento local esenciales para la autenticación, la Liga Fantasy y el correcto funcionamiento de la plataforma. Puedes consultar nuestra ",
                         policyBtn: "Política de Cookies",
                         rejectBtn: "Solo esenciales",
                         acceptBtn: "Aceptar todas"
@@ -1085,16 +1085,16 @@ const translations = {
                 photosFilterApproved: "Aprobadas",
                 photosFilterRejected: "Rechazadas",
                 photosSearchPlaceholder: "Buscar por autor, descripción o Gran Premio...",
-                btnAdminUpload: "<span>📸</span> Subir Foto Directa (Admin)",
+                btnAdminUpload: "<span></span> Subir Foto Directa (Admin)",
                 adminPhotosEmpty: "No se encontraron fotos en esta categoría.",
                 adminPhotosEmptySub: "Las fotos subidas por los pilotos o administradores aparecerán aquí para su gestión.",
                 adminStatusApproved: "🟢 APROBADA",
                 adminStatusRejected: "🔴 RECHAZADA",
                 adminStatusPending: "🟡 PENDIENTE",
-                adminBtnApprove: "✅ Aprobar",
-                adminBtnReject: "❌ Rechazar",
-                adminBtnDownload: "⬇️ Descargar",
-                adminModifyRaceLabel: "🏁 Modificar Carrera asignada:"
+                adminBtnApprove: "Aprobar",
+                adminBtnReject: "Rechazar",
+                adminBtnDownload: "Descargar",
+                adminModifyRaceLabel: "Modificar Carrera asignada:"
             }
         }
     },
@@ -1104,7 +1104,7 @@ const translations = {
             standings: "STANDINGS",
             calendar: "CALENDAR",
             races: "RACES",
-            photos: "📸 PHOTOS",
+            photos: "PHOTOS",
             news: "NEWS",
             liveTiming: "LIVE TIMING",
             info: "INFO",
@@ -1194,8 +1194,8 @@ const translations = {
             thOutcomeTitle: "Title Outcome",
             thOutcomeSub: "Championship Status:",
             footerNote: "* With these mathematical results against Munt., Dieguiosk secures the 2026 drivers' title at Fuji Speedway. Official F1 points system (25-18-15-12-10-8-6-4-2-1 + 1 pt FL).",
-            fastestLap: "⚡ FASTEST LAP",
-            champTag: "🏆 WORLD CHAMPION",
+            fastestLap: "FASTEST LAP",
+            champTag: "WORLD CHAMPION",
             postponeTag: "⏳ POSTPONED TO AUSTIN (R14)",
             muntReq1: "3rd or worse",
             muntReq2: "4th or worse",
@@ -1373,37 +1373,37 @@ const translations = {
             codePlaceholder: "Code (e.g. FF-8A9201)",
             submitBtn: "Link",
             verifiedTag: "VERIFIED DRIVER",
-            unlinkBtn: "🔓 Unlink Driver",
-            customizeBtn: "🎨 Customize Card",
-            viewCardBtn: "👁️ View Card"
+            unlinkBtn: "Unlink driver",
+            customizeBtn: "Customize card",
+            viewCardBtn: "View card"
         },
         cardEditor: {
-            title: "🎨 CUSTOMIZE YOUR DRIVER CARD",
+            title: "CUSTOMIZE YOUR DRIVER CARD",
             desc: "Changes will be saved to Firebase and reflected publicly on your driver card.",
             previewLabel: "REAL-TIME PREVIEW OF YOUR CARD",
             liveBadge: "LIVE",
-            verifiedTag: "VERIFIED ✅",
+            verifiedTag: "VERIFIED",
             group1: "CARD & TEAM COLOR",
             customColorLabel: "Or choose any color:",
             group2: "PROFILE PHOTO OR AVATAR",
             avatarPresetLabel: "FFC Avatars:",
-            btnTriggerAvatarFile: "📁 Upload from device (PC/Mobile)",
+            btnTriggerAvatarFile: "Upload from device (PC/Mobile)",
             avatarUploadOr: "or paste an image link:",
             group3: "OFFICIAL DRIVER NATIONALITY",
-            lockedBadge: "🔒 OFFICIAL FFC",
+            lockedBadge: "OFFICIAL FFC",
             officialFlagNotice: "Nationality is set by the FIA/FFC based on your official entry and cannot be modified.",
             group4: "BIOGRAPHY & PERIPHERALS",
             bioSuggestLabel: "Quick ideas:",
             bioPlaceholder: "Summary of your driving style, peripherals, aspirations in FFC...",
             group5: "SOCIAL MEDIA & CONTACT",
-            saveBtn: "⚡ Save Changes to Firebase",
-            viewBtn: "👁️ View Card"
+            saveBtn: "Save changes",
+            viewBtn: "View card"
         },
         fantasy: {
             backBtn: "Back to Main Site",
             statusLive: "● LIVE",
             seasonBadge: "SEASON 1 · OFFICIAL",
-            heroEyebrow: "🏆 FFC FANTASY LEAGUE · OFFICIAL",
+            heroEyebrow: "FFC FANTASY LEAGUE · OFFICIAL",
             heroTitle: "CREATE YOUR <span class=\"gold-gradient\">TEAM</span>",
             heroDesc: "Manage your €75.0M budget, sign 3 drivers from the official grid and 1 constructor, and compete against the community scoring real points from each Grand Prix.",
             authTitle: "LOG IN TO PLAY",
@@ -1426,12 +1426,12 @@ const translations = {
             saveBtn: "Save",
             resetBtn: "Reset Team",
             goToMarketBtn: "+ Sign in Market",
-            infoStripText: "<strong>FFC Fantasy Rule:</strong> Your lineup must include exactly 3 drivers and 1 constructor within the €75.0M budget cap. Click the <strong>⭐ Turbo Driver</strong> button on any of your 3 drivers to double (x2) their points in each official Grand Prix.",
+            infoStripText: "<strong>FFC Fantasy Rule:</strong> Your lineup must include exactly 3 drivers and 1 constructor within the €75.0M budget cap. Click the <strong>Turbo Driver</strong> button on any of your 3 drivers to double (x2) their points in each official Grand Prix.",
             filterAll: "All",
             filterDrivers: "Drivers",
             filterTeams: "Constructors",
-            filterRising: "🔥 Rising (▲)",
-            filterFalling: "📉 On Offer (▼)",
+            filterRising: "Rising (▲)",
+            filterFalling: "On Offer (▼)",
             filterAffordable: "Affordable (≤ Budget)",
             searchPlaceholder: "Search by name or team...",
             sortPriceDesc: "Price: High to Low",
@@ -1467,12 +1467,12 @@ const translations = {
             heading: "NEWS & <span class=\"gold-gradient\">UPDATES</span>",
             description: "Follow official race reports, transfer announcements, driver statements, and community articles. Submit your own news to be published!",
             catAll: "All",
-            catRaces: "🏆 Races",
-            catTransfers: "🔄 Transfers",
-            catDrivers: "🏎️ Drivers",
-            catReports: "📝 Reports",
-            catCommunity: "👥 Community",
-            catTech: "⚙️ Technical",
+            catRaces: "Races",
+            catTransfers: "Transfers",
+            catDrivers: "Drivers",
+            catReports: "Reports",
+            catCommunity: "Community",
+            catTech: "Technical",
             searchPlaceholder: "Search news...",
             btnSubmit: "Submit News",
             emptyTitleFiltered: "No news found",
@@ -1481,17 +1481,17 @@ const translations = {
             emptyDescNoArticles: "Be the first to propose an article or write an official league announcement!",
             btnResetFilters: "View all news",
             modalBadge: "PRESS • FFC COMMUNITY",
-            modalTitle: "✍️ SUBMIT COMMUNITY NEWS",
+            modalTitle: "SUBMIT COMMUNITY NEWS",
             modalSubtitle: "Share a race report, technical analysis, team press release, or article. Once reviewed and approved by administrators, it will be published on the official site.",
             labelTitle: 'Article Title <span class="required-star">*</span>',
             placeholderTitle: "e.g. Spectacular comeback by Dieguiosk at Monza in the rain",
             labelCategory: 'Category <span class="required-star">*</span>',
-            catOptionRaces: "🏆 Races",
-            catOptionTransfers: "🔄 Transfers",
-            catOptionDrivers: "🏎️ Drivers",
-            catOptionReports: "📝 Reports",
-            catOptionCommunity: "👥 Community",
-            catOptionTech: "⚙️ Technical Analysis",
+            catOptionRaces: "Races",
+            catOptionTransfers: "Transfers",
+            catOptionDrivers: "Drivers",
+            catOptionReports: "Reports",
+            catOptionCommunity: "Community",
+            catOptionTech: "Technical Analysis",
             labelAuthor: 'Author (Your Account) <span class="required-star">*</span>',
             placeholderAuthor: "Your registered username",
             labelSummary: "Short Summary (1-2 sentences)",
@@ -1504,17 +1504,17 @@ const translations = {
             hintContent: "You can separate your thoughts into paragraphs. Line breaks will be preserved when published.",
             moderationNotice: "<strong>Moderation Notice:</strong> All news undergoes a review process by administrators before becoming publicly visible to ensure quality and respect in the league.",
             btnCancel: "Cancel",
-            btnSubmitAction: "<span>🚀</span> Submit for Review",
-            btnEditArticle: "✏️ Edit Article",
-            shareBtn: "🔗 Copy link",
-            commentsHeading: "💬 COMMUNITY COMMENTS",
+            btnSubmitAction: "<span></span> Submit for Review",
+            btnEditArticle: "Edit Article",
+            shareBtn: "Copy link",
+            commentsHeading: "COMMUNITY COMMENTS",
             commentAuthorPlaceholder: "Your name / alias",
             commentTextPlaceholder: "Write a comment on this news...",
-            commentSubmitBtn: "<span>💬</span> Post Comment",
+            commentSubmitBtn: "<span></span> Post Comment",
             noComments: "No comments yet. Be the first to comment on this news article!",
             officialBadge: "OFFICIAL FFC",
             compare: {
-                title: "⚔️ DRIVER COMPARATOR",
+                title: "DRIVER COMPARATOR",
                 sub: "Face-to-face analysis: direct track duel, points, wins, pace & reliability",
                 presets: "RECOMMENDED DUELS:",
                 driverA: "DRIVER A (RED CORNER)",
@@ -1556,32 +1556,32 @@ const translations = {
                     fantasyValue: "FFC FANTASY VALUE"
                 },
                 skills: {
-                    racePace: "🏎️ RACE PACE",
+                    racePace: "RACE PACE",
                     qualyPace: "⏱️ QUALY PACE",
-                    reliability: "🛡️ MECHANICAL RELIABILITY",
-                    consistency: "🎯 TOP 10 CONSISTENCY",
-                    podiumEff: "🏆 PODIUM EFFICIENCY"
+                    reliability: "MECHANICAL RELIABILITY",
+                    consistency: "TOP 10 CONSISTENCY",
+                    podiumEff: "PODIUM EFFICIENCY"
                 },
                 photos: {
                     galleryKicker: "FFC COMMUNITY",
                     galleryTitle: "RACE PHOTO GALLERY",
                     uploadNewBtn: "+ Upload New Photo",
                     filterLabel: "Filter by Grand Prix:",
-                    allGps: "🏁 All Races & GPs",
+                    allGps: "All Races & GPs",
                     emptyTitle: "No photos in this category yet",
                     emptyDesc: "Be the first to share your captures from this race with the community!",
                     uploadFirstBtn: "Upload first photo",
                     modalKicker: "FFC UPLOAD ASSISTANT",
                     modalTitle: "UPLOAD SIMRACING PHOTO",
-                    adminNotice: "🛡️ <strong>Admin Mode Active:</strong> Photos you upload will be published automatically without prior moderation.",
+                    adminNotice: "<strong>Admin Mode Active:</strong> Photos you upload will be published automatically without prior moderation.",
                     loginPromptTitle: "Log in to upload photos",
                     loginPromptDesc: "You must log in with your Formula Factor account to share your captures in the official gallery.",
                     loginPromptBtn: "Log In / Register",
                     labelRace: "Grand Prix / Past Race *",
                     selectRacePlaceholder: "-- Select a race --",
                     labelMethod: "Image Upload Method *",
-                    methodFile: "📁 Local File (PC / Mobile)",
-                    methodUrl: "🔗 Direct URL Link",
+                    methodFile: "Local File (PC / Mobile)",
+                    methodUrl: "Direct URL Link",
                     fileLabel: "Select Images (You can upload multiple at once)",
                     fileHint: "Select one or more photos. Maximum quality and original resolution are preserved.",
                     urlLabel: "Paste Image Link (Discord, Imgur, Postimages...)",
@@ -1590,13 +1590,13 @@ const translations = {
                     captionPlaceholder: "e.g. Turn 1 start, Podium battle...",
                     btnCancel: "Cancel",
                     btnSubmit: "Upload photo",
-                    homeBannerBadge: "📸 FFC COMMUNITY",
+                    homeBannerBadge: "FFC COMMUNITY",
                     homeBannerTitle: "RACE PHOTO GALLERY",
                     homeBannerDesc: "Explore captures, epic overtakes, podiums, and track moments uploaded by the community.",
-                    homeBannerBtn: "📸 View Full Photo Gallery",
+                    homeBannerBtn: "View Full Photo Gallery",
                     closeGalleryAria: "Close gallery",
                     closeUploadAria: "Close upload",
-                    raceTabGallery: "📸 Photo Gallery",
+                    raceTabGallery: "Photo Gallery",
                     raceGalleryTitle: "Race Photo Gallery",
                     raceGalleryDesc: "Captures, podiums, and on-track moments uploaded by the community.",
                     raceUploadBtn1: "+ Upload Photo to this GP",
@@ -1604,8 +1604,8 @@ const translations = {
                     raceEmptyDesc: "Be the first to upload a photo of this race!",
                     raceUploadBtn2: "Upload photo now",
                     lightboxCloseAria: "Close viewer",
-                    lightboxDownload: "⬇️ Download Photo",
-                    lightboxDelete: "🗑️ Delete",
+                    lightboxDownload: "Download Photo",
+                    lightboxDelete: "Delete",
                     lightboxUploadedBy: "Uploaded by",
                     deleteConfirm: "Are you sure you want to delete this photo from the gallery?"
                 },
@@ -1617,7 +1617,7 @@ const translations = {
                     footerDiscord: "Official Discord",
                     footerRules: "FFC Regulations",
                     cookieBanner: {
-                        text: "<strong>🍪 Cookies & Local Storage Notice:</strong> FFC uses essential technical cookies and local storage for authentication, the Fantasy League, and core platform features. You can review our ",
+                        text: "<strong>Cookies & Local Storage Notice:</strong> FFC uses essential technical cookies and local storage for authentication, the Fantasy League, and core platform features. You can review our ",
                         policyBtn: "Cookies Policy",
                         rejectBtn: "Essential only",
                         acceptBtn: "Accept all"
@@ -1696,16 +1696,16 @@ const translations = {
                 photosFilterApproved: "Approved",
                 photosFilterRejected: "Rejected",
                 photosSearchPlaceholder: "Search by author, description, or Grand Prix...",
-                btnAdminUpload: "<span>📸</span> Direct Photo Upload (Admin)",
+                btnAdminUpload: "<span></span> Direct Photo Upload (Admin)",
                 adminPhotosEmpty: "No photos found in this category.",
                 adminPhotosEmptySub: "Photos uploaded by drivers or admins will appear here for moderation.",
                 adminStatusApproved: "🟢 APPROVED",
                 adminStatusRejected: "🔴 REJECTED",
                 adminStatusPending: "🟡 PENDING",
-                adminBtnApprove: "✅ Approve",
-                adminBtnReject: "❌ Reject",
-                adminBtnDownload: "⬇️ Download",
-                adminModifyRaceLabel: "🏁 Modify Assigned Race:"
+                adminBtnApprove: "Approve",
+                adminBtnReject: "Reject",
+                adminBtnDownload: "Download",
+                adminModifyRaceLabel: "Modify Assigned Race:"
             }
         }
     }
@@ -1799,7 +1799,7 @@ function applyTranslations(lang) {
     const navR = document.getElementById("navRaces");
     if (navR) navR.textContent = dict.nav.races;
     const navPhotosEl = document.getElementById("navPhotos");
-    if (navPhotosEl) navPhotosEl.textContent = (dict.nav && dict.nav.photos) || (lang === "en" ? "📸 PHOTOS" : "📸 FOTOS");
+    if (navPhotosEl) navPhotosEl.textContent = (dict.nav && dict.nav.photos) || (lang === "en" ? "PHOTOS" : "FOTOS");
     const navN = document.getElementById("navNews");
     if (navN && dict.nav && dict.nav.news) navN.textContent = dict.nav.news;
     const navLT = document.getElementById("navLiveTiming");
@@ -1893,7 +1893,7 @@ function applyTranslations(lang) {
         const lblFil = document.getElementById("lblGalleryFilter");
         if (lblFil) lblFil.textContent = photosDict.filterLabel || (lang === "en" ? "Filter by Grand Prix:" : "Filtrar por Gran Premio:");
         const optAll = document.getElementById("optFilterAll");
-        if (optAll) optAll.textContent = photosDict.allGps || (lang === "en" ? "🏁 All Races & GPs" : "🏁 Todas las Carreras y GPs");
+        if (optAll) optAll.textContent = photosDict.allGps || (lang === "en" ? "All Races & GPs" : "Todas las Carreras y GPs");
         const gEmptyT = document.getElementById("galleryEmptyTitle");
         if (gEmptyT) gEmptyT.textContent = photosDict.emptyTitle;
         const gEmptyD = document.getElementById("galleryEmptyDesc");
@@ -1948,7 +1948,7 @@ function applyTranslations(lang) {
         if (btnS) btnS.textContent = photosDict.btnSubmit;
 
         const hBanBadge = document.getElementById("homePhotoBannerBadge");
-        if (hBanBadge) hBanBadge.textContent = photosDict.homeBannerBadge || (lang === "en" ? "📸 FFC COMMUNITY" : "📸 COMUNIDAD FFC");
+        if (hBanBadge) hBanBadge.textContent = photosDict.homeBannerBadge || (lang === "en" ? "FFC COMMUNITY" : "COMUNIDAD FFC");
         const hBanTitle = document.getElementById("homePhotoBannerTitle");
         if (hBanTitle) hBanTitle.textContent = photosDict.homeBannerTitle;
         const hBanDesc = document.getElementById("homePhotoBannerDesc");
@@ -2181,13 +2181,13 @@ function applyTranslations(lang) {
 
     const rResBtn = document.getElementById("raceTabResultsBtn");
     if (rResBtn) {
-        rResBtn.textContent = lang === "en" ? "🏁 Official Results" : "🏁 Resultados Oficiales";
+        rResBtn.textContent = lang === "en" ? "Official Results" : "Resultados Oficiales";
     }
     const rGalBtn = document.getElementById("raceTabGalleryBtn");
     if (rGalBtn) {
         const photoCountEl = document.getElementById("raceModalPhotoCount");
         const countVal = photoCountEl ? photoCountEl.textContent : "0";
-        rGalBtn.innerHTML = lang === "en" ? `📸 Photo Gallery (<span id="raceModalPhotoCount">${countVal}</span>)` : `📸 Galería de Fotos (<span id="raceModalPhotoCount">${countVal}</span>)`;
+        rGalBtn.innerHTML = lang === "en" ? `Photo Gallery (<span id="raceModalPhotoCount">${countVal}</span>)` : `Galería de Fotos (<span id="raceModalPhotoCount">${countVal}</span>)`;
     }
 
     // Hero
@@ -2462,13 +2462,14 @@ function applyTranslations(lang) {
     // Timezone & Language settings in User Profile
     const profileTzLabel = document.getElementById("profileTzLabel");
     if (profileTzLabel) {
-        profileTzLabel.textContent = lang === "en" ? "⏰ Time Zone" : "⏰ Zona Horaria";
+        profileTzLabel.innerHTML = `<i data-lucide="clock" aria-hidden="true"></i> ${lang === "en" ? "Time Zone" : "Zona Horaria"}`;
     }
     const profileLangLabel = document.getElementById("profileLangLabel");
     if (profileLangLabel) {
-        profileLangLabel.textContent = lang === "en" ? "🌐 Language" : "🌐 Idioma / Language";
+        profileLangLabel.innerHTML = `<i data-lucide="globe" aria-hidden="true"></i> ${lang === "en" ? "Language" : "Idioma / Language"}`;
     }
     renderTimezoneOptions();
+    refreshIcons();
 
     // User Auth translations
     if (dict.auth) {
@@ -2612,13 +2613,13 @@ function applyTranslations(lang) {
         const ceRemAv = document.getElementById("btnRemoveAvatar");
         if (ceRemAv) ceRemAv.title = lang === "en" ? "Remove photo" : "Quitar foto";
         const ceTrigFile = document.getElementById("btnTriggerAvatarFileSpan");
-        if (ceTrigFile) ceTrigFile.textContent = dict.cardEditor.btnTriggerAvatarFile;
+        if (ceTrigFile) ceTrigFile.innerHTML = '<i data-lucide="upload" aria-hidden="true"></i> ' + dict.cardEditor.btnTriggerAvatarFile;
         const ceOrText = document.getElementById("avatarUploadOrText");
         if (ceOrText) ceOrText.textContent = dict.cardEditor.avatarUploadOr;
         const ceG3 = document.getElementById("cardGroup3Title");
         if (ceG3) ceG3.textContent = dict.cardEditor.group3;
         const ceLocked = document.getElementById("cardLockedBadge");
-        if (ceLocked) ceLocked.textContent = dict.cardEditor.lockedBadge;
+        if (ceLocked) ceLocked.innerHTML = '<i data-lucide="lock" aria-hidden="true"></i> ' + dict.cardEditor.lockedBadge;
         const ceNotice = document.getElementById("officialFlagNotice");
         if (ceNotice) ceNotice.textContent = dict.cardEditor.officialFlagNotice;
         const ceG4 = document.getElementById("cardGroup4Title");
@@ -2630,9 +2631,10 @@ function applyTranslations(lang) {
         const ceG5 = document.getElementById("cardGroup5Title");
         if (ceG5) ceG5.textContent = dict.cardEditor.group5;
         const ceSave = document.getElementById("saveDriverCardBtn");
-        if (ceSave) ceSave.textContent = dict.cardEditor.saveBtn;
+        if (ceSave) ceSave.innerHTML = '<i data-lucide="save" aria-hidden="true"></i> ' + dict.cardEditor.saveBtn;
         const ceView = document.getElementById("modalViewOfficialCardBtn");
-        if (ceView) ceView.textContent = dict.cardEditor.viewBtn;
+        if (ceView) ceView.innerHTML = '<i data-lucide="eye" aria-hidden="true"></i> ' + dict.cardEditor.viewBtn;
+        refreshIcons();
     }
 
     // Fantasy section translations
@@ -2647,7 +2649,7 @@ function applyTranslations(lang) {
         if (fBadge) fBadge.textContent = dict.fantasy.seasonBadge;
 
         const fEyebrow = document.getElementById("fantasyHeroEyebrow");
-        if (fEyebrow) fEyebrow.innerHTML = `<span>🏆</span> ${dict.fantasy.heroEyebrow}`;
+        if (fEyebrow) fEyebrow.innerHTML = `<span></span> ${dict.fantasy.heroEyebrow}`;
 
         const fTitle = document.getElementById("fantasyHeroTitle");
         if (fTitle) fTitle.innerHTML = dict.fantasy.heroTitle;
@@ -2815,7 +2817,7 @@ function applyTranslations(lang) {
         const newsSubmitModalBadge = document.getElementById("newsSubmitModalBadge");
         if (newsSubmitModalBadge && !window.ffcEditingArticleId) newsSubmitModalBadge.textContent = lang === "en" ? "PRESS • FFC REDACTION" : "PRENSA • REDACCIÓN FFC";
         const newsSubmitModalTitle = document.getElementById("newsSubmitModalTitle");
-        if (newsSubmitModalTitle && !window.ffcEditingArticleId) newsSubmitModalTitle.textContent = lang === "en" ? "✍️ ARTICLE EDITOR (BILINGUAL)" : "✍️ REDACTOR DE ARTÍCULO (BILINGÜE)";
+        if (newsSubmitModalTitle && !window.ffcEditingArticleId) newsSubmitModalTitle.textContent = lang === "en" ? "ARTICLE EDITOR (BILINGUAL)" : "REDACTOR DE ARTÍCULO (BILINGÜE)";
 
         const newsBilingualSubtext = document.getElementById("newsBilingualSubtext");
         if (newsBilingualSubtext) newsBilingualSubtext.textContent = lang === "en" ? "You must write the article in both Spanish and English for the international community" : "Debes redactar la noticia en Español e Inglés para la comunidad internacional";
@@ -2827,7 +2829,7 @@ function applyTranslations(lang) {
         const btnDropzoneBrowse = document.getElementById("btnDropzoneBrowse");
         if (btnDropzoneBrowse) btnDropzoneBrowse.textContent = lang === "en" ? "Upload Photo" : "Subir Foto";
         const btnToggleUrlInput = document.getElementById("btnToggleUrlInput");
-        if (btnToggleUrlInput) btnToggleUrlInput.textContent = lang === "en" ? "🔗 Or paste image web link" : "🔗 O pegar enlace web de imagen";
+        if (btnToggleUrlInput) btnToggleUrlInput.textContent = lang === "en" ? "Or paste image web link" : "O pegar enlace web de imagen";
         const btnNewsUseDefaultImg = document.getElementById("btnNewsUseDefaultImg");
         if (btnNewsUseDefaultImg) btnNewsUseDefaultImg.textContent = lang === "en" ? "Use official FFC background" : "Usar fondo oficial FFC";
 
@@ -3060,7 +3062,7 @@ const TIMEZONE_FLAGS = {
     "America/Los_Angeles": "🇺🇸",
     "Asia/Tokyo": "🇯🇵",
     "Australia/Sydney": "🇦🇺",
-    "UTC": "🌐"
+    "UTC": ""
 };
 
 let selectedTimezone = (() => {
@@ -3163,13 +3165,12 @@ function renderTimezoneOptions() {
         const isEnglish = currentLanguage === "en";
         sortedTimezones.forEach(tz => {
             const tzBadge = getTimezoneBadge(tz.id, raceDateObj);
-            const flag = TIMEZONE_FLAGS[tz.id] || "🏁";
             const opt = document.createElement("option");
             opt.value = tz.id;
             opt.selected = (tz.id === selectedTimezone);
             const isBase = tz.id === "Europe/Madrid";
             const baseTag = isBase ? (isEnglish ? " · FFC Base" : " · Base Oficial") : "";
-            opt.textContent = `${flag} ${tz.city} (${tzBadge})${baseTag}`;
+            opt.textContent = `${tz.city} (${tzBadge})${baseTag}`;
             selectEl.appendChild(opt);
         });
         selectEl.value = selectedTimezone;
@@ -4148,7 +4149,7 @@ function getRaceFlagEmoji(key) {
         usa: "🇺🇸",
         brazil: "🇧🇷"
     };
-    return flags[key] || "🏁";
+    return flags[key] || "";
 }
 
 function getRaceFlagHtml(key, size = 20) {
@@ -4369,7 +4370,7 @@ function selectCalendarRound(raceKey, sessionType = "race") {
                     else if (diff < 0) deltaHtml = `<span class="grid-delta-cell delta-down">▼${diff}</span>`;
                 }
 
-                const driverFlag = (typeof getOfficialDriverFlag === "function") ? getOfficialDriverFlag(d.driver) : "🏁";
+                const driverFlag = (typeof getOfficialDriverFlag === "function") ? getOfficialDriverFlag(d.driver) : "";
                 const teamHex = getTeamHexColor(d.team);
 
                 const isWinner = (race.winner && race.winner.toLowerCase().includes(d.driver.toLowerCase()));
@@ -4380,7 +4381,7 @@ function selectCalendarRound(raceKey, sessionType = "race") {
                 let badgeHtml = "";
                 if (isFL) badgeHtml += `<span class="driver-badge-fl" title="Vuelta Rápida">🟣 FL</span>`;
                 if (isPole) badgeHtml += `<span class="driver-badge-pole" title="Pole Position">🟡 POLE</span>`;
-                if (isDOTD) badgeHtml += `<span class="driver-badge-dotd" title="Piloto del Día">⭐ DOTD</span>`;
+                if (isDOTD) badgeHtml += `<span class="driver-badge-dotd" title="Piloto del Día">DOTD</span>`;
 
                 let timeHtml = "";
                 if (d.status === "DNF") {
@@ -5099,7 +5100,7 @@ function renderTop3BattleChart(top3Drivers) {
                 <title>${escapeHtml(gp.name)} · Ronda ${gp.r}</title>
             </image>`;
         } else {
-            svgHtml += `<text x="${x}" y="${height - 8}" fill="#94a3b8" font-size="11" text-anchor="middle">${gp.flag || "🏁"}</text>`;
+            svgHtml += `<text x="${x}" y="${height - 8}" fill="#94a3b8" font-size="11" text-anchor="middle">${gp.flag || ""}</text>`;
         }
     });
 
@@ -6301,6 +6302,7 @@ const adminRaceStatusSelect = document.getElementById("adminRaceStatusSelect");
 const adminSetAsNextRaceBtn = document.getElementById("adminSetAsNextRaceBtn");
 const adminToggleRaceStatusBtn = document.getElementById("adminToggleRaceStatusBtn");
 const adminToggleRaceStatusBtnLabel = document.getElementById("adminToggleRaceStatusBtnLabel");
+const adminFinishNextRaceBtn = document.getElementById("adminFinishNextRaceBtn");
 const adminFastestDriver = document.getElementById("adminFastestDriver");
 const adminFastestTime = document.getElementById("adminFastestTime");
 const adminPoleDriver = document.getElementById("adminPoleDriver");
@@ -6312,6 +6314,8 @@ const adminRacePositionsTable = document.getElementById("adminRacePositionsTable
 const adminRacePositionsBody = document.getElementById("adminRacePositionsBody");
 const adminAddRacePosBtn = document.getElementById("adminAddRacePosBtn");
 const adminLoadDefaultPosBtn = document.getElementById("adminLoadDefaultPosBtn");
+const adminImportRaceResultsBtn = document.getElementById("adminImportRaceResultsBtn");
+const adminImportBanner = document.getElementById("adminImportBanner");
 const adminResetRaceBtn = document.getElementById("adminResetRaceBtn");
 const adminResetRaceBtnBottom = document.getElementById("adminResetRaceBtnBottom");
 const raceResultsSaveNotice = document.getElementById("raceResultsSaveNotice");
@@ -6431,7 +6435,7 @@ function renderNextRaceOnPage(race) {
         rawTemp = `${rawTemp.trim()}°C`;
     }
 
-    let icon = "☀️";
+    let icon = "";
     let condLabel = "SOLEADO";
     let themeClass = "weather-sunny";
 
@@ -6667,7 +6671,7 @@ function savePersistentDriverFlag(driverName, flag) {
 }
 
 function getOfficialDriverFlag(driverName) {
-    if (!driverName) return "🏁";
+    if (!driverName) return "";
     const clean = driverName.trim().toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
 
     // 1. Check in-memory currentPilotos from Firestore
@@ -6693,7 +6697,7 @@ function getOfficialDriverFlag(driverName) {
         );
         if (found && found.flag) return found.flag;
     }
-    return "🏁";
+    return "";
 }
 
 const OFFICIAL_COUNTRY_FLAGS = [
@@ -6903,11 +6907,11 @@ const OFFICIAL_COUNTRY_FLAGS = [
     { name: "Tuvalu", flag: "🇹🇻" },
     { name: "Vanuatu", flag: "🇻🇺" },
 
-    { name: "Sin Bandera / Genérico", flag: "🏁" }
+    { name: "Sin Bandera / Genérico", flag: "" }
 ];
 
 function getCountryCodeFromEmoji(emoji) {
-    if (!emoji || emoji === "🏁" || emoji === "🏭") return null;
+    if (!emoji || emoji === "" || emoji === "") return null;
     
     const cleanStr = String(emoji).trim().toLowerCase();
     const directCodes = {
@@ -6984,7 +6988,7 @@ function getCountryCodeFromEmoji(emoji) {
 function getFlagHtml(flagEmoji, size = 18) {
     if (typeof flagEmoji === "string" && flagEmoji.startsWith("<img")) return flagEmoji;
     const flagSvgFallback = `<svg viewBox="0 0 24 24" width="${size}" height="${size}" fill="currentColor" class="driver-flag-svg inline-block align-middle" style="display: inline-block; vertical-align: middle; margin-top: -2px; margin-right: 4px; opacity: 0.8;" aria-hidden="true"><path d="M14.4 6L14 4H5v17h2v-7h5.6l.4 2h7V6h-5.6z"/></svg>`;
-    if (!flagEmoji || flagEmoji === "🏁" || flagEmoji === "🏭") return flagSvgFallback;
+    if (!flagEmoji || flagEmoji === "" || flagEmoji === "") return flagSvgFallback;
     const code = getCountryCodeFromEmoji(flagEmoji);
     if (code) {
         return `<img src="https://flagcdn.com/w40/${code}.png" class="driver-flag-img inline-block align-middle" alt="${code}" style="width: ${size}px; height: auto; max-height: ${Math.round(size * 0.82)}px; border-radius: 2px; box-shadow: 0 1px 3px rgba(0,0,0,0.35); display: inline-block; vertical-align: middle; margin-top: -2px; margin-right: 4px;" onerror="this.outerHTML='${flagSvgFallback.replace(/"/g, '&quot;')}';">`;
@@ -7021,7 +7025,7 @@ const COUNTRY_NAMES_BY_FLAG = {
     "🇵🇪": "Perú",
     "🇺🇸": "Estados Unidos",
     "🇩🇪": "Alemania",
-    "🏁": "Internacional / FFC"
+    "": "Internacional / FFC"
 };
 
 function getCountryNameByFlag(flag) {
@@ -7032,7 +7036,7 @@ function getCountryNameByFlag(flag) {
 }
 
 function extractFlagFromCountryString(str) {
-    if (!str) return "🏁";
+    if (!str) return "";
     const trimmed = str.trim();
 
     // Check custom/regional long flags first
@@ -7061,7 +7065,7 @@ function extractFlagFromCountryString(str) {
         return chars[0];
     }
 
-    return "🏁";
+    return "";
 }
 
 function initAllCountriesDatalist() {
@@ -7484,7 +7488,7 @@ function getDynamicSeasonMatrixData() {
             }
         });
 
-        const officialFlag = driverObj.flag || driverObj.customFlag || getOfficialDriverFlag(driverName) || meta.flag || "🏁";
+        const officialFlag = driverObj.flag || driverObj.customFlag || getOfficialDriverFlag(driverName) || meta.flag || "";
 
         return {
             pos,
@@ -7815,7 +7819,7 @@ function findDriverStats(driverName) {
 
     const cardColor = userCustom.cardColor || pilotDoc.cardColor || verifiedMapInfo.cardColor || match.cardColor || null;
     const avatarUrl = userCustom.avatarUrl !== undefined ? userCustom.avatarUrl : (pilotDoc.avatarUrl !== undefined ? pilotDoc.avatarUrl : (verifiedMapInfo.avatarUrl !== undefined ? verifiedMapInfo.avatarUrl : (match.avatarUrl || null)));
-    const officialFlag = userCustom.customFlag || userCustom.flag || pilotDoc.customFlag || pilotDoc.flag || verifiedMapInfo.customFlag || match.flag || getOfficialDriverFlag(match.driver) || "🏁";
+    const officialFlag = userCustom.customFlag || userCustom.flag || pilotDoc.customFlag || pilotDoc.flag || verifiedMapInfo.customFlag || match.flag || getOfficialDriverFlag(match.driver) || "";
     const bio = userCustom.bio !== undefined ? userCustom.bio : (pilotDoc.bio !== undefined ? pilotDoc.bio : (verifiedMapInfo.bio !== undefined ? verifiedMapInfo.bio : match.bio || null));
     const socialTwitch = userCustom.socialTwitch !== undefined ? userCustom.socialTwitch : (pilotDoc.socialTwitch !== undefined ? pilotDoc.socialTwitch : (verifiedMapInfo.socialTwitch !== undefined ? verifiedMapInfo.socialTwitch : match.socialTwitch || null));
     const socialYoutube = userCustom.socialYoutube !== undefined ? userCustom.socialYoutube : (pilotDoc.socialYoutube !== undefined ? pilotDoc.socialYoutube : (verifiedMapInfo.socialYoutube !== undefined ? verifiedMapInfo.socialYoutube : match.socialYoutube || null));
@@ -7933,7 +7937,7 @@ function openDriverStatsModal(driverName) {
 
     // Flag & Name
     const flagEl = document.getElementById("driverModalFlag");
-    if (flagEl) flagEl.innerHTML = getFlagHtml(data.customFlag || data.flag || "🏁", 24);
+    if (flagEl) flagEl.innerHTML = getFlagHtml(data.customFlag || data.flag || "", 24);
 
     const nameEl = document.getElementById("driverModalName");
     if (nameEl) nameEl.textContent = data.driver;
@@ -7976,7 +7980,7 @@ function openDriverStatsModal(driverName) {
             a.rel = "noopener noreferrer";
             const userStr = data.socialTwitch.trim().replace("https://twitch.tv/", "").replace("https://www.twitch.tv/", "").replace("@", "");
             a.href = data.socialTwitch.startsWith("http") ? data.socialTwitch : `https://twitch.tv/${userStr}`;
-            a.textContent = `👾 Twitch: ${userStr}`;
+            a.textContent = `Twitch: ${userStr}`;
             if (data.cardColor) a.style.borderColor = `${data.cardColor}60`;
             socialGrid.appendChild(a);
         }
@@ -7989,7 +7993,7 @@ function openDriverStatsModal(driverName) {
             a.rel = "noopener noreferrer";
             const ytStr = data.socialYoutube.trim().replace("https://youtube.com/", "").replace("https://www.youtube.com/", "");
             a.href = data.socialYoutube.startsWith("http") ? data.socialYoutube : `https://youtube.com/${ytStr}`;
-            a.textContent = `📺 YouTube: ${ytStr}`;
+            a.textContent = `YouTube: ${ytStr}`;
             if (data.cardColor) a.style.borderColor = `${data.cardColor}60`;
             socialGrid.appendChild(a);
         }
@@ -8002,7 +8006,7 @@ function openDriverStatsModal(driverName) {
             a.rel = "noopener noreferrer";
             const twStr = data.socialTwitter.trim().replace("https://x.com/", "").replace("https://twitter.com/", "").replace("@", "");
             a.href = data.socialTwitter.startsWith("http") ? data.socialTwitter : `https://x.com/${twStr}`;
-            a.textContent = `🐦 @${twStr}`;
+            a.textContent = `@${twStr}`;
             if (data.cardColor) a.style.borderColor = `${data.cardColor}60`;
             socialGrid.appendChild(a);
         }
@@ -8011,7 +8015,7 @@ function openDriverStatsModal(driverName) {
             count++;
             const span = document.createElement("span");
             span.className = "social-pill social-pill-discord";
-            span.textContent = `💬 Discord: ${data.socialDiscord.trim()}`;
+            span.textContent = `Discord: ${data.socialDiscord.trim()}`;
             if (data.cardColor) span.style.borderColor = `${data.cardColor}60`;
             socialGrid.appendChild(span);
         }
@@ -8135,7 +8139,7 @@ function openDriverStatsModal(driverName) {
                 const num = parseInt(numStr, 10) || 0;
                 if (num >= 25) {
                     pillClass = "res-win";
-                    pillText = `🏆 ${num}`;
+                    pillText = `${num}`;
                 } else if (num >= 15) {
                     pillClass = "res-podium";
                     pillText = `${num}`;
@@ -8307,7 +8311,7 @@ function findTeamStats(teamName) {
     const meta = F1_TEAM_META[matchedTeam] || {
         fullName: matchedTeam,
         code: matchedTeam.slice(0, 3).toUpperCase(),
-        flag: "🏁",
+        flag: "",
         country: "Competición",
         countryEn: "Racing"
     };
@@ -8391,7 +8395,7 @@ function findTeamStats(teamName) {
         return {
             driver: d.driver,
             dorsal: d.dorsal || (stats ? stats.number : ""),
-            flag: d.flag || (stats ? stats.flag : "🏁"),
+            flag: d.flag || (stats ? stats.flag : ""),
             pos: d.pos || (stats ? stats.pos : "--"),
             pts: d.pts !== undefined ? d.pts : (stats ? stats.pts : 0)
         };
@@ -8536,7 +8540,7 @@ function openTeamStatsModal(teamName) {
 
     // Flag & Name
     const flagEl = document.getElementById("teamModalFlag");
-    if (flagEl) flagEl.textContent = data.meta.flag || "🏁";
+    if (flagEl) flagEl.textContent = data.meta.flag || "";
 
     const nameEl = document.getElementById("teamModalName");
     if (nameEl) nameEl.textContent = data.team;
@@ -8673,7 +8677,7 @@ function openTeamStatsModal(teamName) {
             if (rData.completed) {
                 if (rData.isWin) {
                     pillClass = "res-win";
-                    pillText = `🏆 ${rData.pts}`;
+                    pillText = `${rData.pts}`;
                 } else if (rData.isPodium) {
                     pillClass = "res-podium";
                     pillText = `${rData.pts}`;
@@ -9058,7 +9062,7 @@ function renderAdminStandingsEditor(drivers) {
                 <input type="hidden" class="driver-team-input" value="${escapeHtml(officialTeam)}">
             </td>
             <td><input type="number" class="driver-pts-input" value="${Number(d.pts)}" min="0" required></td>
-            <td style="text-align: center;"><button type="button" class="admin-remove-btn" data-pilot-id="${pilotId}" title="Eliminar de clasificación">🗑</button></td>
+            <td style="text-align: center;"><button type="button" class="admin-remove-btn" data-pilot-id="${pilotId}" title="Eliminar de clasificación"><i data-lucide="trash-2" aria-hidden="true"></i></button></td>
         `;
 
         const nameInput = tr.querySelector(".driver-name-input");
@@ -9467,7 +9471,7 @@ function renderSettingsOnPage(settings) {
         adminFantasyLocked.checked = isFantasyLocked;
     }
     if (adminFantasyLockStatusText) {
-        adminFantasyLockStatusText.textContent = isFantasyLocked ? "🔒 MERCADO BLOQUEADO (CARRERA EN CURSO)" : "MERCADO ABIERTO (FICHAJES ACTIVOS)";
+        adminFantasyLockStatusText.textContent = isFantasyLocked ? "MERCADO BLOQUEADO (CARRERA EN CURSO)" : "MERCADO ABIERTO (FICHAJES ACTIVOS)";
         adminFantasyLockStatusText.classList.toggle("is-active", isFantasyLocked);
     }
     if (adminFantasyLockMessage && document.activeElement !== adminFantasyLockMessage) {
@@ -9538,7 +9542,7 @@ function getFantasyLockMessage() {
 
 window.handleLockedAction = function() {
     const msg = getFantasyLockMessage();
-    alert("🔒 " + msg);
+    alert("" + msg);
 };
 
 // In-App Accessible Confirmation Modal (Guaranteed to work in iframes and all browsers)
@@ -9560,7 +9564,7 @@ function showAppConfirm(title, message, confirmText = "Confirmar", cancelText = 
         overlay.innerHTML = `
             <div class="custom-confirm-card" role="dialog" aria-modal="true">
                 <div class="custom-confirm-header">
-                    <span class="custom-confirm-icon">⚠️</span>
+                    <span class="custom-confirm-icon"><i data-lucide="alert-triangle" aria-hidden="true"></i></span>
                     <h3 class="custom-confirm-title">${escapeHtml(title)}</h3>
                 </div>
                 <div class="custom-confirm-body">
@@ -9574,6 +9578,7 @@ function showAppConfirm(title, message, confirmText = "Confirmar", cancelText = 
         `;
 
         overlay.classList.add("active");
+        refreshIcons();
 
         const cancelBtn = overlay.querySelector("#customConfirmCancelBtn");
         const okBtn = overlay.querySelector("#customConfirmOkBtn");
@@ -9720,7 +9725,7 @@ function renderAdminDriversTab(filterText = "") {
         });
 
         const flagName = getCountryNameByFlag(effectiveFlag);
-        const flagDisplayVal = effectiveFlag && flagName ? `${effectiveFlag} ${flagName}` : (effectiveFlag || "🏁 Genérico");
+        const flagDisplayVal = effectiveFlag && flagName ? `${effectiveFlag} ${flagName}` : (effectiveFlag || "Genérico");
 
         tr.innerHTML = `
             <td style="font-weight: bold; color: var(--gold); text-align: center;">${actualIndex + 1}</td>
@@ -9751,7 +9756,7 @@ function renderAdminDriversTab(filterText = "") {
                        data-original-driver="${escapeHtml(item.driver)}" 
                        value="${escapeHtml(flagDisplayVal)}"
                        style="width: 100%;"
-                       placeholder="🔍 Buscar país..."
+                       placeholder="Buscar país..."
                        autocomplete="off">
             </td>
             <td>
@@ -9760,7 +9765,7 @@ function renderAdminDriversTab(filterText = "") {
                 </select>
             </td>
             <td style="text-align: center;">
-                <button type="button" class="admin-remove-btn admin-pilot-remove-btn" data-pilot-id="${pilotId}" data-driver="${escapeHtml(effectiveDriver)}" title="Eliminar piloto de Firestore">🗑</button>
+                <button type="button" class="admin-remove-btn admin-pilot-remove-btn" data-pilot-id="${pilotId}" data-driver="${escapeHtml(effectiveDriver)}" title="Eliminar piloto de Firestore"><i data-lucide="trash-2" aria-hidden="true"></i></button>
             </td>
         `;
 
@@ -9933,7 +9938,7 @@ function renderRacePositionsTable(list) {
         emptyTr.innerHTML = `
             <td colspan="6" style="text-align: center; color: #8c929c; padding: 26px 16px; font-size: 13.5px;">
                 <div style="display: flex; flex-direction: column; align-items: center; gap: 8px;">
-                    <span style="color: #d1d6e0; font-weight: 700; font-size: 14px;">🏁 No hay resultados registrados para este Gran Premio</span>
+                    <span style="color: #d1d6e0; font-weight: 700; font-size: 14px;">No hay resultados registrados para este Gran Premio</span>
                     <span style="font-size: 12.5px; color: #788190;">Haz clic en <strong>«+ Añadir Posición»</strong> o en <strong>«Cargar Top 10»</strong> para registrar el orden de llegada.</span>
                 </div>
             </td>
@@ -9990,7 +9995,7 @@ function renderRacePositionsTable(list) {
                 ${getF1PointsBadgeHtml(idx + 1, statusVal)}
             </td>
             <td style="text-align: center;">
-                <button type="button" class="admin-remove-btn race-pos-remove-btn" title="Eliminar posición">🗑</button>
+                <button type="button" class="admin-remove-btn race-pos-remove-btn" title="Eliminar posición"><i data-lucide="trash-2" aria-hidden="true"></i></button>
             </td>
         `;
 
@@ -10067,7 +10072,7 @@ function populateRaceResultsEditor(raceKey) {
     }
     if (adminRaceStatusBadge) {
         adminRaceStatusBadge.className = `admin-status-pill ${completed ? "status-completed" : "status-upcoming"}`;
-        adminRaceStatusBadge.textContent = completed ? "🏁 FINALIZADA / ACABADA" : "⏳ PRÓXIMA / PENDIENTE";
+        adminRaceStatusBadge.textContent = completed ? "FINALIZADA / ACABADA" : "⏳ PRÓXIMA / PENDIENTE";
     }
     if (adminToggleRaceStatusBtnLabel) {
         adminToggleRaceStatusBtnLabel.textContent = completed ? "Marcar como Pendiente" : "Marcar como Acabada";
@@ -10177,11 +10182,11 @@ function updateAdminLivePreview() {
         }
     }
 
-    let icon = "☀️";
-    if (weatherVal === "partly-cloudy") icon = "⛅";
-    else if (weatherVal === "cloudy") icon = "☁️";
-    else if (weatherVal === "rainy") icon = "🌧️";
-    else if (weatherVal === "storm") icon = "🌩️";
+    let icon = "";
+    if (weatherVal === "partly-cloudy") icon = "";
+    else if (weatherVal === "cloudy") icon = "";
+    else if (weatherVal === "rainy") icon = "";
+    else if (weatherVal === "storm") icon = "";
 
     if (previewMockWeatherIcon) previewMockWeatherIcon.textContent = icon;
     if (previewMockWeatherTemp) previewMockWeatherTemp.textContent = tempVal;
@@ -10281,11 +10286,11 @@ function populateAdminForms() {
         adminFantasyLocked.checked = isFantasyLocked;
     }
     if (adminFantasyLockStatusText) {
-        adminFantasyLockStatusText.textContent = isFantasyLocked ? "🔒 MERCADO BLOQUEADO (CARRERA EN CURSO)" : "MERCADO ABIERTO (FICHAJES ACTIVOS)";
+        adminFantasyLockStatusText.textContent = isFantasyLocked ? "MERCADO BLOQUEADO (CARRERA EN CURSO)" : "MERCADO ABIERTO (FICHAJES ACTIVOS)";
         adminFantasyLockStatusText.classList.toggle("is-active", isFantasyLocked);
     }
     if (adminQuickFantasyStatus) {
-        adminQuickFantasyStatus.textContent = isFantasyLocked ? "🔒 BLOQUEADO" : "⚡ ABIERTO";
+        adminQuickFantasyStatus.textContent = isFantasyLocked ? "BLOQUEADO" : "ABIERTO";
         adminQuickFantasyStatus.style.color = isFantasyLocked ? "var(--gold-light)" : "#3fb950";
     }
 
@@ -10556,7 +10561,7 @@ function initFirestoreListeners() {
                 }
                 if (adminFantasyLockStatusText) {
                     const isFantasyLocked = Boolean(currentSettings.fantasyLocked);
-                    adminFantasyLockStatusText.textContent = isFantasyLocked ? "🔒 MERCADO BLOQUEADO (CARRERA EN CURSO)" : "MERCADO ABIERTO (FICHAJES ACTIVOS)";
+                    adminFantasyLockStatusText.textContent = isFantasyLocked ? "MERCADO BLOQUEADO (CARRERA EN CURSO)" : "MERCADO ABIERTO (FICHAJES ACTIVOS)";
                     adminFantasyLockStatusText.classList.toggle("is-active", isFantasyLocked);
                 }
                 if (adminFantasyLockMessage && document.activeElement !== adminFantasyLockMessage) {
@@ -11143,7 +11148,7 @@ if (adminFantasyLocked) {
     adminFantasyLocked.addEventListener("change", () => {
         const isLocked = adminFantasyLocked.checked;
         if (adminQuickFantasyStatus) {
-            adminQuickFantasyStatus.textContent = isLocked ? "🔒 BLOQUEADO" : "⚡ ABIERTO";
+            adminQuickFantasyStatus.textContent = isLocked ? "BLOQUEADO" : "ABIERTO";
             adminQuickFantasyStatus.style.color = isLocked ? "var(--gold-light)" : "#3fb950";
         }
     });
@@ -11163,7 +11168,7 @@ if (adminAddDriverBtn) {
                 <input type="hidden" class="driver-team-input" value="">
             </td>
             <td><input type="number" class="driver-pts-input" value="0" min="0" required></td>
-            <td style="text-align: center;"><button type="button" class="admin-remove-btn" title="Eliminar piloto">🗑</button></td>
+            <td style="text-align: center;"><button type="button" class="admin-remove-btn" title="Eliminar piloto"><i data-lucide="trash-2" aria-hidden="true"></i></button></td>
         `;
         adminStandingsTableBody.prepend(tr);
 
@@ -11287,7 +11292,7 @@ if (adminFantasyLocked) {
     adminFantasyLocked.addEventListener("change", async () => {
         const isLocked = adminFantasyLocked.checked;
         if (adminFantasyLockStatusText) {
-            adminFantasyLockStatusText.textContent = isLocked ? "🔒 MERCADO BLOQUEADO (CARRERA EN CURSO)" : "MERCADO ABIERTO (FICHAJES ACTIVOS)";
+            adminFantasyLockStatusText.textContent = isLocked ? "MERCADO BLOQUEADO (CARRERA EN CURSO)" : "MERCADO ABIERTO (FICHAJES ACTIVOS)";
             adminFantasyLockStatusText.classList.toggle("is-active", isLocked);
         }
         const current = getSavedSettings();
@@ -11820,7 +11825,7 @@ if (adminAddRacePosBtn) {
                 ${getF1PointsBadgeHtml(count, "FINISHED")}
             </td>
             <td style="text-align: center;">
-                <button type="button" class="admin-remove-btn race-pos-remove-btn" title="Eliminar posición">🗑</button>
+                <button type="button" class="admin-remove-btn race-pos-remove-btn" title="Eliminar posición"><i data-lucide="trash-2" aria-hidden="true"></i></button>
             </td>
         `;
 
@@ -11860,6 +11865,242 @@ if (adminLoadDefaultPosBtn) {
     adminLoadDefaultPosBtn.addEventListener("click", () => {
         renderRacePositionsTable(getDefaultTop10Positions());
     });
+}
+
+// -------------------------------------------------------------
+// RACE RESULTS IMPORT (from the game server's archived session)
+// -------------------------------------------------------------
+// The panel already stores the final classification of every race. This pulls
+// that classification and fills the table, leaving the admin only the review
+// (name mapping, sporting penalties) before saving through the normal flow.
+
+function importDriverKey(name) {
+    return String(name || "").trim().toLowerCase()
+        .normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+}
+
+function showRaceImportBanner(draft, unmatched, poleLap, poleSession) {
+    if (!adminImportBanner) return;
+    const icon = (name) => `<i data-lucide="${name}" aria-hidden="true"></i>`;
+    const infoBits = [];
+    if (draft.track) infoBits.push(`${icon("map-pin")} ${escapeHtml(String(draft.track))}`);
+    if (draft.date) infoBits.push(`${icon("calendar")} ${escapeHtml(String(draft.date))}`);
+    if (draft.type) infoBits.push(`${icon("tag")} ${escapeHtml(String(draft.type))}`);
+    infoBits.push(`${icon("users")} ${Array.isArray(draft.entries) ? draft.entries.length : 0} pilotos`);
+
+    const lines = [`<div class="admin-import-banner-line"><strong>Sesión importada:</strong> ${infoBits.join(" · ")}</div>`];
+
+    if (poleLap && poleLap.ms) {
+        const from = poleSession ? ` <span style="opacity:0.7;">(desde ${escapeHtml(String(poleSession))})</span>` : "";
+        lines.push(`<div class="admin-import-banner-line">${icon("flag")} Pole: <strong>${escapeHtml(String(poleLap.driver))}</strong> · ${escapeHtml(ltMsToLapTime(poleLap.ms))}${from}</div>`);
+    }
+    if (draft.approximate) {
+        lines.push(`<div class="admin-import-banner-line admin-import-warn">${icon("alert-triangle")} La sesión no traía clasificación final: el orden se ha reconstruido por vueltas completadas. Revísalo con atención.</div>`);
+    }
+    if (unmatched && unmatched.length) {
+        lines.push(`<div class="admin-import-banner-line admin-import-warn">${icon("alert-triangle")} ${unmatched.length} nombre(s) sin coincidencia con un piloto oficial: ${unmatched.map(n => escapeHtml(String(n))).join(", ")}. Ajústalos antes de guardar.</div>`);
+    } else {
+        lines.push(`<div class="admin-import-banner-line admin-import-ok">${icon("check")} Todos los pilotos se reconocieron. Revisa y pulsa «Guardar Resultados de Carrera».</div>`);
+    }
+
+    adminImportBanner.innerHTML = lines.join("");
+    adminImportBanner.style.display = "block";
+    refreshIcons();
+}
+
+function showRaceImportError(msg) {
+    if (!adminImportBanner) return;
+    adminImportBanner.innerHTML = `<div class="admin-import-banner-line admin-import-error"><i data-lucide="x" aria-hidden="true"></i> ${escapeHtml(msg)}</div>`;
+    adminImportBanner.style.display = "block";
+    refreshIcons();
+}
+
+// "2026_10_12_18_29" -> "12 OCT 2026 · 18:29".
+function formatSessionStamp(stamp) {
+    const match = String(stamp || "").match(/^(\d{4})_(\d{2})_(\d{2})_(\d{2})_(\d{2})$/);
+    if (!match) return String(stamp || "");
+    const months = ["ENE", "FEB", "MAR", "ABR", "MAY", "JUN", "JUL", "AGO", "SEP", "OCT", "NOV", "DIC"];
+    const month = months[parseInt(match[2], 10) - 1] || match[2];
+    return `${match[3]} ${month} ${match[1]} · ${match[4]}:${match[5]}`;
+}
+
+// Downloads one archived session (default: latest race) and fills the editor.
+async function runRaceImport(sessionName) {
+    if (!adminImportRaceResultsBtn) return;
+
+    const originalLabel = adminImportRaceResultsBtn.innerHTML;
+    adminImportRaceResultsBtn.disabled = true;
+    adminImportRaceResultsBtn.innerHTML = "⏳ Importando...";
+
+    try {
+        await ensureAdminSession();
+        const headers = await getAdminApiHeaders();
+        const url = "/api/admin/results/draft" + (sessionName ? "?session=" + encodeURIComponent(sessionName) : "");
+        const res = await fetch(url, { headers });
+        const data = await res.json().catch(() => null);
+
+        if (!res.ok || !data || !data.success) {
+            throw new Error((data && data.error) || ("HTTP " + res.status));
+        }
+
+        const draft = data.draft || {};
+        const entries = Array.isArray(draft.entries) ? draft.entries : [];
+        if (!entries.length) {
+            throw new Error("La sesión no contiene pilotos que se puedan clasificar.");
+        }
+
+        const confirmed = await showAppConfirm(
+            "Importar resultados del servidor",
+            `Sesión: ${data.sessionFile || "—"} · ${draft.track || "circuito desconocido"}\n` +
+            `Pilotos detectados: ${entries.length}\n` +
+            (data.poleLap ? `Pole detectada: ${data.poleLap.driver}\n` : "") +
+            "\nSe rellenarán el orden de llegada" + (data.poleLap ? ", la vuelta rápida y la pole" : " y la vuelta rápida") +
+            " de la carrera seleccionada arriba. No se guarda nada hasta que pulses «Guardar Resultados de Carrera».",
+            "Rellenar tabla",
+            "Cancelar"
+        );
+        if (!confirmed) return;
+
+        // Map the in-game names to the official roster (accent/case-insensitive).
+        const known = new Map();
+        getAllDriverList().forEach((d) => {
+            if (d && d.driver) known.set(importDriverKey(d.driver), d.driver);
+        });
+
+        const tableList = [];
+        const unmatched = [];
+        entries.forEach((entry) => {
+            const official = known.get(importDriverKey(entry.driver));
+            const driver = official || entry.driver;
+            if (!official) unmatched.push(entry.driver);
+            const status = entry.status === "DSQ" ? "DSQ" : (entry.status === "DNF" ? "DNF" : "FINISHED");
+            tableList.push({
+                driver: driver,
+                team: getDriverTeam(driver),
+                status: status
+            });
+        });
+
+        renderRacePositionsTable(tableList);
+
+        // Fastest lap of the race, when the session reported one.
+        if (draft.fastestLap && draft.fastestLap.ms) {
+            const flName = known.get(importDriverKey(draft.fastestLap.driver)) || draft.fastestLap.driver;
+            populateDriverSelect(adminFastestDriver, flName, "-- Seleccionar Piloto con Vuelta Rápida --");
+            if (adminFastestTime) adminFastestTime.value = ltMsToLapTime(draft.fastestLap.ms);
+        }
+
+        // Pole, taken from the qualifying session that belongs to this race.
+        if (data.poleLap && data.poleLap.ms) {
+            const poleName = known.get(importDriverKey(data.poleLap.driver)) || data.poleLap.driver;
+            populateDriverSelect(adminPoleDriver, poleName, "-- Seleccionar Piloto en Pole --");
+            if (adminPoleTime) adminPoleTime.value = ltMsToLapTime(data.poleLap.ms);
+        }
+
+        showRaceImportBanner(draft, unmatched, data.poleLap, data.poleSession);
+    } catch (err) {
+        console.error("Error importing race results:", err);
+        showRaceImportError("No se pudo importar: " + (err && err.message ? err.message : err));
+    } finally {
+        adminImportRaceResultsBtn.disabled = false;
+        adminImportRaceResultsBtn.innerHTML = originalLabel;
+    }
+}
+
+// Modal listing the archived races so the admin picks the exact one (useful when
+// the newest session is a test). Reuses the shared confirm-overlay styling.
+function showRaceImportPickerModal(sessions) {
+    let overlay = document.getElementById("raceImportPickerModal");
+    if (!overlay) {
+        overlay = document.createElement("div");
+        overlay.id = "raceImportPickerModal";
+        overlay.className = "custom-confirm-overlay";
+        document.body.appendChild(overlay);
+    }
+
+    const items = sessions.map((s, index) => {
+        const isRace = s.type === "RACE";
+        const badge = isRace
+            ? '<i data-lucide="flag" aria-hidden="true"></i> CARRERA'
+            : (s.type === "QUALIFY" ? '<i data-lucide="timer" aria-hidden="true"></i> CLASIFICACIÓN' : escapeHtml(String(s.type)));
+        const track = s.track ? escapeHtml(String(s.track)) : "Circuito sin identificar";
+        const entrants = (s.track && s.entrants) ? ` · ${s.entrants} pilotos` : "";
+        return `<button type="button" class="race-import-pick-item${index === 0 ? " is-latest" : ""}" data-session="${escapeHtml(String(s.name))}">
+            <span class="race-import-pick-badge ${isRace ? "is-race" : ""}">${badge}</span>
+            <span class="race-import-pick-date">${escapeHtml(formatSessionStamp(s.stamp))}</span>
+            ${index === 0 ? '<span class="race-import-pick-latest">MÁS RECIENTE</span>' : ""}
+            <span class="race-import-pick-track"><i data-lucide="map-pin" aria-hidden="true"></i> ${track}${entrants}</span>
+            <span class="race-import-pick-name">${escapeHtml(String(s.name))}</span>
+        </button>`;
+    }).join("");
+
+    overlay.innerHTML = `
+        <div class="custom-confirm-card race-import-picker-card" role="dialog" aria-modal="true">
+            <div class="custom-confirm-header">
+                <span class="custom-confirm-icon"><i data-lucide="download" aria-hidden="true"></i></span>
+                <h3 class="custom-confirm-title">Importar sesión del servidor</h3>
+            </div>
+            <div class="custom-confirm-body">
+                <p>Elige la sesión que quieres importar. Coge la <strong>CARRERA</strong> correcta para no traerte una sesión de pruebas.</p>
+                <div class="race-import-pick-list">${items}</div>
+            </div>
+            <div class="custom-confirm-actions">
+                <button type="button" class="btn btn-secondary btn-sm" id="raceImportPickerCancel">Cancelar</button>
+            </div>
+        </div>
+    `;
+    overlay.classList.add("active");
+    refreshIcons();
+
+    const close = () => overlay.classList.remove("active");
+    const cancelBtn = overlay.querySelector("#raceImportPickerCancel");
+    if (cancelBtn) cancelBtn.onclick = (e) => { e.stopPropagation(); close(); };
+    overlay.onclick = (e) => { if (e.target === overlay) close(); };
+    overlay.querySelectorAll(".race-import-pick-item").forEach((btn) => {
+        btn.onclick = (e) => {
+            e.stopPropagation();
+            close();
+            runRaceImport(btn.dataset.session);
+        };
+    });
+}
+
+// Opens the session picker (falls back to the latest race if the list is empty).
+async function openRaceImportPicker() {
+    if (!adminImportRaceResultsBtn) return;
+
+    const originalLabel = adminImportRaceResultsBtn.innerHTML;
+    adminImportRaceResultsBtn.disabled = true;
+    adminImportRaceResultsBtn.innerHTML = "⏳ Consultando servidor...";
+
+    try {
+        await ensureAdminSession();
+        const headers = await getAdminApiHeaders();
+        const res = await fetch("/api/admin/results/sessions", { headers });
+        const data = await res.json().catch(() => null);
+
+        if (!res.ok || !data || !data.success) {
+            throw new Error((data && data.error) || ("HTTP " + res.status));
+        }
+
+        // Only races carry a classification to import.
+        const sessions = (Array.isArray(data.sessions) ? data.sessions : []).filter((s) => s.type === "RACE");
+        if (!sessions.length) {
+            throw new Error("El servidor no tiene ninguna carrera archivada.");
+        }
+
+        showRaceImportPickerModal(sessions);
+    } catch (err) {
+        console.error("Error listing sessions:", err);
+        showRaceImportError("No se pudo consultar el servidor: " + (err && err.message ? err.message : err));
+    } finally {
+        adminImportRaceResultsBtn.disabled = false;
+        adminImportRaceResultsBtn.innerHTML = originalLabel;
+    }
+}
+
+if (adminImportRaceResultsBtn) {
+    adminImportRaceResultsBtn.addEventListener("click", openRaceImportPicker);
 }
 
 // --- Dynamic Standings & Points Calculation Engine ---
@@ -12051,123 +12292,199 @@ async function recalculateAndSyncStandings(racesMap = raceResults) {
     return newStandings;
 }
 
+// -------------------------------------------------------------
+// RACE RESULTS SAVE (shared by the form and the "finish & next" button)
+// -------------------------------------------------------------
+// Reads the editor, validates it and persists the race. Returns true when the
+// race was saved and false when validation stopped it, so a caller can chain.
+async function persistRaceResultsFromEditor(raceKey, chosenStatus) {
+    if (!raceKey) return false;
+
+    const fastestDriver = adminFastestDriver ? adminFastestDriver.value : "";
+    const fastestTime = adminFastestTime ? adminFastestTime.value.trim() : "";
+    if (!fastestDriver || !fastestTime) {
+        if (raceResultsSaveNotice) {
+            raceResultsSaveNotice.textContent = "Debes seleccionar un piloto y especificar el tiempo de la Vuelta Rápida.";
+            raceResultsSaveNotice.style.color = "#f85149";
+        }
+        return false;
+    }
+
+    const poleDriver = adminPoleDriver ? adminPoleDriver.value : "";
+    const poleTime = adminPoleTime ? adminPoleTime.value.trim() : "";
+    const driverDay = adminDriverDay ? adminDriverDay.value : "";
+    const raceDate = adminRaceDateInput ? adminRaceDateInput.value.trim() : "";
+    const replayUrl = adminRaceReplayUrl ? adminRaceReplayUrl.value.trim() : "";
+
+    const positionRows = adminRacePositionsBody ? adminRacePositionsBody.querySelectorAll("tr") : [];
+    const drivers = [];
+    let winnerDriver = "";
+
+    positionRows.forEach((row, idx) => {
+        const driverSelect = row.querySelector(".race-driver-select");
+        const teamVal = row.querySelector(".race-team-val");
+        const statusSelect = row.querySelector(".race-status-select");
+
+        const driverName = driverSelect ? driverSelect.value.trim() : "";
+        const teamName = teamVal ? teamVal.value.trim() : getDriverTeam(driverName);
+        const statusName = statusSelect ? statusSelect.value.trim() : "FINISHED";
+
+        if (driverName) {
+            if (idx === 0) winnerDriver = driverName;
+            drivers.push({
+                pos: idx + 1,
+                driver: driverName,
+                team: teamName || getDriverTeam(driverName),
+                status: statusName
+            });
+        }
+    });
+
+    if (drivers.length === 0) {
+        if (raceResultsSaveNotice) {
+            raceResultsSaveNotice.textContent = "Añade al menos un piloto en el orden de llegada.";
+            raceResultsSaveNotice.style.color = "#f85149";
+        }
+        return false;
+    }
+
+    const meta = seasonRacesMeta[raceKey] || {
+        round: "ROUND",
+        title: raceKey.toUpperCase(),
+        location: raceKey.toUpperCase(),
+        date: raceDate || "TBA"
+    };
+
+    const status = chosenStatus || (adminRaceStatusSelect ? adminRaceStatusSelect.value : "COMPLETED");
+
+    const existingReplayUrl = (raceResults[raceKey] && raceResults[raceKey].replayUrl) ? raceResults[raceKey].replayUrl : ((seasonRacesMeta[raceKey] && seasonRacesMeta[raceKey].replayUrl) ? seasonRacesMeta[raceKey].replayUrl : "");
+    const finalReplayUrl = replayUrl || existingReplayUrl;
+
+    const updatedRace = {
+        round: meta.round,
+        title: meta.title,
+        location: meta.location,
+        date: raceDate || meta.date,
+        status: status,
+        winner: winnerDriver || drivers[0].driver,
+        pole: poleDriver && poleTime ? `${poleDriver} · ${poleTime}` : (poleDriver || "TBA"),
+        fastest: `${fastestDriver} · ${fastestTime}`,
+        driverDay: driverDay || winnerDriver || drivers[0].driver,
+        replayUrl: finalReplayUrl,
+        drivers: drivers
+    };
+
+    try {
+        if (raceResultsSaveNotice) {
+            raceResultsSaveNotice.textContent = "Guardando resultados, actualizando calendario y recalculando clasificación...";
+            raceResultsSaveNotice.style.color = "var(--gold)";
+        }
+        await setDoc(doc(db, "carreras", raceKey), updatedRace);
+
+        raceResults[raceKey] = updatedRace;
+
+        // If marked as UPCOMING / PRÓXIMA, automatically ensure all previous races are marked as COMPLETED
+        if (status === "UPCOMING") {
+            await ensurePreviousRacesCompletedForNextRace(raceKey, true);
+        } else {
+            // Automatically synchronize calendar progression & update hero countdown
+            await syncCalendarAndNextRace(true);
+            // Automatically recalculate points & standings for drivers and teams
+            await recalculateAndSyncStandings(raceResults);
+        }
+
+        populateRaceResultsEditor(raceKey);
+        return true;
+    } catch (err) {
+        console.error("Error saving race to Firestore:", err);
+        if (raceResultsSaveNotice) {
+            raceResultsSaveNotice.textContent = "Error al guardar en Firestore: " + err.message;
+            raceResultsSaveNotice.style.color = "#f85149";
+        }
+        return false;
+    }
+}
+window.persistRaceResultsFromEditor = persistRaceResultsFromEditor;
+
+// Plain save: persists the selected race with the status chosen in the selector.
 if (raceResultsForm) {
     raceResultsForm.addEventListener("submit", async (e) => {
         e.preventDefault();
         const raceKey = adminSelectRace ? adminSelectRace.value : "";
         if (!raceKey) return;
 
-        const fastestDriver = adminFastestDriver ? adminFastestDriver.value : "";
-        const fastestTime = adminFastestTime ? adminFastestTime.value.trim() : "";
-        if (!fastestDriver || !fastestTime) {
-            if (raceResultsSaveNotice) {
-                raceResultsSaveNotice.textContent = "⚠️ Debes seleccionar un piloto y especificar el tiempo de la Vuelta Rápida.";
-                raceResultsSaveNotice.style.color = "#f85149";
-            }
-            return;
-        }
-
-        const poleDriver = adminPoleDriver ? adminPoleDriver.value : "";
-        const poleTime = adminPoleTime ? adminPoleTime.value.trim() : "";
-        const driverDay = adminDriverDay ? adminDriverDay.value : "";
-        const raceDate = adminRaceDateInput ? adminRaceDateInput.value.trim() : "";
-        const replayUrl = adminRaceReplayUrl ? adminRaceReplayUrl.value.trim() : "";
-
-        const positionRows = adminRacePositionsBody ? adminRacePositionsBody.querySelectorAll("tr") : [];
-        const drivers = [];
-        let winnerDriver = "";
-
-        positionRows.forEach((row, idx) => {
-            const driverSelect = row.querySelector(".race-driver-select");
-            const teamVal = row.querySelector(".race-team-val");
-            const statusSelect = row.querySelector(".race-status-select");
-
-            const driverName = driverSelect ? driverSelect.value.trim() : "";
-            const teamName = teamVal ? teamVal.value.trim() : getDriverTeam(driverName);
-            const statusName = statusSelect ? statusSelect.value.trim() : "FINISHED";
-
-            if (driverName) {
-                if (idx === 0) winnerDriver = driverName;
-                drivers.push({
-                    pos: idx + 1,
-                    driver: driverName,
-                    team: teamName || getDriverTeam(driverName),
-                    status: statusName
-                });
-            }
-        });
-
-        if (drivers.length === 0) {
-            if (raceResultsSaveNotice) {
-                raceResultsSaveNotice.textContent = "⚠️ Añade al menos un piloto en el orden de llegada.";
-                raceResultsSaveNotice.style.color = "#f85149";
-            }
-            return;
-        }
-
-        const meta = seasonRacesMeta[raceKey] || {
-            round: "ROUND",
-            title: raceKey.toUpperCase(),
-            location: raceKey.toUpperCase(),
-            date: raceDate || "TBA"
-        };
-
         const chosenStatus = adminRaceStatusSelect ? adminRaceStatusSelect.value : "COMPLETED";
+        const saved = await persistRaceResultsFromEditor(raceKey, chosenStatus);
+        if (!saved || !raceResultsSaveNotice) return;
 
-        const existingReplayUrl = (raceResults[raceKey] && raceResults[raceKey].replayUrl) ? raceResults[raceKey].replayUrl : ((seasonRacesMeta[raceKey] && seasonRacesMeta[raceKey].replayUrl) ? seasonRacesMeta[raceKey].replayUrl : "");
-        const finalReplayUrl = replayUrl || existingReplayUrl;
+        const meta = seasonRacesMeta[raceKey] || { title: raceKey.toUpperCase() };
+        const prevIndex = SEASON_RACE_ORDER.indexOf(raceKey) - 1;
+        const prevTitle = prevIndex >= 0 ? (seasonRacesMeta[SEASON_RACE_ORDER[prevIndex]]?.title || SEASON_RACE_ORDER[prevIndex].toUpperCase()) : null;
+        raceResultsSaveNotice.textContent = chosenStatus === "UPCOMING" && prevTitle
+            ? `✓ ${meta.title} guardada como PRÓXIMA. Carrera anterior (${prevTitle}) marcada como FINALIZADA.`
+            : `✓ Resultados de ${meta.title} guardados. Calendario y próxima carrera actualizados.`;
+        raceResultsSaveNotice.style.color = "#3fb950";
+        setTimeout(() => { if (raceResultsSaveNotice) raceResultsSaveNotice.textContent = ""; }, 4000);
+    });
+}
 
-        const updatedRace = {
-            round: meta.round,
-            title: meta.title,
-            location: meta.location,
-            date: raceDate || meta.date,
-            status: chosenStatus,
-            winner: winnerDriver || drivers[0].driver,
-            pole: poleDriver && poleTime ? `${poleDriver} · ${poleTime}` : (poleDriver || "TBA"),
-            fastest: `${fastestDriver} · ${fastestTime}`,
-            driverDay: driverDay || winnerDriver || drivers[0].driver,
-            replayUrl: finalReplayUrl,
-            drivers: drivers
-        };
+// One-click "finish this race and set the next one as upcoming": saves the
+// selected race as COMPLETED and advances the calendar in a single action, so
+// the usual two steps (mark finished, then pick the next) become one.
+async function finishRaceAndAdvance() {
+    const raceKey = (adminSelectRace && adminSelectRace.value) ? adminSelectRace.value : "";
+    if (!raceKey) return;
 
-        try {
-            if (raceResultsSaveNotice) {
-                raceResultsSaveNotice.textContent = "Guardando resultados, actualizando calendario y recalculando clasificación...";
-                raceResultsSaveNotice.style.color = "var(--gold)";
-            }
-            await setDoc(doc(db, "carreras", raceKey), updatedRace);
+    const idx = SEASON_RACE_ORDER.indexOf(raceKey);
+    const nextKey = (idx >= 0 && idx + 1 < SEASON_RACE_ORDER.length) ? SEASON_RACE_ORDER[idx + 1] : null;
+    const meta = seasonRacesMeta[raceKey] || { title: raceKey.toUpperCase() };
+    const nextMeta = nextKey ? (seasonRacesMeta[nextKey] || { title: nextKey.toUpperCase() }) : null;
 
-            raceResults[raceKey] = updatedRace;
+    const confirmed = await showAppConfirm(
+        "Finalizar carrera y pasar a la siguiente",
+        nextMeta
+            ? `Se guardará ${meta.title} como FINALIZADA y ${nextMeta.title} pasará a ser la PRÓXIMA (se actualizan calendario, portada y clasificación).`
+            : `${meta.title} es la última cita de la temporada: se guardará como FINALIZADA y se cerrará el calendario.`,
+        "Finalizar y avanzar",
+        "Cancelar"
+    );
+    if (!confirmed) return;
 
-            // If marked as UPCOMING / PRÓXIMA, automatically ensure all previous races are marked as COMPLETED
-            if (chosenStatus === "UPCOMING") {
-                await ensurePreviousRacesCompletedForNextRace(raceKey, true);
-            } else {
-                // Automatically synchronize calendar progression & update hero countdown
-                await syncCalendarAndNextRace(true);
-                // Automatically recalculate points & standings for drivers and teams
-                await recalculateAndSyncStandings(raceResults);
-            }
+    // Force COMPLETED regardless of the selector, then advance to the next round.
+    if (adminRaceStatusSelect) adminRaceStatusSelect.value = "COMPLETED";
 
-            populateRaceResultsEditor(raceKey);
+    const saved = await persistRaceResultsFromEditor(raceKey, "COMPLETED");
+    if (!saved) return;
 
-            if (raceResultsSaveNotice) {
-                const prevIndex = SEASON_RACE_ORDER.indexOf(raceKey) - 1;
-                const prevTitle = prevIndex >= 0 ? (seasonRacesMeta[SEASON_RACE_ORDER[prevIndex]]?.title || SEASON_RACE_ORDER[prevIndex].toUpperCase()) : null;
-                raceResultsSaveNotice.textContent = chosenStatus === "UPCOMING" && prevTitle
-                    ? `✓ ${meta.title} guardada como PRÓXIMA. Carrera anterior (${prevTitle}) marcada como FINALIZADA.`
-                    : `✓ Resultados de ${meta.title} guardados. Calendario y próxima carrera actualizados.`;
-                raceResultsSaveNotice.style.color = "#3fb950";
-                setTimeout(() => { if (raceResultsSaveNotice) raceResultsSaveNotice.textContent = ""; }, 4000);
-            }
-        } catch (err) {
-            console.error("Error saving race to Firestore:", err);
-            if (raceResultsSaveNotice) {
-                raceResultsSaveNotice.textContent = "Error al guardar en Firestore: " + err.message;
-                raceResultsSaveNotice.style.color = "#f85149";
-            }
+    try {
+        if (nextKey) {
+            await ensurePreviousRacesCompletedForNextRace(nextKey, true);
         }
+        populateRaceResultsEditor(raceKey);
+        if (typeof populateAdminForms === "function") populateAdminForms();
+
+        if (raceResultsSaveNotice) {
+            raceResultsSaveNotice.textContent = nextMeta
+                ? `✓ ${meta.title} finalizada. Próxima carrera: ${nextMeta.title}.`
+                : `✓ ${meta.title} finalizada. Temporada completada.`;
+            raceResultsSaveNotice.style.color = "#3fb950";
+            setTimeout(() => { if (raceResultsSaveNotice) raceResultsSaveNotice.textContent = ""; }, 5000);
+        }
+    } catch (err) {
+        console.error("Error advancing to the next race:", err);
+        if (raceResultsSaveNotice) {
+            raceResultsSaveNotice.textContent = "Error al avanzar a la siguiente carrera: " + err.message;
+            raceResultsSaveNotice.style.color = "#f85149";
+        }
+    }
+}
+window.finishRaceAndAdvance = finishRaceAndAdvance;
+
+if (adminFinishNextRaceBtn) {
+    adminFinishNextRaceBtn.addEventListener("click", (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        finishRaceAndAdvance();
     });
 }
 
@@ -12341,7 +12658,7 @@ if (adminRaceStatusSelect) {
         const isComp = val === "COMPLETED";
         if (adminRaceStatusBadge) {
             adminRaceStatusBadge.className = `admin-status-pill ${isComp ? "status-completed" : "status-upcoming"}`;
-            adminRaceStatusBadge.textContent = isComp ? "🏁 FINALIZADA / ACABADA" : "⏳ PRÓXIMA / PENDIENTE";
+            adminRaceStatusBadge.textContent = isComp ? "FINALIZADA / ACABADA" : "⏳ PRÓXIMA / PENDIENTE";
         }
         if (adminToggleRaceStatusBtnLabel) {
             adminToggleRaceStatusBtnLabel.textContent = isComp ? "Marcar como Pendiente" : "Marcar como Acabada";
@@ -13270,6 +13587,11 @@ function renderUserAuthState(user) {
         if (userProfileName) userProfileName.textContent = displayName;
         if (userProfileEmail) userProfileEmail.textContent = user.email || "";
 
+        // Opened directly on #perfil: show the view once the session is known.
+        if (window.location.hash === "#perfil" && typeof openProfileView === "function") {
+            openProfileView();
+        }
+
         if (userProfileStatusVal) {
             if (isAdmin) {
                 userProfileStatusVal.textContent = dict.auth && dict.auth.statusAdmin ? dict.auth.statusAdmin : "ADMINISTRADOR";
@@ -13430,14 +13752,10 @@ if (authHeaderBtn) {
     authHeaderBtn.addEventListener("click", (e) => {
         e.stopPropagation();
         if (activeUserAuth) {
-            // Logged in: toggle user profile menu
-            if (!userAuthDropdown) return;
-            const isOpen = userAuthDropdown.classList.contains("is-open");
+            // Logged in: the profile is now a full view, not a dropdown.
             closeAllDropdowns();
-            if (!isOpen) {
-                userAuthDropdown.classList.add("is-open");
-                authHeaderBtn.setAttribute("aria-expanded", "true");
-            }
+            authHeaderBtn.setAttribute("aria-expanded", "false");
+            openProfileView();
         } else {
             // Not logged in: open login modal
             openUserAuthModal("login");
@@ -13455,8 +13773,172 @@ if (userLogoutBtn) {
         LocalAuthStore.logout();
         renderUserAuthState(null);
         closeAllDropdowns();
+        closeProfileView("#home");
     });
 }
+
+// -------------------------------------------------------------
+// PROFILE VIEW (full page, opened from the avatar — never a dropdown)
+// -------------------------------------------------------------
+// The old dropdown content is relocated here once, on load, so every existing id
+// and event listener keeps working while the layout becomes a proper page.
+
+// Lucide icons are rendered by hand because this view is built at runtime; the
+// helper re-scans the document after every dynamic update.
+function refreshIcons() {
+    try {
+        if (typeof lucide !== "undefined" && lucide.createIcons) lucide.createIcons();
+    } catch (e) { /* icons are decorative: never break the view */ }
+}
+window.refreshIcons = refreshIcons;
+
+// Icons are also injected through dynamic templates all over the app, so a small
+// observer re-renders Lucide whenever a fresh "<i data-lucide>" node appears.
+// It only watches <i> elements, so the <svg> Lucide produces cannot loop.
+function setupIconAutoRender() {
+    if (typeof MutationObserver === "undefined" || typeof lucide === "undefined") return;
+    let scheduled = false;
+    const run = () => { scheduled = false; refreshIcons(); };
+    const observer = new MutationObserver((mutations) => {
+        for (const mutation of mutations) {
+            for (const node of mutation.addedNodes) {
+                if (node.nodeType !== 1) continue;
+                const hasIcon = (node.matches && node.matches("i[data-lucide]"))
+                    || (node.querySelector && node.querySelector("i[data-lucide]"));
+                if (hasIcon) {
+                    if (!scheduled) { scheduled = true; setTimeout(run, 25); }
+                    return;
+                }
+            }
+        }
+    });
+    observer.observe(document.documentElement, { childList: true, subtree: true });
+}
+if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", setupIconAutoRender);
+} else {
+    setupIconAutoRender();
+}
+
+function initProfileView() {
+    const view = document.getElementById("profileView");
+    const menu = document.getElementById("userProfileMenu");
+    if (!view || !menu) return;
+
+    const identitySlot = document.getElementById("profileIdentitySlot");
+    const claimSlot = document.getElementById("profileClaimSlot");
+    const settingsSlot = document.getElementById("profileSettingsSlot");
+    const sessionSlot = document.getElementById("profileSessionSlot");
+    const cardEditorSlot = document.getElementById("profileCardEditorSlot");
+
+    const identity = menu.querySelector(".user-profile-header-card");
+    if (identity && identitySlot) identitySlot.appendChild(identity);
+
+    // The PROFILE box holds the verification card.
+    const profileBox = menu.querySelector(".profile-section-box:not(.settings-section-box)");
+    if (profileBox) {
+        const claimBox = profileBox.querySelector("#userClaimBox");
+        if (claimBox && claimSlot) claimSlot.appendChild(claimBox);
+    }
+
+    // The SETTINGS box splits into "Ajustes" (language/timezone) and "Sesión".
+    const settingsBox = menu.querySelector(".settings-section-box");
+    if (settingsBox) {
+        settingsBox.querySelectorAll(".setting-row-item").forEach((row) => {
+            if (settingsSlot) settingsSlot.appendChild(row);
+        });
+        ["#userUnlinkDriverBtn", "#userAdminShortcut", "#userLogoutBtn"].forEach((sel) => {
+            const node = settingsBox.querySelector(sel);
+            if (node && sessionSlot) sessionSlot.appendChild(node);
+        });
+    }
+
+    // The card customizer lives inline here, not in its own modal any more.
+    const cardOverlay = document.getElementById("cardEditorModalOverlay");
+    if (cardOverlay && cardEditorSlot) {
+        const preview = cardOverlay.querySelector(".card-editor-preview-container");
+        if (preview) cardEditorSlot.appendChild(preview);
+    }
+    const cardForm = document.getElementById("userCardEditForm");
+    if (cardForm && cardEditorSlot) cardEditorSlot.appendChild(cardForm);
+    if (cardOverlay) {
+        cardOverlay.style.display = "none";
+        cardOverlay.setAttribute("aria-hidden", "true");
+    }
+
+    // The dropdown shell is now empty and unused.
+    menu.style.display = "none";
+    menu.setAttribute("aria-hidden", "true");
+
+    // Section switching.
+    const navItems = view.querySelectorAll(".profile-nav-item");
+    const panels = view.querySelectorAll(".profile-panel");
+    const showPanel = (name) => {
+        panels.forEach((p) => { p.style.display = p.getAttribute("data-profile-panel") === name ? "block" : "none"; });
+        navItems.forEach((b) => b.classList.toggle("is-active", b.getAttribute("data-profile-panel") === name));
+        view.setAttribute("data-active-panel", name);
+    };
+    navItems.forEach((btn) => {
+        btn.addEventListener("click", () => showPanel(btn.getAttribute("data-profile-panel")));
+    });
+    showPanel("perfil");
+    window.showProfilePanel = showPanel;
+
+    const backBtn = document.getElementById("profileBackBtn");
+    if (backBtn) backBtn.addEventListener("click", () => closeProfileView("#home"));
+
+    refreshIcons();
+}
+
+function openProfileView() {
+    const view = document.getElementById("profileView");
+    const main = document.getElementById("mainSiteContent");
+    const fantasyView = document.getElementById("fantasyView");
+    if (!view) return;
+    if (fantasyView) fantasyView.style.display = "none";
+    if (main) main.style.display = "none";
+    view.style.display = "block";
+    view.setAttribute("aria-hidden", "false");
+    closeAllDropdowns();
+    const navLinks = document.querySelector(".nav-links");
+    if (navLinks) navLinks.classList.remove("mobile-open", "active");
+    try {
+        if (window.location.hash !== "#perfil") window.history.pushState(null, "", "#perfil");
+    } catch (e) {
+        try { window.location.hash = "#perfil"; } catch (err) {}
+    }
+    window.scrollTo({ top: 0, behavior: "smooth" });
+}
+window.openProfileView = openProfileView;
+
+function closeProfileView(targetAnchor) {
+    const view = document.getElementById("profileView");
+    const main = document.getElementById("mainSiteContent");
+    if (view) { view.style.display = "none"; view.setAttribute("aria-hidden", "true"); }
+    if (main) main.style.display = "block";
+    if (targetAnchor) {
+        try {
+            if (window.location.hash !== targetAnchor) window.location.hash = targetAnchor;
+        } catch (e) {}
+    }
+}
+window.closeProfileView = closeProfileView;
+
+initProfileView();
+
+// Deep link + back/forward: keep the profile view in sync with #perfil.
+if (window.location.hash === "#perfil" && activeUserAuth) {
+    openProfileView();
+}
+window.addEventListener("hashchange", () => {
+    const view = document.getElementById("profileView");
+    const isOpen = view && view.style.display !== "none";
+    if (window.location.hash === "#perfil") {
+        if (activeUserAuth) openProfileView();
+    } else if (isOpen) {
+        closeProfileView(null);
+    }
+});
 
 // Modal Closers & Tabs
 if (userAuthClose) userAuthClose.addEventListener("click", closeUserAuthModal);
@@ -13754,7 +14236,7 @@ if (userClaimForm) {
 
             if (!matchedDriverData || !matchedDriverDoc || !matchedDriverData.driver) {
                 if (userClaimNotice) {
-                    userClaimNotice.textContent = "❌ Código inválido. Solicita un código válido a hermesalo o adriii.lr en Discord.";
+                    userClaimNotice.textContent = "Código inválido. Solicita un código válido a hermesalo o adriii.lr en Discord.";
                     userClaimNotice.style.color = "#f85149";
                 }
                 return;
@@ -13762,7 +14244,7 @@ if (userClaimForm) {
 
             if (matchedDriverData.claimedByUid && matchedDriverData.claimedByUid !== activeUserAuth.uid) {
                 if (userClaimNotice) {
-                    userClaimNotice.textContent = "❌ Este piloto ya está vinculado a otra cuenta.";
+                    userClaimNotice.textContent = "Este piloto ya está vinculado a otra cuenta.";
                     userClaimNotice.style.color = "#f85149";
                 }
                 return;
@@ -14166,9 +14648,9 @@ function renderAdminVerifyTab(filterTerm = "") {
             <td>${statusBadge}</td>
             <td style="text-align: center;">
                 <div style="display: flex; gap: 4px; justify-content: center;">
-                    <button type="button" class="btn btn-primary btn-sm btn-gen-code" data-pid="${pId}" title="Generar / Renovar Código" style="padding: 3px 8px; font-size: 11px;">⚡</button>
-                    ${p.verificationCode ? `<button type="button" class="btn btn-secondary btn-sm btn-copy-code" data-code="${p.verificationCode}" title="Copiar Código" style="padding: 3px 8px; font-size: 11px;">📋</button>` : ""}
-                    ${(p.verificationCode || isDriverVer) ? `<button type="button" class="btn btn-danger-outline btn-sm btn-revoke-code" data-pid="${pId}" title="Revocar Código / Desvincular" style="padding: 3px 8px; font-size: 11px;">🗑️</button>` : ""}
+                    <button type="button" class="btn btn-primary btn-sm btn-gen-code" data-pid="${pId}" title="Generar / Renovar Código" style="padding: 3px 8px; font-size: 11px;"><i data-lucide="key-round" aria-hidden="true"></i></button>
+                    ${p.verificationCode ? `<button type="button" class="btn btn-secondary btn-sm btn-copy-code" data-code="${p.verificationCode}" title="Copiar Código" style="padding: 3px 8px; font-size: 11px;"><i data-lucide="copy" aria-hidden="true"></i></button>` : ""}
+                    ${(p.verificationCode || isDriverVer) ? `<button type="button" class="btn btn-danger-outline btn-sm btn-revoke-code" data-pid="${pId}" title="Revocar Código / Desvincular" style="padding: 3px 8px; font-size: 11px;"><i data-lucide="ban" aria-hidden="true"></i></button>` : ""}
                 </div>
             </td>
         `;
@@ -14391,18 +14873,19 @@ const editCardTwitter = document.getElementById("editCardTwitter");
 const editCardDiscord = document.getElementById("editCardDiscord");
 const editCardNotice = document.getElementById("editCardNotice");
 
+// The customizer is now embedded in the profile ("Ajustes"), so "open" means go
+// there; the old modal overlay is emptied and hidden by initProfileView().
 function openCardEditorModal() {
-    if (!cardEditorModalOverlay) return;
     if (activeUserData) populateUserCardEditor(activeUserData);
-    cardEditorModalOverlay.classList.add("active");
-    cardEditorModalOverlay.setAttribute("aria-hidden", "false");
-    document.body.style.overflow = "hidden";
+    openProfileView();
+    if (typeof window.showProfilePanel === "function") window.showProfilePanel("ajustes");
+    const editor = document.getElementById("profileCardEditorSlot");
+    if (editor && editor.scrollIntoView) {
+        try { editor.scrollIntoView({ behavior: "smooth", block: "start" }); } catch (e) {}
+    }
 }
 
 function closeCardEditorModal() {
-    if (!cardEditorModalOverlay) return;
-    cardEditorModalOverlay.classList.remove("active");
-    cardEditorModalOverlay.setAttribute("aria-hidden", "true");
     document.body.style.overflow = "";
 }
 
@@ -14506,7 +14989,7 @@ function updateCardLivePreview() {
     }
 
     // Name & Flag
-    if (previewFlag) previewFlag.innerHTML = getFlagHtml(officialFlag || "🏁", 24);
+    if (previewFlag) previewFlag.innerHTML = getFlagHtml(officialFlag || "", 24);
     if (previewDriverName) previewDriverName.textContent = driverName;
     if (previewTeamPill) previewTeamPill.textContent = teamName;
 
@@ -14537,7 +15020,7 @@ function updateCardLivePreview() {
             const pill = document.createElement("span");
             pill.className = "social-pill social-pill-twitch";
             pill.style.borderColor = `${color}60`;
-            pill.textContent = `👾 ${twitchVal.replace("@", "")}`;
+            pill.textContent = `${twitchVal.replace("@", "")}`;
             previewSocialGrid.appendChild(pill);
         }
         if (ytVal) {
@@ -14545,7 +15028,7 @@ function updateCardLivePreview() {
             const pill = document.createElement("span");
             pill.className = "social-pill social-pill-youtube";
             pill.style.borderColor = `${color}60`;
-            pill.textContent = `📺 ${ytVal}`;
+            pill.textContent = `${ytVal}`;
             previewSocialGrid.appendChild(pill);
         }
         if (twVal) {
@@ -14553,7 +15036,7 @@ function updateCardLivePreview() {
             const pill = document.createElement("span");
             pill.className = "social-pill social-pill-twitter";
             pill.style.borderColor = `${color}60`;
-            pill.textContent = `🐦 ${twVal.startsWith("@") ? twVal : "@" + twVal}`;
+            pill.textContent = `${twVal.startsWith("@") ? twVal : "@" + twVal}`;
             previewSocialGrid.appendChild(pill);
         }
         if (dcVal) {
@@ -14561,7 +15044,7 @@ function updateCardLivePreview() {
             const pill = document.createElement("span");
             pill.className = "social-pill social-pill-discord";
             pill.style.borderColor = `${color}60`;
-            pill.textContent = `💬 ${dcVal}`;
+            pill.textContent = `${dcVal}`;
             previewSocialGrid.appendChild(pill);
         }
 
@@ -14607,8 +15090,8 @@ function populateUserCardEditor(data) {
     const driverName = data.claimedDriver || (activeUserData && activeUserData.claimedDriver) || "";
     const officialFlag = getOfficialDriverFlag(driverName);
     const countryName = getCountryNameByFlag(officialFlag);
-    if (editCardFlagDisplay) editCardFlagDisplay.innerHTML = getFlagHtml(officialFlag || "🏁", 24);
-    if (editCardCountryName) editCardCountryName.innerHTML = `${getFlagHtml(officialFlag || "🏁", 18)} <span style="vertical-align: middle; margin-left: 4px;">${countryName}</span>`;
+    if (editCardFlagDisplay) editCardFlagDisplay.innerHTML = getFlagHtml(officialFlag || "", 24);
+    if (editCardCountryName) editCardCountryName.innerHTML = `${getFlagHtml(officialFlag || "", 18)} <span style="vertical-align: middle; margin-left: 4px;">${countryName}</span>`;
 
     const bioCharCounter = document.getElementById("bioCharCounter");
     if (editCardBio) {
@@ -14855,7 +15338,8 @@ if (userCardEditForm) {
             }
 
             if (editCardNotice) {
-                editCardNotice.innerHTML = `✓ ¡Tarjeta de piloto actualizada en Firebase! <button type="button" id="noticeOpenCardBtn" style="background: none; border: none; color: #fce79a; font-weight: bold; text-decoration: underline; cursor: pointer; margin-left: 6px;">👁️ Ver Mi Tarjeta Oficial &rarr;</button>`;
+                editCardNotice.innerHTML = `✓ ¡Tarjeta de piloto actualizada en Firebase! <button type="button" id="noticeOpenCardBtn" style="background: none; border: none; color: #fce79a; font-weight: bold; text-decoration: underline; cursor: pointer; margin-left: 6px;">Ver Mi Tarjeta Oficial &rarr;</button>`;
+                refreshIcons();
                 editCardNotice.style.color = "#10b981";
                 const noticeBtn = document.getElementById("noticeOpenCardBtn");
                 if (noticeBtn) {
@@ -15073,7 +15557,7 @@ function getDriverPriceFluctuation(driverName) {
 
     let trend = "flat";
     let formClass = "trend-flat";
-    let formTag = "➖ Estable";
+    let formTag = "Estable";
 
     const isNonParticipant = latest.race && Array.isArray(latest.race.drivers) && latest.race.drivers.length > 0 && (!latest.race.drivers.some(e => e && e.driver && normalizeDriverKey(e.driver) === normalizeDriverKey(driverName)) || (latest.race.drivers.find(e => e && e.driver && normalizeDriverKey(e.driver) === normalizeDriverKey(driverName))?.status === "DNS"));
 
@@ -15084,15 +15568,15 @@ function getDriverPriceFluctuation(driverName) {
     } else if (delta > 0) {
         trend = "up";
         formClass = "trend-up";
-        if (delta >= 0.5) formTag = `🔥 En Racha (+${lastRacePts} pts en ${lastRaceName})`;
-        else formTag = `📈 Al Alza (+${lastRacePts} pts en ${lastRaceName})`;
+        if (delta >= 0.5) formTag = `En Racha (+${lastRacePts} pts en ${lastRaceName})`;
+        else formTag = `Al Alza (+${lastRacePts} pts en ${lastRaceName})`;
     } else if (delta < 0) {
         trend = "down";
         formClass = "trend-down";
-        if (delta <= -0.4) formTag = `❄️ En Frío (${lastRacePos || '0 pts'} en ${lastRaceName})`;
-        else formTag = `📉 Descuento (${lastRacePos || '0 pts'} en ${lastRaceName})`;
+        if (delta <= -0.4) formTag = `En Frío (${lastRacePos || '0 pts'} en ${lastRaceName})`;
+        else formTag = `Descuento (${lastRacePos || '0 pts'} en ${lastRaceName})`;
     } else {
-        formTag = lastRacePts > 0 ? `⚡ Rentable (${lastRacePts} pts)` : `➖ Valor Estable`;
+        formTag = lastRacePts > 0 ? `Rentable (${lastRacePts} pts)` : `Valor Estable`;
     }
 
     return {
@@ -15120,7 +15604,7 @@ function getTeamPriceFluctuation(teamName) {
             trend: "flat",
             lastRacePts: 0,
             lastRaceName: "Temporada",
-            formTag: "➖ Estable",
+            formTag: "Estable",
             formClass: "trend-flat"
         };
     }
@@ -15190,7 +15674,7 @@ function getTeamPriceFluctuation(teamName) {
 
     let trend = "flat";
     let formClass = "trend-flat";
-    let formTag = "➖ Estable";
+    let formTag = "Estable";
 
     if (teamDriversCount === 0 && latest.race && Array.isArray(latest.race.drivers) && latest.race.drivers.length > 0) {
         trend = "flat";
@@ -15199,15 +15683,15 @@ function getTeamPriceFluctuation(teamName) {
     } else if (delta > 0) {
         trend = "up";
         formClass = "trend-up";
-        if (delta >= 0.6) formTag = `🔥 En Racha (+${lastRacePts} pts en ${lastRaceName})`;
-        else formTag = `📈 Al Alza (+${lastRacePts} pts en ${lastRaceName})`;
+        if (delta >= 0.6) formTag = `En Racha (+${lastRacePts} pts en ${lastRaceName})`;
+        else formTag = `Al Alza (+${lastRacePts} pts en ${lastRaceName})`;
     } else if (delta < 0) {
         trend = "down";
         formClass = "trend-down";
-        if (delta <= -0.4) formTag = `❄️ En Frío (${lastRacePts} pts en ${lastRaceName})`;
-        else formTag = `📉 Descuento (${lastRacePts} pts en ${lastRaceName})`;
+        if (delta <= -0.4) formTag = `En Frío (${lastRacePts} pts en ${lastRaceName})`;
+        else formTag = `Descuento (${lastRacePts} pts en ${lastRaceName})`;
     } else {
-        formTag = lastRacePts > 0 ? `⚡ Rentable (${lastRacePts} pts)` : `➖ Valor Estable`;
+        formTag = lastRacePts > 0 ? `Rentable (${lastRacePts} pts)` : `Valor Estable`;
     }
 
     return {
@@ -15270,7 +15754,7 @@ function renderAdminMarketSentimentWidget() {
     });
 
     const latest = getLatestCompletedRace();
-    const gpName = latest.meta ? `${latest.meta.flag || '🏁'} ${latest.meta.name || latest.meta.code}` : "Temporada Regular";
+    const gpName = latest.meta ? `${latest.meta.flag || ''} ${latest.meta.name || latest.meta.code}` : "Temporada Regular";
 
     const s = getSavedSettings();
     const isFluct = s ? (s.fantasyFluctuationEnabled !== false) : true;
@@ -15283,17 +15767,17 @@ function renderAdminMarketSentimentWidget() {
         </div>
         <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap:10px;">
             <div style="background: rgba(63, 185, 80, 0.08); border: 1px solid rgba(63, 185, 80, 0.25); border-radius: 8px; padding: 10px;">
-                <div style="font-size: 10px; text-transform: uppercase; color: #3fb950; font-weight: 700; margin-bottom: 4px;">🚀 Mayor Subida</div>
+                <div style="font-size: 10px; text-transform: uppercase; color: #3fb950; font-weight: 700; margin-bottom: 4px;">Mayor Subida</div>
                 <div style="font-weight: 700; font-size: 13px; color: #f0f6fc; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${maxUpDriver ? escapeHtml(maxUpDriver.name) : '--'}</div>
                 <div style="font-size: 11px; color: #3fb950; font-weight: 700; margin-top: 2px;">${maxUpDriver ? maxUpDriver.flu.deltaFormatted : '+0.0M€'} (${maxUpDriver ? maxUpDriver.flu.currentPrice.toFixed(1) : 0}M€)</div>
             </div>
             <div style="background: rgba(248, 81, 73, 0.08); border: 1px solid rgba(248, 81, 73, 0.25); border-radius: 8px; padding: 10px;">
-                <div style="font-size: 10px; text-transform: uppercase; color: #f85149; font-weight: 700; margin-bottom: 4px;">📉 Mayor Descuento</div>
+                <div style="font-size: 10px; text-transform: uppercase; color: #f85149; font-weight: 700; margin-bottom: 4px;">Mayor Descuento</div>
                 <div style="font-weight: 700; font-size: 13px; color: #f0f6fc; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${maxDownDriver ? escapeHtml(maxDownDriver.name) : '--'}</div>
                 <div style="font-size: 11px; color: #f85149; font-weight: 700; margin-top: 2px;">${maxDownDriver ? maxDownDriver.flu.deltaFormatted : '+0.0M€'} (${maxDownDriver ? maxDownDriver.flu.currentPrice.toFixed(1) : 0}M€)</div>
             </div>
             <div style="background: rgba(210, 153, 34, 0.08); border: 1px solid rgba(210, 153, 34, 0.25); border-radius: 8px; padding: 10px;">
-                <div style="font-size: 10px; text-transform: uppercase; color: #d29922; font-weight: 700; margin-bottom: 4px;">🏎️ Escudería Destacada</div>
+                <div style="font-size: 10px; text-transform: uppercase; color: #d29922; font-weight: 700; margin-bottom: 4px;">Escudería Destacada</div>
                 <div style="font-weight: 700; font-size: 13px; color: #f0f6fc; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${maxUpTeam ? escapeHtml(maxUpTeam.name) : '--'}</div>
                 <div style="font-size: 11px; color: #d29922; font-weight: 700; margin-top: 2px;">${maxUpTeam ? maxUpTeam.flu.deltaFormatted : '+0.0M€'} (${maxUpTeam ? maxUpTeam.flu.currentPrice.toFixed(1) : 0}M€)</div>
             </div>
@@ -15485,7 +15969,7 @@ window.OFFICIAL_ROUND_10_POINTS = OFFICIAL_ROUND_10_POINTS;
 // Master historical snapshot of Round 10 & Round 11 official fantasy points
 // This protects all earned points across past rounds, allowing drivers to be changed for future rounds without modifying previous results.
 var OFFICIAL_PAST_ROUNDS_SCORES = {
-    "adriangalindomele_gmail_com": {"managerName":"Galindo📸","teamName":"Netanyahu FFC Team","totalBeforeRound13":189,"roundScores":{"nurburgring":73,"hungary":63,"belgium":53}},
+    "adriangalindomele_gmail_com": {"managerName":"Galindo","teamName":"Netanyahu FFC Team","totalBeforeRound13":189,"roundScores":{"nurburgring":73,"hungary":63,"belgium":53}},
     "alexvanocastaneda_gmail_com": {"managerName":"MUNTISEXO33","teamName":"ACRR","totalBeforeRound13":167,"roundScores":{"nurburgring":69,"hungary":25,"belgium":73}},
     "biljjana_hotmail_com": {"managerName":"Sebinho","teamName":"Mi Escudería FFC","totalBeforeRound13":92,"roundScores":{"nurburgring":0,"hungary":51,"belgium":41}},
     "dericktonly_gmail_com": {"managerName":"IWantMozaR5","teamName":"Mi Escudería FFC","totalBeforeRound13":18,"roundScores":{"nurburgring":0,"hungary":0,"belgium":18}},
@@ -16140,7 +16624,7 @@ function renderFantasyHUD() {
     }
     if (budgetSub) {
         if (metrics.remaining < 0) {
-            budgetSub.innerHTML = `<span style="color:#ef4444; font-weight:700;">⚠️ ${isEn ? "Excess: -" : "Exceso: -"}${Math.abs(metrics.remaining).toFixed(1)}M € (${isEn ? "Sell picks" : "Vende fichajes"})</span>`;
+            budgetSub.innerHTML = `<span style="color:#ef4444; font-weight:700;">${isEn ? "Excess: -" : "Exceso: -"}${Math.abs(metrics.remaining).toFixed(1)}M € (${isEn ? "Sell picks" : "Vende fichajes"})</span>`;
         } else {
             budgetSub.textContent = isEn 
                 ? `Spent: ${metrics.spent.toFixed(1)}M € of ${FANTASY_INITIAL_BUDGET.toFixed(1)}M € starting`
@@ -16164,7 +16648,7 @@ function renderFantasyHUD() {
     const rankEl = document.getElementById("fantasyRankPosition");
     const rankSub = document.getElementById("fantasyRankSub");
     if (!isLogged) {
-        if (rankEl) rankEl.textContent = isEn ? "🔒 Log In" : "🔒 Inicia Sesión";
+        if (rankEl) rankEl.textContent = isEn ? "Log In" : "Inicia Sesión";
         if (rankSub) rankSub.textContent = isEn ? "To compete in the league" : "Para competir en la liga";
     } else {
         if (rankSub) rankSub.textContent = isEn ? "Overall Standings" : "Clasificación General";
@@ -16204,9 +16688,9 @@ function renderSlotCard(containerId, slotType, slotIndex, currentItem, pts, isTu
     if (!currentItem) {
         // Empty Slot State
         const label = slotType === "driver" ? (isEn ? `Driver ${slotIndex}` : `Piloto ${slotIndex}`) : (isEn ? "Constructor" : "Constructor");
-        const icon = slotType === "driver" ? "🏎️" : "🏭";
+        const icon = slotType === "driver" ? "" : "";
         const btnText = isLocked 
-            ? (isEn ? "🔒 Market Locked" : "🔒 Mercado Bloqueado") 
+            ? (isEn ? "Market Locked" : "Mercado Bloqueado") 
             : (isLogged ? (isEn ? "Go to Market" : "Ir al Mercado") : (isEn ? "Log In" : "Iniciar Sesión"));
         const btnClick = isLocked 
             ? "handleLockedAction()" 
@@ -16215,7 +16699,7 @@ function renderSlotCard(containerId, slotType, slotIndex, currentItem, pts, isTu
 
         container.innerHTML = `
             <div class="slot-empty-body" onclick="${btnClick}">
-                <div class="slot-empty-icon">${isLocked ? "🔒" : (isLogged ? icon : "🔒")}</div>
+                <div class="slot-empty-icon">${isLocked ? "" : (isLogged ? icon : "")}</div>
                 <div class="slot-empty-title">${isLocked ? `${label} (${isEn ? "Locked" : "Bloqueado"})` : (isLogged ? `+ ${isEn ? "Sign " + label : "Fichar " + label}` : `${label} ${isEn ? "Locked" : "Bloqueado"}`)}</div>
                 <div class="slot-empty-sub">${isLocked ? (isEn ? "Lineups frozen during race" : "Alineaciones congeladas por carrera") : (isLogged ? (isEn ? "Vacant slot available" : "Vacante disponible") : (isEn ? "Log in to sign" : "Inicia sesión para fichar"))}</div>
                 <button type="button" class="slot-empty-btn ${lockBtnClass}">${btnText}</button>
@@ -16231,14 +16715,14 @@ function renderSlotCard(containerId, slotType, slotIndex, currentItem, pts, isTu
             const flu = getDriverPriceFluctuation(currentItem);
             const avatarUrl = driverData && driverData.avatarUrl ? driverData.avatarUrl : null;
             const turboClass = isTurbo ? "is-active" : "";
-            const turboLabel = isTurbo ? (isEn ? "⭐ Turbo Active (x2 Pts)" : "⭐ Turbo Activo (x2 Pts)") : (isEn ? "⭐ Activate Turbo (x2)" : "⭐ Activar Turbo (x2)");
+            const turboLabel = isTurbo ? (isEn ? "Turbo Active (x2 Pts)" : "Turbo Activo (x2 Pts)") : (isEn ? "Activate Turbo (x2)" : "Activar Turbo (x2)");
 
             const sellBtnHtml = isLocked
-                ? `<button type="button" class="slot-sell-btn is-locked" onclick="handleLockedAction()" title="${isEn ? "Market locked during race" : "Mercado bloqueado por carrera"}">🔒 ${isEn ? "Locked" : "Bloqueado"}</button>`
+                ? `<button type="button" class="slot-sell-btn is-locked" onclick="handleLockedAction()" title="${isEn ? "Market locked during race" : "Mercado bloqueado por carrera"}">${isEn ? "Locked" : "Bloqueado"}</button>`
                 : `<button type="button" class="slot-sell-btn" onclick="handleSellSlot('driver${slotIndex}')">✕ ${isEn ? "Sell" : "Vender"}</button>`;
 
             const turboBtnHtml = isLocked
-                ? `<button type="button" class="slot-turbo-btn ${turboClass} is-locked" onclick="handleLockedAction()" title="${isEn ? "Market locked during race" : "Mercado bloqueado por carrera"}">🔒 ${turboLabel}</button>`
+                ? `<button type="button" class="slot-turbo-btn ${turboClass} is-locked" onclick="handleLockedAction()" title="${isEn ? "Market locked during race" : "Mercado bloqueado por carrera"}">${turboLabel}</button>`
                 : `<button type="button" class="slot-turbo-btn ${turboClass}" onclick="handleToggleTurbo('${escapeHtml(currentItem)}')">${turboLabel}</button>`;
 
             container.innerHTML = `
@@ -16249,8 +16733,8 @@ function renderSlotCard(containerId, slotType, slotIndex, currentItem, pts, isTu
                     </div>
                     <div class="slot-avatar-wrap">
                         ${avatarUrl 
-                            ? `<img src="${escapeHtml(avatarUrl)}" class="slot-avatar-img" alt="${escapeHtml(currentItem)}" onerror="this.outerHTML='<div class=\\'slot-team-logo-icon\\'>🏎️</div>'">`
-                            : `<div class="slot-team-logo-icon">🏎️</div>`
+                            ? `<img src="${escapeHtml(avatarUrl)}" class="slot-avatar-img" alt="${escapeHtml(currentItem)}" onerror="this.outerHTML='<div class=\\'slot-team-logo-icon\\'></div>'">`
+                            : `<div class="slot-team-logo-icon"></div>`
                         }
                         <div class="slot-name-block">
                             <div class="slot-item-name" title="${escapeHtml(currentItem)}">${flag} ${escapeHtml(currentItem)}</div>
@@ -16278,7 +16762,7 @@ function renderSlotCard(containerId, slotType, slotIndex, currentItem, pts, isTu
             const price = getConstructorFantasyPrice(currentItem);
             const flu = getTeamPriceFluctuation(currentItem);
             const sellBtnHtml = isLocked
-                ? `<button type="button" class="slot-sell-btn is-locked" onclick="handleLockedAction()" title="${isEn ? "Market locked during race" : "Mercado bloqueado por carrera"}">🔒 ${isEn ? "Locked" : "Bloqueado"}</button>`
+                ? `<button type="button" class="slot-sell-btn is-locked" onclick="handleLockedAction()" title="${isEn ? "Market locked during race" : "Mercado bloqueado por carrera"}">${isEn ? "Locked" : "Bloqueado"}</button>`
                 : `<button type="button" class="slot-sell-btn" onclick="handleSellSlot('team')">✕ ${isEn ? "Sell" : "Vender"}</button>`;
 
             container.innerHTML = `
@@ -16288,7 +16772,7 @@ function renderSlotCard(containerId, slotType, slotIndex, currentItem, pts, isTu
                         ${sellBtnHtml}
                     </div>
                     <div class="slot-avatar-wrap">
-                        <div class="slot-team-logo-icon">🏭</div>
+                        <div class="slot-team-logo-icon"></div>
                         <div class="slot-name-block">
                             <div class="slot-item-name" title="${escapeHtml(currentItem)}">${escapeHtml(currentItem)}</div>
                             <span class="ranking-team-pill ${getTeamClass(currentItem)}"><span class="team-dot"></span>Constructor</span>
@@ -16524,7 +17008,7 @@ function renderFantasyMarketGrid() {
             price,
             flu,
             isOwned,
-            flag: "🏭",
+            flag: "",
             avatarUrl: null
         };
     });
@@ -16585,12 +17069,12 @@ function renderFantasyMarketGrid() {
         let actionBtnHtml = "";
         if (isLocked) {
             if (item.isOwned) {
-                actionBtnHtml = `<button type="button" class="market-action-btn owned-btn is-locked" onclick="handleLockedAction()" title="${isEn ? "Market locked during race" : "Mercado bloqueado por carrera"}">🔒 ${isEn ? "Signed (Locked)" : "Fichado (Bloqueado)"}</button>`;
+                actionBtnHtml = `<button type="button" class="market-action-btn owned-btn is-locked" onclick="handleLockedAction()" title="${isEn ? "Market locked during race" : "Mercado bloqueado por carrera"}">${isEn ? "Signed (Locked)" : "Fichado (Bloqueado)"}</button>`;
             } else {
-                actionBtnHtml = `<button type="button" class="market-action-btn is-locked" onclick="handleLockedAction()" title="${isEn ? "Market locked during race" : "Mercado bloqueado por carrera"}">🔒 ${isEn ? "Market Locked" : "Mercado Bloqueado"}</button>`;
+                actionBtnHtml = `<button type="button" class="market-action-btn is-locked" onclick="handleLockedAction()" title="${isEn ? "Market locked during race" : "Mercado bloqueado por carrera"}">${isEn ? "Market Locked" : "Mercado Bloqueado"}</button>`;
             }
         } else if (!isLogged) {
-            actionBtnHtml = `<button type="button" class="market-action-btn sign-btn" onclick="requireFantasyAuth()" title="${isEn ? "Log in to sign" : "Inicia sesión para fichar"}">🔒 ${isEn ? "Log In to Sign" : "Iniciar Sesión para Fichar"}</button>`;
+            actionBtnHtml = `<button type="button" class="market-action-btn sign-btn" onclick="requireFantasyAuth()" title="${isEn ? "Log in to sign" : "Inicia sesión para fichar"}">${isEn ? "Log In to Sign" : "Iniciar Sesión para Fichar"}</button>`;
         } else if (item.isOwned) {
             actionBtnHtml = `<button type="button" class="market-action-btn owned-btn" onclick="handleSellFromMarket('${item.type}', '${escapeHtml(item.name)}')">${isEn ? "Signed ✓ (Sell)" : "Fichado ✓ (Vender)"}</button>`;
         } else if (isDriver && driverSlotsFull) {
@@ -16607,10 +17091,10 @@ function renderFantasyMarketGrid() {
                 <div class="market-card-top">
                     ${isDriver 
                         ? (item.avatarUrl 
-                            ? `<img src="${escapeHtml(item.avatarUrl)}" class="market-card-avatar" alt="${escapeHtml(item.name)}" onerror="this.outerHTML='<div class=\\'market-card-team-icon\\'>🏎️</div>'">`
-                            : `<div class="market-card-team-icon">🏎️</div>`
+                            ? `<img src="${escapeHtml(item.avatarUrl)}" class="market-card-avatar" alt="${escapeHtml(item.name)}" onerror="this.outerHTML='<div class=\\'market-card-team-icon\\'></div>'">`
+                            : `<div class="market-card-team-icon"></div>`
                         )
-                        : `<div class="market-card-team-icon">🏭</div>`
+                        : `<div class="market-card-team-icon"></div>`
                     }
                     <div class="market-card-info">
                         <div class="market-card-name" title="${escapeHtml(item.name)}">${getFlagHtml(item.flag, 16)} ${escapeHtml(item.name)}</div>
@@ -16772,7 +17256,7 @@ async function renderFantasyLeaderboard() {
             const myRankIndex = teamsList.findIndex(t => t.isUserTeam);
             rankEl.textContent = myRankIndex >= 0 ? `#${myRankIndex + 1} / ${teamsList.length}` : "-";
         } else {
-            rankEl.textContent = isEn ? "🔒 Log In" : "🔒 Inicia Sesión";
+            rankEl.textContent = isEn ? "Log In" : "Inicia Sesión";
         }
     }
 
@@ -16781,7 +17265,7 @@ async function renderFantasyLeaderboard() {
         tbody.innerHTML = `
             <tr>
                 <td colspan="5" style="text-align: center; padding: 48px 20px; color: #94a3b8;">
-                    <div style="font-size: 32px; margin-bottom: 8px;">🏎️</div>
+                    <div style="font-size: 32px; margin-bottom: 8px;"></div>
                     <div style="font-size: 15px; font-weight: 700; color: #f1f5f9; margin-bottom: 4px;">${isEn ? "No registered teams yet" : "Aún no hay escuderías registradas"}</div>
                     <div style="font-size: 13px; color: #64748b;">${isLogged ? (isEn ? "Set up your lineup in 'My Team' to lead the standings!" : "¡Configura tu alineación en 'Mi Escudería' para liderar la clasificación!") : (isEn ? "Log in with your account to create your team and compete in the league." : "Inicia sesión con tu cuenta para crear tu equipo y competir en la liga.")}</div>
                 </td>
@@ -16803,9 +17287,9 @@ async function renderFantasyLeaderboard() {
         const noTeamTxt = isEn ? "No Team" : "Sin Escudería";
         const myTeamBadge = isEn ? "YOUR TEAM" : "TU EQUIPO";
 
-        const d1Chip = t.driver1 ? `<span class="lb-driver-chip ${t.turboDriver === t.driver1 ? 'is-turbo' : ''}">${t.turboDriver === t.driver1 ? '⭐ ' : ''}${escapeHtml(t.driver1)}</span>` : `<span class="lb-driver-chip" style="opacity:0.4;">${vacantTxt}</span>`;
-        const d2Chip = t.driver2 ? `<span class="lb-driver-chip ${t.turboDriver === t.driver2 ? 'is-turbo' : ''}">${t.turboDriver === t.driver2 ? '⭐ ' : ''}${escapeHtml(t.driver2)}</span>` : `<span class="lb-driver-chip" style="opacity:0.4;">${vacantTxt}</span>`;
-        const d3Chip = t.driver3 ? `<span class="lb-driver-chip ${t.turboDriver === t.driver3 ? 'is-turbo' : ''}">${t.turboDriver === t.driver3 ? '⭐ ' : ''}${escapeHtml(t.driver3)}</span>` : `<span class="lb-driver-chip" style="opacity:0.4;">${vacantTxt}</span>`;
+        const d1Chip = t.driver1 ? `<span class="lb-driver-chip ${t.turboDriver === t.driver1 ? 'is-turbo' : ''}">${t.turboDriver === t.driver1 ? '' : ''}${escapeHtml(t.driver1)}</span>` : `<span class="lb-driver-chip" style="opacity:0.4;">${vacantTxt}</span>`;
+        const d2Chip = t.driver2 ? `<span class="lb-driver-chip ${t.turboDriver === t.driver2 ? 'is-turbo' : ''}">${t.turboDriver === t.driver2 ? '' : ''}${escapeHtml(t.driver2)}</span>` : `<span class="lb-driver-chip" style="opacity:0.4;">${vacantTxt}</span>`;
+        const d3Chip = t.driver3 ? `<span class="lb-driver-chip ${t.turboDriver === t.driver3 ? 'is-turbo' : ''}">${t.turboDriver === t.driver3 ? '' : ''}${escapeHtml(t.driver3)}</span>` : `<span class="lb-driver-chip" style="opacity:0.4;">${vacantTxt}</span>`;
         const teamChip = t.team ? `<span class="lb-team-chip ranking-team-pill ${getTeamClass(t.team)}"><span class="team-dot"></span>${escapeHtml(t.team)}</span>` : `<span class="lb-team-chip" style="opacity:0.4;">${noTeamTxt}</span>`;
 
         return `
@@ -17105,12 +17589,12 @@ function setComparatorMode(mode) {
     if (hintText && hintIcon) {
         const isEn = typeof currentLanguage !== "undefined" && currentLanguage === "en";
         if (mode === "mutual") {
-            hintIcon.textContent = "⚖️";
+            hintIcon.textContent = "";
             hintText.innerHTML = isEn
                 ? "<strong>Fair Mode Active:</strong> Evaluating only Grands Prix where both drivers started on track. Absences do not award duel wins to the opponent."
                 : "<strong>Modo Justo activo:</strong> Se analizan exclusivamente las carreras donde ambos compitieron en pista. Las ausencias no otorgan victorias al rival.";
         } else {
-            hintIcon.textContent = "🌐";
+            hintIcon.textContent = "";
             hintText.innerHTML = isEn
                 ? "<strong>Full Season Mode:</strong> Evaluating all 15 rounds of the championship (non-participation counts as an adverse result)."
                 : "<strong>Modo Temporada Completa:</strong> Se evalúan las 15 rondas del campeonato (la no participación cuenta como resultado adverso).";
@@ -17189,7 +17673,7 @@ function populateComparatorDropdowns(allDrivers) {
     if (!selectA || !selectB) return;
 
     const optionsHtml = allDrivers.map((d, index) => {
-        const flag = (typeof getOfficialDriverFlag === "function") ? getOfficialDriverFlag(d.driver) : (d.flag || "🏁");
+        const flag = (typeof getOfficialDriverFlag === "function") ? getOfficialDriverFlag(d.driver) : (d.flag || "");
         const pos = d.pos || (index + 1);
         const pts = d.pts || 0;
         const team = d.team || "FFC";
@@ -17213,7 +17697,7 @@ function renderComparatorPresets(allDrivers) {
     // Preset 1: P1 vs P2 (Title Fight)
     if (allDrivers.length >= 2) {
         presets.push({
-            label: `🏆 ${allDrivers[0].driver} vs ${allDrivers[1].driver}`,
+            label: `${allDrivers[0].driver} vs ${allDrivers[1].driver}`,
             driverA: allDrivers[0].driver,
             driverB: allDrivers[1].driver
         });
@@ -17229,7 +17713,7 @@ function renderComparatorPresets(allDrivers) {
     Object.keys(teamGroups).forEach(team => {
         if (teamGroups[team].length >= 2 && presets.length < 4) {
             presets.push({
-                label: `⚔️ Duelo ${team} (${teamGroups[team][0].driver} vs ${teamGroups[team][1].driver})`,
+                label: `Duelo ${team} (${teamGroups[team][0].driver} vs ${teamGroups[team][1].driver})`,
                 driverA: teamGroups[team][0].driver,
                 driverB: teamGroups[team][1].driver
             });
@@ -17306,8 +17790,8 @@ function renderDriverComparison(driverNameA, driverNameB) {
     if (selectB) selectB.value = compareDriverB;
 
     // Update flag icons in selectors
-    const flagA = (typeof getOfficialDriverFlag === "function") ? getOfficialDriverFlag(compareDriverA) : "🏁";
-    const flagB = (typeof getOfficialDriverFlag === "function") ? getOfficialDriverFlag(compareDriverB) : "🏁";
+    const flagA = (typeof getOfficialDriverFlag === "function") ? getOfficialDriverFlag(compareDriverA) : "";
+    const flagB = (typeof getOfficialDriverFlag === "function") ? getOfficialDriverFlag(compareDriverB) : "";
     const flagElA = document.getElementById("compareSelectFlagA");
     const flagElB = document.getElementById("compareSelectFlagB");
     if (flagElA) flagElA.innerHTML = getFlagHtml(flagA, 20);
@@ -17363,7 +17847,7 @@ function renderComparatorHeroCard(slot, stats, fantasyPrice) {
     const verifiedEl = document.getElementById(`compareVerified${prefix}`);
 
     const driverName = stats.driver;
-    const flag = (typeof getOfficialDriverFlag === "function") ? getOfficialDriverFlag(driverName) : (stats.flag || "🏁");
+    const flag = (typeof getOfficialDriverFlag === "function") ? getOfficialDriverFlag(driverName) : (stats.flag || "");
     const dorsal = (typeof getDriverDorsalNumber === "function") ? getDriverDorsalNumber(driverName) : (stats.dorsal || "#" + (stats.pos || 1));
 
     if (nameEl) nameEl.textContent = driverName;
@@ -17568,7 +18052,7 @@ function computeDriverHeadToHeadDuels(statsA, statsB, mode = "mutual") {
         roundDuels.push({
             roundNum,
             gpName: gp.name || gp.code || `Round ${roundNum}`,
-            flag: gp.flag || (gp.country ? (typeof getOfficialCountryFlag === "function" ? getOfficialCountryFlag(gp.country) : "🏁") : "🏁"),
+            flag: gp.flag || (gp.country ? (typeof getOfficialCountryFlag === "function" ? getOfficialCountryFlag(gp.country) : "") : ""),
             country: gp.country || gp.name,
             raceKey: gp.raceKey,
             isCompleted,
@@ -17985,7 +18469,7 @@ function renderComparatorRoundsTable(statsA, statsB, h2h) {
             <tr class="${isNonMutual ? 'is-non-mutual' : ''}">
                 <td style="font-weight: 800; color: #94a3b8; font-family: 'Barlow Condensed', sans-serif;">R${d.roundNum}</td>
                 <td>
-                    <span style="margin-right: 6px;">${getFlagHtml(d.flag || "🏁", 16)}</span>
+                    <span style="margin-right: 6px;">${getFlagHtml(d.flag || "", 16)}</span>
                     <strong style="color: #f1f5f9;">${escapeHTML(d.gpName)}</strong>
                 </td>
                 <td style="text-align: center;">${dispA}</td>
@@ -18616,16 +19100,16 @@ function renderPublicNewsSection() {
 
         const hasBilingual = (article.title_en && article.title && article.title_en !== article.title) || (article.content_en && article.content && article.content_en !== article.content);
         const bilingualBadge = hasBilingual 
-            ? `<span class="news-card-lang-tag" title="${currentLanguage === 'en' ? 'Bilingual article: Available in Spanish & English' : 'Artículo bilingüe: Disponible en Español e Inglés'}">🌐 ES / EN</span>` 
+            ? `<span class="news-card-lang-tag" title="${currentLanguage === 'en' ? 'Bilingual article: Available in Spanish & English' : 'Artículo bilingüe: Disponible en Español e Inglés'}">ES / EN</span>` 
             : ``;
 
         const editedBadge = article.isEdited
-            ? `<span class="news-card-edited-tag" title="${currentLanguage === 'en' ? 'Article has been edited' : 'Artículo editado'}">✏️ ${currentLanguage === 'en' ? 'Edited' : 'Editado'}</span>`
+            ? `<span class="news-card-edited-tag" title="${currentLanguage === 'en' ? 'Article has been edited' : 'Artículo editado'}">${currentLanguage === 'en' ? 'Edited' : 'Editado'}</span>`
             : ``;
 
         const imageMarkup = article.imageUrl 
-            ? `<img src="${encodeURI(article.imageUrl)}" alt="${encodeURI(title)}" class="news-card-img" loading="lazy" onerror="this.onerror=null; this.parentElement.innerHTML='<div class=\\'news-card-img-fallback\\'><span class=\\'news-fallback-icon\\'>🏎️</span><span class=\\'news-fallback-brand\\'>FORMULA FACTOR</span></div>';">`
-            : `<div class="news-card-img-fallback"><span class="news-fallback-icon">🏎️</span><span class="news-fallback-brand">FORMULA FACTOR</span></div>`;
+            ? `<img src="${encodeURI(article.imageUrl)}" alt="${encodeURI(title)}" class="news-card-img" loading="lazy" onerror="this.onerror=null; this.parentElement.innerHTML='<div class=\\'news-card-img-fallback\\'><span class=\\'news-fallback-icon\\'></span><span class=\\'news-fallback-brand\\'>FORMULA FACTOR</span></div>';">`
+            : `<div class="news-card-img-fallback"><span class="news-fallback-icon"></span><span class="news-fallback-brand">FORMULA FACTOR</span></div>`;
 
         return `
             <article class="news-card" data-article-id="${article.id}" tabindex="0" role="button" aria-label="${currentLanguage === 'en' ? 'Read' : 'Leer'} ${title}">
@@ -18635,7 +19119,7 @@ function renderPublicNewsSection() {
                 </div>
                 <div class="news-card-body">
                     <div class="news-card-date-row">
-                        <span>📅 ${dateFormatted}</span>
+                        <span>${dateFormatted}</span>
                         <span>&bull;</span>
                         <span>⏱️ ${readingTime}</span>
                         ${editedBadge ? `<span>&bull;</span>` + editedBadge : ``}
@@ -18648,7 +19132,7 @@ function renderPublicNewsSection() {
                             <span class="news-author-mini-name">${article.authorName || authorFallback}</span>
                         </div>
                         <div class="news-card-comments-pill">
-                            <span>💬</span>
+                            <span></span>
                             <span>${commentsCount}</span>
                         </div>
                     </div>
@@ -18710,7 +19194,7 @@ window.toggleNewsEditorFullscreen = function() {
     const isFullscreen = card.classList.toggle("is-fullscreen");
     const isEn = typeof currentLanguage !== "undefined" && currentLanguage === "en";
 
-    if (icon) icon.textContent = isFullscreen ? "🗗" : "⛶";
+    if (icon) icon.textContent = isFullscreen ? "" : "⛶";
     if (label) label.textContent = isFullscreen 
         ? (isEn ? "Exit Fullscreen" : "Salir de pantalla completa") 
         : (isEn ? "Fullscreen" : "Pantalla completa");
@@ -19011,7 +19495,7 @@ window.updateEditorWordStats = function() {
             badgeEs.textContent = isEn ? "✓ Completed" : "✓ Listo";
         } else {
             badgeEs.className = "lang-status-badge pending";
-            badgeEs.textContent = isEn ? "⚠️ Incomplete" : "⚠️ Incompleto";
+            badgeEs.textContent = isEn ? "Incomplete" : "Incompleto";
         }
     }
 
@@ -19022,7 +19506,7 @@ window.updateEditorWordStats = function() {
             badgeEn.textContent = isEn ? "✓ Completed" : "✓ Listo";
         } else {
             badgeEn.className = "lang-status-badge pending";
-            badgeEn.textContent = isEn ? "⚠️ Incomplete" : "⚠️ Incompleto";
+            badgeEn.textContent = isEn ? "Incomplete" : "Incompleto";
         }
     }
 
@@ -19413,7 +19897,7 @@ function openSubmitNewsModal(prefillCategory = null) {
     removeCoverImage();
 
     if (modalBadge) modalBadge.textContent = isEn ? "PRESS • FFC REDACTION" : "PRENSA • REDACCIÓN FFC";
-    if (modalTitle) modalTitle.textContent = isEn ? "✍️ ARTICLE EDITOR (BILINGUAL)" : "✍️ REDACTOR DE ARTÍCULO (BILINGÜE)";
+    if (modalTitle) modalTitle.textContent = isEn ? "ARTICLE EDITOR (BILINGUAL)" : "REDACTOR DE ARTÍCULO (BILINGÜE)";
 
     if (statusMsg) {
         statusMsg.textContent = "";
@@ -19435,11 +19919,11 @@ function openSubmitNewsModal(prefillCategory = null) {
         const dict = typeof translations !== "undefined" && translations[currentLanguage] ? translations[currentLanguage] : null;
         const userIsAdmin = isUserAdmin(u);
         if (userIsAdmin) {
-            submitBtn.innerHTML = isEn ? "<span>🚀</span> Publish Official News" : "<span>🚀</span> Publicar Noticia Oficial";
+            submitBtn.innerHTML = isEn ? "<span></span> Publish Official News" : "<span></span> Publicar Noticia Oficial";
         } else {
             submitBtn.innerHTML = (dict && dict.news && dict.news.btnSubmitAction) 
                 ? dict.news.btnSubmitAction 
-                : (isEn ? "<span>🚀</span> Submit for Review" : "<span>🚀</span> Enviar para Revisión");
+                : (isEn ? "<span></span> Submit for Review" : "<span></span> Enviar para Revisión");
         }
     }
 
@@ -19569,14 +20053,14 @@ window.openEditNewsArticleModal = function(articleId) {
     if (draftBadge) draftBadge.style.opacity = "0";
 
     if (modalBadge) modalBadge.textContent = isEn ? "EDITION • FFC PRESS" : "EDICIÓN • PRENSA FFC";
-    if (modalTitle) modalTitle.textContent = isEn ? "✏️ EDIT ARTICLE (BILINGUAL)" : "✏️ EDITAR ARTÍCULO (BILINGÜE)";
+    if (modalTitle) modalTitle.textContent = isEn ? "EDIT ARTICLE (BILINGUAL)" : "EDITAR ARTÍCULO (BILINGÜE)";
 
     if (submitBtn) {
         submitBtn.disabled = false;
         if (userIsAdmin) {
-            submitBtn.innerHTML = isEn ? "<span>💾</span> Save Official Changes" : "<span>💾</span> Guardar Cambios Oficiales";
+            submitBtn.innerHTML = isEn ? "<span></span> Save Official Changes" : "<span></span> Guardar Cambios Oficiales";
         } else {
-            submitBtn.innerHTML = isEn ? "<span>💾</span> Save & Send to Admins" : "<span>💾</span> Guardar y Enviar a Revisión";
+            submitBtn.innerHTML = isEn ? "<span></span> Save & Send to Admins" : "<span></span> Guardar y Enviar a Revisión";
         }
     }
 
@@ -19615,7 +20099,7 @@ function closeSubmitNewsModal() {
     const modalBadge = document.getElementById("newsSubmitModalBadge");
     const modalTitle = document.getElementById("newsSubmitModalTitle");
     if (modalBadge) modalBadge.textContent = isEn ? "PRESS • FFC REDACTION" : "PRENSA • REDACCIÓN FFC";
-    if (modalTitle) modalTitle.textContent = isEn ? "✍️ ARTICLE EDITOR" : "✍️ REDACTOR DE ARTÍCULO";
+    if (modalTitle) modalTitle.textContent = isEn ? "ARTICLE EDITOR" : "REDACTOR DE ARTÍCULO";
 }
 
 async function handleNewsFormSubmit(e) {
@@ -19677,8 +20161,8 @@ async function handleNewsFormSubmit(e) {
         if (statusMsg) {
             statusMsg.style.color = "#f87171";
             statusMsg.textContent = isEn 
-                ? "⚠️ Spanish Title is required. Please write the headline in Spanish." 
-                : "⚠️ El Título en Español es obligatorio. Escribe el titular en español.";
+                ? "Spanish Title is required. Please write the headline in Spanish." 
+                : "El Título en Español es obligatorio. Escribe el titular en español.";
         }
         return;
     }
@@ -19690,8 +20174,8 @@ async function handleNewsFormSubmit(e) {
         if (statusMsg) {
             statusMsg.style.color = "#f87171";
             statusMsg.textContent = isEn 
-                ? "⚠️ Spanish Article Body is required. Please write the content in Spanish." 
-                : "⚠️ El Cuerpo del Artículo en Español es obligatorio. Escribe el contenido en español.";
+                ? "Spanish Article Body is required. Please write the content in Spanish." 
+                : "El Cuerpo del Artículo en Español es obligatorio. Escribe el contenido en español.";
         }
         return;
     }
@@ -19704,8 +20188,8 @@ async function handleNewsFormSubmit(e) {
         if (statusMsg) {
             statusMsg.style.color = "#f87171";
             statusMsg.textContent = isEn 
-                ? "⚠️ English Title is required. Please write the headline in English." 
-                : "⚠️ El Título en Inglés es obligatorio. Escribe el titular en inglés.";
+                ? "English Title is required. Please write the headline in English." 
+                : "El Título en Inglés es obligatorio. Escribe el titular en inglés.";
         }
         return;
     }
@@ -19717,8 +20201,8 @@ async function handleNewsFormSubmit(e) {
         if (statusMsg) {
             statusMsg.style.color = "#f87171";
             statusMsg.textContent = isEn 
-                ? "⚠️ English Article Body is required. Please write the content in English." 
-                : "⚠️ El Cuerpo del Artículo en Inglés es obligatorio. Escribe el contenido en inglés.";
+                ? "English Article Body is required. Please write the content in English." 
+                : "El Cuerpo del Artículo en Inglés es obligatorio. Escribe el contenido en inglés.";
         }
         return;
     }
@@ -19816,22 +20300,22 @@ async function handleNewsFormSubmit(e) {
             if (isEditing) {
                 if (userIsAdmin) {
                     statusMsg.textContent = isEn 
-                        ? "✅ Official bilingual article updated successfully!" 
-                        : "✅ ¡Artículo bilingüe actualizado y guardado correctamente!";
+                        ? "Official bilingual article updated successfully!" 
+                        : "¡Artículo bilingüe actualizado y guardado correctamente!";
                 } else {
                     statusMsg.textContent = isEn 
-                        ? "✅ Article updated! It has been sent back to administrators for review before being published." 
-                        : "✅ ¡Artículo actualizado! Se ha enviado de nuevo a los administradores para su revisión antes de volver a publicarse.";
+                        ? "Article updated! It has been sent back to administrators for review before being published." 
+                        : "¡Artículo actualizado! Se ha enviado de nuevo a los administradores para su revisión antes de volver a publicarse.";
                 }
             } else {
                 if (userIsAdmin) {
                     statusMsg.textContent = isEn 
-                        ? "✅ Official news article published successfully in both languages!" 
-                        : "✅ ¡Noticia oficial publicada con éxito en ambos idiomas!";
+                        ? "Official news article published successfully in both languages!" 
+                        : "¡Noticia oficial publicada con éxito en ambos idiomas!";
                 } else {
                     statusMsg.textContent = isEn 
-                        ? "✅ Bilingual news submitted for review! It will be published once approved by administrators." 
-                        : "✅ ¡Noticia bilingüe enviada para revisión! Se publicará en el portal una vez aprobada por administradores.";
+                        ? "Bilingual news submitted for review! It will be published once approved by administrators." 
+                        : "¡Noticia bilingüe enviada para revisión! Se publicará en el portal una vez aprobada por administradores.";
                 }
             }
         }
@@ -19843,7 +20327,7 @@ async function handleNewsFormSubmit(e) {
                 const dict = typeof translations !== "undefined" && translations[currentLanguage] ? translations[currentLanguage] : null;
                 submitBtn.innerHTML = (dict && dict.news && dict.news.btnSubmitAction) 
                     ? dict.news.btnSubmitAction 
-                    : (isEn ? "<span>🚀</span> Submit for Review" : "<span>🚀</span> Enviar para Revisión");
+                    : (isEn ? "<span></span> Submit for Review" : "<span></span> Enviar para Revisión");
             }
         }, 1500);
 
@@ -19867,8 +20351,8 @@ async function handleNewsFormSubmit(e) {
         if (statusMsg) {
             statusMsg.style.color = "#34d399";
             statusMsg.textContent = isEn 
-                ? "✅ Article saved locally for administrator review!" 
-                : "✅ Noticia guardada localmente para revisión de los administradores.";
+                ? "Article saved locally for administrator review!" 
+                : "Noticia guardada localmente para revisión de los administradores.";
         }
         setTimeout(() => {
             closeSubmitNewsModal();
@@ -19877,7 +20361,7 @@ async function handleNewsFormSubmit(e) {
                 const dict = typeof translations !== "undefined" && translations[currentLanguage] ? translations[currentLanguage] : null;
                 submitBtn.innerHTML = (dict && dict.news && dict.news.btnSubmitAction) 
                     ? dict.news.btnSubmitAction 
-                    : (isEn ? "<span>🚀</span> Submit for Review" : "<span>🚀</span> Enviar para Revisión");
+                    : (isEn ? "<span></span> Submit for Review" : "<span></span> Enviar para Revisión");
             }
         }, 1500);
     }
@@ -20015,17 +20499,17 @@ function openNewsArticleModal(articleId) {
         if (userIsAdmin) {
             adminBar.style.display = "flex";
             const approveBtnHtml = article.status !== "approved"
-                ? `<button type="button" class="btn-action-approve" id="modalBtnApproveNews" title="Aprobar y publicar">✅ Aprobar Noticia</button>`
+                ? `<button type="button" class="btn-action-approve" id="modalBtnApproveNews" title="Aprobar y publicar">Aprobar Noticia</button>`
                 : ``;
             const rejectBtnHtml = article.status !== "rejected"
-                ? `<button type="button" class="btn-action-reject" id="modalBtnRejectNews" title="Rechazar noticia">❌ Rechazar</button>`
+                ? `<button type="button" class="btn-action-reject" id="modalBtnRejectNews" title="Rechazar noticia">Rechazar</button>`
                 : ``;
 
             adminBtnsContainer.innerHTML = `
-                <button type="button" class="btn-action-edit" id="modalBtnEditNewsAdmin" title="Editar campos del artículo">✏️ Editar Noticia</button>
+                <button type="button" class="btn-action-edit" id="modalBtnEditNewsAdmin" title="Editar campos del artículo">Editar Noticia</button>
                 ${approveBtnHtml}
                 ${rejectBtnHtml}
-                <button type="button" class="btn-action-delete" id="modalBtnDeleteNews" title="Eliminar noticia">🗑️ Eliminar Noticia</button>
+                <button type="button" class="btn-action-delete" id="modalBtnDeleteNews" title="Eliminar noticia">Eliminar Noticia</button>
             `;
 
             const btnEditAdmin = document.getElementById("modalBtnEditNewsAdmin");
@@ -20063,11 +20547,11 @@ function openNewsArticleModal(articleId) {
                         closeNewsArticleModal();
                     } else {
                         btnDelete.classList.add("confirming");
-                        btnDelete.innerHTML = currentLanguage === "en" ? "⚠️ Click again to delete" : "⚠️ Clic de nuevo para eliminar";
+                        btnDelete.innerHTML = currentLanguage === "en" ? "Click again to delete" : "Clic de nuevo para eliminar";
                         setTimeout(() => {
                             if (btnDelete && btnDelete.classList.contains("confirming")) {
                                 btnDelete.classList.remove("confirming");
-                                btnDelete.innerHTML = "🗑️ Eliminar Noticia";
+                                btnDelete.innerHTML = "Eliminar Noticia";
                             }
                         }, 3500);
                     }
@@ -20204,7 +20688,7 @@ function renderCommentsList(comments, newsId) {
         const canDelete = userIsAdmin || (u && u.email && c.authorEmail && u.email.toLowerCase() === c.authorEmail.toLowerCase());
 
         const deleteBtnMarkup = canDelete 
-            ? `<button type="button" class="btn-delete-comment" data-comment-id="${safeCommentId}" data-news-id="${escapeHtml(newsId)}" title="${escapeHtml(deleteTitle)}">🗑️</button>` 
+            ? `<button type="button" class="btn-delete-comment" data-comment-id="${safeCommentId}" data-news-id="${escapeHtml(newsId)}" title="${escapeHtml(deleteTitle)}"><i data-lucide="trash-2" aria-hidden="true"></i></button>` 
             : ``;
 
         return `
@@ -20231,13 +20715,13 @@ function renderCommentsList(comments, newsId) {
             const nId = btn.dataset.newsId;
             if (!btn.dataset.confirming) {
                 btn.dataset.confirming = "true";
-                btn.textContent = "⚠️ ¿Borrar?";
+                btn.textContent = "¿Borrar?";
                 btn.style.color = "#f87171";
                 btn.style.fontSize = "11px";
                 setTimeout(() => {
                     if (btn && btn.dataset.confirming === "true") {
                         delete btn.dataset.confirming;
-                        btn.textContent = "🗑️";
+                        btn.textContent = "";
                         btn.style.color = "";
                         btn.style.fontSize = "";
                     }
@@ -20357,7 +20841,7 @@ function handleShareArticleLink() {
         const btn = document.getElementById("btnShareArticleLink");
         if (btn) {
             const originalText = btn.innerHTML;
-            btn.innerHTML = "✅ ¡Enlace copiado!";
+            btn.innerHTML = "¡Enlace copiado!";
             setTimeout(() => {
                 btn.innerHTML = originalText;
             }, 2000);
@@ -20417,15 +20901,15 @@ function renderAdminNewsTab() {
         }
 
         const editedPillMarkup = article.isEdited
-            ? `<span class="admin-news-status-pill status-edited" title="Artículo editado el ${article.editedAt ? formatNewsDateTime(article.editedAt) : ''}">✏️ EDITADO</span>`
+            ? `<span class="admin-news-status-pill status-edited" title="Artículo editado el ${article.editedAt ? formatNewsDateTime(article.editedAt) : ''}">EDITADO</span>`
             : ``;
 
         const approveBtnMarkup = article.status !== "approved"
-            ? `<button type="button" class="btn-action-approve" data-news-id="${article.id}" title="Aprobar y publicar en la web">✅ Aprobar</button>`
+            ? `<button type="button" class="btn-action-approve" data-news-id="${article.id}" title="Aprobar y publicar en la web">Aprobar</button>`
             : ``;
 
         const rejectBtnMarkup = article.status !== "rejected"
-            ? `<button type="button" class="btn-action-reject" data-news-id="${article.id}" title="Rechazar noticia">❌ Rechazar</button>`
+            ? `<button type="button" class="btn-action-reject" data-news-id="${article.id}" title="Rechazar noticia">Rechazar</button>`
             : ``;
 
         return `
@@ -20437,9 +20921,9 @@ function renderAdminNewsTab() {
                         <span class="news-cat-pill ${getNewsCategoryClass(article.category)}">${article.category || "Comunidad"}</span>
                     </div>
                     <div class="admin-news-meta-info">
-                        <span>📅 ${dateFormatted}</span>
+                        <span>${dateFormatted}</span>
                         <span>&bull;</span>
-                        <span>💬 ${article.commentsCount || 0} comentarios</span>
+                        <span>${article.commentsCount || 0} comentarios</span>
                     </div>
                 </div>
 
@@ -20450,16 +20934,16 @@ function renderAdminNewsTab() {
 
                 <div class="admin-news-item-bottom">
                     <div class="admin-news-author-detail">
-                        <span>✍️ <strong>${article.authorName || "Anónimo"}</strong></span>
+                        <span><strong>${article.authorName || "Anónimo"}</strong></span>
                         ${article.authorEmail ? ` &bull; <span style="color: #94a3b8;">${article.authorEmail}</span>` : ""}
                     </div>
 
                     <div class="admin-news-action-buttons">
-                        <button type="button" class="btn-action-preview" data-news-id="${article.id}" title="Ver contenido completo y comentarios">👁️ Leer / Ver</button>
-                        <button type="button" class="btn-action-edit" data-news-id="${article.id}" title="Editar artículo">✏️ Editar</button>
+                        <button type="button" class="btn-action-preview" data-news-id="${article.id}" title="Ver contenido completo y comentarios">Leer / Ver</button>
+                        <button type="button" class="btn-action-edit" data-news-id="${article.id}" title="Editar artículo">Editar</button>
                         ${approveBtnMarkup}
                         ${rejectBtnMarkup}
-                        <button type="button" class="btn-action-delete" data-news-id="${article.id}" title="Eliminar definitivamente">🗑️ Eliminar</button>
+                        <button type="button" class="btn-action-delete" data-news-id="${article.id}" title="Eliminar definitivamente">Eliminar</button>
                     </div>
                 </div>
             </div>
@@ -20508,12 +20992,12 @@ function renderAdminNewsTab() {
                 deleteNewsArticle(id);
             } else {
                 btn.classList.add("confirming");
-                btn.innerHTML = currentLanguage === "en" ? "⚠️ Confirm delete?" : "⚠️ ¿Confirmar eliminar?";
+                btn.innerHTML = currentLanguage === "en" ? "Confirm delete?" : "¿Confirmar eliminar?";
                 btn.title = currentLanguage === "en" ? "Click again to confirm deletion" : "Haz clic de nuevo para confirmar la eliminación";
                 setTimeout(() => {
                     if (btn && btn.classList.contains("confirming")) {
                         btn.classList.remove("confirming");
-                        btn.innerHTML = "🗑️ Eliminar";
+                        btn.innerHTML = "Eliminar";
                         btn.title = currentLanguage === "en" ? "Delete permanently" : "Eliminar definitivamente";
                     }
                 }, 3500);
@@ -22696,12 +23180,12 @@ function renderGlobalPhotoGrid() {
                 <img src="${escapeHtml(photo.photoUrl)}" alt="${escapeHtml(photo.caption || (isEn ? "FFC Photo" : "Foto FFC"))}" loading="lazy">
                 <span class="photo-card-badge">${escapeHtml(raceLabel)}</span>
                 ${pendingBadge}
-                <button type="button" class="photo-card-dl-btn" title="${dlTitleText}" style="position: absolute; top: 8px; right: 8px; background: rgba(0,0,0,0.7); color: #fff; border: 1px solid rgba(255,255,255,0.3); border-radius: 4px; padding: 3px 7px; font-size: 11px; font-weight: 700; cursor: pointer; z-index: 2; transition: all 0.2s;">⬇️ ${dlBtnText}</button>
+                <button type="button" class="photo-card-dl-btn" title="${dlTitleText}" style="position: absolute; top: 8px; right: 8px; background: rgba(0,0,0,0.7); color: #fff; border: 1px solid rgba(255,255,255,0.3); border-radius: 4px; padding: 3px 7px; font-size: 11px; font-weight: 700; cursor: pointer; z-index: 2; transition: all 0.2s;">${dlBtnText}</button>
             </div>
             <div class="photo-card-content">
                 <div class="photo-card-caption">${escapeHtml(photo.caption || noDescText)}</div>
                 <div class="photo-card-meta">
-                    <span class="photo-card-author">👤 ${escapeHtml(photo.author)}</span>
+                    <span class="photo-card-author">${escapeHtml(photo.author)}</span>
                     <span class="photo-card-date">${escapeHtml(photo.createdAt || '')}</span>
                 </div>
             </div>
@@ -22761,12 +23245,12 @@ function renderRaceModalPhotoGallery(raceKey) {
             <div class="photo-card-thumb" style="position: relative;">
                 <img src="${escapeHtml(photo.photoUrl)}" alt="${escapeHtml(photo.caption || (isEn ? "Race photo" : "Foto de carrera"))}" loading="lazy">
                 ${pendingBadge}
-                <button type="button" class="photo-card-dl-btn" title="${dlTitleText}" style="position: absolute; top: 8px; right: 8px; background: rgba(0,0,0,0.7); color: #fff; border: 1px solid rgba(255,255,255,0.3); border-radius: 4px; padding: 3px 7px; font-size: 11px; font-weight: 700; cursor: pointer; z-index: 2; transition: all 0.2s;">⬇️ ${dlBtnText}</button>
+                <button type="button" class="photo-card-dl-btn" title="${dlTitleText}" style="position: absolute; top: 8px; right: 8px; background: rgba(0,0,0,0.7); color: #fff; border: 1px solid rgba(255,255,255,0.3); border-radius: 4px; padding: 3px 7px; font-size: 11px; font-weight: 700; cursor: pointer; z-index: 2; transition: all 0.2s;">${dlBtnText}</button>
             </div>
             <div class="photo-card-content">
                 <div class="photo-card-caption">${escapeHtml(photo.caption || noDescText)}</div>
                 <div class="photo-card-meta">
-                    <span class="photo-card-author">👤 ${escapeHtml(photo.author)}</span>
+                    <span class="photo-card-author">${escapeHtml(photo.author)}</span>
                     <span class="photo-card-date">${escapeHtml(photo.createdAt || '')}</span>
                 </div>
             </div>
@@ -22825,14 +23309,14 @@ window.openPhotoLightbox = function(photo) {
         const subBy = isEn ? "Uploaded by" : "Subido por";
         if (authorDate) authorDate.textContent = `${subBy} ${photo.author} • ${photo.createdAt || ''}`;
         if (downloadBtn) {
-            downloadBtn.textContent = isEn ? "⬇️ Download Photo" : "⬇️ Descargar Foto";
+            downloadBtn.textContent = isEn ? "Download Photo" : "Descargar Foto";
             downloadBtn.onclick = () => window.downloadCurrentLightboxPhoto();
         }
 
         const u = typeof activeUserAuth !== "undefined" && activeUserAuth ? activeUserAuth : ((typeof window !== "undefined" && window.LocalAuthStore) ? window.LocalAuthStore.getCurrentUser() : (typeof LocalAuthStore !== "undefined" ? LocalAuthStore.getCurrentUser() : null));
         const userIsAdmin = typeof isUserAdmin === "function" && isUserAdmin(u);
         if (deleteBtn) {
-            deleteBtn.textContent = isEn ? "🗑️ Delete" : "🗑️ Eliminar";
+            deleteBtn.textContent = isEn ? "Delete" : "Eliminar";
             deleteBtn.style.display = userIsAdmin ? "inline-flex" : "none";
         }
 
@@ -22915,7 +23399,7 @@ function updateCalendarCardPhotoBadges() {
                 const header = card.querySelector(".calendar-status") || card.querySelector(".calendar-card-header");
                 if (header) header.appendChild(badge);
             }
-            badge.textContent = `📸 ${count}`;
+            badge.textContent = `${count}`;
         } else if (badge) {
             badge.remove();
         }
@@ -23008,13 +23492,13 @@ function renderAdminPhotosTab() {
             statusBadge = `<span style="background: rgba(251, 191, 36, 0.15); color: #fbbf24; border: 1px solid rgba(251, 191, 36, 0.4); padding: 2px 8px; border-radius: 4px; font-size: 10px; font-weight: 800;">${badgeText}</span>`;
         }
 
-        const approveText = adminDict?.adminBtnApprove || (isEn ? "✅ Approve" : "✅ Aprobar");
-        const rejectText = adminDict?.adminBtnReject || (isEn ? "❌ Reject" : "❌ Rechazar");
-        const dlText = adminDict?.adminBtnDownload || (isEn ? "⬇️ Download" : "⬇️ Descargar");
+        const approveText = adminDict?.adminBtnApprove || (isEn ? "Approve" : "Aprobar");
+        const rejectText = adminDict?.adminBtnReject || (isEn ? "Reject" : "Rechazar");
+        const dlText = adminDict?.adminBtnDownload || (isEn ? "Download" : "Descargar");
         const dlTitle = isEn ? "Download high quality photo" : "Descargar foto en alta calidad";
         const delTitle = isEn ? "Delete permanently" : "Eliminar permanentemente";
         const noDescText = isEn ? "No description" : "Sin descripción";
-        const modRaceLabel = adminDict?.adminModifyRaceLabel || (isEn ? "🏁 Modify Assigned Race:" : "🏁 Modificar Carrera asignada:");
+        const modRaceLabel = adminDict?.adminModifyRaceLabel || (isEn ? "Modify Assigned Race:" : "Modificar Carrera asignada:");
 
         const approveBtn = status !== "approved" ? `<button type="button" class="btn btn-sm" data-action="approve" data-id="${photo.id}" style="background: #16a34a; color: #fff; font-size: 11px; padding: 4px 10px; border-radius: 4px; cursor: pointer;">${approveText}</button>` : "";
         const rejectBtn = status !== "rejected" ? `<button type="button" class="btn btn-sm" data-action="reject" data-id="${photo.id}" style="background: #d97706; color: #fff; font-size: 11px; padding: 4px 10px; border-radius: 4px; cursor: pointer;">${rejectText}</button>` : "";
@@ -23035,7 +23519,7 @@ function renderAdminPhotosTab() {
                     <div>
                         <div style="font-size: 13px; font-weight: 600; color: #f8fafc; margin-bottom: 4px;">${escapeHtml(photo.caption || noDescText)}</div>
                         <div style="font-size: 11px; color: #94a3b8; display: flex; justify-content: space-between; margin-bottom: 8px;">
-                            <span>👤 ${escapeHtml(photo.author)}</span>
+                            <span>${escapeHtml(photo.author)}</span>
                             <span>${escapeHtml(photo.createdAt || '')}</span>
                         </div>
 
@@ -23053,7 +23537,7 @@ function renderAdminPhotosTab() {
                         ${approveBtn}
                         ${rejectBtn}
                         <button type="button" class="btn btn-sm" data-action="download" data-id="${photo.id}" style="background: rgba(255,255,255,0.1); color: #fff; font-size: 11px; padding: 4px 10px; border-radius: 4px; border: 1px solid rgba(255,255,255,0.2); cursor: pointer;" title="${dlTitle}">${dlText}</button>
-                        <button type="button" class="btn btn-sm" data-action="delete" data-id="${photo.id}" style="background: #dc2626; color: #fff; font-size: 11px; padding: 4px 10px; border-radius: 4px; margin-left: auto; cursor: pointer;" title="${delTitle}">🗑️</button>
+                        <button type="button" class="btn btn-sm" data-action="delete" data-id="${photo.id}" style="background: #dc2626; color: #fff; font-size: 11px; padding: 4px 10px; border-radius: 4px; margin-left: auto; cursor: pointer;" title="${delTitle}"><i data-lucide="trash-2" aria-hidden="true"></i></button>
                     </div>
                 </div>
             </div>
@@ -23444,7 +23928,7 @@ function renderAuditTableRows() {
         const displayEmail = acc.email 
             ? `<div style="display: flex; align-items: center; gap: 6px;">
                  <span style="font-family: monospace; font-size: 13px; font-weight: 600; color: ${acc.status === 'suspicious' ? '#fca5a5' : '#f8fafc'};">${escapeHtml(acc.email)}</span>
-                 <button type="button" class="btn btn-xs" onclick="navigator.clipboard.writeText('${acc.email}');" style="padding: 1px 5px; font-size: 10px; opacity: 0.6;" title="Copiar correo">📋</button>
+                 <button type="button" class="btn btn-xs" onclick="navigator.clipboard.writeText('${acc.email}');" style="padding: 1px 5px; font-size: 10px; opacity: 0.6;" title="Copiar correo"></button>
                </div>`
             : `<span style="font-style: italic; color: #64748b; font-size: 12px;">(Sin correo registrado · Doc: ${escapeHtml(acc.firestoreDocId || 'N/A')})</span>`;
 
@@ -23454,7 +23938,7 @@ function renderAuditTableRows() {
             <tr style="border-bottom: 1px solid rgba(255, 255, 255, 0.06); transition: background 0.15s; ${rowBg}" data-key="${escapeHtml(acc.key)}">
                 <td style="padding: 12px 14px; text-align: center;">
                     ${isProtected 
-                        ? `<span title="Cuenta protegida" style="cursor: not-allowed; opacity: 0.4;">🔒</span>`
+                        ? `<span title="Cuenta protegida" style="cursor: not-allowed; opacity: 0.4;"></span>`
                         : `<input type="checkbox" class="audit-row-checkbox" data-key="${escapeHtml(acc.key)}" ${isSelected ? 'checked' : ''} style="accent-color: #ef4444; width: 16px; height: 16px; cursor: pointer;">`
                     }
                 </td>

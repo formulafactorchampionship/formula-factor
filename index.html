@@ -33,7 +33,7 @@
         <link rel="preconnect" href="https://esm.sh" crossorigin>
     <link rel="preconnect" href="https://flagcdn.com" crossorigin>
     <link rel="preconnect" href="https://firestore.googleapis.com" crossorigin>
-    <link rel="stylesheet" href="style.css?v=20261015_rc19">
+    <link rel="stylesheet" href="style.css?v=20261017_rc30">
     <link rel="stylesheet" href="BorderGlow.css">
     <link rel="stylesheet" href="LightPillar.css">
     <script>
@@ -365,7 +365,7 @@
                                 <!-- Preferencia de Zona Horaria -->
                                 <div class="setting-row-item setting-row-tz">
                                     <div class="setting-tz-header">
-                                        <span id="profileTzLabel">⏰ Zona Horaria</span>
+                                        <span id="profileTzLabel"><i data-lucide="clock" aria-hidden="true"></i> Zona Horaria</span>
                                         <span class="setting-tz-badge" id="profileTzBadge">BASE: MADRID</span>
                                     </div>
                                     <div class="setting-tz-select-wrap">
@@ -395,6 +395,61 @@
 
     </div>
 </header>
+
+
+<!-- =========================================================
+     PERFIL (vista a pantalla completa, no desplegable)
+     Accesible solo desde el avatar. El contenido real (identidad,
+     verificación, tarjeta, ajustes, sesión) se mueve aquí desde el
+     antiguo menú al cargar, para conservar todos los IDs y handlers.
+========================================================= -->
+<section id="profileView" class="profile-portal-view" style="display: none;" aria-hidden="true">
+    <div class="profile-shell">
+        <nav class="profile-nav" id="profileNav" aria-label="Secciones del perfil">
+            <button type="button" class="profile-nav-item is-active" data-profile-panel="perfil">
+                <span class="profile-nav-icon" aria-hidden="true"><i data-lucide="user-round"></i></span>
+                <span class="profile-nav-label">Mi perfil</span>
+            </button>
+            <button type="button" class="profile-nav-item" data-profile-panel="ajustes">
+                <span class="profile-nav-icon" aria-hidden="true"><i data-lucide="settings"></i></span>
+                <span class="profile-nav-label">Ajustes</span>
+            </button>
+            <button type="button" class="profile-nav-item" data-profile-panel="sesion">
+                <span class="profile-nav-icon" aria-hidden="true"><i data-lucide="key-round"></i></span>
+                <span class="profile-nav-label">Sesión</span>
+            </button>
+        </nav>
+
+        <div class="profile-main">
+            <div class="profile-topbar">
+                <button type="button" class="profile-back-btn" id="profileBackBtn">
+                    <i data-lucide="arrow-left" aria-hidden="true"></i>
+                    <span>Volver al sitio</span>
+                </button>
+            </div>
+
+            <section class="profile-panel" id="profilePanelPerfil" data-profile-panel="perfil">
+                <h2 class="profile-panel-title">Mi perfil</h2>
+                <p class="profile-panel-sub">Tu identidad en la FFC y el estado de verificación como piloto oficial.</p>
+                <div class="profile-panel-body" id="profileIdentitySlot"></div>
+                <div class="profile-panel-body" id="profileClaimSlot"></div>
+            </section>
+
+            <section class="profile-panel" id="profilePanelAjustes" data-profile-panel="ajustes" style="display: none;">
+                <h2 class="profile-panel-title">Ajustes</h2>
+                <p class="profile-panel-sub">Idioma, zona horaria y personalización de tu tarjeta oficial de piloto.</p>
+                <div class="profile-panel-body" id="profileSettingsSlot"></div>
+                <div class="profile-panel-body" id="profileCardEditorSlot"></div>
+            </section>
+
+            <section class="profile-panel" id="profilePanelSesion" data-profile-panel="sesion" style="display: none;">
+                <h2 class="profile-panel-title">Sesión</h2>
+                <p class="profile-panel-sub">Acciones sobre tu cuenta y tu vínculo con el piloto.</p>
+                <div class="profile-panel-body" id="profileSessionSlot"></div>
+            </section>
+        </div>
+    </div>
+</section>
 
 
 <main id="mainSiteContent">
@@ -833,7 +888,7 @@
                     <span class="scenarios-diff-badge" id="scenariosDiffBadge" style="font-size: 11px; font-weight: 700; color: #38bdf8; background: rgba(56, 189, 248, 0.12); border: 1px solid rgba(56, 189, 248, 0.28); padding: 2px 7px; border-radius: 6px; font-family: 'Barlow Condensed', sans-serif; letter-spacing: 0.5px;">DIFERENCIA: +49 PTS</span>
                 </div>
                 <h3 class="battle-scenarios-title" id="battleScenariosTitle">
-                    <span>🏆</span>
+                    <span><i data-lucide="trophy" aria-hidden="true"></i></span>
                     <span id="scenariosTitleText">ESCENARIOS PARA EL CAMPEONATO DEL MUNDO</span>
                 </h3>
                 <p class="battle-scenarios-sub" id="scenariosSubText">
@@ -898,14 +953,14 @@
                         <td class="cell-dieguiosk">
                             <div class="scenario-cell-flex">
                                 <span class="scenario-pos-pill pill-p1">1º</span>
-                                <span class="scenario-fl-tag" id="scenFl1">⚡ VUELTA RÁPIDA</span>
+                                <span class="scenario-fl-tag" id="scenFl1">VUELTA RÁPIDA</span>
                             </div>
                         </td>
                         <td class="cell-munt">
                             <span class="scenario-pos-pill pill-munt-req" id="scenReq1">3º o peor</span>
                         </td>
                         <td class="cell-outcome">
-                            <span class="scenario-outcome-tag outcome-champ" id="scenOut1">🏆 CAMPEÓN DEL MUNDO</span>
+                            <span class="scenario-outcome-tag outcome-champ" id="scenOut1">CAMPEÓN DEL MUNDO</span>
                         </td>
                     </tr>
 
@@ -920,7 +975,7 @@
                             <span class="scenario-pos-pill pill-munt-req" id="scenReq2">4º o peor</span>
                         </td>
                         <td class="cell-outcome">
-                            <span class="scenario-outcome-tag outcome-champ" id="scenOut2">🏆 CAMPEÓN DEL MUNDO</span>
+                            <span class="scenario-outcome-tag outcome-champ" id="scenOut2">CAMPEÓN DEL MUNDO</span>
                         </td>
                     </tr>
 
@@ -929,14 +984,14 @@
                         <td class="cell-dieguiosk">
                             <div class="scenario-cell-flex">
                                 <span class="scenario-pos-pill pill-podium">2º</span>
-                                <span class="scenario-fl-tag" id="scenFl2">⚡ VUELTA RÁPIDA</span>
+                                <span class="scenario-fl-tag" id="scenFl2">VUELTA RÁPIDA</span>
                             </div>
                         </td>
                         <td class="cell-munt">
                             <span class="scenario-pos-pill pill-munt-req" id="scenReq3">5º o peor</span>
                         </td>
                         <td class="cell-outcome">
-                            <span class="scenario-outcome-tag outcome-champ" id="scenOut3">🏆 CAMPEÓN DEL MUNDO</span>
+                            <span class="scenario-outcome-tag outcome-champ" id="scenOut3">CAMPEÓN DEL MUNDO</span>
                         </td>
                     </tr>
 
@@ -951,7 +1006,7 @@
                             <span class="scenario-pos-pill pill-munt-req" id="scenReq4">6º o peor</span>
                         </td>
                         <td class="cell-outcome">
-                            <span class="scenario-outcome-tag outcome-champ" id="scenOut4">🏆 CAMPEÓN DEL MUNDO</span>
+                            <span class="scenario-outcome-tag outcome-champ" id="scenOut4">CAMPEÓN DEL MUNDO</span>
                         </td>
                     </tr>
 
@@ -960,14 +1015,14 @@
                         <td class="cell-dieguiosk">
                             <div class="scenario-cell-flex">
                                 <span class="scenario-pos-pill pill-podium">3º</span>
-                                <span class="scenario-fl-tag" id="scenFl3">⚡ VUELTA RÁPIDA</span>
+                                <span class="scenario-fl-tag" id="scenFl3">VUELTA RÁPIDA</span>
                             </div>
                         </td>
                         <td class="cell-munt">
                             <span class="scenario-pos-pill pill-munt-req" id="scenReq5">7º o peor</span>
                         </td>
                         <td class="cell-outcome">
-                            <span class="scenario-outcome-tag outcome-champ" id="scenOut5">🏆 CAMPEÓN DEL MUNDO</span>
+                            <span class="scenario-outcome-tag outcome-champ" id="scenOut5">CAMPEÓN DEL MUNDO</span>
                         </td>
                     </tr>
 
@@ -982,7 +1037,7 @@
                             <span class="scenario-pos-pill pill-munt-req" id="scenReq6">8º o peor</span>
                         </td>
                         <td class="cell-outcome">
-                            <span class="scenario-outcome-tag outcome-champ" id="scenOut6">🏆 CAMPEÓN DEL MUNDO</span>
+                            <span class="scenario-outcome-tag outcome-champ" id="scenOut6">CAMPEÓN DEL MUNDO</span>
                         </td>
                     </tr>
 
@@ -991,14 +1046,14 @@
                         <td class="cell-dieguiosk">
                             <div class="scenario-cell-flex">
                                 <span class="scenario-pos-pill pill-top5">4º</span>
-                                <span class="scenario-fl-tag" id="scenFl4">⚡ VUELTA RÁPIDA</span>
+                                <span class="scenario-fl-tag" id="scenFl4">VUELTA RÁPIDA</span>
                             </div>
                         </td>
                         <td class="cell-munt">
                             <span class="scenario-pos-pill pill-munt-req" id="scenReq7">9º o peor</span>
                         </td>
                         <td class="cell-outcome">
-                            <span class="scenario-outcome-tag outcome-champ" id="scenOut7">🏆 CAMPEÓN DEL MUNDO</span>
+                            <span class="scenario-outcome-tag outcome-champ" id="scenOut7">CAMPEÓN DEL MUNDO</span>
                         </td>
                     </tr>
 
@@ -1013,7 +1068,7 @@
                             <span class="scenario-pos-pill pill-munt-req" id="scenReq8">10º o peor</span>
                         </td>
                         <td class="cell-outcome">
-                            <span class="scenario-outcome-tag outcome-champ" id="scenOut8">🏆 CAMPEÓN DEL MUNDO</span>
+                            <span class="scenario-outcome-tag outcome-champ" id="scenOut8">CAMPEÓN DEL MUNDO</span>
                         </td>
                     </tr>
 
@@ -1022,14 +1077,14 @@
                         <td class="cell-dieguiosk">
                             <div class="scenario-cell-flex">
                                 <span class="scenario-pos-pill pill-top5">5º</span>
-                                <span class="scenario-fl-tag" id="scenFl5">⚡ VUELTA RÁPIDA</span>
+                                <span class="scenario-fl-tag" id="scenFl5">VUELTA RÁPIDA</span>
                             </div>
                         </td>
                         <td class="cell-munt">
                             <span class="scenario-pos-pill pill-munt-req" id="scenReq9">10º o peor (sin VR)</span>
                         </td>
                         <td class="cell-outcome">
-                            <span class="scenario-outcome-tag outcome-champ" id="scenOut9">🏆 CAMPEÓN DEL MUNDO</span>
+                            <span class="scenario-outcome-tag outcome-champ" id="scenOut9">CAMPEÓN DEL MUNDO</span>
                         </td>
                     </tr>
 
@@ -1044,7 +1099,7 @@
                             <span class="scenario-pos-pill pill-munt-nopoints" id="scenReq10">Sin puntos (11º o DNF)</span>
                         </td>
                         <td class="cell-outcome">
-                            <span class="scenario-outcome-tag outcome-champ" id="scenOut10">🏆 CAMPEÓN DEL MUNDO</span>
+                            <span class="scenario-outcome-tag outcome-champ" id="scenOut10">CAMPEÓN DEL MUNDO</span>
                         </td>
                     </tr>
 
@@ -1500,7 +1555,7 @@
                 </div>
                 <div class="cal-row-status-winner">
                     <span class="cal-status-badge status-completed">✓ Finalizada</span>
-                    <span class="cal-winner-pill">🏆 Muntii <small>(Red Bull)</small></span>
+                    <span class="cal-winner-pill">Muntii <small>(Red Bull)</small></span>
                     <a href="https://www.youtube.com/watch?v=AYdKou7kdS8" target="_blank" rel="noopener noreferrer" class="cal-replay-link" title="Ver repetición">▶</a>
                 </div>
                 <div class="cal-row-action">
@@ -1529,7 +1584,7 @@
                 </div>
                 <div class="cal-row-status-winner">
                     <span class="cal-status-badge status-completed">✓ Finalizada</span>
-                    <span class="cal-winner-pill">🏆 Muntii <small>(Red Bull)</small></span>
+                    <span class="cal-winner-pill">Muntii <small>(Red Bull)</small></span>
                     <a href="https://www.youtube.com/watch?v=cYTpQzHtOrs" target="_blank" rel="noopener noreferrer" class="cal-replay-link" title="Ver repetición">▶</a>
                 </div>
                 <div class="cal-row-action">
@@ -1558,7 +1613,7 @@
                 </div>
                 <div class="cal-row-status-winner">
                     <span class="cal-status-badge status-completed">✓ Finalizada</span>
-                    <span class="cal-winner-pill">🏆 Dieguiosk <small>(HRT)</small></span>
+                    <span class="cal-winner-pill">Dieguiosk <small>(HRT)</small></span>
                     <a href="https://www.youtube.com/watch?v=W5j-VQaJjhg" target="_blank" rel="noopener noreferrer" class="cal-replay-link" title="Ver repetición">▶</a>
                 </div>
                 <div class="cal-row-action">
@@ -1587,7 +1642,7 @@
                 </div>
                 <div class="cal-row-status-winner">
                     <span class="cal-status-badge status-completed">✓ Finalizada</span>
-                    <span class="cal-winner-pill">🏆 Muntii <small>(Red Bull)</small></span>
+                    <span class="cal-winner-pill">Muntii <small>(Red Bull)</small></span>
                     <a href="https://www.youtube.com/watch?v=Agsxp2u1KSc" target="_blank" rel="noopener noreferrer" class="cal-replay-link" title="Ver repetición">▶</a>
                 </div>
                 <div class="cal-row-action">
@@ -1616,7 +1671,7 @@
                 </div>
                 <div class="cal-row-status-winner">
                     <span class="cal-status-badge status-completed">✓ Finalizada</span>
-                    <span class="cal-winner-pill">🏆 Dieguiosk <small>(HRT)</small></span>
+                    <span class="cal-winner-pill">Dieguiosk <small>(HRT)</small></span>
                     <a href="https://www.youtube.com/watch?v=QtlnDNmD7S8" target="_blank" rel="noopener noreferrer" class="cal-replay-link" title="Ver repetición">▶</a>
                 </div>
                 <div class="cal-row-action">
@@ -1645,7 +1700,7 @@
                 </div>
                 <div class="cal-row-status-winner">
                     <span class="cal-status-badge status-completed">✓ Finalizada</span>
-                    <span class="cal-winner-pill">🏆 Novitaa <small>(Red Bull)</small></span>
+                    <span class="cal-winner-pill">Novitaa <small>(Red Bull)</small></span>
                     <a href="https://www.youtube.com/watch?v=vEV3irvtAiM" target="_blank" rel="noopener noreferrer" class="cal-replay-link" title="Ver repetición">▶</a>
                 </div>
                 <div class="cal-row-action">
@@ -1674,7 +1729,7 @@
                 </div>
                 <div class="cal-row-status-winner">
                     <span class="cal-status-badge status-completed">✓ Finalizada</span>
-                    <span class="cal-winner-pill">🏆 Dieguiosk <small>(HRT)</small></span>
+                    <span class="cal-winner-pill">Dieguiosk <small>(HRT)</small></span>
                     <a href="https://www.youtube.com/watch?v=XdL21LJPJTo" target="_blank" rel="noopener noreferrer" class="cal-replay-link" title="Ver repetición">▶</a>
                 </div>
                 <div class="cal-row-action">
@@ -1703,7 +1758,7 @@
                 </div>
                 <div class="cal-row-status-winner">
                     <span class="cal-status-badge status-completed">✓ Finalizada</span>
-                    <span class="cal-winner-pill">🏆 Muntii <small>(Red Bull)</small></span>
+                    <span class="cal-winner-pill">Muntii <small>(Red Bull)</small></span>
                     <a href="https://www.youtube.com/watch?v=5l8w3KBOLgQ" target="_blank" rel="noopener noreferrer" class="cal-replay-link" title="Ver repetición">▶</a>
                 </div>
                 <div class="cal-row-action">
@@ -1732,7 +1787,7 @@
                 </div>
                 <div class="cal-row-status-winner">
                     <span class="cal-status-badge status-completed">✓ Finalizada</span>
-                    <span class="cal-winner-pill">🏆 BigTheo <small>(Ferrari)</small></span>
+                    <span class="cal-winner-pill">BigTheo <small>(Ferrari)</small></span>
                     <a href="https://www.youtube.com/watch?v=eU1ciNDcuKg" target="_blank" rel="noopener noreferrer" class="cal-replay-link" title="Ver repetición">▶</a>
                 </div>
                 <div class="cal-row-action">
@@ -1761,7 +1816,7 @@
                 </div>
                 <div class="cal-row-status-winner">
                     <span class="cal-status-badge status-completed">✓ Finalizada</span>
-                    <span class="cal-winner-pill">🏆 Dieguiosk <small>(HRT)</small></span>
+                    <span class="cal-winner-pill">Dieguiosk <small>(HRT)</small></span>
                     <a href="https://www.youtube.com/watch?v=WOl7kH5ac8A" target="_blank" rel="noopener noreferrer" class="cal-replay-link" title="Ver repetición">▶</a>
                 </div>
                 <div class="cal-row-action">
@@ -1790,7 +1845,7 @@
                 </div>
                 <div class="cal-row-status-winner">
                     <span class="cal-status-badge status-completed">✓ Finalizada</span>
-                    <span class="cal-winner-pill">🏆 Dieguiosk <small>(HRT)</small></span>
+                    <span class="cal-winner-pill">Dieguiosk <small>(HRT)</small></span>
                     <a href="https://www.youtube.com/watch?v=kgdyds8paqQ" target="_blank" rel="noopener noreferrer" class="cal-replay-link" title="Ver repetición">▶</a>
                 </div>
                 <div class="cal-row-action">
@@ -1819,7 +1874,7 @@
                 </div>
                 <div class="cal-row-status-winner">
                     <span class="cal-status-badge status-completed">✓ Finalizada</span>
-                    <span class="cal-winner-pill">🏆 Novitaa <small>(Red Bull)</small></span>
+                    <span class="cal-winner-pill">Novitaa <small>(Red Bull)</small></span>
                 </div>
                 <div class="cal-row-action">
                     <button type="button" class="cal-action-btn" onclick="openRace('belgium')">Resultados ➔</button>
@@ -1846,7 +1901,7 @@
                     <span class="cal-date-sub">17:00 CEST</span>
                 </div>
                 <div class="cal-row-status-winner">
-                    <span class="cal-status-badge status-next">🔥 PRÓXIMA CARRERA</span>
+                    <span class="cal-status-badge status-next"><i data-lucide="flame" aria-hidden="true"></i> PRÓXIMA CARRERA</span>
                     <span class="cal-winner-pill" style="border-color: rgba(239, 68, 68, 0.4); color: #ff8585;">¡ESTE FIN DE SEMANA!</span>
                 </div>
                 <div class="cal-row-action">
@@ -2977,7 +3032,7 @@
                     <span id="btnParticipateDiscordText">ESCRIBIR EN #JOIN-A-TEAM ↗</span>
                 </a>
                 <a href="/reglamento-ffc.txt" download="Reglamento_Oficial_FFC.txt" class="btn btn-secondary participate-cta-sec-btn" id="btnParticipateReglamento">
-                    <span id="btnParticipateRegText">📄 DESCARGAR REGLAMENTO</span>
+                    <span id="btnParticipateRegText"><i data-lucide="file-text" aria-hidden="true"></i> DESCARGAR REGLAMENTO</span>
                 </a>
             </div>
         </div>
@@ -3153,7 +3208,7 @@
         <div class="fantasy-hero-header">
             <div class="fantasy-hero-titles">
                 <div class="fantasy-hero-eyebrow" id="fantasyHeroEyebrow">
-                    <span>🏆</span> FFC FANTASY LEAGUE · OFICIAL
+                    <span><i data-lucide="trophy" aria-hidden="true"></i></span> FFC FANTASY LEAGUE · OFICIAL
                 </div>
                 <h1 class="fantasy-hero-title" id="fantasyHeroTitle">
                     CREA TU <span class="gold-gradient">ESCUDERÍA</span>
@@ -3167,7 +3222,7 @@
         <!-- Banner de Inicio de Sesión Requerido -->
         <div class="fantasy-auth-banner" id="fantasyAuthBanner" style="display: none;">
             <div class="fantasy-auth-banner-left">
-                <span class="fantasy-auth-lock-icon">🔒</span>
+                <span class="fantasy-auth-lock-icon"><i data-lucide="lock" aria-hidden="true"></i></span>
                 <div>
                     <h3 class="fantasy-auth-banner-title">INICIA SESIÓN PARA JUGAR</h3>
                     <p class="fantasy-auth-banner-desc">
@@ -3184,7 +3239,7 @@
         <!-- Banner de Mercado de Fichajes Bloqueado (Carrera en Curso) -->
         <div class="fantasy-locked-banner" id="fantasyLockedBanner" style="display: none;">
             <div class="fantasy-locked-banner-left">
-                <span class="fantasy-locked-icon">🔒</span>
+                <span class="fantasy-locked-icon"><i data-lucide="lock" aria-hidden="true"></i></span>
                 <div>
                     <h3 class="fantasy-locked-title" id="fantasyLockedTitle">MERCADO DE FICHAJES BLOQUEADO</h3>
                     <p class="fantasy-locked-desc" id="fantasyLockedDesc">
@@ -3193,7 +3248,7 @@
                 </div>
             </div>
             <div class="fantasy-locked-badge">
-                <span id="fantasyLockedBadgeText">🔴 CARRERA EN CURSO</span>
+                <span id="fantasyLockedBadgeText"><i data-lucide="circle-dot" aria-hidden="true"></i> CARRERA EN CURSO</span>
             </div>
         </div>
 
@@ -3201,7 +3256,7 @@
         <div class="fantasy-hud-grid">
             <div class="fantasy-hud-card hud-budget">
                 <div class="hud-label-row">
-                    <span class="hud-icon">💰</span>
+                    <span class="hud-icon"><i data-lucide="coins" aria-hidden="true"></i></span>
                     <span class="hud-label" id="hudBudgetLabel">PRESUPUESTO DISPONIBLE</span>
                 </div>
                 <div class="hud-value" id="fantasyBudgetRemaining">75.0M €</div>
@@ -3215,7 +3270,7 @@
 
             <div class="fantasy-hud-card hud-value-card">
                 <div class="hud-label-row">
-                    <span class="hud-icon">🏎️</span>
+                    <span class="hud-icon"><i data-lucide="car" aria-hidden="true"></i></span>
                     <span class="hud-label" id="hudTeamValLabel">VALOR DEL EQUIPO</span>
                 </div>
                 <div class="hud-value" id="fantasyTeamValue">0.0M €</div>
@@ -3226,7 +3281,7 @@
 
             <div class="fantasy-hud-card hud-points">
                 <div class="hud-label-row">
-                    <span class="hud-icon">⭐</span>
+                    <span class="hud-icon"><i data-lucide="star" aria-hidden="true"></i></span>
                     <span class="hud-label" id="hudPointsLabel">PUNTOS FANTASY</span>
                 </div>
                 <div class="hud-value" id="fantasyTotalPts">0 <span class="pts-unit">PTS</span></div>
@@ -3237,7 +3292,7 @@
 
             <div class="fantasy-hud-card hud-rank">
                 <div class="hud-label-row">
-                    <span class="hud-icon">🏅</span>
+                    <span class="hud-icon"><i data-lucide="medal" aria-hidden="true"></i></span>
                     <span class="hud-label" id="hudRankLabel">RANGO EN LIGA</span>
                 </div>
                 <div class="hud-value" id="fantasyRankPosition">-</div>
@@ -3317,9 +3372,9 @@
 
             <!-- Banner explicativo del Turbo Driver -->
             <div class="fantasy-info-strip">
-                <div class="info-strip-icon">💡</div>
+                <div class="info-strip-icon"><i data-lucide="lightbulb" aria-hidden="true"></i></div>
                 <div class="info-strip-text" id="fantasyInfoStripText">
-                    <strong>Regla FFC Fantasy:</strong> Tu alineación debe incluir exactamente 3 pilotos y 1 constructor dentro del tope de 75.0M€. Pulsa el botón <strong>⭐ Turbo Driver</strong> en cualquiera de tus 3 pilotos para duplicar (x2) sus puntos en cada Gran Premio oficial.
+                    <strong>Regla FFC Fantasy:</strong> Tu alineación debe incluir exactamente 3 pilotos y 1 constructor dentro del tope de 75.0M€. Pulsa el botón <strong><i data-lucide="star" aria-hidden="true"></i> Turbo Driver</strong> en cualquiera de tus 3 pilotos para duplicar (x2) sus puntos en cada Gran Premio oficial.
                 </div>
             </div>
 
@@ -3336,8 +3391,8 @@
                     <button type="button" class="market-filter-pill active" id="marketFilterAll" data-filter="all">Todos</button>
                     <button type="button" class="market-filter-pill" id="marketFilterDrivers" data-filter="drivers">Pilotos</button>
                     <button type="button" class="market-filter-pill" id="marketFilterTeams" data-filter="teams">Constructores</button>
-                    <button type="button" class="market-filter-pill" id="marketFilterRising" data-filter="rising">🔥 En Alza (▲)</button>
-                    <button type="button" class="market-filter-pill" id="marketFilterFalling" data-filter="falling">📉 En Oferta (▼)</button>
+                    <button type="button" class="market-filter-pill" id="marketFilterRising" data-filter="rising"><i data-lucide="flame" aria-hidden="true"></i> En Alza (▲)</button>
+                    <button type="button" class="market-filter-pill" id="marketFilterFalling" data-filter="falling"><i data-lucide="trending-down" aria-hidden="true"></i> En Oferta (▼)</button>
                     <button type="button" class="market-filter-pill" id="marketFilterAffordable" data-filter="affordable">Asequibles (≤ Presupuesto)</button>
                 </div>
                 <div class="market-search-sort">
@@ -3400,7 +3455,7 @@
             <div class="fantasy-rules-grid">
 
                 <div class="fantasy-rule-card">
-                    <div class="rule-card-icon">💰</div>
+                    <div class="rule-card-icon"><i data-lucide="coins" aria-hidden="true"></i></div>
                     <h3 class="rule-card-title" id="ruleCard1Title">1. Presupuesto Inicial (75.0M €)</h3>
                     <p class="rule-card-text" id="ruleCard1Text">
                         Dispones de 75.0M€ de presupuesto fijo. Los constructores son el activo principal (14.0M€ - 38.5M€) y los pilotos oscilan entre 6.0M€ y 29.7M€. Es imposible fichar a los mejores pilotos y al mejor equipo simultáneamente, obligándote a gestionar tu estrategia con fichajes equilibrados.
@@ -3408,7 +3463,7 @@
                 </div>
 
                 <div class="fantasy-rule-card">
-                    <div class="rule-card-icon">🏎️</div>
+                    <div class="rule-card-icon"><i data-lucide="car" aria-hidden="true"></i></div>
                     <h3 class="rule-card-title" id="ruleCard2Title">2. Estructura de la Escudería</h3>
                     <p class="rule-card-text" id="ruleCard2Text">
                         Debes fichar exactamente <strong>3 pilotos oficiales</strong> y <strong>1 constructor</strong>. No se permiten pilotos duplicados en una misma alineación.
@@ -3416,7 +3471,7 @@
                 </div>
 
                 <div class="fantasy-rule-card">
-                    <div class="rule-card-icon">⭐</div>
+                    <div class="rule-card-icon"><i data-lucide="star" aria-hidden="true"></i></div>
                     <h3 class="rule-card-title" id="ruleCard3Title">3. Turbo Driver (Multiplicador x2)</h3>
                     <p class="rule-card-text" id="ruleCard3Text">
                         Selecciona a uno de tus 3 pilotos como <strong>Turbo Driver</strong>. Los puntos obtenidos por este piloto se multiplicarán por 2 (x2) en la puntuación total de tu escudería.
@@ -3424,7 +3479,7 @@
                 </div>
 
                 <div class="fantasy-rule-card">
-                    <div class="rule-card-icon">🏁</div>
+                    <div class="rule-card-icon"><i data-lucide="flag" aria-hidden="true"></i></div>
                     <h3 class="rule-card-title" id="ruleCard4Title">4. Inicio con 0 Puntos (A partir de Nürburgring)</h3>
                     <p class="rule-card-text" id="ruleCard4Text">
                         Todos los equipos y participantes comienzan la liga Fantasy con <strong>0 puntos</strong>. Las puntuaciones se acumularán a partir del Gran Premio de Nürburgring (Round 10) y siguientes rondas de la temporada con los puntos reales que consigan tus pilotos y constructor en cada carrera oficial.
@@ -3432,7 +3487,7 @@
                 </div>
 
                 <div class="fantasy-rule-card">
-                    <div class="rule-card-icon">🔄</div>
+                    <div class="rule-card-icon"><i data-lucide="refresh-cw" aria-hidden="true"></i></div>
                     <h3 class="rule-card-title" id="ruleCard5Title">5. Mercado de Traspasos Libre</h3>
                     <p class="rule-card-text" id="ruleCard5Text">
                         Puedes vender y cambiar pilotos y constructores en cualquier momento entre carreras. Al vender un piloto recuperas el 100% de su valor actual para reinvertirlo en nuevos talentos.
@@ -3440,7 +3495,7 @@
                 </div>
 
                 <div class="fantasy-rule-card">
-                    <div class="rule-card-icon">☁️</div>
+                    <div class="rule-card-icon"><i data-lucide="cloud" aria-hidden="true"></i></div>
                     <h3 class="rule-card-title" id="ruleCard6Title">6. Guardado en Tu Perfil</h3>
                     <p class="rule-card-text" id="ruleCard6Text">
                         Si has iniciado sesión con tu cuenta, tu escudería se sincroniza automáticamente con la nube en Firestore, manteniéndose guardada y visible en la clasificación comunitaria.
@@ -3448,7 +3503,7 @@
                 </div>
 
                 <div class="fantasy-rule-card">
-                    <div class="rule-card-icon">📈</div>
+                    <div class="rule-card-icon"><i data-lucide="trending-up" aria-hidden="true"></i></div>
                     <h3 class="rule-card-title" id="ruleCard7Title">7. Fluctuación Dinámica de Precios & Plusvalías</h3>
                     <p class="rule-card-text" id="ruleCard7Text">
                         El precio de mercado de cada piloto y constructor sube (<strong>▲ +0.1M€ a +1.0M€</strong>) o baja (<strong>▼ -0.1M€ a -0.6M€</strong>) tras cada Gran Premio oficial según su rendimiento real. Si fichas a un piloto antes de una gran actuación y su valor se dispara, al venderlo recuperarás su <strong>nuevo precio de mercado</strong>, aumentando el presupuesto total de tu escudería.
@@ -3580,7 +3635,7 @@
                 <!-- Dynamic photos -->
             </div>
             <div class="photo-empty-state" id="raceModalPhotoEmptyState" style="display: none;">
-                <span class="empty-icon">📸</span>
+                <span class="empty-icon"><i data-lucide="camera" aria-hidden="true"></i></span>
                 <h4 id="raceGalleryEmptyTitle">No hay fotos para este Gran Premio todavía</h4>
                 <p id="raceGalleryEmptyDesc">¡Sé el primero en subir una foto de esta carrera!</p>
                 <button type="button" class="btn btn-primary btn-sm" id="raceGalleryUploadBtn2" onclick="openUploadPhotoModalForCurrentRace()">Subir foto ahora</button>
@@ -4142,42 +4197,42 @@
             
             <nav class="admin-sidebar-nav">
                 <button type="button" class="admin-tab-btn active" data-tab="tab-next-race">
-                    <span class="admin-tab-icon">🏁</span>
+                    <span class="admin-tab-icon"><i data-lucide="flag" aria-hidden="true"></i></span>
                     <span class="admin-tab-title">Control de Carrera & Directo</span>
                 </button>
                 <button type="button" class="admin-tab-btn" data-tab="tab-race-results">
-                    <span class="admin-tab-icon">🏆</span>
+                    <span class="admin-tab-icon"><i data-lucide="trophy" aria-hidden="true"></i></span>
                     <span class="admin-tab-title">Resultados de Carreras</span>
                 </button>
                 <button type="button" class="admin-tab-btn" data-tab="tab-standings">
-                    <span class="admin-tab-icon">📊</span>
+                    <span class="admin-tab-icon"><i data-lucide="bar-chart-3" aria-hidden="true"></i></span>
                     <span class="admin-tab-title">Clasificación General</span>
                 </button>
                 <button type="button" class="admin-tab-btn" data-tab="tab-drivers">
-                    <span class="admin-tab-icon">🏎️</span>
+                    <span class="admin-tab-icon"><i data-lucide="car" aria-hidden="true"></i></span>
                     <span class="admin-tab-title">Pilotos & Escuderías</span>
                 </button>
                 <button type="button" class="admin-tab-btn" data-tab="tab-verify" id="adminTabVerifyBtn">
-                    <span class="admin-tab-icon">🛡️</span>
+                    <span class="admin-tab-icon"><i data-lucide="shield" aria-hidden="true"></i></span>
                     <span class="admin-tab-title">Verificación & Códigos</span>
                     <span class="admin-tab-pill-badge admin-tab-badge-gold" id="adminTabVerifyBadge">0</span>
                 </button>
                 <button type="button" class="admin-tab-btn" data-tab="tab-news">
-                    <span class="admin-tab-icon">📰</span>
+                    <span class="admin-tab-icon"><i data-lucide="newspaper" aria-hidden="true"></i></span>
                     <span class="admin-tab-title">Noticias & Comunidad</span>
                 </button>
                 <button type="button" class="admin-tab-btn" data-tab="tab-photos">
-                    <span class="admin-tab-icon">📸</span>
+                    <span class="admin-tab-icon"><i data-lucide="camera" aria-hidden="true"></i></span>
                     <span class="admin-tab-title">Galería & Fotos</span>
                     <span class="admin-tab-pill-badge admin-tab-badge-gold" id="adminTabPhotosBadge">0</span>
                 </button>
                 <button type="button" class="admin-tab-btn" data-tab="tab-email-audit" id="adminTabEmailAuditBtn">
-                    <span class="admin-tab-icon">🔍</span>
+                    <span class="admin-tab-icon"><i data-lucide="search" aria-hidden="true"></i></span>
                     <span class="admin-tab-title">Auditoría & Seguridad</span>
                     <span class="admin-tab-pill-badge" id="adminTabEmailAuditBadge" style="background: rgba(239, 68, 68, 0.25); color: #fca5a5; border: 1px solid rgba(239, 68, 68, 0.45);">0</span>
                 </button>
                 <button type="button" class="admin-tab-btn" data-tab="tab-settings">
-                    <span class="admin-tab-icon">⚙️</span>
+                    <span class="admin-tab-icon"><i data-lucide="settings" aria-hidden="true"></i></span>
                     <span class="admin-tab-title">Ajustes & FFC Fantasy</span>
                 </button>
             </nav>
@@ -4197,8 +4252,8 @@
                     <input type="text" id="adminGlobalQuickSearch" placeholder="Búsqueda rápida en panel (Pilotos, GPs, Config)..." autocomplete="off">
                 </div>
                 <div class="admin-workspace-actions-right">
-                    <span class="admin-session-badge" id="adminSessionInfo">🔒 Admin Pit Wall</span>
-                    <button type="button" class="admin-quick-guide-btn" title="Guía Rápida / Pit Wall" onclick="alert('Formula Factor Championship // FIA Race Control Pit Wall v2026. Gestiona en segundos la próxima carrera, resultados oficiales, mercado fantasy, códigos de verificación y moderación de prensa/fotos.')">💡 Pit Wall Guide</button>
+                    <span class="admin-session-badge" id="adminSessionInfo"><i data-lucide="lock" aria-hidden="true"></i> Admin Pit Wall</span>
+                    <button type="button" class="admin-quick-guide-btn" title="Guía Rápida / Pit Wall" onclick="alert('Formula Factor Championship // FIA Race Control Pit Wall v2026. Gestiona en segundos la próxima carrera, resultados oficiales, mercado fantasy, códigos de verificación y moderación de prensa/fotos.')"><i data-lucide="lightbulb" aria-hidden="true"></i> Pit Wall Guide</button>
                     <button type="button" class="admin-close-window-btn" id="adminPanelClose" aria-label="Cerrar ventana">✕</button>
                 </div>
             </header>
@@ -4271,7 +4326,7 @@
                 <!-- PRESET QUICK LOADER -->
                 <div class="admin-preset-strip">
                     <div class="admin-preset-label">
-                        <span class="admin-preset-icon">⚡</span>
+                        <span class="admin-preset-icon"><i data-lucide="zap" aria-hidden="true"></i></span>
                         <span>Plantilla rápida de Gran Premio:</span>
                     </div>
                     <select id="adminQuickGpPreset" class="admin-preset-select">
@@ -4327,11 +4382,11 @@
                                 <div class="admin-field">
                                     <label for="adminRaceWeather">Previsión Meteorológica / Clima</label>
                                     <select id="adminRaceWeather" class="admin-select" required>
-                                        <option value="sunny">☀️ Soleado / Despejado</option>
-                                        <option value="partly-cloudy">⛅ Parcialmente Nublado</option>
-                                        <option value="cloudy">☁️ Nublado</option>
-                                        <option value="rainy">🌧️ Lluvia / Pista Mojada</option>
-                                        <option value="storm">🌩️ Tormenta Intensa</option>
+                                        <option value="sunny">Soleado / Despejado</option>
+                                        <option value="partly-cloudy">Parcialmente Nublado</option>
+                                        <option value="cloudy">Nublado</option>
+                                        <option value="rainy">Lluvia / Pista Mojada</option>
+                                        <option value="storm">Tormenta Intensa</option>
                                     </select>
                                 </div>
                                 <div class="admin-field admin-field-full">
@@ -4339,13 +4394,13 @@
                                         <label for="adminRaceDateTime" style="margin-bottom: 0;">Fecha y Hora de la Carrera (Cuenta Regresiva)</label>
                                         <label class="admin-tbd-checkbox-label" id="adminRaceIsTbdLabel" style="display: inline-flex; align-items: center; gap: 6px; cursor: pointer; font-size: 12px; font-weight: 700; color: var(--gold-light, #f1d78a);">
                                             <input type="checkbox" id="adminRaceIsTbd" style="cursor: pointer; accent-color: var(--gold, #d4af37);">
-                                            <span>⏱️ Fecha por Determinar (TBD / TBA)</span>
+                                            <span>Fecha por Determinar (TBD / TBA)</span>
                                         </label>
                                     </div>
                                     <div style="display: flex; gap: 8px; align-items: center;">
                                         <input type="datetime-local" id="adminRaceDateTime" style="flex: 1;">
                                         <button type="button" id="adminSetTbdQuickBtn" class="btn btn-secondary btn-sm" style="white-space: nowrap; padding: 7px 12px; font-size: 12px; font-weight: 700;">
-                                            ⏱️ Modo TBD
+                                            Modo TBD
                                         </button>
                                     </div>
                                     <small class="admin-field-hint" id="adminRaceDateTimeHint">Ajusta la fecha y hora oficial para que el contador en vivo sincronice automáticamente, o marca TBD si aún no está confirmada.</small>
@@ -4364,7 +4419,7 @@
                                     <div class="admin-preview-meta-row">
                                         <span class="admin-preview-round" id="previewMockRound">ROUND 10</span>
                                         <div class="admin-preview-weather" id="previewMockWeather">
-                                            <span id="previewMockWeatherIcon">☀️</span>
+                                            <span id="previewMockWeatherIcon"><i data-lucide="sun" aria-hidden="true"></i></span>
                                             <span id="previewMockWeatherTemp">22°C</span>
                                         </div>
                                     </div>
@@ -4429,17 +4484,20 @@
                     <div class="admin-race-status-bar" id="adminRaceStatusBar">
                         <div class="admin-race-status-left">
                             <span class="admin-race-status-label">Estado de la Carrera:</span>
-                            <span id="adminRaceStatusBadge" class="admin-status-pill status-completed">🏁 FINALIZADA</span>
+                            <span id="adminRaceStatusBadge" class="admin-status-pill status-completed"><i data-lucide="flag" aria-hidden="true"></i> FINALIZADA</span>
                             <select id="adminRaceStatusSelect" class="admin-select" style="width: auto; padding: 4px 10px; font-size: 12px; height: 32px; background: rgba(0,0,0,0.5); border-color: rgba(214,180,92,0.3);">
-                                <option value="COMPLETED">🏁 Finalizada / Acabada (Resultados publicados)</option>
-                                <option value="UPCOMING">⏳ Próxima / Pendiente (Aún no disputada)</option>
+                                <option value="COMPLETED">Finalizada / Acabada (Resultados publicados)</option>
+                                <option value="UPCOMING">Próxima / Pendiente (Aún no disputada)</option>
                             </select>
                         </div>
                         <div class="admin-race-status-actions" style="display: flex; gap: 8px; flex-wrap: wrap;">
-                            <button type="button" id="adminSetAsNextRaceBtn" class="btn btn-secondary btn-sm" style="display: inline-flex; align-items: center; gap: 6px; padding: 6px 14px; font-size: 12px;" title="Fijar esta cita como la próxima carrera activa y marcar las anteriores como finalizadas">
-                                <span>🎯</span> <span>Fijar como Próxima</span>
+                            <button type="button" id="adminFinishNextRaceBtn" class="btn btn-primary btn-sm" style="display: inline-flex; align-items: center; gap: 6px; padding: 6px 14px; font-size: 12px;" title="Guarda esta carrera como finalizada y fija la siguiente del calendario en un solo paso">
+                                <i data-lucide="flag" aria-hidden="true"></i> <span>Finalizar y pasar a la siguiente</span>
                             </button>
-                            <button type="button" id="adminToggleRaceStatusBtn" class="btn btn-primary btn-sm" style="display: inline-flex; align-items: center; gap: 6px; padding: 6px 14px; font-size: 12px;">
+                            <button type="button" id="adminSetAsNextRaceBtn" class="btn btn-secondary btn-sm" style="display: inline-flex; align-items: center; gap: 6px; padding: 6px 14px; font-size: 12px;" title="Fijar esta cita como la próxima carrera activa y marcar las anteriores como finalizadas">
+                                <i data-lucide="target" aria-hidden="true"></i> <span>Fijar como Próxima</span>
+                            </button>
+                            <button type="button" id="adminToggleRaceStatusBtn" class="btn btn-secondary btn-sm" style="display: inline-flex; align-items: center; gap: 6px; padding: 6px 14px; font-size: 12px;">
                                 <span id="adminToggleRaceStatusBtnLabel">Marcar como Acabada</span>
                             </button>
                         </div>
@@ -4447,6 +4505,9 @@
 
                     <div class="admin-auto-sync-banner">
                         <div>
+                            <span><strong>Lo más rápido:</strong> usa <strong>«Finalizar y pasar a la siguiente»</strong> para guardar esta carrera como finalizada y fijar la siguiente del calendario de una sola vez.</span>
+                        </div>
+                        <div style="margin-top: 8px;">
                             <span><strong>Sincronización Automática:</strong> Al marcar una carrera como <strong>Próxima</strong>, la anterior (y todas las previas en el calendario) se marca automáticamente como <strong>Finalizada</strong>. Del mismo modo, al marcar una carrera como <strong>Acabada</strong>, el calendario avanza y el Hero actualiza su cuenta atrás.</span>
                         </div>
                     </div>
@@ -4491,7 +4552,7 @@
                         <!-- PILOTO DEL DÍA Y FECHA -->
                         <div class="admin-highlight-card">
                             <div class="admin-highlight-header">
-                                <span class="admin-highlight-icon">⭐</span>
+                                <span class="admin-highlight-icon"><i data-lucide="star" aria-hidden="true"></i></span>
                                 <span class="admin-highlight-title">PILOTO DEL DÍA &amp; FECHA</span>
                             </div>
                             <div class="admin-field" style="margin-bottom: 8px;">
@@ -4536,11 +4597,14 @@
                     <div class="admin-standings-toolbar">
                         <h4>ORDEN DE LLEGADA (PILOTOS POR DESPLEGABLE)</h4>
                         <div class="admin-toolbar-btns">
+                            <button type="button" id="adminImportRaceResultsBtn" class="btn btn-primary btn-sm" title="Descargar una carrera finalizada del servidor y rellenar el orden de llegada automáticamente"><i data-lucide="download" aria-hidden="true"></i> Importar del Servidor</button>
                             <button type="button" id="adminAddRacePosBtn" class="btn btn-secondary btn-sm">+ Añadir Posición</button>
                             <button type="button" id="adminLoadDefaultPosBtn" class="btn btn-secondary btn-sm">Cargar Top 10</button>
                             <button type="button" id="adminResetRaceBtn" class="btn btn-danger-outline btn-sm" title="Restablecer resultados y tiempos de esta carrera">↺ Restablecer Carrera</button>
                         </div>
                     </div>
+
+                    <div class="admin-import-banner" id="adminImportBanner" style="display: none;"></div>
 
                     <div class="admin-table-wrapper">
                         <table class="admin-table" id="adminRacePositionsTable">
@@ -4585,7 +4649,7 @@
                         <input type="text" id="adminStandingsSearchInput" placeholder="Buscar piloto o equipo en la clasificación..." class="admin-filter-input" autocomplete="off">
                     </div>
                     <div class="admin-toolbar-btns">
-                        <button type="button" class="btn btn-secondary btn-sm" id="adminRecalcStandingsBtn" title="Recalcular puntos automáticamente según los resultados de todas las carreras">⚡ Recalcular desde Carreras</button>
+                        <button type="button" class="btn btn-secondary btn-sm" id="adminRecalcStandingsBtn" title="Recalcular puntos automáticamente según los resultados de todas las carreras"><i data-lucide="zap" aria-hidden="true"></i> Recalcular desde Carreras</button>
                         <button type="button" class="btn btn-secondary btn-sm" id="adminAddDriverBtn">+ Añadir Piloto a Tabla</button>
                     </div>
                 </div>
@@ -4784,7 +4848,7 @@
                                 <option value="code">Solo con Código Activo</option>
                                 <option value="pending">Sin Código / Pendientes</option>
                             </select>
-                            <input type="text" id="adminSearchVerifyPilotInput" placeholder="🔍 Buscar piloto..." class="admin-filter-input" autocomplete="off">
+                            <input type="text" id="adminSearchVerifyPilotInput" placeholder="Buscar piloto..." class="admin-filter-input" autocomplete="off">
                         </div>
                     </div>
 
@@ -4824,7 +4888,7 @@
                     <div class="admin-settings-section-card champion-admin-border" style="border: 1px solid rgba(214, 180, 92, 0.45); background: linear-gradient(135deg, rgba(214, 180, 92, 0.08) 0%, rgba(10, 15, 26, 0.95) 100%);">
                         <div class="admin-live-header">
                             <div class="admin-live-badge" style="background: rgba(214, 180, 92, 0.2); color: var(--gold); border: 1px solid rgba(214, 180, 92, 0.45);">
-                                <span>👑</span>
+                                <span><i data-lucide="crown" aria-hidden="true"></i></span>
                                 PORTADA HERO &bull; MODO CAMPEÓN DEL MUNDO
                             </div>
                             <label class="admin-switch-label" for="adminChampionMode">
@@ -4919,7 +4983,7 @@
                     <div class="admin-settings-section-card fantasy-border" style="margin-top: 20px;">
                         <div class="admin-live-header">
                             <div class="admin-live-badge fantasy-badge">
-                                <span>🏎️</span>
+                                <span><i data-lucide="car" aria-hidden="true"></i></span>
                                 FFC FANTASY LEAGUE &bull; BLOQUEO DE MERCADO
                             </div>
                             <label class="admin-switch-label" for="adminFantasyLocked">
@@ -4945,7 +5009,7 @@
                         <div class="admin-sub-card">
                             <div class="admin-live-header" style="margin-bottom: 8px;">
                                 <div class="admin-live-badge" style="background: rgba(74, 222, 128, 0.15); color: #4ade80; border-color: rgba(74, 222, 128, 0.4);">
-                                    <span>📈</span>
+                                    <span><i data-lucide="trending-up" aria-hidden="true"></i></span>
                                     FLUCTUACIÓN DINÁMICA DE PRECIOS
                                 </div>
                                 <label class="admin-switch-label" for="adminFantasyFluctuation">
@@ -4972,7 +5036,7 @@
                                 <div class="admin-field">
                                     <label>Acción Rápida de Mercado</label>
                                     <button type="button" class="fantasy-btn-gold" id="adminRecalculatePricesBtn" style="width: 100%; height: 42px; margin-top: 2px;">
-                                        <span>🔄 Recalcular y Aplicar Precios</span>
+                                        <span><i data-lucide="refresh-cw" aria-hidden="true"></i> Recalcular y Aplicar Precios</span>
                                     </button>
                                 </div>
                             </div>
@@ -5060,7 +5124,7 @@
                     <div class="admin-news-right-actions">
                         <input type="text" id="adminNewsSearchInput" class="admin-news-search-input" placeholder="Buscar por título o autor...">
                         <button type="button" class="btn btn-primary btn-sm" id="btnAdminCreateOfficialNews">
-                            <span>➕</span> Redactar Noticia Oficial
+                            <span><i data-lucide="plus" aria-hidden="true"></i></span> Redactar Noticia Oficial
                         </button>
                     </div>
                 </div>
@@ -5099,7 +5163,7 @@
                     <div class="admin-news-right-actions">
                         <input type="text" id="adminPhotosSearchInput" class="admin-news-search-input" placeholder="Buscar por autor, descripción o Gran Premio...">
                         <button type="button" class="btn btn-primary btn-sm" id="btnAdminUploadPhoto" onclick="openUploadPhotoModal()" style="display: inline-flex; align-items: center; gap: 6px; white-space: nowrap;">
-                            <span>📸</span> Subir Foto Directa (Admin)
+                            <span><i data-lucide="camera" aria-hidden="true"></i></span> Subir Foto Directa (Admin)
                         </button>
                     </div>
                 </div>
@@ -5284,11 +5348,11 @@
                 <div class="preview-card-header">
                     <div class="preview-avatar-wrap" id="previewAvatarWrap">
                         <img src="" id="previewAvatarImg" class="preview-avatar-img" alt="Avatar" style="display: none;">
-                        <span id="previewAvatarFallback" class="preview-avatar-fallback">🏎️</span>
+                        <span id="previewAvatarFallback" class="preview-avatar-fallback"><i data-lucide="user-round"></i></span>
                     </div>
                     <div class="preview-info">
                         <div class="preview-name-row">
-                            <span id="previewFlag" class="preview-flag">🏁</span>
+                            <span id="previewFlag" class="preview-flag"><i data-lucide="flag"></i></span>
                             <span id="previewDriverName" class="preview-name">Tu Piloto</span>
                             <span class="verify-badge-verified" style="display: inline-block; font-size: 9px; padding: 2px 5px;">VERIFICADO</span>
                         </div>
@@ -5344,11 +5408,11 @@
                 <div class="avatar-controls-container">
                     <div class="avatar-quick-presets" id="avatarQuickPresets">
                         <span class="avatar-preset-label" id="avatarPresetLabel">Avatares FFC:</span>
-                        <button type="button" class="avatar-preset-btn" data-avatar="helmet-gold" title="Casco Oro">🏆 Oro</button>
-                        <button type="button" class="avatar-preset-btn" data-avatar="helmet-red" title="Casco Rojo">🔴 Rojo</button>
-                        <button type="button" class="avatar-preset-btn" data-avatar="helmet-blue" title="Casco Azul">🔵 Azul</button>
-                        <button type="button" class="avatar-preset-btn" data-avatar="helmet-green" title="Casco Verde">🟢 Verde</button>
-                        <button type="button" class="avatar-preset-btn avatar-btn-clear" id="btnRemoveAvatar" title="Quitar foto">🧹 Quitar</button>
+                        <button type="button" class="avatar-preset-btn" data-avatar="helmet-gold" title="Casco Oro"><span class="preset-dot" style="--dot:#d6b45c"></span> Oro</button>
+                        <button type="button" class="avatar-preset-btn" data-avatar="helmet-red" title="Casco Rojo"><span class="preset-dot" style="--dot:#e10600"></span> Rojo</button>
+                        <button type="button" class="avatar-preset-btn" data-avatar="helmet-blue" title="Casco Azul"><span class="preset-dot" style="--dot:#0057ff"></span> Azul</button>
+                        <button type="button" class="avatar-preset-btn" data-avatar="helmet-green" title="Casco Verde"><span class="preset-dot" style="--dot:#10b981"></span> Verde</button>
+                        <button type="button" class="avatar-preset-btn avatar-btn-clear" id="btnRemoveAvatar" title="Quitar foto"><i data-lucide="eraser"></i> Quitar</button>
                     </div>
                     
                     <div class="avatar-upload-row">
@@ -5370,7 +5434,7 @@
                     <span class="card-locked-badge" id="cardLockedBadge">OFICIAL FFC</span>
                 </div>
                 <div class="official-nationality-card">
-                    <span id="editCardFlagDisplay" class="official-flag-icon">🏁</span>
+                    <span id="editCardFlagDisplay" class="official-flag-icon"><i data-lucide="flag"></i></span>
                     <div class="official-flag-details">
                         <span id="editCardCountryName" class="official-country-name">Nacionalidad oficial FFC</span>
                         <span class="official-flag-notice">El país está fijado por la FIA/FFC en base a tu inscripción oficial y no se puede modificar.</span>
@@ -5387,12 +5451,12 @@
                 </div>
                 <div class="bio-suggestions-row">
                     <span class="bio-suggest-label" id="bioSuggestLabel">Ideas rápidas:</span>
-                    <button type="button" class="bio-tag-btn" data-tag="🎮 Mando PS5">🎮 Mando</button>
-                    <button type="button" class="bio-tag-btn" data-tag="🕹️ Volante G29">🕹️ Volante G29</button>
-                    <button type="button" class="bio-tag-btn" data-tag="🏎️ Fanatec DD">🏎️ Fanatec DD</button>
-                    <button type="button" class="bio-tag-btn" data-tag="🌧️ Especialista en lluvia">🌧️ Lluvia</button>
-                    <button type="button" class="bio-tag-btn" data-tag="⚡ Agresivo al límite">⚡ Agresivo</button>
-                    <button type="button" class="bio-tag-btn" data-tag="🛡️ Ritmo constante">🛡️ Consistente</button>
+                    <button type="button" class="bio-tag-btn" data-tag="Mando PS5"><i data-lucide="gamepad-2"></i> Mando</button>
+                    <button type="button" class="bio-tag-btn" data-tag="Volante G29"><i data-lucide="gauge"></i> Volante G29</button>
+                    <button type="button" class="bio-tag-btn" data-tag="Fanatec DD"><i data-lucide="car"></i> Fanatec DD</button>
+                    <button type="button" class="bio-tag-btn" data-tag="Especialista en lluvia"><i data-lucide="cloud-rain"></i> Lluvia</button>
+                    <button type="button" class="bio-tag-btn" data-tag="Agresivo al límite"><i data-lucide="zap"></i> Agresivo</button>
+                    <button type="button" class="bio-tag-btn" data-tag="Ritmo constante"><i data-lucide="shield"></i> Consistente</button>
                 </div>
                 <textarea id="editCardBio" class="claim-textarea" rows="2" placeholder="Official FFC driver competing in the 2010 Championship season." maxlength="300"></textarea>
             </div>
@@ -5405,19 +5469,19 @@
                 </div>
                 <div class="social-input-grid-visual">
                     <div class="social-input-item">
-                        <span class="social-input-icon twitch">👾</span>
+                        <span class="social-input-icon twitch"><i data-lucide="tv"></i></span>
                         <input type="text" id="editCardTwitch" class="claim-input" placeholder="Twitch (usuario)">
                     </div>
                     <div class="social-input-item">
-                        <span class="social-input-icon youtube">📺</span>
+                        <span class="social-input-icon youtube"><i data-lucide="video"></i></span>
                         <input type="text" id="editCardYoutube" class="claim-input" placeholder="YouTube (canal)">
                     </div>
                     <div class="social-input-item">
-                        <span class="social-input-icon twitter">🐦</span>
+                        <span class="social-input-icon twitter"><i data-lucide="at-sign"></i></span>
                         <input type="text" id="editCardTwitter" class="claim-input" placeholder="X / Twitter (@handle)">
                     </div>
                     <div class="social-input-item">
-                        <span class="social-input-icon discord">💬</span>
+                        <span class="social-input-icon discord"><i data-lucide="message-circle"></i></span>
                         <input type="text" id="editCardDiscord" class="claim-input" placeholder="Discord (usuario)">
                     </div>
                 </div>
@@ -5623,7 +5687,7 @@
 <div id="cookieConsentBanner" class="cookie-banner" style="display: none;">
     <div class="cookie-banner-inner">
         <div class="cookie-banner-text" id="cookieBannerText">
-            <strong>🍪 Uso de Cookies y Almacenamiento Local:</strong> FFC utiliza cookies técnicas y almacenamiento local esenciales para la autenticación, la Liga Fantasy y el correcto funcionamiento de la plataforma. Puedes consultar nuestra <button type="button" class="cookie-policy-link-btn" id="bannerCookiesLink" onclick="if(window.openCookiesModal){window.openCookiesModal();return false;}">Política de Cookies</button>.
+            <strong><i data-lucide="cookie" aria-hidden="true"></i> Uso de Cookies y Almacenamiento Local:</strong> FFC utiliza cookies técnicas y almacenamiento local esenciales para la autenticación, la Liga Fantasy y el correcto funcionamiento de la plataforma. Puedes consultar nuestra <button type="button" class="cookie-policy-link-btn" id="bannerCookiesLink" onclick="if(window.openCookiesModal){window.openCookiesModal();return false;}">Política de Cookies</button>.
         </div>
         <div class="cookie-banner-actions">
             <button type="button" class="btn btn-secondary btn-sm" id="cookieRejectBtn">Solo esenciales</button>
@@ -5647,13 +5711,13 @@
             <div class="news-editor-topbar-left">
                 <div class="admin-card-badge" id="newsSubmitModalBadge">PRENSA &bull; REDACCIÓN FFC</div>
                 <h2 id="newsSubmitModalTitle" class="news-editor-main-title">REDACTOR DE ARTÍCULO</h2>
-                <span class="news-editor-draft-badge" id="newsDraftStatusIndicator" title="Guardado automático local">💾 Borrador guardado</span>
+                <span class="news-editor-draft-badge" id="newsDraftStatusIndicator" title="Guardado automático local"><i data-lucide="save" aria-hidden="true"></i> Borrador guardado</span>
             </div>
             
             <div class="news-editor-topbar-right">
                 <!-- Fullscreen Toggle Button -->
                 <button type="button" class="news-editor-btn-topbar" id="btnToggleEditorFullscreen" onclick="toggleNewsEditorFullscreen()" title="Alternar pantalla completa (F11)">
-                    <span id="fullscreenIcon">⛶</span>
+                    <span id="fullscreenIcon"><i data-lucide="maximize" aria-hidden="true"></i></span>
                     <span id="fullscreenLabel" class="news-fullscreen-text">Pantalla completa</span>
                 </button>
                 <!-- Close Button -->
@@ -5688,7 +5752,7 @@
                 <button type="button" class="ribbon-btn" id="btnRibbonItalic" onclick="executeEditorCommand('italic')" title="Cursiva (Ctrl+I)"><em>I</em></button>
                 <button type="button" class="ribbon-btn" id="btnRibbonUnderline" onclick="executeEditorCommand('underline')" title="Subrayado (Ctrl+U)"><u>U</u></button>
                 <button type="button" class="ribbon-btn" id="btnRibbonStrike" onclick="executeEditorCommand('strikeThrough')" title="Tachado"><s>S</s></button>
-                <button type="button" class="ribbon-btn ribbon-btn-highlight" id="btnRibbonHighlight" onclick="applyRibbonHighlight()" title="Resaltado Oro FFC">✨ Oro</button>
+                <button type="button" class="ribbon-btn ribbon-btn-highlight" id="btnRibbonHighlight" onclick="applyRibbonHighlight()" title="Resaltado Oro FFC"><i data-lucide="sparkles" aria-hidden="true"></i> Oro</button>
             </div>
 
             <div class="ribbon-divider"></div>
@@ -5715,10 +5779,10 @@
 
             <!-- Media & Extras -->
             <div class="ribbon-group">
-                <button type="button" class="ribbon-btn" id="btnRibbonInsertImg" onclick="triggerInsertArticleImage()" title="Insertar foto dentro del texto">📷 Foto en texto</button>
+                <button type="button" class="ribbon-btn" id="btnRibbonInsertImg" onclick="triggerInsertArticleImage()" title="Insertar foto dentro del texto"><i data-lucide="image" aria-hidden="true"></i> Foto en texto</button>
                 <input type="file" id="articleBodyImgFileInput" accept="image/*" style="display: none;" onchange="handleArticleBodyImageUpload(event)">
-                <button type="button" class="ribbon-btn" id="btnRibbonInsertLink" onclick="applyRibbonLink()" title="Insertar enlace web">🔗 Link</button>
-                <button type="button" class="ribbon-btn" onclick="executeEditorCommand('removeFormat')" title="Limpiar formato">🧹</button>
+                <button type="button" class="ribbon-btn" id="btnRibbonInsertLink" onclick="applyRibbonLink()" title="Insertar enlace web"><i data-lucide="link" aria-hidden="true"></i> Link</button>
+                <button type="button" class="ribbon-btn" onclick="executeEditorCommand('removeFormat')" title="Limpiar formato"><i data-lucide="eraser" aria-hidden="true"></i></button>
             </div>
 
             <!-- Stats (Words & Reading Time) -->
@@ -5739,21 +5803,21 @@
                         <div class="news-page-meta-group">
                             <label for="newsSubmitCategory" class="news-sheet-label" id="lblNewsSubmitCategory">CATEGORÍA <span class="required-star">*</span></label>
                             <select id="newsSubmitCategory" class="news-sheet-select" required onchange="autoSaveDraft()">
-                                <option value="Carreras">🏆 Carreras</option>
-                                <option value="Fichajes">🔄 Fichajes</option>
-                                <option value="Pilotos">🏎️ Pilotos</option>
-                                <option value="Crónicas">📝 Crónicas</option>
-                                <option value="Comunidad" selected>👥 Comunidad</option>
-                                <option value="Técnica">⚙️ Análisis Técnico</option>
+                                <option value="Carreras">Carreras</option>
+                                <option value="Fichajes">Fichajes</option>
+                                <option value="Pilotos">Pilotos</option>
+                                <option value="Crónicas">Crónicas</option>
+                                <option value="Comunidad" selected>Comunidad</option>
+                                <option value="Técnica">Análisis Técnico</option>
                             </select>
                         </div>
                         
                         <div class="news-page-meta-group">
                             <label for="newsSubmitAuthor" class="news-sheet-label" id="lblNewsSubmitAuthor">AUTOR REGISTRADO <span class="required-star">*</span></label>
                             <div class="news-sheet-author-pill">
-                                <span class="author-icon">👤</span>
+                                <span class="author-icon"><i data-lucide="user-round" aria-hidden="true"></i></span>
                                 <input type="text" id="newsSubmitAuthor" class="news-sheet-author-input" readonly title="Nombre de tu cuenta registrada">
-                                <span class="author-verified-tag" title="Cuenta verificada">🔒 VERIFICADO</span>
+                                <span class="author-verified-tag" title="Cuenta verificada"><i data-lucide="badge-check" aria-hidden="true"></i> VERIFICADO</span>
                             </div>
                         </div>
                     </div>
@@ -5786,8 +5850,8 @@
                                 <div class="cover-preview-overlay">
                                     <span class="cover-preview-badge" id="coverPreviewBadge">✓ Foto cargada</span>
                                     <div class="cover-preview-actions">
-                                        <button type="button" class="btn-cover-action" onclick="event.stopPropagation(); triggerCoverFileInput()" title="Cambiar foto">🔄 Cambiar foto</button>
-                                        <button type="button" class="btn-cover-action btn-cover-remove" onclick="event.stopPropagation(); removeCoverImage()" title="Eliminar foto">🗑️ Quitar foto</button>
+                                        <button type="button" class="btn-cover-action" onclick="event.stopPropagation(); triggerCoverFileInput()" title="Cambiar foto"><i data-lucide="refresh-cw" aria-hidden="true"></i> Cambiar foto</button>
+                                        <button type="button" class="btn-cover-action btn-cover-remove" onclick="event.stopPropagation(); removeCoverImage()" title="Eliminar foto"><i data-lucide="trash-2" aria-hidden="true"></i> Quitar foto</button>
                                     </div>
                                 </div>
                             </div>
@@ -5796,10 +5860,10 @@
                         <!-- Secondary options: Link toggle and FFC background preset -->
                         <div class="news-cover-extra-actions">
                             <button type="button" class="btn-sub-link-action" onclick="toggleCoverUrlInput()" id="btnToggleUrlInput">
-                                🔗 O pegar enlace web de imagen
+                                <i data-lucide="link" aria-hidden="true"></i> O pegar enlace web de imagen
                             </button>
                             <button type="button" class="btn-sub-link-action" onclick="setPresetNewsImage()" id="btnNewsUseDefaultImg">
-                                🏁 Usar fondo oficial FFC
+                                <i data-lucide="flag" aria-hidden="true"></i> Usar fondo oficial FFC
                             </button>
                         </div>
 
@@ -5811,7 +5875,7 @@
                     <!-- BILINGUAL LANGUAGE TABS (MANDATORY DUAL-LANGUAGE) -->
                     <div class="news-bilingual-bar">
                         <div class="news-bilingual-header-title">
-                            <span class="news-bilingual-icon">🌐</span>
+                            <span class="news-bilingual-icon"><i data-lucide="globe" aria-hidden="true"></i></span>
                             <div class="news-bilingual-text-wrap">
                                 <strong class="news-bilingual-title-text" id="newsBilingualHeaderTitle">IDIOMAS OBLIGATORIOS (2/2)</strong>
                                 <span class="news-bilingual-subtext" id="newsBilingualSubtext">Debes redactar la noticia en Español e Inglés para la comunidad internacional</span>
@@ -5821,12 +5885,12 @@
                             <button type="button" class="news-lang-tab-btn active" id="btnNewsLangTab_es" onclick="switchNewsEditorLang('es')">
                                 <span class="lang-flag"><img loading="lazy" decoding="async" src="https://flagcdn.com/w40/es.png" class="driver-flag-img inline-block align-middle" alt="es" style="width: 18px; height: 12px; border-radius: 2px;"></span>
                                 <span class="lang-tab-name">Español</span>
-                                <span class="lang-status-badge pending" id="badgeLangStatus_es">⚠️ Incompleto</span>
+                                <span class="lang-status-badge pending" id="badgeLangStatus_es"><i data-lucide="alert-triangle" aria-hidden="true"></i> Incompleto</span>
                             </button>
                             <button type="button" class="news-lang-tab-btn" id="btnNewsLangTab_en" onclick="switchNewsEditorLang('en')">
                                 <span class="lang-flag"><img loading="lazy" decoding="async" src="https://flagcdn.com/w40/gb.png" class="driver-flag-img inline-block align-middle" alt="gb" style="width: 18px; height: 12px; border-radius: 2px;"></span>
                                 <span class="lang-tab-name">English</span>
-                                <span class="lang-status-badge pending" id="badgeLangStatus_en">⚠️ Incomplete</span>
+                                <span class="lang-status-badge pending" id="badgeLangStatus_en"><i data-lucide="alert-triangle" aria-hidden="true"></i> Incomplete</span>
                             </button>
                         </div>
                     </div>
@@ -5914,7 +5978,7 @@
 
                         <div class="news-pane-footer-switch">
                             <button type="button" class="btn-switch-lang-next btn-switch-lang-prev" onclick="switchNewsEditorLang('es')">
-                                <span>⬅ <img loading="lazy" decoding="async" src="https://flagcdn.com/w40/es.png" class="driver-flag-img inline-block align-middle" alt="es" style="width: 16px; height: 11px; border-radius: 2px; margin-right: 4px;"> Volver a versión en Español</span>
+                                <span><i data-lucide="arrow-left" aria-hidden="true"></i> <img loading="lazy" decoding="async" src="https://flagcdn.com/w40/es.png" class="driver-flag-img inline-block align-middle" alt="es" style="width: 16px; height: 11px; border-radius: 2px; margin-right: 4px;"> Volver a versión en Español</span>
                             </button>
                         </div>
                     </div>
@@ -5931,7 +5995,7 @@
             <!-- Footer Bar -->
             <footer class="news-editor-footer">
                 <div class="news-editor-footer-left">
-                    <span class="notice-icon">🛡️</span>
+                    <span class="notice-icon"><i data-lucide="shield" aria-hidden="true"></i></span>
                     <span class="notice-text-sm" id="newsSubmitModerationNoticeText">
                         Todas las noticias se revisan por administradores antes de publicarse en la web.
                     </span>
@@ -5961,7 +6025,7 @@
             <!-- Header -->
             <header class="news-article-header">
                 <div class="news-article-meta-tags">
-                    <span class="news-cat-pill" id="articleCategoryPill">🏆 Carreras</span>
+                    <span class="news-cat-pill" id="articleCategoryPill"><i data-lucide="trophy" aria-hidden="true"></i> Carreras</span>
                     <span class="news-meta-dot">&bull;</span>
                     <span class="news-article-date" id="articleDate">18 de Septiembre, 2026</span>
                     <span class="news-meta-dot">&bull;</span>
@@ -6003,7 +6067,7 @@
                         <svg viewBox="0 0 24 24" width="13" height="13" fill="currentColor" class="inline-block align-middle" style="display:inline-block; vertical-align:middle; margin-right:4px;"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg><span id="btnEditCurrentArticleText">Editar Noticia</span>
                     </button>
                     <button type="button" class="news-share-btn" id="btnShareArticleLink" title="Copiar enlace de noticia">
-                        <span id="btnShareArticleLinkText">🔗 Copiar enlace</span>
+                        <span id="btnShareArticleLinkText"><i data-lucide="link" aria-hidden="true"></i> Copiar enlace</span>
                     </button>
                 </div>
             </div>
@@ -6070,7 +6134,7 @@
         <div class="photo-filter-row">
             <label for="galleryRaceFilterSelect" id="lblGalleryFilter">Filtrar por Gran Premio:</label>
             <select id="galleryRaceFilterSelect" class="photo-select">
-                <option value="all" id="optFilterAll">🏁 Todas las Carreras y GPs</option>
+                <option value="all" id="optFilterAll">Todas las Carreras y GPs</option>
                 <option value="barcelona_test">T - Barcelona Test Days</option>
                 <option value="australia">01 - Australia GP</option>
                 <option value="malaysia">02 - Malaysia GP</option>
@@ -6095,7 +6159,7 @@
                 <!-- Rendered dynamically -->
             </div>
             <div class="photo-empty-state" id="globalPhotoEmptyState" style="display: none;">
-                <span class="empty-icon">📸</span>
+                <span class="empty-icon"><i data-lucide="camera" aria-hidden="true"></i></span>
                 <h4 id="galleryEmptyTitle">No hay fotos en esta categoría todavía</h4>
                 <p id="galleryEmptyDesc">¡Sé el primero en compartir tus capturas de esta carrera con la comunidad!</p>
                 <button type="button" class="btn btn-primary btn-sm" id="btnOpenUploadPhoto2" onclick="openUploadPhotoModal()">Subir primera foto</button>
@@ -6122,7 +6186,7 @@
         </div>
 
         <div id="uploadLoginPrompt" style="display: none; text-align: center; padding: 30px 20px;">
-            <div style="font-size: 48px; margin-bottom: 12px;">🔒</div>
+            <div style="font-size: 48px; margin-bottom: 12px;"><i data-lucide="lock" aria-hidden="true"></i></div>
             <h3 style="color: #f1f5f9; margin-bottom: 8px;" id="uploadLoginPromptTitle">Inicia sesión para subir fotos</h3>
             <p style="color: #94a3b8; font-size: 14px; margin-bottom: 20px;" id="uploadLoginPromptDesc">Debes iniciar sesión con tu cuenta de Formula Factor para compartir tus capturas en la galería oficial.</p>
             <button type="button" class="btn btn-primary" id="uploadLoginPromptBtn" onclick="closeUploadPhotoModal(); if(typeof closeGlobalPhotoGalleryModal === 'function') closeGlobalPhotoGalleryModal(); if(window.openUserAuthModal) openUserAuthModal('login');">Iniciar Sesión / Registrarse</button>
@@ -6139,8 +6203,8 @@
             <div class="form-group">
                 <label id="lblUploadMethod">Método de Subida de Imagen *</label>
                 <div class="upload-method-tabs">
-                    <button type="button" class="method-tab active" id="tabUploadFile" onclick="switchUploadMethod('file')">📁 Archivo Local (PC / Móvil)</button>
-                    <button type="button" class="method-tab" id="tabUploadUrl" onclick="switchUploadMethod('url')">🔗 Enlace URL Directo</button>
+                    <button type="button" class="method-tab active" id="tabUploadFile" onclick="switchUploadMethod('file')"><i data-lucide="folder-open" aria-hidden="true"></i> Archivo Local (PC / Móvil)</button>
+                    <button type="button" class="method-tab" id="tabUploadUrl" onclick="switchUploadMethod('url')"><i data-lucide="link" aria-hidden="true"></i> Enlace URL Directo</button>
                 </div>
             </div>
 
@@ -6188,8 +6252,8 @@
                 <span id="lightboxAuthorDate">Subido por Autor • Fecha</span>
             </div>
             <div class="lightbox-actions">
-                <button type="button" id="lightboxDownloadBtn" class="btn btn-secondary btn-sm" onclick="downloadCurrentLightboxPhoto()">⬇️ Descargar Foto</button>
-                <button type="button" id="lightboxDeleteBtn" class="btn btn-danger btn-sm" style="display: none;" onclick="deleteCurrentLightboxPhoto()">🗑️ Eliminar</button>
+                <button type="button" id="lightboxDownloadBtn" class="btn btn-secondary btn-sm" onclick="downloadCurrentLightboxPhoto()"><i data-lucide="download" aria-hidden="true"></i> Descargar Foto</button>
+                <button type="button" id="lightboxDeleteBtn" class="btn btn-danger btn-sm" style="display: none;" onclick="deleteCurrentLightboxPhoto()"><i data-lucide="trash-2" aria-hidden="true"></i> Eliminar</button>
             </div>
         </div>
     </div>
@@ -6197,7 +6261,7 @@
 
 
 
-<script type="module" src="script.js?v=20261016_rc20"></script>
+<script type="module" src="script.js?v=20261017_rc30"></script>
 
 </body>
 </html>

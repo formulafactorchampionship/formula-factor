@@ -8,6 +8,7 @@ import { fileURLToPath } from 'url';
 import { fetchAllAccounts, deleteAccounts, PROTECTED_EMAILS, FIREBASE_API_KEY } from './emailAuditService.js';
 import { createLiveTimingStore } from './live-timing-store.js';
 import { createLiveTimingUpstream } from './live-timing-upstream.js';
+import { listArchivedSessions, fetchRaceImport } from './race-results-import.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -876,6 +877,53 @@ app.get('/api/live-timing/records', (req, res) => {
 // How often the archived sessions are re-scanned (the relay is always on, so
 // this is only for sessions that ended while the process was down).
 const LIVE_TIMING_IMPORT_EVERY_MS = 15 * 60 * 1000;
+
+// -------------------------------------------------------------
+// 11c. RACE RESULTS IMPORT (admin drafts from the archived sessions)
+// -------------------------------------------------------------
+// The admin panel used to retype the finishing order by hand. These endpoints
+// read the panel's archived RACE session (which already contains the final
+// classification) and hand back a draft. Nothing is published here: the admin
+// reviews the draft and saves it with the existing race-results flow, so the
+// manual editor stays the source of truth.
+app.get('/api/admin/results/sessions', requireAdminAuth, async (req, res) => {
+  try {
+    const sessions = await listArchivedSessions();
+    // Only the session types that can produce a usable classification.
+    const usable = sessions
+      .filter((session) => session.type === 'RACE' || session.type === 'QUALIFY')
+      .slice(0, 40);
+    return res.json({ success: true, sessions: usable });
+  } catch (err) {
+    return res.status(502).json({
+      success: false,
+      error: 'No se pudo leer el archivo del servidor: ' + err.message
+    });
+  }
+});
+
+app.get('/api/admin/results/draft', requireAdminAuth, async (req, res) => {
+  try {
+    const requested = sanitizeString(String(req.query.session || ''), 80);
+
+    // No session given -> latest archived race. The pole (from the matching
+    // qualifying session) comes along when one can be found.
+    const result = await fetchRaceImport(requested);
+    if (!result) {
+      return res.status(404).json({
+        success: false,
+        error: 'El servidor todavía no tiene ninguna carrera archivada.'
+      });
+    }
+
+    return res.json({ success: true, ...result });
+  } catch (err) {
+    return res.status(502).json({
+      success: false,
+      error: 'No se pudo descargar la sesión: ' + err.message
+    });
+  }
+});
 
 // -------------------------------------------------------------
 // 12. CARRERAS FOTOS & COMMUNITY GALLERY (WITH STRICT SANITIZATION)

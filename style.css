@@ -9164,6 +9164,116 @@ footer {
     color: #ffffff;
 }
 
+.admin-import-banner {
+    background: rgba(214, 180, 92, 0.06);
+    border: 1px solid rgba(214, 180, 92, 0.25);
+    border-radius: 6px;
+    padding: 10px 14px;
+    margin: 14px 0 6px;
+    font-size: 13px;
+    line-height: 1.5;
+    color: #c7ceda;
+}
+
+.admin-import-banner-line + .admin-import-banner-line {
+    margin-top: 4px;
+}
+
+.admin-import-banner strong {
+    color: #ffffff;
+}
+
+.admin-import-warn {
+    color: #f0b849;
+}
+
+.admin-import-ok {
+    color: #3fb950;
+}
+
+.admin-import-error {
+    color: #f85149;
+}
+
+/* Session picker modal (import from the game server) */
+.race-import-picker-card {
+    max-width: 540px;
+    width: 92%;
+}
+
+.race-import-pick-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    max-height: 46vh;
+    overflow-y: auto;
+    margin-top: 12px;
+}
+
+.race-import-pick-item {
+    position: relative;
+    display: grid;
+    grid-template-columns: auto 1fr;
+    align-items: center;
+    gap: 2px 10px;
+    text-align: left;
+    padding: 10px 12px;
+    border: 1px solid rgba(214, 180, 92, 0.22);
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: 6px;
+    cursor: pointer;
+    color: #e6e9ef;
+    transition: border-color 0.15s ease, background 0.15s ease;
+}
+
+.race-import-pick-item:hover,
+.race-import-pick-item:focus-visible {
+    border-color: rgba(214, 180, 92, 0.6);
+    background: rgba(214, 180, 92, 0.08);
+    outline: none;
+}
+
+.race-import-pick-badge {
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 0.5px;
+    color: #9aa3b2;
+}
+
+.race-import-pick-badge.is-race {
+    color: var(--gold-light, #f1d78a);
+}
+
+.race-import-pick-date {
+    font-weight: 700;
+    font-size: 13px;
+}
+
+.race-import-pick-name {
+    grid-column: 1 / -1;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 11px;
+    opacity: 0.55;
+}
+
+.race-import-pick-track {
+    grid-column: 1 / -1;
+    font-size: 13px;
+    font-weight: 700;
+    color: #e6e9ef;
+    margin-top: 2px;
+}
+
+.race-import-pick-latest {
+    position: absolute;
+    top: 9px;
+    right: 12px;
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 0.5px;
+    color: #3fb950;
+}
+
 .race-pts-tag {
     display: inline-flex;
     align-items: center;
@@ -21471,4 +21581,239 @@ input:focus, select:focus, textarea:focus {
     background: #dc2626;
     color: #fff;
     border-color: #ef4444;
+}
+
+/* =========================================================
+   PROFILE VIEW (full page opened from the avatar, never a dropdown)
+========================================================= */
+.profile-portal-view {
+    min-height: 100vh;
+    padding: 96px 20px 60px;
+    background: radial-gradient(1200px 600px at 20% -10%, rgba(214, 180, 92, 0.08), transparent 60%), var(--bg, #0b0d12);
+}
+
+.profile-shell {
+    max-width: 1040px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 232px 1fr;
+    gap: 22px;
+    align-items: start;
+}
+
+.profile-nav {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    position: sticky;
+    top: 92px;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(214, 180, 92, 0.18);
+    border-radius: 10px;
+    padding: 10px;
+}
+
+.profile-nav-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    padding: 11px 12px;
+    background: transparent;
+    border: 1px solid transparent;
+    border-radius: 7px;
+    color: #c7ceda;
+    font-family: "Barlow Condensed", sans-serif;
+    font-size: 15px;
+    font-weight: 700;
+    letter-spacing: 0.6px;
+    text-transform: uppercase;
+    cursor: pointer;
+    text-align: left;
+    transition: background 0.15s, color 0.15s, border-color 0.15s;
+}
+
+.profile-nav-item:hover {
+    background: rgba(255, 255, 255, 0.05);
+    color: #fff;
+}
+
+.profile-nav-item.is-active {
+    background: rgba(214, 180, 92, 0.14);
+    border-color: rgba(214, 180, 92, 0.45);
+    color: #fff;
+}
+
+.profile-nav-icon {
+    font-size: 16px;
+}
+
+.profile-main {
+    min-width: 0;
+}
+
+.profile-topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 18px;
+    flex-wrap: wrap;
+}
+
+.profile-back-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(214, 180, 92, 0.3);
+    color: #e6e9ef;
+    border-radius: 6px;
+    padding: 7px 14px;
+    font-size: 12.5px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background 0.15s, border-color 0.15s;
+}
+
+.profile-back-btn:hover {
+    background: rgba(214, 180, 92, 0.12);
+    border-color: rgba(214, 180, 92, 0.6);
+}
+
+.profile-panel-title {
+    font-family: "Barlow Condensed", sans-serif;
+    font-size: 26px;
+    font-weight: 800;
+    letter-spacing: 0.6px;
+    text-transform: uppercase;
+    color: #fff;
+    margin: 0 0 4px;
+}
+
+.profile-panel-sub {
+    color: #8f98a8;
+    font-size: 13.5px;
+    margin: 0 0 18px;
+}
+
+.profile-panel-body {
+    margin-bottom: 18px;
+}
+
+/* Identity card: reuses the old dropdown header card, tuned for the page. */
+#profileIdentitySlot .user-profile-header-card {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 18px;
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(214, 180, 92, 0.18);
+    margin-bottom: 16px;
+}
+
+#profileIdentitySlot .user-profile-avatar-large {
+    width: 62px;
+    height: 62px;
+    font-size: 26px;
+}
+
+/* Items moved from the dropdown keep their look but get page spacing. */
+.profile-panel-body .setting-row-item,
+.profile-panel-body .setting-row-tz {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(214, 180, 92, 0.16);
+    border-radius: 8px;
+    padding: 12px 14px;
+    margin-bottom: 10px;
+}
+
+.profile-panel-body #userLogoutBtn,
+.profile-panel-body #userUnlinkDriverBtn,
+.profile-panel-body #userOpenAdminPanelBtn {
+    width: 100%;
+    margin-bottom: 10px;
+}
+
+/* Icons (Lucide) sizing across the profile view and the admin/import UI. */
+.profile-nav-icon svg {
+    width: 18px;
+    height: 18px;
+    display: block;
+}
+
+.profile-back-btn svg {
+    width: 15px;
+    height: 15px;
+}
+
+#profileTzLabel svg {
+    width: 14px;
+    height: 14px;
+    vertical-align: -2px;
+}
+
+#adminImportRaceResultsBtn svg,
+#adminFinishNextRaceBtn svg,
+#adminSetAsNextRaceBtn svg {
+    width: 14px;
+    height: 14px;
+}
+
+.race-import-pick-badge svg,
+.race-import-pick-track svg,
+.admin-import-banner-line svg {
+    width: 13px;
+    height: 13px;
+    vertical-align: -2px;
+}
+
+.social-input-icon svg {
+    width: 16px;
+    height: 16px;
+}
+
+.bio-tag-btn svg,
+.avatar-preset-btn svg {
+    width: 13px;
+    height: 13px;
+    vertical-align: -2px;
+}
+
+.preview-avatar-fallback svg {
+    width: 30px;
+    height: 30px;
+}
+
+.official-flag-icon svg {
+    width: 22px;
+    height: 22px;
+}
+
+/* Colored dot used by the avatar presets instead of emoji. */
+.preset-dot {
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: var(--dot, #fff);
+    margin-right: 5px;
+    vertical-align: -1px;
+}
+
+@media (max-width: 720px) {
+    .profile-shell {
+        grid-template-columns: 1fr;
+    }
+
+    .profile-nav {
+        position: static;
+        flex-direction: row;
+        flex-wrap: wrap;
+    }
+
+    .profile-nav-item {
+        width: auto;
+    }
 }
