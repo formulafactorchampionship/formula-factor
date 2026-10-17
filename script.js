@@ -13510,26 +13510,32 @@ const CloudAuthService = {
     },
 
     async resetPassword(email) {
-        const cleanEmail = email.trim().toLowerCase();
-        if (cleanEmail === "enzo.castillo.lomb@gmail.com") {
-            return true;
+        const cleanEmail = String(email || "").trim().toLowerCase();
+        if (!cleanEmail) {
+            throw { code: "auth/invalid-email", message: "Missing email" };
         }
 
+        // Ask Firebase to email the reset link. The continue URL returns the user
+        // to the site after resetting; if this domain is not in Firebase's
+        // authorized list, retry without it so the email still goes out.
+        const actionCodeSettings = {
+            url: window.location.origin + window.location.pathname,
+            handleCodeInApp: false
+        };
         try {
-            await sendPasswordResetEmail(auth, cleanEmail);
+            auth.languageCode = (typeof currentLanguage !== "undefined" && currentLanguage === "en") ? "en" : "es";
+        } catch (e) {}
+
+        try {
+            await sendPasswordResetEmail(auth, cleanEmail, actionCodeSettings);
             return true;
         } catch (e) {
-            // The private 'usuarios' collection is owner/admin-only now, so it can
-            // no longer be used to probe whether an email is registered. Fall back
-            // to the local credential cache for legacy device-only accounts.
-            try {
-                const localUsers = LocalAuthStore.getUsers();
-                if (localUsers.some(u => (u.email || "").toLowerCase().trim() === cleanEmail)) {
-                    return true;
-                }
-            } catch (lErr) {}
-
-            throw { code: "auth/user-not-found", message: "User not found" };
+            const code = (e && e.code) || "";
+            if (code === "auth/unauthorized-continue-uri" || code === "auth/invalid-continue-uri") {
+                await sendPasswordResetEmail(auth, cleanEmail);
+                return true;
+            }
+            throw e;
         }
     },
 
@@ -13712,6 +13718,25 @@ function getAuthErrorMessage(errCode) {
         return isEn ? "Network error. Please check your internet connection." : "Error de red. Comprueba tu conexión a internet.";
     }
     return isEn ? "An authentication error occurred. Please try again." : "Ocurrió un error al autenticar. Por favor inténtalo de nuevo.";
+}
+
+// Friendly, reset-specific errors (distinct from the login wording).
+function getPasswordResetErrorMessage(errCode) {
+    const isEn = currentLanguage === "en";
+    const str = String(errCode || "").toLowerCase();
+    if (str.includes("invalid-email")) {
+        return isEn ? "That email address looks invalid." : "Ese correo electrónico no parece válido.";
+    }
+    if (str.includes("network-request-failed")) {
+        return isEn ? "Network error. Check your connection and try again." : "Error de red. Comprueba tu conexión e inténtalo de nuevo.";
+    }
+    if (str.includes("too-many-requests")) {
+        return isEn ? "Too many attempts. Please try again in a few minutes." : "Demasiados intentos. Inténtalo de nuevo en unos minutos.";
+    }
+    if (str.includes("unauthorized-continue-uri")) {
+        return isEn ? "This site is not authorised to send the link. Contact the administration." : "La web no está autorizada para enviar el enlace. Contacta con la administración.";
+    }
+    return isEn ? "Could not send the reset email. Please try again later." : "No se pudo enviar el correo de recuperación. Inténtalo más tarde.";
 }
 
 // Switch between Login / Register / Reset Tabs
@@ -14340,14 +14365,14 @@ if (userResetForm) {
             await CloudAuthService.resetPassword(email);
             showAuthAlert(
                 isEn
-                    ? "Password reset request processed. If an account exists, instructions have been prepared."
-                    : "Solicitud procesada. Si la cuenta existe, se enviarán las instrucciones.",
+                    ? "If an account exists for that email, we've sent a password reset link. Check your inbox (and spam)."
+                    : "Si existe una cuenta con ese correo, te hemos enviado un enlace para restablecer la contraseña. Revisa tu bandeja (y el spam).",
                 "success"
             );
             if (resetEmailInput) resetEmailInput.value = "";
         } catch (err) {
             console.error("Password reset error:", err);
-            showAuthAlert(getAuthErrorMessage(err.code || err.message));
+            showAuthAlert(getPasswordResetErrorMessage(err.code || err.message));
         } finally {
             if (resetSubmitBtn) {
                 resetSubmitBtn.disabled = false;
