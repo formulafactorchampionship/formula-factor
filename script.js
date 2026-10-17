@@ -20368,10 +20368,10 @@ window.openEditNewsArticleModal = function(articleId) {
     if (summaryEsInput) summaryEsInput.value = summaryEsVal;
     if (editorEs) {
         if (/<[a-z][\s\S]*>/i.test(contentEsVal)) {
-            editorEs.innerHTML = contentEsVal;
+            editorEs.innerHTML = sanitizeArticleHtml(contentEsVal);
         } else {
             const paragraphs = (contentEsVal || "").split(/\n\n+/).filter(p => p.trim().length > 0);
-            editorEs.innerHTML = paragraphs.map(p => `<p>${p.replace(/\n/g, "<br>")}</p>`).join("");
+            editorEs.innerHTML = paragraphs.map(p => `<p>${escapeHtml(p).replace(/\n/g, "<br>")}</p>`).join("");
         }
     }
 
@@ -20384,10 +20384,10 @@ window.openEditNewsArticleModal = function(articleId) {
     if (summaryEnInput) summaryEnInput.value = summaryEnVal;
     if (editorEn) {
         if (/<[a-z][\s\S]*>/i.test(contentEnVal)) {
-            editorEn.innerHTML = contentEnVal;
+            editorEn.innerHTML = sanitizeArticleHtml(contentEnVal);
         } else {
             const paragraphs = (contentEnVal || "").split(/\n\n+/).filter(p => p.trim().length > 0);
-            editorEn.innerHTML = paragraphs.map(p => `<p>${p.replace(/\n/g, "<br>")}</p>`).join("");
+            editorEn.innerHTML = paragraphs.map(p => `<p>${escapeHtml(p).replace(/\n/g, "<br>")}</p>`).join("");
         }
     }
 
