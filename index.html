@@ -33,7 +33,7 @@
         <link rel="preconnect" href="https://esm.sh" crossorigin>
     <link rel="preconnect" href="https://flagcdn.com" crossorigin>
     <link rel="preconnect" href="https://firestore.googleapis.com" crossorigin>
-    <link rel="stylesheet" href="style.css?v=20261017_rc42">
+    <link rel="stylesheet" href="style.css?v=20261017_rc57">
     <link rel="stylesheet" href="components/BorderGlow.css">
     <link rel="stylesheet" href="components/LightPillar.css">
     <script>
@@ -882,7 +882,7 @@
             <div class="battle-scenarios-title-wrap">
                 <div class="battle-scenarios-badge-row">
                     <span class="battle-scenarios-badge">
-                        <img loading="lazy" decoding="async" src="https://flagcdn.com/w40/jp.png" class="driver-flag-img inline-block align-middle" alt="jp" style="width: 16px; height: 11px; border-radius: 2px; vertical-align: -1px; margin-right: 4px;">
+                        <img loading="lazy" decoding="async" id="scenariosRoundFlag" src="https://flagcdn.com/w40/jp.png" class="driver-flag-img inline-block align-middle" alt="jp" style="width: 16px; height: 11px; border-radius: 2px; vertical-align: -1px; margin-right: 4px;">
                         <span id="scenariosRoundBadge">RONDA 13 · FUJI SPEEDWAY</span>
                     </span>
                     <span class="scenarios-diff-badge" id="scenariosDiffBadge" style="font-size: 11px; font-weight: 700; color: #38bdf8; background: rgba(56, 189, 248, 0.12); border: 1px solid rgba(56, 189, 248, 0.28); padding: 2px 7px; border-radius: 6px; font-family: 'Barlow Condensed', sans-serif; letter-spacing: 0.5px;">DIFERENCIA: +49 PTS</span>
@@ -910,20 +910,20 @@
                         <th class="th-dieguiosk" scope="col">
                             <div class="scenarios-th-box">
                                 <span class="scenarios-th-name">
-                                    <img loading="lazy" decoding="async" src="https://flagcdn.com/w40/al.png" class="driver-flag-img inline-block align-middle" alt="al" style="width: 18px; height: 13px; border-radius: 2px; vertical-align: -1px;">
-                                    <span>Dieguiosk</span>
+                                    <img loading="lazy" decoding="async" id="thDiegoFlag" src="https://flagcdn.com/w40/al.png" class="driver-flag-img inline-block align-middle" alt="al" style="width: 18px; height: 13px; border-radius: 2px; vertical-align: -1px;">
+                                    <span id="thDiegoName">Dieguiosk</span>
                                 </span>
-                                <span class="scenarios-th-badge hrt">HRT #23 · 168 PTS</span>
+                                <span class="scenarios-th-badge hrt" id="thDiegoBadge">HRT #23 · 168 PTS</span>
                             </div>
                             <div class="scenarios-th-sub" id="thDiegoSub">Si finaliza en Fuji:</div>
                         </th>
                         <th class="th-munt" scope="col">
                             <div class="scenarios-th-box">
                                 <span class="scenarios-th-name">
-                                    <img loading="lazy" decoding="async" src="https://flagcdn.com/w40/es.png" class="driver-flag-img inline-block align-middle" alt="es" style="width: 18px; height: 13px; border-radius: 2px; vertical-align: -1px;">
-                                    <span>Munt.</span>
+                                    <img loading="lazy" decoding="async" id="thMuntFlag" src="https://flagcdn.com/w40/es.png" class="driver-flag-img inline-block align-middle" alt="es" style="width: 18px; height: 13px; border-radius: 2px; vertical-align: -1px;">
+                                    <span id="thMuntName">Munt.</span>
                                 </span>
-                                <span class="scenarios-th-badge rb">RED BULL #99 · 119 PTS</span>
+                                <span class="scenarios-th-badge rb" id="thMuntBadge">RED BULL #99 · 119 PTS</span>
                             </div>
                             <div class="scenarios-th-sub" id="thMuntSub">Munt debe cruzar meta:</div>
                         </th>
@@ -941,7 +941,7 @@
                                     </svg>
                                     <span id="thOutcomeTitle">Desenlace del Título</span>
                                 </span>
-                                <span class="scenarios-th-badge outcome-hdr">R13 MATEMÁTICO</span>
+                                <span class="scenarios-th-badge outcome-hdr" id="thOutcomeBadge">R13 MATEMÁTICO</span>
                             </div>
                             <div class="scenarios-th-sub" id="thOutcomeSub">Estado del campeonato:</div>
                         </th>
@@ -2730,61 +2730,23 @@
                         <div class="live-timing-map-empty" id="liveTimingMapEmpty" data-mode="waiting">Esperando datos del mapa del circuito...</div>
                     </div>
 
-                    <!-- Focused driver: opened by clicking a row in the table or a car on the map -->
+                    <!-- Focused driver: opened by clicking a row in the table or a car on the map.
+                         Kept intentionally minimal: the rest of the live timing already shows
+                         lap times, sectors and gaps, so this strip only highlights the driver
+                         and their live speed. -->
                     <div class="lt-focus" id="liveTimingFocus" style="display: none;">
-                        <div class="lt-focus-head">
-                            <span class="lt-driver-bar" id="liveTimingFocusBar"></span>
-                            <span class="lt-focus-id">
-                                <span class="lt-focus-name" id="liveTimingFocusName">--</span>
-                                <span class="lt-focus-car" id="liveTimingFocusCar">--</span>
-                            </span>
-                            <span class="lt-focus-pos" id="liveTimingFocusPos">--</span>
-                            <button type="button" class="lt-focus-close" id="liveTimingFocusClose" data-lt-i18n="focusShowAll">VER TODOS</button>
-                        </div>
-                        <div class="lt-focus-flags" id="liveTimingFocusFlags"></div>
-                        <div class="lt-focus-grid">
-                            <div class="lt-focus-item">
-                                <span class="lt-focus-key" data-lt-i18n="focusSpeed">VELOCIDAD</span>
-                                <strong class="lt-focus-val lt-accent-green" id="liveTimingFocusSpeed">--</strong>
-                            </div>
-                            <div class="lt-focus-item">
-                                <span class="lt-focus-key" data-lt-i18n="focusBest">MEJOR VUELTA</span>
-                                <strong class="lt-focus-val lt-accent-purple" id="liveTimingFocusBest">--:--.---</strong>
-                            </div>
-                            <div class="lt-focus-item">
-                                <span class="lt-focus-key" data-lt-i18n="focusLast">ÚLTIMA</span>
-                                <strong class="lt-focus-val" id="liveTimingFocusLast">--:--.---</strong>
-                            </div>
-                            <div class="lt-focus-item">
-                                <span class="lt-focus-key" data-lt-i18n="focusTop">V. MÁX</span>
-                                <strong class="lt-focus-val" id="liveTimingFocusTop">--</strong>
-                            </div>
-                            <div class="lt-focus-item">
-                                <span class="lt-focus-key" data-lt-i18n="focusLaps">VUELTAS</span>
-                                <strong class="lt-focus-val" id="liveTimingFocusLaps">0</strong>
-                            </div>
-                            <div class="lt-focus-item">
-                                <span class="lt-focus-key" data-lt-i18n="focusGap">INTERVALO</span>
-                                <strong class="lt-focus-val lt-accent-amber" id="liveTimingFocusGap">--</strong>
-                            </div>
-                            <div class="lt-focus-item">
-                                <span class="lt-focus-key" data-lt-i18n="focusDelta">Δ MEJOR</span>
-                                <strong class="lt-focus-val" id="liveTimingFocusDelta">--</strong>
-                            </div>
-                            <div class="lt-focus-item">
-                                <span class="lt-focus-key" data-lt-i18n="focusTyre">NEUMÁTICO</span>
-                                <strong class="lt-focus-val" id="liveTimingFocusTyre">--</strong>
-                            </div>
-                            <div class="lt-focus-item">
-                                <span class="lt-focus-key" data-lt-i18n="focusPing">PING</span>
-                                <strong class="lt-focus-val" id="liveTimingFocusPing">--</strong>
-                            </div>
-                        </div>
-                        <div class="lt-focus-track">
-                            <span class="lt-focus-key" data-lt-i18n="focusSpline">PISTA</span>
-                            <span class="lt-focus-spline"><span class="lt-focus-spline-fill" id="liveTimingFocusSplineFill"></span></span>
-                        </div>
-                        <div class="lt-focus-sectors" id="liveTimingFocusSectors"></div>
+                        <span class="lt-focus-bar" id="liveTimingFocusBar"></span>
+                        <span class="lt-focus-id">
+                            <span class="lt-focus-name" id="liveTimingFocusName">--</span>
+                            <span class="lt-focus-car" id="liveTimingFocusCar">--</span>
+                        </span>
+                        <span class="lt-focus-pos" id="liveTimingFocusPos">--</span>
+                        <span class="lt-focus-flags" id="liveTimingFocusFlags"></span>
+                        <span class="lt-focus-speed">
+                            <span class="lt-focus-speed-val" id="liveTimingFocusSpeed">--</span>
+                            <span class="lt-focus-speed-unit">km/h</span>
+                        </span>
+                        <button type="button" class="lt-focus-close" id="liveTimingFocusClose" data-lt-i18n="focusShowAll">VER TODOS</button>
                     </div>
 
                     <div class="lt-map-foot">
@@ -4227,44 +4189,57 @@
             </div>
             
             <nav class="admin-sidebar-nav">
+                <div class="admin-nav-group">Carrera</div>
                 <button type="button" class="admin-tab-btn active" data-tab="tab-next-race">
                     <span class="admin-tab-icon"><i data-lucide="flag" aria-hidden="true"></i></span>
-                    <span class="admin-tab-title">Control de Carrera & Directo</span>
+                    <span class="admin-tab-title">Control de Carrera</span>
                 </button>
                 <button type="button" class="admin-tab-btn" data-tab="tab-race-results">
                     <span class="admin-tab-icon"><i data-lucide="trophy" aria-hidden="true"></i></span>
-                    <span class="admin-tab-title">Resultados de Carreras</span>
+                    <span class="admin-tab-title">Resultados</span>
                 </button>
                 <button type="button" class="admin-tab-btn" data-tab="tab-standings">
                     <span class="admin-tab-icon"><i data-lucide="bar-chart-3" aria-hidden="true"></i></span>
-                    <span class="admin-tab-title">Clasificación General</span>
+                    <span class="admin-tab-title">Clasificación</span>
                 </button>
+
+                <div class="admin-nav-group">Pilotos</div>
                 <button type="button" class="admin-tab-btn" data-tab="tab-drivers">
                     <span class="admin-tab-icon"><i data-lucide="car" aria-hidden="true"></i></span>
-                    <span class="admin-tab-title">Pilotos & Escuderías</span>
+                    <span class="admin-tab-title">Pilotos</span>
                 </button>
                 <button type="button" class="admin-tab-btn" data-tab="tab-verify" id="adminTabVerifyBtn">
                     <span class="admin-tab-icon"><i data-lucide="shield" aria-hidden="true"></i></span>
-                    <span class="admin-tab-title">Verificación & Códigos</span>
+                    <span class="admin-tab-title">Verificación</span>
                     <span class="admin-tab-pill-badge admin-tab-badge-gold" id="adminTabVerifyBadge">0</span>
                 </button>
+
+                <div class="admin-nav-group">Contenido</div>
                 <button type="button" class="admin-tab-btn" data-tab="tab-news">
                     <span class="admin-tab-icon"><i data-lucide="newspaper" aria-hidden="true"></i></span>
-                    <span class="admin-tab-title">Noticias & Comunidad</span>
+                    <span class="admin-tab-title">Noticias</span>
                 </button>
                 <button type="button" class="admin-tab-btn" data-tab="tab-photos">
                     <span class="admin-tab-icon"><i data-lucide="camera" aria-hidden="true"></i></span>
-                    <span class="admin-tab-title">Galería & Fotos</span>
+                    <span class="admin-tab-title">Galería</span>
                     <span class="admin-tab-pill-badge admin-tab-badge-gold" id="adminTabPhotosBadge">0</span>
+                </button>
+
+                <div class="admin-nav-group">Fantasy</div>
+                <button type="button" class="admin-tab-btn" data-tab="tab-fantasy-admin">
+                    <span class="admin-tab-icon"><i data-lucide="trending-up" aria-hidden="true"></i></span>
+                    <span class="admin-tab-title">Mercado</span>
+                </button>
+
+                <div class="admin-nav-group">Sistema</div>
+                <button type="button" class="admin-tab-btn" data-tab="tab-settings">
+                    <span class="admin-tab-icon"><i data-lucide="settings" aria-hidden="true"></i></span>
+                    <span class="admin-tab-title">Ajustes</span>
                 </button>
                 <button type="button" class="admin-tab-btn" data-tab="tab-email-audit" id="adminTabEmailAuditBtn">
                     <span class="admin-tab-icon"><i data-lucide="search" aria-hidden="true"></i></span>
-                    <span class="admin-tab-title">Auditoría & Seguridad</span>
+                    <span class="admin-tab-title">Auditoría</span>
                     <span class="admin-tab-pill-badge" id="adminTabEmailAuditBadge" style="background: rgba(239, 68, 68, 0.25); color: #fca5a5; border: 1px solid rgba(239, 68, 68, 0.45);">0</span>
-                </button>
-                <button type="button" class="admin-tab-btn" data-tab="tab-settings">
-                    <span class="admin-tab-icon"><i data-lucide="settings" aria-hidden="true"></i></span>
-                    <span class="admin-tab-title">Ajustes & FFC Fantasy</span>
                 </button>
             </nav>
 
@@ -4346,95 +4321,91 @@
 
             <!-- TAB 1: PRÓXIMA CARRERA -->
             <div class="admin-tab-pane active" id="tab-next-race">
-                <div class="admin-tab-intro">
-                    <div class="admin-card-badge">CALENDARIO &amp; CUENTA REGRESIVA</div>
-                    <h3>CONFIGURACIÓN DEL PRÓXIMO GRAN PREMIO</h3>
-                    <p class="admin-field-hint">
-                        Personaliza los datos del Gran Premio que se mostrarán en la portada principal, el circuito, el clima y la cuenta regresiva en vivo.
-                    </p>
-                </div>
-
-                <!-- PRESET QUICK LOADER -->
-                <div class="admin-preset-strip">
-                    <div class="admin-preset-label">
-                        <span class="admin-preset-icon"><i data-lucide="zap" aria-hidden="true"></i></span>
-                        <span>Plantilla rápida de Gran Premio:</span>
+                <div class="admin-compact-head">
+                    <div class="admin-compact-head-title">
+                        <span class="admin-card-badge">Próximo Gran Premio</span>
+                        <h3>CONTROL DE CARRERA</h3>
                     </div>
-                    <select id="adminQuickGpPreset" class="admin-preset-select">
-                        <option value="">-- Seleccionar Gran Premio oficial (Auto-completar datos) --</option>
-                        <option value="australia">ROUND 01 — AUSTRALIA (Albert Park)</option>
-                        <option value="malaysia">ROUND 02 — MALAYSIA (Sepang)</option>
-                        <option value="bahrain">ROUND 03 — BAHRAIN (Sakhir)</option>
-                        <option value="turkey">ROUND 04 — TURKEY (Istanbul Park)</option>
-                        <option value="spain">ROUND 05 — SPAIN (Barcelona)</option>
-                        <option value="italy">ROUND 06 — ITALY (Monza)</option>
-                        <option value="austria">ROUND 07 — AUSTRIA (Red Bull Ring)</option>
-                        <option value="silverstone">ROUND 08 — GREAT BRITAIN (Silverstone)</option>
-                        <option value="hockenheim">ROUND 09 — GERMANY (Hockenheim)</option>
-                        <option value="nurburgring">ROUND 10 — EUROPE (Nürburgring GP)</option>
-                        <option value="hungary">ROUND 11 — HUNGARY (Hungaroring)</option>
-                        <option value="belgium">ROUND 12 — BELGIUM (Spa-Francorchamps)</option>
-                        <option value="fuji">ROUND 13 — FUJI (Fuji Speedway)</option>
-                        <option value="singapore" style="display:none;">ROUND 13 — FUJI (Fuji Speedway)</option>
-                        <option value="cota">ROUND 14 — USA (COTA)</option>
-                        <option value="brazil">ROUND 15 — BRAZIL (Interlagos)</option>
-                    </select>
+                    <div class="admin-preset-inline">
+                        <span class="admin-preset-icon"><i data-lucide="zap" aria-hidden="true"></i></span>
+                        <select id="adminQuickGpPreset" class="admin-preset-select" title="Auto-completar los datos del GP">
+                            <option value="">Plantilla de GP: auto-completar…</option>
+                            <option value="australia">ROUND 01 — AUSTRALIA (Albert Park)</option>
+                            <option value="malaysia">ROUND 02 — MALAYSIA (Sepang)</option>
+                            <option value="bahrain">ROUND 03 — BAHRAIN (Sakhir)</option>
+                            <option value="turkey">ROUND 04 — TURKEY (Istanbul Park)</option>
+                            <option value="spain">ROUND 05 — SPAIN (Barcelona)</option>
+                            <option value="italy">ROUND 06 — ITALY (Monza)</option>
+                            <option value="austria">ROUND 07 — AUSTRIA (Red Bull Ring)</option>
+                            <option value="silverstone">ROUND 08 — GREAT BRITAIN (Silverstone)</option>
+                            <option value="hockenheim">ROUND 09 — GERMANY (Hockenheim)</option>
+                            <option value="nurburgring">ROUND 10 — EUROPE (Nürburgring GP)</option>
+                            <option value="hungary">ROUND 11 — HUNGARY (Hungaroring)</option>
+                            <option value="belgium">ROUND 12 — BELGIUM (Spa-Francorchamps)</option>
+                            <option value="fuji">ROUND 13 — FUJI (Fuji Speedway)</option>
+                            <option value="singapore" style="display:none;">ROUND 13 — FUJI (Fuji Speedway)</option>
+                            <option value="cota">ROUND 14 — USA (COTA)</option>
+                            <option value="brazil">ROUND 15 — BRAZIL (Interlagos)</option>
+                        </select>
+                    </div>
                 </div>
 
                 <form id="nextRaceForm">
                     <div class="admin-next-race-layout">
                         <div class="admin-next-race-form-col">
                             <div class="admin-form-grid">
-                                <div class="admin-field">
-                                    <label for="adminRaceRound">Ronda del Campeonato</label>
-                                    <input type="text" id="adminRaceRound" placeholder="Ej: ROUND 10" required>
-                                </div>
-                                <div class="admin-field">
-                                    <label for="adminRaceTitle">Nombre del Gran Premio</label>
-                                    <input type="text" id="adminRaceTitle" placeholder="Ej: NÜRBURGRING GP" required>
-                                </div>
-                                <div class="admin-field">
-                                    <label for="adminRaceLocation">Circuito y Región</label>
-                                    <input type="text" id="adminRaceLocation" placeholder="Ej: NÜRBURGRING · EUROPE" required>
-                                </div>
-                                <div class="admin-field">
-                                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
-                                        <label for="adminRaceDateText" style="margin-bottom: 0;">Texto de Fecha Visible</label>
-                                        <button type="button" id="adminQuickTbdDateTextBtn" class="btn btn-secondary btn-xs" style="padding: 2px 8px; font-size: 11px; font-weight: 700; color: var(--gold-light, #f1d78a);">
-                                            Fijar "TBD"
-                                        </button>
+                                <div class="rc-group">
+                                    <div class="rc-group-title"><span class="rc-group-num">1</span> Identidad del GP</div>
+                                    <div class="admin-field">
+                                        <label for="adminRaceRound">Ronda del Campeonato</label>
+                                        <input type="text" id="adminRaceRound" placeholder="Ej: ROUND 10" required>
                                     </div>
-                                    <input type="text" id="adminRaceDateText" placeholder="Ej: 20 SEP · 17:00 CEST o TBD" required>
-                                </div>
-                                <div class="admin-field">
-                                    <label for="adminRaceTemp">Temperatura del Circuito (°C)</label>
-                                    <input type="text" id="adminRaceTemp" placeholder="Ej: 22°C o 22" value="22°C" required>
-                                </div>
-                                <div class="admin-field">
-                                    <label for="adminRaceWeather">Previsión Meteorológica / Clima</label>
-                                    <select id="adminRaceWeather" class="admin-select" required>
-                                        <option value="sunny">Soleado / Despejado</option>
-                                        <option value="partly-cloudy">Parcialmente Nublado</option>
-                                        <option value="cloudy">Nublado</option>
-                                        <option value="rainy">Lluvia / Pista Mojada</option>
-                                        <option value="storm">Tormenta Intensa</option>
-                                    </select>
-                                </div>
-                                <div class="admin-field admin-field-full">
-                                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; flex-wrap: wrap; gap: 8px;">
-                                        <label for="adminRaceDateTime" style="margin-bottom: 0;">Fecha y Hora de la Carrera (Cuenta Regresiva)</label>
-                                        <label class="admin-tbd-checkbox-label" id="adminRaceIsTbdLabel" style="display: inline-flex; align-items: center; gap: 6px; cursor: pointer; font-size: 12px; font-weight: 700; color: var(--gold-light, #f1d78a);">
-                                            <input type="checkbox" id="adminRaceIsTbd" style="cursor: pointer; accent-color: var(--gold, #d4af37);">
-                                            <span>Fecha por Determinar (TBD / TBA)</span>
-                                        </label>
+                                    <div class="admin-field">
+                                        <label for="adminRaceTitle">Nombre del Gran Premio</label>
+                                        <input type="text" id="adminRaceTitle" placeholder="Ej: NÜRBURGRING GP" required>
                                     </div>
-                                    <div style="display: flex; gap: 8px; align-items: center;">
-                                        <input type="datetime-local" id="adminRaceDateTime" style="flex: 1;">
-                                        <button type="button" id="adminSetTbdQuickBtn" class="btn btn-secondary btn-sm" style="white-space: nowrap; padding: 7px 12px; font-size: 12px; font-weight: 700;">
-                                            Modo TBD
-                                        </button>
+                                    <div class="admin-field">
+                                        <label for="adminRaceLocation">Circuito y Región</label>
+                                        <input type="text" id="adminRaceLocation" placeholder="Ej: NÜRBURGRING · EUROPE" required>
                                     </div>
-                                    <small class="admin-field-hint" id="adminRaceDateTimeHint">Ajusta la fecha y hora oficial para que el contador en vivo sincronice automáticamente, o marca TBD si aún no está confirmada.</small>
+                                </div>
+
+                                <div class="rc-group">
+                                    <div class="rc-group-title"><span class="rc-group-num">2</span> Fecha &amp; Cuenta atrás</div>
+                                    <div class="admin-field admin-field-full">
+                                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; flex-wrap: wrap; gap: 8px;">
+                                            <label for="adminRaceDateTime" style="margin-bottom: 0;">Fecha y Hora de la Carrera (Cuenta Regresiva)</label>
+                                            <label class="admin-tbd-checkbox-label" id="adminRaceIsTbdLabel" style="display: inline-flex; align-items: center; gap: 6px; cursor: pointer; font-size: 12px; font-weight: 700; color: var(--gold-light, #f1d78a);">
+                                                <input type="checkbox" id="adminRaceIsTbd" style="cursor: pointer; accent-color: var(--gold, #d4af37);">
+                                                <span>Fecha por Determinar (TBD / TBA)</span>
+                                            </label>
+                                        </div>
+                                        <div style="display: flex; gap: 8px; align-items: center;">
+                                            <input type="datetime-local" id="adminRaceDateTime" style="flex: 1;">
+                                            <button type="button" id="adminSetTbdQuickBtn" class="btn btn-secondary btn-sm" style="white-space: nowrap; padding: 7px 12px; font-size: 12px; font-weight: 700;">
+                                                Modo TBD
+                                            </button>
+                                        </div>
+                                        <small class="admin-field-hint" id="adminRaceDateTimeHint">Ajusta la fecha y hora oficial para que el contador en vivo sincronice automáticamente, o marca TBD si aún no está confirmada.</small>
+                                    </div>
+                                </div>
+
+                                <div class="rc-group">
+                                    <div class="rc-group-title"><span class="rc-group-num">3</span> Clima</div>
+                                    <div class="admin-field">
+                                        <label for="adminRaceTemp">Temperatura del Circuito (°C)</label>
+                                        <input type="text" id="adminRaceTemp" placeholder="Ej: 22°C o 22" value="22°C" required>
+                                    </div>
+                                    <div class="admin-field">
+                                        <label for="adminRaceWeather">Previsión Meteorológica / Clima</label>
+                                        <select id="adminRaceWeather" class="admin-select" required>
+                                            <option value="sunny">Soleado / Despejado</option>
+                                            <option value="partly-cloudy">Parcialmente Nublado</option>
+                                            <option value="cloudy">Nublado</option>
+                                            <option value="rainy">Lluvia / Pista Mojada</option>
+                                            <option value="storm">Tormenta Intensa</option>
+                                        </select>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -4477,39 +4448,50 @@
 
             <!-- TAB 2: RESULTADOS DE CARRERAS -->
             <div class="admin-tab-pane" id="tab-race-results">
-                <div class="admin-tab-intro">
-                    <div class="admin-card-badge">PUNTUACIÓN Y TIEMPOS</div>
-                    <h3>RESULTADOS OFICIALES DE GRANDES PREMIOS</h3>
-                    <p class="admin-field-hint">
-                        Selecciona cualquier Gran Premio de la temporada para cargar, revisar o registrar los tiempos de pole, vuelta rápida, piloto del día y el orden de llegada.
-                    </p>
+                <div class="rr-landing" id="raceResultsLanding">
+                    <button type="button" class="rr-landing-btn" id="adminOpenImportLandingBtn">
+                        <span class="rr-landing-icon"><i data-lucide="download" aria-hidden="true"></i></span>
+                        <span class="rr-landing-title">Importar del Servidor</span>
+                        <span class="rr-landing-sub">Elige la sesión y revisa/ajusta la clasificación importada</span>
+                    </button>
+                    <button type="button" class="rr-landing-btn" id="adminCreateResultsBtn">
+                        <span class="rr-landing-icon"><i data-lucide="plus" aria-hidden="true"></i></span>
+                        <span class="rr-landing-title">Crear Resultados</span>
+                        <span class="rr-landing-sub">Introduce el orden de llegada y tiempos a mano</span>
+                    </button>
+                </div>
+
+                <div id="raceResultsEditor" style="display: none;">
+                <div class="admin-compact-head">
+                    <div class="admin-compact-head-title">
+                        <button type="button" class="rr-back-btn" id="adminBackToResultsLandingBtn" title="Volver a Importar / Crear resultados"><i data-lucide="arrow-left" aria-hidden="true"></i> Volver</button>
+                        <span class="admin-card-badge">Puntuación y tiempos</span>
+                        <h3>RESULTADOS</h3>
+                    </div>
+                    <div class="admin-preset-inline">
+                        <span class="admin-preset-icon"><i data-lucide="flag" aria-hidden="true"></i></span>
+                        <select id="adminSelectRace" class="admin-preset-select" required title="Elige la carrera a cargar/editar">
+                            <option value="australia">ROUND 01 — AUSTRALIA (Albert Park)</option>
+                            <option value="malaysia">ROUND 02 — MALAYSIA (Sepang)</option>
+                            <option value="bahrain">ROUND 03 — BAHRAIN (Sakhir)</option>
+                            <option value="turkey">ROUND 04 — TURKEY (Istanbul Park)</option>
+                            <option value="spain">ROUND 05 — SPAIN (Barcelona)</option>
+                            <option value="italy">ROUND 06 — ITALY (Monza)</option>
+                            <option value="austria">ROUND 07 — AUSTRIA (Red Bull Ring)</option>
+                            <option value="silverstone">ROUND 08 — GREAT BRITAIN (Silverstone)</option>
+                            <option value="hockenheim">ROUND 09 — GERMANY (Hockenheim)</option>
+                            <option value="nurburgring">ROUND 10 — EUROPE (Nürburgring GP)</option>
+                            <option value="hungary">ROUND 11 — HUNGARY (Hungaroring)</option>
+                            <option value="belgium">ROUND 12 — BELGIUM (Spa-Francorchamps)</option>
+                            <option value="fuji">ROUND 13 — FUJI (Fuji Speedway)</option>
+                            <option value="singapore" style="display:none;">ROUND 13 — FUJI (Fuji Speedway)</option>
+                            <option value="cota">ROUND 14 — USA (COTA)</option>
+                            <option value="brazil">ROUND 15 — BRAZIL (Interlagos)</option>
+                        </select>
+                    </div>
                 </div>
 
                 <form id="raceResultsForm">
-                    <div class="admin-results-selector-box">
-                        <div class="admin-field admin-field-full" style="margin-bottom: 0;">
-                            <label for="adminSelectRace">SELECCIONAR CARRERA DE LA TEMPORADA</label>
-                            <select id="adminSelectRace" class="admin-select" required>
-                                <option value="australia">ROUND 01 — AUSTRALIA (Albert Park)</option>
-                                <option value="malaysia">ROUND 02 — MALAYSIA (Sepang)</option>
-                                <option value="bahrain">ROUND 03 — BAHRAIN (Sakhir)</option>
-                                <option value="turkey">ROUND 04 — TURKEY (Istanbul Park)</option>
-                                <option value="spain">ROUND 05 — SPAIN (Barcelona)</option>
-                                <option value="italy">ROUND 06 — ITALY (Monza)</option>
-                                <option value="austria">ROUND 07 — AUSTRIA (Red Bull Ring)</option>
-                                <option value="silverstone">ROUND 08 — GREAT BRITAIN (Silverstone)</option>
-                                <option value="hockenheim">ROUND 09 — GERMANY (Hockenheim)</option>
-                                <option value="nurburgring">ROUND 10 — EUROPE (Nürburgring GP)</option>
-                                <option value="hungary">ROUND 11 — HUNGARY (Hungaroring)</option>
-                                <option value="belgium">ROUND 12 — BELGIUM (Spa-Francorchamps)</option>
-                                <option value="fuji">ROUND 13 — FUJI (Fuji Speedway)</option>
-                                <option value="singapore" style="display:none;">ROUND 13 — FUJI (Fuji Speedway)</option>
-                                <option value="cota">ROUND 14 — USA (COTA)</option>
-                                <option value="brazil">ROUND 15 — BRAZIL (Interlagos)</option>
-                            </select>
-                            <span class="admin-field-hint">Al cambiar de carrera se cargarán sus resultados oficiales para verlos o editarlos.</span>
-                        </div>
-                    </div>
 
                     <!-- ESTADO DE LA CARRERA Y PROGRESIÓN DEL CALENDARIO -->
                     <div class="admin-race-status-bar" id="adminRaceStatusBar">
@@ -4684,6 +4666,7 @@
                         </div>
                     </div>
                 </form>
+                </div>
             </div>
 
             <!-- TAB 3: CLASIFICACIÓN -->
@@ -5031,6 +5014,66 @@
                         </div>
                     </div>
 
+                    <!-- El bloque FFC Fantasy se movió a su propia pestaña -->
+
+                    <!-- MÓDULO 3: REDES OFICIALES Y DATOS GLOBALES -->
+                    <div class="admin-settings-section-card" style="margin-top: 20px;">
+                        <div class="admin-card-badge">REDES &amp; ESTADÍSTICAS</div>
+                        <h4 style="margin: 6px 0 14px 0; font-family: 'Barlow Condensed', sans-serif; font-size: 18px; color: #fff; letter-spacing: 1px;">ENLACES OFICIALES Y DATOS GLOBALES</h4>
+
+                        <div class="admin-form-grid">
+                            <div class="admin-field admin-field-full">
+                                <label for="adminDiscordUrl">Enlace de Servidor de Discord</label>
+                                <input type="url" id="adminDiscordUrl" placeholder="https://discord.gg/...">
+                            </div>
+                            <div class="admin-field">
+                                <label for="adminXUrl">Enlace de X (Twitter)</label>
+                                <input type="url" id="adminXUrl" placeholder="https://x.com/F0RMULAF4CTOR">
+                            </div>
+                            <div class="admin-field">
+                                <label for="adminInstagramUrl">Enlace de Instagram</label>
+                                <input type="url" id="adminInstagramUrl" placeholder="https://www.instagram.com/formulafactorchampionship">
+                            </div>
+                            <div class="admin-field">
+                                <label for="adminStatSeason">Temporada Actual</label>
+                                <input type="text" id="adminStatSeason" placeholder="01">
+                            </div>
+                            <div class="admin-field">
+                                <label for="adminStatRounds">Total de Rounds</label>
+                                <input type="text" id="adminStatRounds" placeholder="15">
+                            </div>
+                            <div class="admin-field">
+                                <label for="adminStatDrivers">Pilotos en Grid</label>
+                                <input type="text" id="adminStatDrivers" placeholder="44">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- MÓDULO 4: RESTABLECER DATOS DE FÁBRICA -->
+                    <div class="admin-danger-zone">
+                        <div>
+                            <strong>Restablecer Datos de Fábrica</strong>
+                            <p>Elimina todos los cambios guardados localmente y restaura la información inicial.</p>
+                        </div>
+                        <button type="button" id="adminResetDefaultBtn" class="admin-danger-btn">Restablecer Todo</button>
+                    </div>
+
+                    <div class="admin-save-bar">
+                        <span class="admin-save-notice" id="settingsSaveNotice"></span>
+                        <button type="submit" class="btn btn-primary">Guardar Ajustes</button>
+                    </div>
+                </form>
+            </div>
+
+                        <!-- TAB: FFC FANTASY (MERCADO, PRECIOS & BLOQUEO) -->
+            <div class="admin-tab-pane" id="tab-fantasy-admin">
+                <div class="admin-tab-intro">
+                    <div class="admin-card-badge">FFC FANTASY LEAGUE</div>
+                    <h3>MERCADO, PRECIOS Y BLOQUEO</h3>
+                    <p class="admin-field-hint">
+                        Congela el mercado durante una carrera, controla la fluctuación dinámica de precios y revisa el sentimiento de mercado. Los cambios se guardan al instante.
+                    </p>
+                </div>
                     <!-- MÓDULO 2: FFC FANTASY LEAGUE (MERCADO & PRECIOS) -->
                     <div class="admin-settings-section-card fantasy-border" style="margin-top: 20px;">
                         <div class="admin-live-header">
@@ -5097,56 +5140,8 @@
                         </div>
                     </div>
 
-                    <!-- MÓDULO 3: REDES OFICIALES Y DATOS GLOBALES -->
-                    <div class="admin-settings-section-card" style="margin-top: 20px;">
-                        <div class="admin-card-badge">REDES &amp; ESTADÍSTICAS</div>
-                        <h4 style="margin: 6px 0 14px 0; font-family: 'Barlow Condensed', sans-serif; font-size: 18px; color: #fff; letter-spacing: 1px;">ENLACES OFICIALES Y DATOS GLOBALES</h4>
-
-                        <div class="admin-form-grid">
-                            <div class="admin-field admin-field-full">
-                                <label for="adminDiscordUrl">Enlace de Servidor de Discord</label>
-                                <input type="url" id="adminDiscordUrl" placeholder="https://discord.gg/...">
-                            </div>
-                            <div class="admin-field">
-                                <label for="adminXUrl">Enlace de X (Twitter)</label>
-                                <input type="url" id="adminXUrl" placeholder="https://x.com/F0RMULAF4CTOR">
-                            </div>
-                            <div class="admin-field">
-                                <label for="adminInstagramUrl">Enlace de Instagram</label>
-                                <input type="url" id="adminInstagramUrl" placeholder="https://www.instagram.com/formulafactorchampionship">
-                            </div>
-                            <div class="admin-field">
-                                <label for="adminStatSeason">Temporada Actual</label>
-                                <input type="text" id="adminStatSeason" placeholder="01">
-                            </div>
-                            <div class="admin-field">
-                                <label for="adminStatRounds">Total de Rounds</label>
-                                <input type="text" id="adminStatRounds" placeholder="15">
-                            </div>
-                            <div class="admin-field">
-                                <label for="adminStatDrivers">Pilotos en Grid</label>
-                                <input type="text" id="adminStatDrivers" placeholder="44">
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- MÓDULO 4: RESTABLECER DATOS DE FÁBRICA -->
-                    <div class="admin-danger-zone">
-                        <div>
-                            <strong>Restablecer Datos de Fábrica</strong>
-                            <p>Elimina todos los cambios guardados localmente y restaura la información inicial.</p>
-                        </div>
-                        <button type="button" id="adminResetDefaultBtn" class="admin-danger-btn">Restablecer Todo</button>
-                    </div>
-
-                    <div class="admin-save-bar">
-                        <span class="admin-save-notice" id="settingsSaveNotice"></span>
-                        <button type="submit" class="btn btn-primary">Guardar Ajustes</button>
-                    </div>
-                </form>
             </div>
-
-            <!-- TAB 7: GESTIÓN Y MODERACIÓN DE NOTICIAS -->
+<!-- TAB 7: GESTIÓN Y MODERACIÓN DE NOTICIAS -->
             <div class="admin-tab-pane" id="tab-news">
                 <div class="admin-tab-intro">
                     <div class="admin-card-badge">MODERACIÓN &bull; PRENSA &bull; COMUNIDAD</div>
@@ -6313,7 +6308,7 @@
 
 
 
-<script type="module" src="script.js?v=20261017_rc42"></script>
+<script type="module" src="script.js?v=20261017_rc57"></script>
 
 </body>
 </html>

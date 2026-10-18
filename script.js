@@ -1879,14 +1879,11 @@ function applyTranslations(lang) {
 
     const scenariosDict = dict.scenarios;
     if (scenariosDict) {
-        const sRb = document.getElementById("scenariosRoundBadge");
-        if (sRb) sRb.textContent = scenariosDict.roundBadge;
-        const sDb = document.getElementById("scenariosDiffBadge");
-        if (sDb) sDb.textContent = scenariosDict.diffBadge;
+        // Static labels only: the round badge, the points, the gap and every
+        // scenario row are computed from the live standings in
+        // renderChampionshipScenarios() and must not be overwritten here.
         const sTt = document.getElementById("scenariosTitleText");
         if (sTt) sTt.textContent = scenariosDict.title;
-        const sSt = document.getElementById("scenariosSubText");
-        if (sSt) sSt.innerHTML = scenariosDict.sub;
         const bAll = document.getElementById("btnFilterAll");
         if (bAll) bAll.textContent = scenariosDict.filterAll;
         const bWin = document.getElementById("btnFilterWin");
@@ -1903,27 +1900,8 @@ function applyTranslations(lang) {
         if (thOT) thOT.textContent = scenariosDict.thOutcomeTitle;
         const thOS = document.getElementById("thOutcomeSub");
         if (thOS) thOS.textContent = scenariosDict.thOutcomeSub;
-        const sFn = document.getElementById("scenariosFooterNote");
-        if (sFn) sFn.textContent = scenariosDict.footerNote;
 
-        for (let i = 1; i <= 5; i++) {
-            const fl = document.getElementById(`scenFl${i}`);
-            if (fl) fl.textContent = scenariosDict.fastestLap;
-        }
-        for (let i = 1; i <= 10; i++) {
-            const req = document.getElementById(`scenReq${i}`);
-            if (req && scenariosDict[`muntReq${i}`]) req.textContent = scenariosDict[`muntReq${i}`];
-        }
-        for (let i = 1; i <= 10; i++) {
-            const out = document.getElementById(`scenOut${i}`);
-            if (out) out.textContent = scenariosDict.champTag;
-        }
-        const d11 = document.getElementById("scenDiego11");
-        if (d11) d11.textContent = scenariosDict.diego11;
-        const r11 = document.getElementById("scenReq11");
-        if (r11) r11.textContent = scenariosDict.muntReq11;
-        const o11 = document.getElementById("scenOut11");
-        if (o11) o11.textContent = scenariosDict.postponeTag;
+        if (typeof renderChampionshipScenarios === "function") renderChampionshipScenarios();
     }
 
     const photosDict = dict.photos || (dict.compare && dict.compare.photos) || (dict.news && dict.news.compare && dict.news.compare.photos);
@@ -4974,7 +4952,10 @@ function renderHomeTop3Podium() {
             
             if (gapEl && driverData) {
                 if (isLeader) {
-                    gapEl.innerHTML = `Líder &bull; 5 Victorias`;
+                    const wins = (typeof countDriverWins === "function") ? countDriverWins(driverData.driver) : 0;
+                    const isEn = (typeof currentLanguage === "string" && currentLanguage === "en");
+                    const winWord = isEn ? (wins === 1 ? "Win" : "Wins") : (wins === 1 ? "Victoria" : "Victorias");
+                    gapEl.innerHTML = (isEn ? "Leader" : "Líder") + ` &bull; ${wins} ${winWord}`;
                 } else {
                     const p1Pts = Number(p1.pts) || 0;
                     const curPts = Number(driverData.pts) || 0;
@@ -4991,6 +4972,9 @@ function renderHomeTop3Podium() {
         // Render Top 3 Championship Battle Chart
         renderTop3BattleChart([p1, p2, p3]);
     }
+
+    // The scenario table is computed from the standings + calendar.
+    renderChampionshipScenarios();
 }
 window.renderHomeTop3Podium = renderHomeTop3Podium;
 
@@ -5027,6 +5011,264 @@ function highlightScenarioRow(rowEl) {
     }
 }
 window.highlightScenarioRow = highlightScenarioRow;
+
+/* =========================================================
+   HOME: "CHAMPIONSHIP SCENARIOS" (computed, never hardcoded)
+   ========================================================= */
+// Every number in this block is derived from the live standings and the race
+// calendar, so the points, the gap and each clinch condition stay
+// mathematically correct on their own (they used to be typed by hand and went
+// stale after every race).
+//
+// A line reads: "if the leader finishes X, the title is his as long as the
+// rival finishes Y or worse". The rival may also take the extra point for the
+// fastest lap, so a line only turns green when the gap survives that worst
+// case; the rows tagged "fastest lap" assume the leader takes it instead.
+
+const SCENARIO_POINTS = [25, 18, 15, 12, 10, 8, 6, 4, 2, 1]; // P1..P10
+const SCENARIO_FL_PTS = 1;
+const SCENARIO_MAX_RACE_PTS = SCENARIO_POINTS[0] + SCENARIO_FL_PTS; // 26
+
+function scenarioPointsFor(pos) {
+    return (pos >= 1 && pos <= SCENARIO_POINTS.length) ? SCENARIO_POINTS[pos - 1] : 0;
+}
+
+function scenarioPosLabel(pos, isEn) {
+    if (!isEn) return pos + "º";
+    const mod10 = pos % 10;
+    const mod100 = pos % 100;
+    if (mod10 === 1 && mod100 !== 11) return pos + "st";
+    if (mod10 === 2 && mod100 !== 12) return pos + "nd";
+    if (mod10 === 3 && mod100 !== 13) return pos + "rd";
+    return pos + "th";
+}
+
+function scenarioRoundTitle(raceKey) {
+    const meta = (typeof seasonRacesMeta !== "undefined" && seasonRacesMeta) ? seasonRacesMeta[raceKey] : null;
+    return meta && meta.title ? String(meta.title) : String(raceKey || "").toUpperCase();
+}
+
+function scenarioDriverNumber(driver) {
+    if (!driver) return "";
+    const direct = (driver.dorsal !== undefined && driver.dorsal !== null && String(driver.dorsal).trim() !== "")
+        ? driver.dorsal
+        : driver.number;
+    if (direct !== undefined && direct !== null && String(direct).trim() !== "") {
+        return String(direct).trim().replace(/^#/, "");
+    }
+    if (typeof ffc2010SeasonDrivers !== "undefined" && Array.isArray(ffc2010SeasonDrivers)) {
+        const key = normalizeDriverKey(driver.driver);
+        const found = ffc2010SeasonDrivers.find(d => d && d.driver && normalizeDriverKey(d.driver) === key);
+        if (found && found.number !== undefined && found.number !== null) return String(found.number).replace(/^#/, "");
+    }
+    return "";
+}
+
+// Wins across the completed races (used by the podium leader line).
+function countDriverWins(driverName) {
+    const key = normalizeDriverKey(driverName);
+    if (!key) return 0;
+    let wins = 0;
+    Object.values((typeof raceResults !== "undefined" && raceResults) ? raceResults : {}).forEach((race) => {
+        if (!race) return;
+        const done = race.status === "COMPLETED" || (race.winner && race.winner !== "TBA");
+        if (!done || !race.winner) return;
+        const winner = String(race.winner).split("·")[0].trim();
+        if (winner && normalizeDriverKey(winner) === key) wins += 1;
+    });
+    return wins;
+}
+
+function championshipScenarioData() {
+    const raw = (currentPilotos && currentPilotos.length > 0) ? currentPilotos : getSavedStandings();
+    const sorted = (typeof sortDriversStandings === "function" ? sortDriversStandings(raw) : raw)
+        .filter(d => d && d.driver);
+    if (sorted.length < 2) return null;
+
+    const leader = sorted[0];
+    const rival = sorted[1];
+    const leaderPts = Number(leader.pts) || 0;
+    const rivalPts = Number(rival.pts) || 0;
+    const gap = leaderPts - rivalPts;
+    if (gap <= 0) return null;
+
+    const order = (typeof SEASON_RACE_ORDER !== "undefined" && Array.isArray(SEASON_RACE_ORDER)) ? SEASON_RACE_ORDER : [];
+    const results = (typeof raceResults !== "undefined" && raceResults) ? raceResults : {};
+    const isDone = (key) => {
+        const r = results[key];
+        return !!(r && (r.status === "COMPLETED" || (r.winner && r.winner !== "TBA")));
+    };
+    const nextIdx = order.findIndex(key => !isDone(key));
+    if (nextIdx === -1) return null;
+
+    const roundsAfter = order.length - nextIdx - 1;
+    const ceiling = roundsAfter * SCENARIO_MAX_RACE_PTS; // what the rival can still score
+
+    // Smallest rival finish that still leaves the title decided, or null.
+    const clinchAt = (leaderRacePts, rivalMayTakeFL) => {
+        for (let j = 1; j <= 11; j++) {
+            const rivalRacePts = scenarioPointsFor(j) + (rivalMayTakeFL ? SCENARIO_FL_PTS : 0);
+            if (gap + leaderRacePts - rivalRacePts > ceiling) return j;
+        }
+        return null;
+    };
+
+    const rows = [];
+    [1, 2, 3, 4, 5].forEach(pos => {
+        const withFL = clinchAt(scenarioPointsFor(pos) + SCENARIO_FL_PTS, false);
+        rows.push({ pos, fl: true, rivalPos: withFL, clinch: withFL !== null, tail: false });
+        const plain = clinchAt(scenarioPointsFor(pos), true);
+        rows.push({ pos, fl: false, rivalPos: plain, clinch: plain !== null, tail: false });
+    });
+    // "6th or worse": the hard case is the leader scoring nothing at all.
+    const tail = clinchAt(0, true);
+    rows.push({ pos: 6, fl: false, rivalPos: tail, clinch: tail !== null, tail: true });
+
+    return {
+        leader, rival, leaderPts, rivalPts, gap,
+        nextKey: order[nextIdx],
+        nextRoundNumber: nextIdx + 1,
+        nextRoundTitle: scenarioRoundTitle(order[nextIdx]),
+        remainingTitles: order.slice(nextIdx + 1).map(scenarioRoundTitle),
+        nextAfterTitle: order[nextIdx + 1] ? scenarioRoundTitle(order[nextIdx + 1]) : "",
+        roundsAfter, ceiling,
+        rows,
+        anyClinch: rows.some(r => r.clinch)
+    };
+}
+
+function scenarioSeasonYear() {
+    const kicker = document.getElementById("homeTop3Kicker");
+    const found = kicker && kicker.textContent ? kicker.textContent.match(/(19|20)\d{2}/) : null;
+    return found ? found[0] : String(new Date().getFullYear());
+}
+
+function renderChampionshipScenarios() {
+    const wrapper = document.getElementById("battleScenariosWrapper");
+    if (!wrapper) return;
+
+    const data = championshipScenarioData();
+    if (!data) {
+        // Nothing to fight over (season over or no leader yet): hide the block.
+        wrapper.style.display = "none";
+        return;
+    }
+    wrapper.style.display = "";
+
+    const isEn = (typeof currentLanguage === "string" && currentLanguage === "en");
+    const dict = ((isEn ? translations.en : translations.es) || {}).scenarios || {};
+
+    // --- Round badge ------------------------------------------------
+    const roundFlag = document.getElementById("scenariosRoundFlag");
+    if (roundFlag) {
+        const code = (typeof RACE_FLAG_ISO_MAP !== "undefined" && RACE_FLAG_ISO_MAP[data.nextKey]) || "eu";
+        roundFlag.src = "https://flagcdn.com/w40/" + code + ".png";
+        roundFlag.alt = code;
+    }
+    const roundBadge = document.getElementById("scenariosRoundBadge");
+    if (roundBadge) {
+        roundBadge.textContent = (isEn ? "ROUND " : "RONDA ") + data.nextRoundNumber + " · " + data.nextRoundTitle.toUpperCase();
+    }
+
+    const diffBadge = document.getElementById("scenariosDiffBadge");
+    if (diffBadge) diffBadge.textContent = (isEn ? "GAP: +" : "DIFERENCIA: +") + data.gap + " PTS";
+
+    const outcomeBadge = document.getElementById("thOutcomeBadge");
+    if (outcomeBadge) {
+        outcomeBadge.textContent = "R" + data.nextRoundNumber + (data.anyClinch
+            ? (isEn ? " DECIDER" : " MATEMÁTICO")
+            : (isEn ? " OPEN" : " EN JUEGO"));
+    }
+
+    // --- Driver headers --------------------------------------------
+    const fillDriverHead = (nameId, flagId, badgeId, badgeCls, driver, pts) => {
+        const nameEl = document.getElementById(nameId);
+        if (nameEl) nameEl.textContent = driver.driver;
+        const flagEl = document.getElementById(flagId);
+        if (flagEl) {
+            const code = (typeof getCountryCodeFromEmoji === "function")
+                ? getCountryCodeFromEmoji(driver.flag || driver.customFlag)
+                : null;
+            if (code) { flagEl.src = "https://flagcdn.com/w40/" + code + ".png"; flagEl.alt = code; }
+        }
+        const badgeEl = document.getElementById(badgeId);
+        if (badgeEl) {
+            const team = String(driver.team || getDriverTeam(driver.driver) || "").toUpperCase();
+            const num = scenarioDriverNumber(driver);
+            badgeEl.textContent = (team ? team + " " : "") + (num ? "#" + num + " · " : "") + pts + " PTS";
+            badgeEl.className = "scenarios-th-badge " + badgeCls;
+        }
+    };
+    fillDriverHead("thDiegoName", "thDiegoFlag", "thDiegoBadge", "hrt", data.leader, data.leaderPts);
+    fillDriverHead("thMuntName", "thMuntFlag", "thMuntBadge", "rb", data.rival, data.rivalPts);
+
+    // --- Sub title --------------------------------------------------
+    const subText = document.getElementById("scenariosSubText");
+    if (subText) {
+        const leader = escapeHtml(data.leader.driver);
+        const rival = escapeHtml(data.rival.driver);
+        const roundTitle = escapeHtml(data.nextRoundTitle);
+        if (data.roundsAfter === 0) {
+            subText.innerHTML = isEn
+                ? `The last round decides it: <strong>${leader}</strong> is mathematically champion as long as he crosses the line ahead of <strong>${rival}</strong>.`
+                : `En la última ronda: <strong>${leader}</strong> se proclama Campeón de Pilotos matemáticamente si cruza meta por delante de <strong>${rival}</strong>.`;
+        } else {
+            const list = data.remainingTitles.map(escapeHtml);
+            const joined = list.length === 1 ? list[0] : (list.slice(0, -1).join(", ") + (isEn ? " and " : " y ") + list[list.length - 1]);
+            subText.innerHTML = isEn
+                ? `If <strong>${leader}</strong> leaves ${roundTitle} more than <strong>${data.ceiling} points</strong> ahead of <strong>${rival}</strong>, he will mathematically claim the Drivers' Championship (${data.ceiling} points still available at ${joined}).`
+                : `Si <strong>${leader}</strong> sale de ${roundTitle} con más de <strong>${data.ceiling} puntos</strong> sobre <strong>${rival}</strong>, se proclamará Campeón de Pilotos matemáticamente (quedarán ${data.ceiling} pts en disputa entre ${joined}).`;
+        }
+    }
+
+    // --- Table rows -------------------------------------------------
+    const tbody = document.getElementById("battleScenariosTbody");
+    if (tbody) {
+        const pillFor = (pos) => pos === 1 ? "pill-p1" : (pos <= 3 ? "pill-podium" : "pill-top5");
+        const reqLabel = (j) => scenarioPosLabel(j, isEn) + (isEn ? " or worse" : " o peor");
+        const champTag = dict.champTag || (isEn ? "WORLD CHAMPION" : "CAMPEÓN DEL MUNDO");
+        const flTag = dict.fastestLap || (isEn ? "FASTEST LAP" : "VUELTA RÁPIDA");
+        const noDecide = isEn ? "TITLE NOT DECIDED" : "NO DECIDE EL TÍTULO";
+        const anyResult = isEn ? "Any result" : "Cualquier resultado";
+        const postpone = isEn
+            ? "TITLE POSTPONED TO " + (data.nextAfterTitle || "THE LAST ROUND") + (data.nextAfterTitle ? " (R" + (data.nextRoundNumber + 1) + ")" : "")
+            : "SE APLAZA A " + (data.nextAfterTitle || "LA ÚLTIMA RONDA") + (data.nextAfterTitle ? " (R" + (data.nextRoundNumber + 1) + ")" : "");
+
+        const html = data.rows.map((r) => {
+            const group = r.pos === 1 ? "win" : (r.pos <= 3 ? "podium" : (r.tail ? "wait" : "top5"));
+            const rowCls = "scenario-row" + (group === "wait" ? "" : " row-" + group);
+            const diegoCell = r.tail
+                ? `<span class="scenario-pos-pill pill-postpone">${scenarioPosLabel(6, isEn)}${isEn ? " or worse" : " o peor"}</span>`
+                : `<div class="scenario-cell-flex"><span class="scenario-pos-pill ${pillFor(r.pos)}">${scenarioPosLabel(r.pos, isEn)}</span>${r.fl ? `<span class="scenario-fl-tag">${escapeHtml(flTag)}</span>` : ""}</div>`;
+            const reqText = r.clinch ? reqLabel(r.rivalPos) : (r.tail ? anyResult : "—");
+            const reqCls = r.clinch ? (r.rivalPos >= 11 ? "pill-munt-nopoints" : "pill-munt-req") : "pill-postpone";
+            const outcome = r.clinch
+                ? `<span class="scenario-outcome-tag outcome-champ">${escapeHtml(champTag)}</span>`
+                : (r.tail
+                    ? `<span class="scenario-outcome-tag outcome-wait">${escapeHtml(postpone)}</span>`
+                    : `<span class="scenario-outcome-tag outcome-wait">${escapeHtml(noDecide)}</span>`);
+            return `<tr class="${rowCls}" data-group="${group}" onclick="highlightScenarioRow(this)">`
+                + `<td class="cell-dieguiosk">${diegoCell}</td>`
+                + `<td class="cell-munt"><span class="scenario-pos-pill ${reqCls}">${escapeHtml(reqText)}</span></td>`
+                + `<td class="cell-outcome">${outcome}</td></tr>`;
+        }).join("");
+        tbody.innerHTML = html;
+
+        // Keep whatever filter was selected before the rebuild.
+        const activeBtn = document.querySelector("#scenariosQuickFilter .scenario-filter-btn.active");
+        filterScenariosRows(activeBtn ? (activeBtn.getAttribute("data-filter") || "all") : "all");
+    }
+
+    // --- Footer note ------------------------------------------------
+    const footer = document.getElementById("scenariosFooterNote");
+    if (footer) {
+        const leader = data.leader.driver;
+        const rival = data.rival.driver;
+        footer.textContent = isEn
+            ? `* With these mathematical results against ${rival}, ${leader} secures the ${scenarioSeasonYear()} drivers' title at ${data.nextRoundTitle}. Official F1 points system (25-18-15-12-10-8-6-4-2-1 + 1 pt FL).`
+            : `* Con estos resultados matemáticos frente a ${rival}, ${leader} asegura el título de pilotos ${scenarioSeasonYear()} en ${data.nextRoundTitle}. Puntuación oficial F1 (25-18-15-12-10-8-6-4-2-1 + 1 pt VR).`;
+    }
+}
 
 function renderTop3BattleChart(top3Drivers) {
     const container = document.getElementById("homeTop3BattleSvgContainer");
@@ -10333,22 +10575,21 @@ function updateAdminLivePreview() {
     const roundVal = adminRaceRound ? adminRaceRound.value.trim() : "";
     const titleVal = adminRaceTitle ? adminRaceTitle.value.trim() : "";
     const locVal = adminRaceLocation ? adminRaceLocation.value.trim() : "";
-    const dateVal = adminRaceDateText ? adminRaceDateText.value.trim() : "";
+    const dtVal = adminRaceDateTime ? adminRaceDateTime.value.trim() : "";
     let tempVal = adminRaceTemp ? adminRaceTemp.value.trim() : "22°C";
     if (tempVal && !tempVal.includes("°")) tempVal += "°C";
     const weatherVal = adminRaceWeather ? adminRaceWeather.value : "sunny";
-    const isTbd = Boolean(adminRaceIsTbd && adminRaceIsTbd.checked) || 
-                  (dateVal && (dateVal.toUpperCase().includes("TBD") || dateVal.toUpperCase().includes("TBA") || dateVal.toUpperCase().includes("POR DETERMINAR") || dateVal.toUpperCase().includes("POR CONFIRMAR")));
+    const isTbd = Boolean(adminRaceIsTbd && adminRaceIsTbd.checked) || !dtVal;
 
     if (previewMockRound) previewMockRound.textContent = roundVal || "ROUND 10";
     if (previewMockTitle) previewMockTitle.textContent = titleVal || "GRAN PREMIO";
     if (previewMockLocation) previewMockLocation.textContent = locVal || "CIRCUITO · PAÍS";
     if (previewMockDateText) {
         if (isTbd) {
-            previewMockDateText.textContent = dateVal || "TBD · POR DETERMINAR";
+            previewMockDateText.textContent = "TBD · POR DETERMINAR";
             previewMockDateText.style.color = "var(--gold-light, #f1d78a)";
         } else {
-            previewMockDateText.textContent = dateVal || "PRÓXIMAMENTE";
+            previewMockDateText.textContent = formatDateTimeLocalToDateText(dtVal) || "PRÓXIMAMENTE";
             previewMockDateText.style.color = "#e2e8f0";
         }
     }
@@ -10393,7 +10634,6 @@ function populateAdminForms() {
     if (adminRaceRound) adminRaceRound.value = race.round || "";
     if (adminRaceTitle) adminRaceTitle.value = race.title || "";
     if (adminRaceLocation) adminRaceLocation.value = race.location || "";
-    if (adminRaceDateText) adminRaceDateText.value = race.dateText || (isTbd ? "TBD · Por Determinar" : "");
     if (adminRaceTemp) adminRaceTemp.value = race.weatherTemp || "22°C";
     if (adminRaceWeather) adminRaceWeather.value = race.weatherCondition || "sunny";
     
@@ -11110,7 +11350,8 @@ function formatDateTimeLocalToDateText(dtVal) {
         const [year, monthNum, dayNum] = datePart.split('-').map(Number);
         const monthsEs = ["ENE", "FEB", "MAR", "ABR", "MAY", "JUN", "JUL", "AGO", "SEP", "OCT", "NOV", "DIC"];
         const monthName = monthsEs[monthNum - 1] || "SEP";
-        return `${dayNum} ${monthName} · ${timePart} CEST`;
+        const day = String(dayNum).padStart(2, "0");
+        return `${day} ${monthName} · ${timePart} CEST`;
     } catch (e) {
         return dtVal;
     }
@@ -11120,19 +11361,17 @@ function formatDateTimeLocalToDateText(dtVal) {
 if (nextRaceForm) {
     nextRaceForm.addEventListener("submit", async (e) => {
         e.preventDefault();
-        const dateTextVal = adminRaceDateText ? adminRaceDateText.value.trim() : "";
         const dtVal = adminRaceDateTime ? adminRaceDateTime.value.trim() : "";
         const fallbackDateTime = (typeof currentNextRace !== "undefined" && currentNextRace && currentNextRace.dateTime) ? currentNextRace.dateTime : "2026-09-20T17:00";
         const fallbackDateText = (typeof currentNextRace !== "undefined" && currentNextRace && currentNextRace.dateText) ? currentNextRace.dateText : "20 SEP · 17:00 CEST";
 
-        const isTbd = Boolean(adminRaceIsTbd && adminRaceIsTbd.checked) || 
-                      (dateTextVal && (dateTextVal.toUpperCase().includes("TBD") || dateTextVal.toUpperCase().includes("TBA") || dateTextVal.toUpperCase().includes("POR DETERMINAR") || dateTextVal.toUpperCase().includes("POR CONFIRMAR"))) ||
-                      (!dtVal && !fallbackDateTime && (!adminRaceDateTime.required || (adminRaceIsTbd && adminRaceIsTbd.checked)));
+        const isTbd = Boolean(adminRaceIsTbd && adminRaceIsTbd.checked) || (!dtVal && !fallbackDateTime);
 
         const resolvedDateTime = isTbd ? "TBD" : (dtVal || fallbackDateTime);
-        const resolvedDateText = isTbd 
-            ? "TBD · Por Determinar" 
-            : (dtVal ? formatDateTimeLocalToDateText(dtVal) : (dateTextVal || fallbackDateText));
+        // The visible date is derived from the race date/time; the admin no longer types it.
+        const resolvedDateText = isTbd
+            ? "TBD · Por Determinar"
+            : (dtVal ? formatDateTimeLocalToDateText(dtVal) : fallbackDateText);
 
         const updated = {
             round: adminRaceRound ? adminRaceRound.value.trim() : "ROUND 10",
@@ -11189,12 +11428,8 @@ if (adminRaceIsTbd) {
                 adminRaceDateTime.value = "";
             }
         }
-        if (isChecked && adminRaceDateText) {
-            if (!adminRaceDateText.value || !adminRaceDateText.value.toUpperCase().includes("TBD")) {
-                adminRaceDateText.value = "TBD · Por Determinar";
-            }
-        } else if (!isChecked && adminRaceDateText && adminRaceDateText.value.toUpperCase().includes("TBD")) {
-            adminRaceDateText.value = "20 SEP · 17:00 CEST";
+        if (isChecked && adminRaceDateTime) {
+            adminRaceDateTime.value = "";
         }
         if (adminRaceDateTimeHint) {
             adminRaceDateTimeHint.textContent = isChecked 
@@ -11210,18 +11445,6 @@ if (adminSetTbdQuickBtn) {
         if (!adminRaceIsTbd) return;
         adminRaceIsTbd.checked = !adminRaceIsTbd.checked;
         adminRaceIsTbd.dispatchEvent(new Event("change"));
-    });
-}
-
-if (adminQuickTbdDateTextBtn) {
-    adminQuickTbdDateTextBtn.addEventListener("click", () => {
-        if (adminRaceDateText) adminRaceDateText.value = "TBD · Por Determinar";
-        if (adminRaceIsTbd) {
-            adminRaceIsTbd.checked = true;
-            adminRaceIsTbd.dispatchEvent(new Event("change"));
-        } else {
-            updateAdminLivePreview();
-        }
     });
 }
 
@@ -11265,19 +11488,13 @@ if (adminQuickGpPreset) {
 }
 
 // Live Preview Real-Time Input Synchronization
-[adminRaceRound, adminRaceTitle, adminRaceLocation, adminRaceDateText, adminRaceTemp].forEach(inputEl => {
+[adminRaceRound, adminRaceTitle, adminRaceLocation, adminRaceTemp].forEach(inputEl => {
     if (inputEl) {
         inputEl.addEventListener("input", updateAdminLivePreview);
     }
 });
 if (adminRaceDateTime) {
-    adminRaceDateTime.addEventListener("input", (e) => {
-        const val = e.target.value;
-        if (val && adminRaceDateText && (!adminRaceIsTbd || !adminRaceIsTbd.checked)) {
-            adminRaceDateText.value = formatDateTimeLocalToDateText(val);
-        }
-        updateAdminLivePreview();
-    });
+    adminRaceDateTime.addEventListener("input", updateAdminLivePreview);
 }
 if (adminRaceWeather) {
     adminRaceWeather.addEventListener("change", updateAdminLivePreview);
@@ -12263,6 +12480,7 @@ async function runRaceImport(sessionName) {
 
         showRaceImportBanner(draft, Array.from(unmatched), data.poleLap, data.poleSession, data.qualifying, sessionType);
         renderAdminQualifyingPreview(raceKeyForImport);
+        showRaceResultsEditor();
     } catch (err) {
         console.error("Error importing race results:", err);
         showRaceImportError("No se pudo importar: " + (err && err.message ? err.message : err));
@@ -12370,6 +12588,43 @@ async function openRaceImportPicker() {
 
 if (adminImportRaceResultsBtn) {
     adminImportRaceResultsBtn.addEventListener("click", openRaceImportPicker);
+}
+
+// -------------------------------------------------------------
+// RACE RESULTS — landing (Importar / Crear) vs the editor
+// -------------------------------------------------------------
+function showRaceResultsEditor() {
+    const landing = document.getElementById("raceResultsLanding");
+    const editor = document.getElementById("raceResultsEditor");
+    if (landing) landing.style.display = "none";
+    if (editor) editor.style.display = "block";
+    try { window.scrollTo({ top: 0, behavior: "smooth" }); } catch (e) { /* ignore */ }
+}
+
+function showRaceResultsLanding() {
+    const landing = document.getElementById("raceResultsLanding");
+    const editor = document.getElementById("raceResultsEditor");
+    if (landing) landing.style.display = "grid";
+    if (editor) editor.style.display = "none";
+}
+
+const adminOpenImportLandingBtn = document.getElementById("adminOpenImportLandingBtn");
+if (adminOpenImportLandingBtn) {
+    adminOpenImportLandingBtn.addEventListener("click", () => openRaceImportPicker());
+}
+
+const adminCreateResultsBtn = document.getElementById("adminCreateResultsBtn");
+if (adminCreateResultsBtn) {
+    adminCreateResultsBtn.addEventListener("click", () => {
+        const key = adminSelectRace ? (adminSelectRace.value || "australia") : "australia";
+        populateRaceResultsEditor(key);
+        showRaceResultsEditor();
+    });
+}
+
+const adminBackToResultsLandingBtn = document.getElementById("adminBackToResultsLandingBtn");
+if (adminBackToResultsLandingBtn) {
+    adminBackToResultsLandingBtn.addEventListener("click", () => showRaceResultsLanding());
 }
 
 // --- Dynamic Standings & Points Calculation Engine ---
@@ -22674,14 +22929,17 @@ function renderLiveTimingFocus() {
     }
 
     const isEn = ltIsEnglish();
-    panel.style.display = "block";
+    // "flex", not "block": the strip lays its parts out on a single row.
+    panel.style.display = "flex";
 
+    // Only the driver's identity and their live speed live here: lap times,
+    // sectors and gaps are already on the table and the records card, and
+    // repeating them made the strip noisy.
     const driver = entry.driver || {};
     const carInfo = driver.CarInfo || {};
-    const car = ltDriverLapInfo(driver) || {};
 
     const name = carInfo.DriverName || (isEn ? "Unknown driver" : "Piloto desconocido");
-    const carName = car.CarName || carInfo.CarName || carInfo.CarModel || "--";
+    const carName = carInfo.CarName || carInfo.CarModel || "--";
     const position = (driver.Position && driver.Position !== 255) ? driver.Position : "--";
 
     const bar = document.getElementById("liveTimingFocusBar");
@@ -22692,34 +22950,18 @@ function renderLiveTimingFocus() {
     ltFocusValue("liveTimingFocusPos", "P" + position);
 
     const speed = Number(driver.__ltSpeedKmh);
-    ltFocusValue("liveTimingFocusSpeed", (isFinite(speed) && speed > 0) ? Math.round(speed) + " km/h" : "--");
-    ltFocusValue("liveTimingFocusBest", ltFormatLap(car.BestLap));
-    ltFocusValue("liveTimingFocusLast", ltFormatLap(car.LastLap));
-    ltFocusValue("liveTimingFocusTop", Number(car.TopSpeedBestLap) > 0 ? Math.round(Number(car.TopSpeedBestLap)) + " km/h" : "--");
-    ltFocusValue("liveTimingFocusLaps", String(car.NumLaps || 0));
-    ltFocusValue("liveTimingFocusGap", driver.Split || "--");
-    const delta = ltSignedDelta(driver.DeltaToBest);
-    ltFocusValue("liveTimingFocusDelta", delta || "--");
-    ltFocusValue("liveTimingFocusTyre", carInfo.Tyres || car.TyreBestLap || "--");
-    const ping = Number(driver.Ping);
-    ltFocusValue("liveTimingFocusPing", (isFinite(ping) && ping >= 0) ? Math.round(ping) + " ms" : "--");
+    // The unit lives in the markup; only the number is refreshed here.
+    ltFocusValue("liveTimingFocusSpeed", (isFinite(speed) && speed > 0) ? String(Math.round(speed)) : "--");
 
-    const spline = ltSplinePercent(driver);
-    const fill = document.getElementById("liveTimingFocusSplineFill");
-    if (fill) fill.style.width = (spline === null ? 0 : spline).toFixed(1) + "%";
-
+    // Context only when there is something to say; the row collapses otherwise.
     const flags = document.getElementById("liveTimingFocusFlags");
     if (flags) {
         const pills = [];
         if (driver.IsInPits) pills.push('<span class="lt-flag lt-flag-pit">' + (isEn ? "IN PITS" : "EN BOXES") + "</span>");
         if (driver.DRSActive) pills.push('<span class="lt-flag lt-flag-drs">DRS</span>');
         if (driver.BlueFlag) pills.push('<span class="lt-flag lt-flag-blue">' + (isEn ? "BLUE FLAG" : "BANDERA AZUL") + "</span>");
-        if (carInfo.Tyres) pills.push('<span class="lt-flag lt-flag-tyre">' + escapeHtml(String(carInfo.Tyres)) + "</span>");
         flags.innerHTML = pills.join("");
     }
-
-    const sectors = document.getElementById("liveTimingFocusSectors");
-    if (sectors) sectors.innerHTML = ltSectorChips(car);
 }
 
 // Row / car / close-button clicks. Bound once, delegated so re-rendering the
@@ -22880,7 +23122,7 @@ function handleLiveTimingMessage(raw) {
             if (String(guid) === String(liveTimingSelectedGuid)) {
                 ltRefreshDotTag(guid);
                 ltApplyMapFocus();
-                ltFocusValue("liveTimingFocusSpeed", (isFinite(speed) && speed > 0) ? speed + " km/h" : "--");
+                ltFocusValue("liveTimingFocusSpeed", (isFinite(speed) && speed > 0) ? String(Math.round(speed)) : "--");
             }
 
             const dot = liveTimingMapDots.get(guid) || (driver ? ltCreateMapDot(guid, driver, 0) : null);

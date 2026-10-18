@@ -21913,3 +21913,305 @@ input:focus, select:focus, textarea:focus {
         transition-duration: 0.01ms !important;
     }
 }
+
+/* =========================================================
+   NEW COMPONENTS
+   Styles for the components added on top of the base sheet:
+   admin nav groups, compact tab heads, Race-Control groups,
+   the Resultados landing and the live-timing focus strip.
+   ========================================================= */
+
+/* --- Admin sidebar: section groups -------------------------------- */
+.admin-nav-group {
+    margin: 16px 10px 6px;
+    font-family: "Barlow Condensed", sans-serif;
+    font-size: 10.5px;
+    font-weight: 800;
+    letter-spacing: 1.4px;
+    text-transform: uppercase;
+    color: var(--gold);
+    opacity: 0.85;
+}
+
+.admin-nav-group:first-child {
+    margin-top: 4px;
+}
+
+/* --- Admin: compact tab head -------------------------------------- */
+.admin-compact-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+    padding: 12px 16px;
+    margin-bottom: 16px;
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.035) 0%, rgba(255, 255, 255, 0) 100%);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+}
+
+.admin-compact-head-title {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+}
+
+.admin-compact-head-title h3 {
+    margin: 0;
+    font-family: "Barlow Condensed", sans-serif;
+    font-size: 20px;
+    font-weight: 800;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--white);
+}
+
+.admin-preset-inline {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    flex: 0 1 auto;
+    min-width: 0;
+}
+
+.admin-preset-icon {
+    display: inline-flex;
+    align-items: center;
+    color: var(--gold);
+}
+
+.admin-preset-icon svg {
+    width: 16px;
+    height: 16px;
+}
+
+/* --- Control de Carrera: grouped field blocks --------------------- */
+.rc-group {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    min-width: 0;
+}
+
+.rc-group-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding-bottom: 6px;
+    border-bottom: 1px solid var(--border);
+    font-family: "Barlow Condensed", sans-serif;
+    font-size: 13px;
+    font-weight: 800;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+    color: var(--gold-light);
+}
+
+.rc-group-num {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: var(--gold-glow);
+    border: 1px solid var(--gold-dark);
+    font-family: "JetBrains Mono", monospace;
+    font-size: 10px;
+    color: var(--gold-light);
+}
+
+/* --- Resultados: Importar / Crear landing ------------------------- */
+.rr-landing {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    max-width: 780px;
+    margin: 10px auto 24px;
+}
+
+.rr-landing-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 26px 18px;
+    text-align: center;
+    color: #e6e9ef;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(214, 180, 92, 0.28);
+    border-radius: 12px;
+    cursor: pointer;
+    transition: background 0.18s ease, border-color 0.18s ease, transform 0.18s ease;
+}
+
+.rr-landing-btn:hover {
+    background: rgba(214, 180, 92, 0.1);
+    border-color: rgba(214, 180, 92, 0.6);
+    transform: translateY(-2px);
+}
+
+.rr-landing-icon svg {
+    width: 30px;
+    height: 30px;
+    color: var(--gold-light);
+}
+
+.rr-landing-title {
+    font-family: "Barlow Condensed", sans-serif;
+    font-size: 20px;
+    font-weight: 800;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+}
+
+.rr-landing-sub {
+    font-size: 12.5px;
+    color: var(--muted);
+}
+
+.rr-back-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 2px;
+    padding: 0 0 6px 0;
+    background: transparent;
+    border: none;
+    font-family: "Barlow Condensed", sans-serif;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.6px;
+    text-transform: uppercase;
+    color: var(--muted);
+    cursor: pointer;
+}
+
+.rr-back-btn:hover {
+    color: #ffffff;
+}
+
+.rr-back-btn svg {
+    width: 14px;
+    height: 14px;
+}
+
+/* --- Live timing: focused-driver strip (speed only) --------------- */
+.lt-focus {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: nowrap;
+    padding: 13px 16px 14px;
+    border-top: 1px solid var(--lt-line);
+    background:
+        radial-gradient(120% 170% at 100% 0%, rgba(126, 217, 87, 0.07) 0%, rgba(126, 217, 87, 0) 55%),
+        linear-gradient(180deg, rgba(23, 30, 42, 0.6) 0%, rgba(10, 15, 22, 0.78) 100%);
+    animation: ltFocusIn 0.25s ease;
+}
+
+.lt-focus-bar {
+    flex: 0 0 auto;
+    width: 4px;
+    height: 40px;
+    border-radius: 3px;
+    background: #d6b45c;
+    box-shadow: 0 0 12px rgba(0, 0, 0, 0.55);
+}
+
+.lt-focus-id {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+    flex: 1 1 auto;
+    overflow: hidden;
+}
+
+.lt-focus-pos {
+    flex: 0 0 auto;
+    font-family: var(--lt-mono);
+    font-size: 13px;
+    font-weight: 800;
+    letter-spacing: 0.04em;
+    color: #e8c766;
+    background: rgba(232, 199, 102, 0.1);
+    border: 1px solid rgba(232, 199, 102, 0.32);
+    border-radius: 7px;
+    padding: 5px 9px;
+}
+
+.lt-focus-flags {
+    display: flex;
+    flex-wrap: nowrap;
+    gap: 5px;
+    min-width: 0;
+    overflow: hidden;
+}
+
+.lt-focus-flags:empty {
+    display: none;
+}
+
+.lt-focus-speed {
+    flex: 0 0 auto;
+    display: flex;
+    align-items: baseline;
+    gap: 6px;
+    margin-left: auto;
+    padding-left: 14px;
+    border-left: 1px solid var(--lt-line);
+}
+
+.lt-focus-speed-val {
+    font-family: var(--lt-mono);
+    font-size: 36px;
+    font-weight: 800;
+    line-height: 0.9;
+    letter-spacing: -0.02em;
+    color: var(--lt-green);
+    font-variant-numeric: tabular-nums;
+    text-shadow: 0 0 22px rgba(126, 217, 87, 0.35);
+}
+
+.lt-focus-speed-unit {
+    font-family: var(--lt-mono);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--lt-muted-2);
+}
+
+@media (max-width: 900px) {
+    .lt-focus-speed-val {
+        font-size: 30px;
+    }
+
+    .rr-landing {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 480px) {
+    .lt-focus {
+        gap: 9px;
+        padding: 11px 12px;
+    }
+
+    .lt-focus-speed {
+        padding-left: 10px;
+    }
+
+    .lt-focus-speed-val {
+        font-size: 26px;
+    }
+
+    .lt-focus-car {
+        display: none;
+    }
+}
