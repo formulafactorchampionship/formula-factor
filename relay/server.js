@@ -19,6 +19,7 @@ import http from 'http';
 import { fileURLToPath } from 'url';
 import { createLiveTimingUpstream, LIVE_TIMING_UPSTREAM } from '../live-timing-upstream.js';
 import { createLiveTimingStore } from '../live-timing-store.js';
+import { listArchivedSessions, fetchRaceImport } from '../server/race-results-import.js';
 
 const PORT = Number(process.env.PORT) || 8080;
 const IDLE_MS = Number(process.env.IDLE_MS) || 60000;
@@ -198,7 +199,7 @@ function handleStream(req, res) {
   res.on('close', cleanup);
 }
 
-const server = http.createServer((req, res) => {
+const server = http.createServer(async (req, res) => {
   const url = new URL(req.url, 'http://localhost');
   const path = url.pathname.replace(/\/+$/, '') || '/';
 
@@ -242,6 +243,47 @@ const server = http.createServer((req, res) => {
       tracks: Object.keys(store.getStore().tracks).length,
       uptimeSeconds: Math.round(process.uptime())
     });
+    return;
+  }
+
+  // -------------------------------------------------------------
+  // Race results import (read-only)
+  // -------------------------------------------------------------
+  // The public site is static, so the admin panel has no Node server on the
+  // same origin. These mirror the endpoints in server/server.js so the
+  // "Importar del Servidor" button also works on GitHub Pages. They only read
+  // the game panel's public archived sessions (nothing is written).
+  if (path === '/api/admin/results/sessions') {
+    try {
+      const sessions = await listArchivedSessions();
+      sendJson(req, res, 200, { success: true, sessions: sessions.slice(0, 60) });
+    } catch (err) {
+      sendJson(req, res, 502, {
+        success: false,
+        error: 'No se pudo leer el archivo del servidor: ' + ((err && err.message) || err)
+      });
+    }
+    return;
+  }
+
+  if (path === '/api/admin/results/draft') {
+    try {
+      const requested = String(url.searchParams.get('session') || '').slice(0, 80);
+      const result = await fetchRaceImport(requested);
+      if (!result) {
+        sendJson(req, res, 404, {
+          success: false,
+          error: 'El servidor todavía no tiene ninguna carrera archivada.'
+        });
+        return;
+      }
+      sendJson(req, res, 200, { success: true, ...result });
+    } catch (err) {
+      sendJson(req, res, 502, {
+        success: false,
+        error: 'No se pudo descargar la sesión: ' + ((err && err.message) || err)
+      });
+    }
     return;
   }
 

@@ -30,9 +30,14 @@ const USER_AGENT = 'FormulaFactorChampionship/1.0';
 
 async function httpGet(url) {
   const response = await fetch(url, {
-    headers: { Accept: '*/*', 'User-Agent': USER_AGENT }
+    headers: { Accept: '*/*', 'User-Agent': USER_AGENT },
+    signal: AbortSignal.timeout(20000)
   });
   if (!response.ok) throw new Error('HTTP ' + response.status + ' for ' + url);
+  // A session file is large but bounded; refuse anything absurd so a public
+  // caller cannot make the relay pull unbounded data.
+  const len = Number(response.headers.get('content-length') || 0);
+  if (len > 15 * 1024 * 1024) throw new Error('Response too large for ' + url);
   return response;
 }
 

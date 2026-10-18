@@ -1,13 +1,18 @@
 # Files uploaded to Cloud Build for `gcloud run deploy --source .`.
 # The image only needs Dockerfile, live-timing-upstream.js,
-# live-timing-store.js and relay/, so everything heavy or private stays out.
+# live-timing-store.js, relay/ and server/race-results-import.js (the relay
+# mirrors the read-only results-import endpoints), so everything heavy or
+# private stays out.
 .git/
 .github/
 node_modules/
 backups/
 news_uploads/
 components/
-server/
+server/server.js
+server/emailAuditService.js
+server/envLoader.js
+server/build-live-timing-records.mjs
 photos_db.json
 fantasy_teams_db.json
 live_timing_db.json

@@ -22215,3 +22215,37 @@ input:focus, select:focus, textarea:focus {
         display: none;
     }
 }
+
+/* =========================================================
+   WORLD CHAMPION CROWN (standings)
+   ========================================================= */
+.world-champion-crown {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    margin-left: 6px;
+    padding: 1px 7px 1px 5px;
+    border-radius: 999px;
+    background: linear-gradient(135deg, rgba(214, 180, 92, 0.22), rgba(214, 180, 92, 0.08));
+    border: 1px solid rgba(214, 180, 92, 0.55);
+    color: #f2d98a;
+    vertical-align: middle;
+    box-shadow: 0 0 10px rgba(214, 180, 92, 0.25);
+}
+
+.world-champion-crown-icon {
+    color: #f5d67a;
+    filter: drop-shadow(0 0 3px rgba(245, 214, 122, 0.6));
+}
+
+.world-champion-tag {
+    font-size: 9px;
+    font-weight: 800;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    white-space: nowrap;
+}
+
+@media (max-width: 640px) {
+    .world-champion-tag { display: none; }
+}

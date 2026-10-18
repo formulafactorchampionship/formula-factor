@@ -16,6 +16,9 @@ WORKDIR /app
 
 COPY live-timing-upstream.js live-timing-store.js ./
 COPY relay ./relay
+# The results importer is shared with the admin Node server; the relay serves its
+# read-only endpoints so the static site can import race results too.
+COPY server/race-results-import.js ./server/
 
 # The modules are ESM and have no dependencies, so a two-line package.json is
 # all Node needs ("type": "module"); nothing to install.

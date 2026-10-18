@@ -1365,6 +1365,41 @@ app.get('/api/admin/audit-backups', requireAdminAuth, (req, res) => {
   }
 });
 
+// Race-day safety snapshot. The admin panel posts the full state (races,
+// standings, fantasy) right before publishing results, and the server keeps a
+// timestamped copy on disk (backups/, gitignored) so nothing is lost if the
+// upload goes wrong halfway.
+app.post('/api/admin/backup', requireAdminAuth, (req, res) => {
+  try {
+    const payload = req.body;
+    if (!payload || typeof payload !== 'object' || Array.isArray(payload)) {
+      return res.status(400).json({ success: false, error: 'Empty or invalid backup payload' });
+    }
+
+    const backupDir = path.join(ROOT, 'backups');
+    if (!fs.existsSync(backupDir)) fs.mkdirSync(backupDir, { recursive: true });
+
+    const stamp = new Date().toISOString().replace(/[:.]/g, '-');
+    const label = sanitizeString(String(payload.label || 'race'), 40).replace(/[^a-zA-Z0-9_-]/g, '') || 'race';
+    const filename = `ffc_backup_${label}_${stamp}.json`;
+    fs.writeFileSync(path.join(backupDir, filename), JSON.stringify(payload, null, 2), 'utf8');
+
+    // Keep only the newest 50 backups so the folder cannot grow forever.
+    try {
+      const files = fs.readdirSync(backupDir)
+        .filter((f) => f.endsWith('.json'))
+        .map((f) => ({ f, t: fs.statSync(path.join(backupDir, f)).mtimeMs }))
+        .sort((a, b) => b.t - a.t);
+      files.slice(50).forEach(({ f }) => { try { fs.unlinkSync(path.join(backupDir, f)); } catch (e) { /* ignore */ } });
+    } catch (e) { /* pruning is best effort */ }
+
+    return res.json({ success: true, filename });
+  } catch (err) {
+    console.error('Error writing safety backup:', err);
+    return res.status(500).json({ success: false, error: err.message });
+  }
+});
+
 // -------------------------------------------------------------
 // 14. SPA CLIENT ROUTING & SERVER START
 // -------------------------------------------------------------

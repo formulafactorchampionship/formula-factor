@@ -5143,9 +5143,110 @@ function scenarioSeasonYear() {
     return found ? found[0] : String(new Date().getFullYear());
 }
 
+// Is the drivers' title already mathematically decided? Returns the clinched
+// champion (plus runner-up, gap and remaining rounds) or null. The title is
+// secure when the leader's gap is larger than every point the runner-up could
+// still score (P1 + fastest lap per remaining round), even if the leader scores
+// nothing else.
+function championshipClinchInfo(standingsOverride) {
+    const raw = (standingsOverride && standingsOverride.length > 0)
+        ? standingsOverride
+        : ((typeof currentPilotos !== "undefined" && currentPilotos && currentPilotos.length > 0) ? currentPilotos : getSavedStandings());
+    const sorted = (typeof sortDriversStandings === "function" ? sortDriversStandings(raw) : raw)
+        .filter(d => d && d.driver);
+    if (sorted.length < 2) return null;
+
+    const leader = sorted[0];
+    const runnerUp = sorted[1];
+    const gap = (Number(leader.pts) || 0) - (Number(runnerUp.pts) || 0);
+    if (gap <= 0) return null;
+
+    const order = (typeof SEASON_RACE_ORDER !== "undefined" && Array.isArray(SEASON_RACE_ORDER)) ? SEASON_RACE_ORDER : [];
+    const results = (typeof raceResults !== "undefined" && raceResults) ? raceResults : {};
+    const remaining = order.filter((key) => {
+        const r = results[key];
+        return !(r && (r.status === "COMPLETED" || (r.winner && r.winner !== "TBA")));
+    }).length;
+
+    if (gap <= remaining * SCENARIO_MAX_RACE_PTS) return null;
+    return { champion: leader, runnerUp: runnerUp, gap: gap, remaining: remaining };
+}
+
+// The current world champion's name: the clinched leader once the title is
+// decided, otherwise whoever settings marks as champion (crowning window).
+// Used to paint the crown in the standings.
+function getChampionDriverName() {
+    const info = championshipClinchInfo();
+    if (info) return info.champion.driver;
+    const s = getSavedSettings();
+    if (s && s.championMode) {
+        const name = (s.championCustomName || s.championDriver || "").trim();
+        if (name) return name;
+    }
+    return null;
+}
+
+// Switches World Champion mode on automatically the moment the title is
+// mathematically decided, filling driver, team, points and wins from the live
+// standings. Only an admin session can persist this (rules), so non-admin
+// callers simply fail silently.
+async function autoActivateChampionIfDecided(standings) {
+    if (typeof db === "undefined") return false;
+    const info = championshipClinchInfo(standings);
+    if (!info) return false;
+
+    const championName = info.champion.driver;
+    const current = (currentSettings && typeof currentSettings === "object") ? currentSettings : (getSavedSettings() || defaultSettings);
+    const championPoints = String(Number(info.champion.pts) || 0);
+    // Re-run only when the crown is off, points on a different driver, or the
+    // stored totals are stale (points can still move after the title is won).
+    const alreadyOn = Boolean(current.championMode)
+        && normalizeDriverKey(current.championDriver || "") === normalizeDriverKey(championName)
+        && String(current.championPoints || "") === championPoints;
+    if (alreadyOn) return false;
+
+    const updated = {
+        ...current,
+        championMode: true,
+        championDriver: championName,
+        championCustomName: current.championCustomName || "",
+        championTeam: info.champion.team || getDriverTeam(championName) || "FFC",
+        championPoints: championPoints,
+        championWins: String(typeof countDriverWins === "function" ? countDriverWins(championName) : 0),
+        championTribute: current.championTribute || defaultSettings.championTribute
+    };
+
+    try {
+        await setDoc(doc(db, "configuracion", "general"), {
+            championMode: updated.championMode,
+            championDriver: updated.championDriver,
+            championTeam: updated.championTeam,
+            championPoints: updated.championPoints,
+            championWins: updated.championWins,
+            championTribute: updated.championTribute
+        }, { merge: true });
+        currentSettings = updated;
+        renderSettingsOnPage(updated);
+        if (typeof renderStandingsOnPage === "function") renderStandingsOnPage(currentPilotos);
+        console.log("[FFC] World Champion mode auto-activated for " + championName);
+        return true;
+    } catch (e) {
+        console.warn("Could not auto-activate World Champion mode:", e);
+        return false;
+    }
+}
+window.autoActivateChampionIfDecided = autoActivateChampionIfDecided;
+
 function renderChampionshipScenarios() {
     const wrapper = document.getElementById("battleScenariosWrapper");
     if (!wrapper) return;
+
+    // Once the title is mathematically decided the "calculations" table is gone:
+    // the champion is crowned in the hero and the standings instead.
+    if (typeof championshipClinchInfo === "function" && championshipClinchInfo()) {
+        wrapper.style.display = "none";
+        return;
+    }
 
     const data = championshipScenarioData();
     if (!data) {
@@ -7401,6 +7502,20 @@ function sortDriversStandings(drivers) {
     });
 }
 
+const WORLD_CHAMPION_CROWN_SVG = `
+    <svg viewBox="0 0 24 24" width="15" height="15" fill="currentColor" class="world-champion-crown-icon" aria-hidden="true" style="vertical-align:-2px;">
+        <path d="M5 16L3 5l5.5 5L12 4l3.5 6L21 5l-2 11H5zm14 3c0 .6-.4 1-1 1H6c-.6 0-1-.4-1-1v-1h14v1z"/>
+    </svg>
+`;
+
+// A crown + tag rendered next to the champion's name in the standings.
+function worldChampionBadgeHtml(driverName, isEn) {
+    const champion = (typeof getChampionDriverName === "function") ? getChampionDriverName() : null;
+    if (!champion || !driverName || normalizeDriverKey(champion) !== normalizeDriverKey(driverName)) return "";
+    const label = isEn ? "WORLD CHAMPION" : "CAMPEÓN DEL MUNDO";
+    return `<span class="world-champion-crown" title="${label}">${WORLD_CHAMPION_CROWN_SVG}<span class="world-champion-tag">${isEn ? "WORLD CHAMPION" : "CAMPEÓN"}</span></span>`;
+}
+
 function renderStandingsOnPage(drivers) {
     // Sort by points descending with official championship tie-breaker ranking
     const sorted = sortDriversStandings(drivers);
@@ -7657,6 +7772,21 @@ function renderStandingsOnPage(drivers) {
     if (typeof renderHomeTop3Podium === "function") {
         renderHomeTop3Podium();
     }
+
+    // Crown the world champion wherever their name is rendered (leader row,
+    // podium columns and the rest of the table).
+    try {
+        const champion = getChampionDriverName();
+        const champBlock = document.getElementById("driverStandingsBlock");
+        if (champion && champBlock) {
+            const champKey = normalizeDriverKey(champion);
+            champBlock.querySelectorAll(".driver-clickable[data-driver]").forEach((el) => {
+                if (normalizeDriverKey(el.getAttribute("data-driver")) === champKey && !el.querySelector(".world-champion-crown")) {
+                    el.insertAdjacentHTML("beforeend", worldChampionBadgeHtml(champion, isEn));
+                }
+            });
+        }
+    } catch (e) { /* decorative only */ }
 }
 
 // ==============================================
@@ -11017,6 +11147,22 @@ function initFirestoreListeners() {
         console.error("Error subscribing to 'general' settings:", error);
     });
 
+    // 3b. Frozen fantasy scores (written when a race is published). Kept in sync
+    // so the leaderboard reflects the frozen values on every device.
+    onSnapshot(doc(db, "configuracion", "fantasy_frozen"), (docSnap) => {
+        if (docSnap.exists()) {
+            const data = docSnap.data() || {};
+            if (data.rounds && typeof data.rounds === "object") {
+                window.FROZEN_FANTASY_SCORES = { rounds: data.rounds, updatedAt: data.updatedAt || null };
+                if (typeof renderFantasyLeaderboard === "function" && typeof ffcFantasyState !== "undefined" && ffcFantasyState && ffcFantasyState.activeSubTab === "leaderboard") {
+                    renderFantasyLeaderboard();
+                }
+            }
+        }
+    }, (error) => {
+        console.warn("Error subscribing to frozen fantasy scores:", error);
+    });
+
     // 4. Synchronize race results from carreras collection in real time
     onSnapshot(collection(db, "carreras"), async (snapshot) => {
         isCarrerasInitialLoaded = true;
@@ -12368,6 +12514,53 @@ function formatSessionStamp(stamp) {
     return `${match[3]} ${month} ${match[1]} · ${match[4]}:${match[5]}`;
 }
 
+// The results importer is the only admin feature that needs a server: it
+// downloads the sessions archived by the game panel. In development that server
+// is the same origin (server/server.js); on the static site it is the public
+// Cloud Run relay, which mirrors the read-only endpoints. Try same origin first
+// and fall back to the relay, so the button works in both setups.
+function adminResultsRelayBase() {
+    const meta = document.querySelector('meta[name="ffc-live-timing-relay"]');
+    const value = meta ? String(meta.getAttribute("content") || "").trim() : "";
+    return value.replace(/\/+$/, "");
+}
+
+async function fetchAdminResultsJson(path) {
+    const errors = [];
+
+    // 1. Same origin (local/dev Node server).
+    try {
+        const res = await fetch(path, { headers: await getAdminApiHeaders() });
+        const type = String(res.headers.get("content-type") || "");
+        if (type.includes("application/json")) {
+            const data = await res.json().catch(() => null);
+            if (data) return { ok: res.ok, status: res.status, data };
+        }
+        errors.push("HTTP " + res.status);
+    } catch (e) {
+        errors.push((e && e.message) || String(e));
+    }
+
+    // 2. Public relay (static hosting). No custom headers, so it stays a simple
+    //    CORS request and does not need a preflight.
+    const relay = adminResultsRelayBase();
+    if (relay) {
+        try {
+            const res = await fetch(relay + path, { headers: { Accept: "application/json" } });
+            const type = String(res.headers.get("content-type") || "");
+            if (type.includes("application/json")) {
+                const data = await res.json().catch(() => null);
+                if (data) return { ok: res.ok, status: res.status, data };
+            }
+            errors.push("HTTP " + res.status);
+        } catch (e) {
+            errors.push((e && e.message) || String(e));
+        }
+    }
+
+    throw new Error(errors.filter(Boolean).join(" / ") || "Sin respuesta del servidor");
+}
+
 // Downloads one archived session (default: latest race) and fills the editor.
 async function runRaceImport(sessionName) {
     if (!adminImportRaceResultsBtn) return;
@@ -12378,13 +12571,12 @@ async function runRaceImport(sessionName) {
 
     try {
         await ensureAdminSession();
-        const headers = await getAdminApiHeaders();
         const url = "/api/admin/results/draft" + (sessionName ? "?session=" + encodeURIComponent(sessionName) : "");
-        const res = await fetch(url, { headers });
-        const data = await res.json().catch(() => null);
+        const result = await fetchAdminResultsJson(url);
+        const data = result.data;
 
-        if (!res.ok || !data || !data.success) {
-            throw new Error((data && data.error) || ("HTTP " + res.status));
+        if (!result.ok || !data || !data.success) {
+            throw new Error((data && data.error) || ("HTTP " + result.status));
         }
 
         const draft = data.draft || {};
@@ -12562,12 +12754,11 @@ async function openRaceImportPicker() {
 
     try {
         await ensureAdminSession();
-        const headers = await getAdminApiHeaders();
-        const res = await fetch("/api/admin/results/sessions", { headers });
-        const data = await res.json().catch(() => null);
+        const result = await fetchAdminResultsJson("/api/admin/results/sessions");
+        const data = result.data;
 
-        if (!res.ok || !data || !data.success) {
-            throw new Error((data && data.error) || ("HTTP " + res.status));
+        if (!result.ok || !data || !data.success) {
+            throw new Error((data && data.error) || ("HTTP " + result.status));
         }
 
         // Every session type is listed; the panel decides what each one imports.
@@ -12826,11 +13017,82 @@ async function recalculateAndSyncStandings(racesMap = raceResults) {
         renderAdminVerifyTab(typeof adminSearchVerifyPilotInput !== "undefined" && adminSearchVerifyPilotInput ? adminSearchVerifyPilotInput.value : "");
     }
 
+    // Freeze the fantasy scores of any newly completed round (so later driver
+    // changes cannot alter them) and auto-crown the champion once the title is
+    // mathematically decided.
+    if (typeof freezeCompletedFantasyRounds === "function") {
+        try { await freezeCompletedFantasyRounds(racesMap); } catch (e) { /* never block */ }
+    }
+    if (typeof autoActivateChampionIfDecided === "function") {
+        try { await autoActivateChampionIfDecided(newStandings); } catch (e) { /* never block */ }
+    }
+
     // Refresh fantasy prices and leaderboard immediately
     updateFantasyWithNewStandings();
 
     return newStandings;
 }
+
+// -------------------------------------------------------------
+// RACE-DAY SAFETY BACKUP
+// -------------------------------------------------------------
+// Snapshots everything a results upload touches (races, standings, fantasy,
+// frozen scores) to a local file AND to the server's backups/ folder, so a bad
+// upload can always be rolled back. Runs automatically before a race is
+// published.
+async function createRaceSafetyBackup(label) {
+    try {
+        const snapshot = {
+            tipo: "ffc-safety-backup",
+            etiqueta: label || "race",
+            creado: new Date().toISOString(),
+            carreras: (typeof raceResults !== "undefined" && raceResults) ? raceResults : {},
+            pilotos: (typeof currentPilotos !== "undefined" && currentPilotos) ? currentPilotos : [],
+            fantasy: (typeof cloudFantasyTeams !== "undefined" && Array.isArray(cloudFantasyTeams)) ? cloudFantasyTeams : [],
+            ajustes: (typeof currentSettings !== "undefined" && currentSettings) ? currentSettings : getSavedSettings(),
+            proximaCarrera: (typeof currentNextRace !== "undefined") ? currentNextRace : null,
+            fantasyCongelado: (typeof window !== "undefined" && window.FROZEN_FANTASY_SCORES) ? window.FROZEN_FANTASY_SCORES : null
+        };
+
+        const stamp = new Date().toISOString().replace(/[:.]/g, "-");
+        const safeLabel = String(label || "carrera").replace(/[^a-zA-Z0-9_-]/g, "") || "carrera";
+        const filename = `ffc_backup_${safeLabel}_${stamp}.json`;
+
+        // 1. Local copy the admin always keeps, even if the server is unreachable.
+        try {
+            const blob = new Blob([JSON.stringify(snapshot, null, 2)], { type: "application/json" });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement("a");
+            a.href = url;
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            setTimeout(() => URL.revokeObjectURL(url), 4000);
+        } catch (e) {
+            console.warn("Local safety backup could not be downloaded:", e);
+        }
+
+        // 2. Server-side copy (backups/, gitignored).
+        try {
+            const headers = (typeof getAdminApiHeaders === "function") ? await getAdminApiHeaders() : getAdminAuthHeaders();
+            const resp = await fetch('/api/admin/backup', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', ...headers },
+                body: JSON.stringify({ ...snapshot, label: safeLabel })
+            });
+            if (!resp.ok) throw new Error('HTTP ' + resp.status);
+        } catch (e) {
+            console.warn("Server safety backup failed (local copy kept):", e);
+        }
+
+        return filename;
+    } catch (e) {
+        console.warn("Safety backup failed:", e);
+        return null;
+    }
+}
+window.createRaceSafetyBackup = createRaceSafetyBackup;
 
 // -------------------------------------------------------------
 // RACE RESULTS SAVE (shared by the form and the "finish & next" button)
@@ -12926,6 +13188,10 @@ async function persistRaceResultsFromEditor(raceKey, chosenStatus) {
         if (raceResultsSaveNotice) {
             raceResultsSaveNotice.textContent = "Guardando resultados, actualizando calendario y recalculando clasificación...";
             raceResultsSaveNotice.style.color = "var(--gold)";
+        }
+        // Safety net: back up the whole state before publishing results.
+        if (status === "COMPLETED" && typeof createRaceSafetyBackup === "function") {
+            try { await createRaceSafetyBackup(raceKey); } catch (e) { /* never block the save */ }
         }
         await setDoc(doc(db, "carreras", raceKey), updatedRace);
 
@@ -13164,6 +13430,9 @@ if (adminToggleRaceStatusBtn) {
         raceResults[raceKey] = updatedRace;
 
         try {
+            if (newStatus === "COMPLETED" && typeof createRaceSafetyBackup === "function") {
+                try { await createRaceSafetyBackup(raceKey); } catch (e) { /* never block */ }
+            }
             await setDoc(doc(db, "carreras", raceKey), updatedRace);
 
             if (newStatus === "UPCOMING") {
@@ -16610,6 +16879,122 @@ function getOfficialRound10Score(teamState) {
     return undefined;
 }
 
+// -------------------------------------------------------------
+// Dynamically frozen fantasy scores (auto-lock at race publication)
+// -------------------------------------------------------------
+// The hardcoded maps above pin rounds 10-12 by hand. From that point on, the
+// score every team earned in a round is snapshotted the moment the race is
+// published (while the market is still frozen), so changing drivers afterwards
+// can never rewrite points already scored. Shape:
+//   { rounds: { <raceKey>: { <teamKey>: points, ... }, ... }, updatedAt }
+var FROZEN_FANTASY_SCORES = { rounds: {} };
+window.FROZEN_FANTASY_SCORES = FROZEN_FANTASY_SCORES;
+
+function normFantasyToken(value) {
+    return String(value || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+        .toLowerCase().replace(/[^a-z0-9]/g, "");
+}
+
+// Several keys per team so a lookup succeeds whether only the id, the manager
+// name or the team name is known in a given place (leaderboard, server copy...).
+function fantasyTeamLookupKeys(teamState) {
+    const keys = [];
+    const add = (k) => { if (k && !keys.includes(k)) keys.push(k); };
+    if (!teamState) return keys;
+    const idRaw = teamState.userId || teamState.id || teamState.email || "";
+    const id = String(idRaw).toLowerCase().trim().replace(/[^a-z0-9_]/g, "_");
+    if (id) add("id:" + id);
+    const mgr = normFantasyToken(teamState.managerName);
+    if (mgr) add("m:" + mgr);
+    const tm = normFantasyToken(teamState.teamName);
+    if (tm) add("t:" + tm);
+    return keys;
+}
+
+function getFrozenRoundScore(teamState, roundKey) {
+    const map = (typeof window !== "undefined" && window.FROZEN_FANTASY_SCORES) ? window.FROZEN_FANTASY_SCORES : FROZEN_FANTASY_SCORES;
+    if (!map || !map.rounds || !roundKey) return undefined;
+    const bucket = map.rounds[roundKey];
+    if (!bucket) return undefined;
+    for (const k of fantasyTeamLookupKeys(teamState)) {
+        if (bucket[k] !== undefined) return bucket[k];
+    }
+    return undefined;
+}
+
+// Rounds already pinned by the hardcoded snapshots must never be re-frozen from
+// live data: those values are hand-corrected history.
+function isRoundOfficiallyLocked(roundKey) {
+    if (!roundKey) return false;
+    if (roundKey === "nurburgring") return true; // OFFICIAL_ROUND_10_POINTS
+    const pastMap = (typeof window !== "undefined" && window.OFFICIAL_PAST_ROUNDS_SCORES) ? window.OFFICIAL_PAST_ROUNDS_SCORES : OFFICIAL_PAST_ROUNDS_SCORES;
+    if (!pastMap) return false;
+    for (const item of Object.values(pastMap)) {
+        if (item && item.roundScores && item.roundScores[roundKey] !== undefined) return true;
+    }
+    return false;
+}
+
+// Snapshots the score every known fantasy team earned in each completed round
+// that is not already hand-locked. Called right after results are published
+// (market still frozen) so later driver changes cannot alter scored points.
+async function freezeCompletedFantasyRounds(racesMap = raceResults) {
+    if (typeof db === "undefined") return;
+    const results = racesMap || {};
+    const lockable = Object.keys(results).filter((key) =>
+        isFantasyScoringRace(key, results[key]) && !isRoundOfficiallyLocked(key)
+    );
+    if (lockable.length === 0) return;
+
+    // Make sure every team is known: realtime cache first, server copy as fallback.
+    if (!Array.isArray(cloudFantasyTeams) || cloudFantasyTeams.length === 0) {
+        initFantasyLeaderboardRealtime();
+        try {
+            const resp = await fetch('/api/fantasy/teams');
+            if (resp.ok) {
+                const data = await resp.json();
+                if (data && Array.isArray(data.teams) && data.teams.length > 0) mergeFantasyTeams(data.teams);
+            }
+        } catch (e) { /* offline: freeze whatever is known */ }
+    }
+    const teams = Array.isArray(cloudFantasyTeams) ? cloudFantasyTeams : [];
+    if (teams.length === 0) return;
+
+    const map = (typeof window !== "undefined" && window.FROZEN_FANTASY_SCORES) ? window.FROZEN_FANTASY_SCORES : FROZEN_FANTASY_SCORES;
+    if (!map.rounds) map.rounds = {};
+    let changed = false;
+
+    lockable.forEach((key) => {
+        const race = results[key];
+        if (!map.rounds[key]) map.rounds[key] = {};
+        const bucket = map.rounds[key];
+        teams.forEach((t) => {
+            const lineup = {
+                driver1: t.driver1, driver2: t.driver2, driver3: t.driver3,
+                team: t.team, turboDriver: t.turboDriver
+            };
+            if (!(lineup.driver1 && lineup.driver2 && lineup.driver3 && lineup.team)) return;
+            const keys = fantasyTeamLookupKeys(t);
+            if (keys.length === 0) return;
+            if (keys.every((k) => bucket[k] !== undefined)) return; // already frozen
+            const score = getLineupScoreInRace(lineup, race);
+            keys.forEach((k) => { if (bucket[k] === undefined) { bucket[k] = score; changed = true; } });
+        });
+    });
+
+    if (!changed) return;
+    try {
+        await setDoc(doc(db, "configuracion", "fantasy_frozen"), {
+            rounds: map.rounds,
+            updatedAt: new Date().toISOString()
+        }, { merge: true });
+        window.FROZEN_FANTASY_SCORES = map;
+    } catch (e) {
+        console.warn("Could not persist frozen fantasy scores:", e);
+    }
+}
+window.freezeCompletedFantasyRounds = freezeCompletedFantasyRounds;
+
 function calculateFantasyTeamPoints(teamState) {
     if (!teamState) return { totalPts: 0, roundScores: {} };
 
@@ -16623,9 +17008,14 @@ function calculateFantasyTeamPoints(teamState) {
 
     completedRaces.forEach(({ key, race }) => {
         let rPts = 0;
+        // 0. A round frozen at publication time always wins: it captures what the
+        //    team scored with the lineup it actually raced.
+        const frozenPts = getFrozenRoundScore(teamState, key);
         // 1. Check official locked historical scores for past rounds
         const officialPastPts = getOfficialPastRoundScore(teamState, key);
-        if (officialPastPts !== undefined) {
+        if (frozenPts !== undefined) {
+            rPts = frozenPts;
+        } else if (officialPastPts !== undefined) {
             rPts = officialPastPts;
         } else if (key === "nurburgring") {
             const officialPts = getOfficialRound10Score(teamState);
