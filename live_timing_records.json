@@ -1,7 +1,7 @@
 {
   "version": 1,
-  "updatedAt": "2026-10-18T16:38:16.853Z",
-  "default": "rt_fuji_speedway|layout_gp",
+  "updatedAt": "2026-10-18T21:09:33.067Z",
+  "default": "cota_2022|gt",
   "tracks": {
     "rt_fuji_speedway|layout_gp": {
       "key": "rt_fuji_speedway|layout_gp",
@@ -100,6 +100,17 @@
         "at": "2026-10-11T16:11:00.000Z"
       },
       "lastSeen": "2026-10-11T16:11:00.000Z"
+    },
+    "cota_2022|gt": {
+      "key": "cota_2022|gt",
+      "track": "cota_2022",
+      "config": "gt",
+      "name": "Circuit of The Americas",
+      "drivers": 0,
+      "bestLap": null,
+      "topSpeed": null,
+      "laps": null,
+      "lastSeen": null
     }
   }
 }
