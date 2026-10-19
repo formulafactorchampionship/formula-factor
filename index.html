@@ -33,7 +33,7 @@
         <link rel="preconnect" href="https://esm.sh" crossorigin>
     <link rel="preconnect" href="https://flagcdn.com" crossorigin>
     <link rel="preconnect" href="https://firestore.googleapis.com" crossorigin>
-    <link rel="stylesheet" href="style.css?v=20261019_rc59">
+    <link rel="stylesheet" href="style.css?v=20261019_rc60">
     <link rel="stylesheet" href="components/BorderGlow.css">
     <link rel="stylesheet" href="components/LightPillar.css">
     <script>
@@ -4637,10 +4637,10 @@
                         </table>
                     </div>
 
-                    <!-- Previsualización (solo lectura) de la clasificación importada -->
+                    <!-- Parrilla de clasificación (editable: nombres del servidor -> pilotos oficiales) -->
                     <div class="admin-qualifying-preview" id="adminQualifyingPreview" style="display: none;">
                         <div class="admin-qualifying-header">
-                            <span class="admin-qualifying-title">CLASIFICACIÓN IMPORTADA (PARRILLA)</span>
+                            <span class="admin-qualifying-title">CLASIFICACIÓN (PARRILLA) · PUEDES CAMBIAR LOS PILOTOS</span>
                             <span class="admin-qualifying-count" id="adminQualifyingCount"></span>
                         </div>
                         <div class="admin-table-wrapper">
@@ -4648,9 +4648,9 @@
                                 <thead>
                                     <tr>
                                         <th style="width: 60px;">POS</th>
-                                        <th>PILOTO</th>
-                                        <th>EQUIPO</th>
-                                        <th style="width: 120px;">TIEMPO</th>
+                                        <th style="min-width: 220px;">PILOTO (DESPLEGABLE)</th>
+                                        <th style="min-width: 150px;">EQUIPO (OFICIAL · SEGÚN PILOTO)</th>
+                                        <th style="width: 150px;">TIEMPO</th>
                                     </tr>
                                 </thead>
                                 <tbody id="adminQualifyingRows"></tbody>
@@ -6308,7 +6308,7 @@
 
 
 
-<script type="module" src="script.js?v=20261019_rc59"></script>
+<script type="module" src="script.js?v=20261019_rc60"></script>
 
 </body>
 </html>

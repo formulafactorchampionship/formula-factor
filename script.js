@@ -12465,8 +12465,10 @@ function showRaceImportBanner(draft, unmatched, poleLap, poleSession, qualifying
     refreshIcons();
 }
 
-// Read-only preview of the qualifying grid in the admin panel: whatever was just
-// imported for this race, or the one already stored.
+// Editable qualifying grid in the admin panel: whatever was just imported for
+// this race, or the one already stored. The driver is a dropdown (the in-game
+// names do not always match the official roster, so the admin maps them here),
+// the team follows the chosen driver and the lap time stays editable.
 function renderAdminQualifyingPreview(raceKey) {
     const box = document.getElementById("adminQualifyingPreview");
     const rowsEl = document.getElementById("adminQualifyingRows");
@@ -12489,13 +12491,84 @@ function renderAdminQualifyingPreview(raceKey) {
 
     box.style.display = "block";
     if (countEl) countEl.textContent = list.length + " pilotos";
-    rowsEl.innerHTML = list.map((entry) => `
-        <tr>
-            <td style="text-align: center; font-weight: 800; color: var(--gold);">${escapeHtml(String(entry.pos))}</td>
-            <td>${escapeHtml(entry.driver)}</td>
-            <td>${escapeHtml(entry.team || "")}</td>
-            <td class="qualifying-time">${escapeHtml(entry.time || "--:--.---")}</td>
-        </tr>`).join("");
+
+    const driverList = getAllDriverList();
+    rowsEl.innerHTML = list.map((entry, idx) => {
+        const driver = entry.driver || "";
+        const isKnown = driver && driverList.some(d => d.driver.toLowerCase() === driver.toLowerCase());
+        let options = `<option value="">-- Seleccionar Piloto --</option>`;
+        driverList.forEach(d => {
+            const selected = driver && driver.toLowerCase() === d.driver.toLowerCase();
+            options += `<option value="${escapeHtml(d.driver)}" ${selected ? "selected" : ""}>${escapeHtml(d.driver)}</option>`;
+        });
+        if (driver && !isKnown) {
+            options += `<option value="${escapeHtml(driver)}" selected>${escapeHtml(driver)}</option>`;
+        }
+        const team = entry.team || getDriverTeam(driver) || "Independent";
+        const pos = (entry.pos !== undefined && entry.pos !== null && String(entry.pos).trim() !== "") ? entry.pos : (idx + 1);
+        return `<tr class="qualifying-row">
+            <td style="text-align: center; font-weight: 800; color: var(--gold);">
+                ${escapeHtml(String(pos))}
+                <input type="hidden" class="qualifying-pos-val" value="${escapeHtml(String(pos))}">
+            </td>
+            <td>
+                <select class="qualifying-driver-select" required>
+                    ${options}
+                </select>
+            </td>
+            <td>
+                <div class="race-team-lock-box">
+                    <span class="team-locked-badge ${getTeamClass(team)}" title="Equipo oficial (según el piloto)">${escapeHtml(team)}</span>
+                    <input type="hidden" class="qualifying-team-val" value="${escapeHtml(team)}">
+                </div>
+            </td>
+            <td>
+                <input type="text" class="qualifying-time-input" value="${escapeHtml(entry.time || "")}" placeholder="--:--.---">
+            </td>
+        </tr>`;
+    }).join("");
+
+    // Keep the team badge in step with the chosen driver.
+    rowsEl.querySelectorAll(".qualifying-driver-select").forEach((select) => {
+        select.addEventListener("change", () => {
+            const tr = select.closest("tr");
+            const badge = tr ? tr.querySelector(".team-locked-badge") : null;
+            const teamVal = tr ? tr.querySelector(".qualifying-team-val") : null;
+            const official = getDriverTeam(select.value) || "Independent";
+            if (badge) {
+                badge.textContent = official;
+                badge.className = `team-locked-badge ${getTeamClass(official)}`;
+            }
+            if (teamVal) teamVal.value = official;
+        });
+    });
+}
+
+// Reads the (possibly edited) qualifying grid from the panel. Returns null when
+// there is nothing rendered, so the caller can fall back to the stored grid.
+function readAdminQualifyingGrid() {
+    const body = document.getElementById("adminQualifyingRows");
+    if (!body) return null;
+    const rows = body.querySelectorAll("tr");
+    if (!rows.length) return null;
+
+    const list = [];
+    rows.forEach((row, idx) => {
+        const select = row.querySelector(".qualifying-driver-select");
+        const teamVal = row.querySelector(".qualifying-team-val");
+        const timeInput = row.querySelector(".qualifying-time-input");
+        const posVal = row.querySelector(".qualifying-pos-val");
+        const driver = select ? select.value.trim() : "";
+        if (!driver) return;
+        const pos = posVal && parseInt(posVal.value, 10) ? parseInt(posVal.value, 10) : (idx + 1);
+        list.push({
+            pos: pos,
+            driver: driver,
+            team: teamVal ? teamVal.value.trim() : getDriverTeam(driver),
+            time: timeInput ? timeInput.value.trim() : ""
+        });
+    });
+    return list;
 }
 
 function showRaceImportError(msg) {
@@ -13221,10 +13294,14 @@ async function persistRaceResultsFromEditor(raceKey, chosenStatus) {
         drivers: drivers
     };
 
-    // Qualifying grid: the freshly imported one, or the one already stored (so a
-    // normal edit does not wipe it).
+    // Qualifying grid: whatever the admin left in the panel (imported and/or
+    // hand-corrected names), otherwise the one already stored (so a normal edit
+    // does not wipe it).
     const existingQualifying = (raceResults[raceKey] && Array.isArray(raceResults[raceKey].qualifying)) ? raceResults[raceKey].qualifying : null;
-    const qualifyingToStore = (pendingQualifying && pendingQualifying.raceKey === raceKey) ? pendingQualifying.list : existingQualifying;
+    const editedQualifying = (typeof readAdminQualifyingGrid === "function") ? readAdminQualifyingGrid() : null;
+    const qualifyingToStore = (Array.isArray(editedQualifying) && editedQualifying.length)
+        ? editedQualifying
+        : ((pendingQualifying && pendingQualifying.raceKey === raceKey) ? pendingQualifying.list : existingQualifying);
     if (Array.isArray(qualifyingToStore) && qualifyingToStore.length) {
         updatedRace.qualifying = qualifyingToStore;
     }

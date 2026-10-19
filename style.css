@@ -8857,7 +8857,8 @@ footer {
 
 .race-driver-select,
 .race-team-select,
-.race-status-select {
+.race-status-select,
+.qualifying-driver-select {
     width: 100%;
     background: #090d13;
     border: 1px solid rgba(255, 255, 255, 0.12);
@@ -8870,16 +8871,34 @@ footer {
 
 .race-driver-select:focus,
 .race-team-select:focus,
-.race-status-select:focus {
+.race-status-select:focus,
+.qualifying-driver-select:focus {
     outline: none;
     border-color: var(--gold);
 }
 
 .race-driver-select option,
 .race-team-select option,
-.race-status-select option {
+.race-status-select option,
+.qualifying-driver-select option {
     background: #0b1017;
     color: #fff;
+}
+
+.qualifying-time-input {
+    width: 100%;
+    background: #090d13;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    color: #fff;
+    padding: 7px 10px;
+    font-size: 13px;
+    border-radius: 3px;
+    font-family: "JetBrains Mono", monospace;
+}
+
+.qualifying-time-input:focus {
+    outline: none;
+    border-color: var(--gold);
 }
 
 /* =========================================================
