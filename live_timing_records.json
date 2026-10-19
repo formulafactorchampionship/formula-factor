@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-10-18T21:09:33.067Z",
+  "updatedAt": "2026-10-19T06:09:43.025Z",
   "default": "cota_2022|gt",
   "tracks": {
     "rt_fuji_speedway|layout_gp": {
@@ -106,11 +106,17 @@
       "track": "cota_2022",
       "config": "gt",
       "name": "Circuit of The Americas",
-      "drivers": 0,
+      "drivers": 1,
       "bestLap": null,
       "topSpeed": null,
-      "laps": null,
-      "lastSeen": null
+      "laps": {
+        "count": 3,
+        "driver": "IWantMozaR5",
+        "car": "Formula RSS 2010 V8",
+        "guid": "76561199381231982",
+        "at": "2026-10-19T06:09:39.189Z"
+      },
+      "lastSeen": "2026-10-19T06:09:39.189Z"
     }
   }
 }
