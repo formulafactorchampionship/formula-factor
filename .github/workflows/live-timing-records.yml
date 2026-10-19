@@ -33,14 +33,20 @@ jobs:
       - name: Refresh stored lap times
         run: node server/build-live-timing-records.mjs --timeout 25000
 
+      # Precomputes the race-results import bundle the admin panel reads on the
+      # static site (the game panel rejects cross-origin browser requests).
+      - name: Refresh race import bundle
+        continue-on-error: true
+        run: node server/build-race-import.mjs
+
       - name: Publish changes
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add live_timing_records.json
+          git add live_timing_records.json race_import.json
           if git diff --cached --quiet; then
             echo "No changes to publish."
           else
-            git commit -m "chore(live-timing): refresh stored times"
+            git commit -m "chore(live-timing,race-import): refresh published data"
             git push
           fi

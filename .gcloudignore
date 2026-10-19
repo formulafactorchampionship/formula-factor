@@ -13,6 +13,7 @@ server/server.js
 server/emailAuditService.js
 server/envLoader.js
 server/build-live-timing-records.mjs
+server/build-race-import.mjs
 photos_db.json
 fantasy_teams_db.json
 live_timing_db.json

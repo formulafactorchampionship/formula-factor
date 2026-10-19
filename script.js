@@ -12561,6 +12561,30 @@ async function fetchAdminResultsJson(path) {
     throw new Error(errors.filter(Boolean).join(" / ") || "Sin respuesta del servidor");
 }
 
+// Static fallback for the import button. The GitHub Action publishes
+// race_import.json (the sessions list + ready drafts for the latest race and
+// qualifying) next to the site, so the button also works on pure static hosting
+// with no server and no relay. Cached after the first read.
+let staticRaceImportCache = null;
+async function loadStaticRaceImport() {
+    if (staticRaceImportCache) return staticRaceImportCache;
+    staticRaceImportCache = { sessions: [], drafts: {} };
+    try {
+        const res = await fetch("race_import.json", { cache: "no-store" });
+        const type = String(res.headers.get("content-type") || "");
+        if (res.ok && type.includes("json")) {
+            const data = await res.json();
+            if (data && typeof data === "object") {
+                staticRaceImportCache = {
+                    sessions: Array.isArray(data.sessions) ? data.sessions : [],
+                    drafts: (data.drafts && typeof data.drafts === "object") ? data.drafts : {}
+                };
+            }
+        }
+    } catch (e) { /* no bundle published yet: keep it empty */ }
+    return staticRaceImportCache;
+}
+
 // Downloads one archived session (default: latest race) and fills the editor.
 async function runRaceImport(sessionName) {
     if (!adminImportRaceResultsBtn) return;
@@ -12572,11 +12596,25 @@ async function runRaceImport(sessionName) {
     try {
         await ensureAdminSession();
         const url = "/api/admin/results/draft" + (sessionName ? "?session=" + encodeURIComponent(sessionName) : "");
-        const result = await fetchAdminResultsJson(url);
-        const data = result.data;
-
-        if (!result.ok || !data || !data.success) {
-            throw new Error((data && data.error) || ("HTTP " + result.status));
+        let data = null;
+        try {
+            const result = await fetchAdminResultsJson(url);
+            if (!result.ok || !result.data || !result.data.success) {
+                throw new Error((result.data && result.data.error) || ("HTTP " + result.status));
+            }
+            data = result.data;
+        } catch (liveErr) {
+            // Pure static hosting: use the precomputed draft published with the site.
+            const bundle = await loadStaticRaceImport();
+            const latestRace = (bundle.sessions || []).find((s) => s.type === "RACE");
+            const chosen = sessionName
+                ? (bundle.drafts && bundle.drafts[sessionName])
+                : (latestRace && bundle.drafts ? bundle.drafts[latestRace.name] : null);
+            if (chosen) {
+                data = chosen;
+            } else {
+                throw liveErr;
+            }
         }
 
         const draft = data.draft || {};
@@ -12754,15 +12792,22 @@ async function openRaceImportPicker() {
 
     try {
         await ensureAdminSession();
-        const result = await fetchAdminResultsJson("/api/admin/results/sessions");
-        const data = result.data;
-
-        if (!result.ok || !data || !data.success) {
-            throw new Error((data && data.error) || ("HTTP " + result.status));
+        let sessions = [];
+        try {
+            const result = await fetchAdminResultsJson("/api/admin/results/sessions");
+            const data = result.data;
+            if (!result.ok || !data || !data.success) {
+                throw new Error((data && data.error) || ("HTTP " + result.status));
+            }
+            sessions = Array.isArray(data.sessions) ? data.sessions : [];
+        } catch (liveErr) {
+            // Pure static hosting: fall back to the bundle published with the site.
+            const bundle = await loadStaticRaceImport();
+            sessions = Array.isArray(bundle.sessions) ? bundle.sessions : [];
+            if (!sessions.length) throw liveErr;
         }
 
         // Every session type is listed; the panel decides what each one imports.
-        const sessions = Array.isArray(data.sessions) ? data.sessions : [];
         if (!sessions.length) {
             throw new Error("El servidor no tiene ninguna sesión archivada.");
         }

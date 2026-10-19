@@ -1,0 +1,404 @@
+{
+  "version": 1,
+  "updatedAt": "2026-10-19T09:03:38.009Z",
+  "sessions": [
+    {
+      "name": "2026_10_18_18_10_RACE",
+      "identity": "2026_10_18_18_10_RACE",
+      "type": "RACE",
+      "stamp": "2026_10_18_18_10",
+      "track": "Rt Fuji Speedway",
+      "entrants": 6
+    },
+    {
+      "name": "2026_10_18_17_26_QUALIFY",
+      "identity": "2026_10_18_17_26_QUALIFY",
+      "type": "QUALIFY",
+      "stamp": "2026_10_18_17_26",
+      "track": "Rt Fuji Speedway",
+      "entrants": 5
+    },
+    {
+      "name": "2026_10_18_17_3_PRACTICE",
+      "identity": "2026_10_18_17_3_PRACTICE",
+      "type": "PRACTICE",
+      "stamp": "2026_10_18_17_03",
+      "track": "Rt Fuji Speedway",
+      "entrants": 5
+    },
+    {
+      "name": "2026_10_16_16_5_PRACTICE",
+      "identity": "2026_10_16_16_5_PRACTICE",
+      "type": "PRACTICE",
+      "stamp": "2026_10_16_16_05",
+      "track": "Rt Fuji Speedway",
+      "entrants": 1
+    },
+    {
+      "name": "2026_10_16_4_3_PRACTICE",
+      "identity": "2026_10_16_4_3_PRACTICE",
+      "type": "PRACTICE",
+      "stamp": "2026_10_16_04_03",
+      "track": "Rt Fuji Speedway",
+      "entrants": 1
+    },
+    {
+      "name": "2026_10_14_15_59_PRACTICE-time-attack",
+      "identity": "2026_10_14_15_59_PRACTICE",
+      "type": "TIME_ATTACK",
+      "stamp": "2026_10_14_15_59",
+      "track": "Rt Fuji Speedway",
+      "entrants": 2
+    },
+    {
+      "name": "2026_10_12_18_29_RACE",
+      "identity": "2026_10_12_18_29_RACE",
+      "type": "RACE",
+      "stamp": "2026_10_12_18_29",
+      "track": "Silverstone",
+      "entrants": 4
+    },
+    {
+      "name": "2026_10_12_18_20_RACE",
+      "identity": "2026_10_12_18_20_RACE",
+      "type": "RACE",
+      "stamp": "2026_10_12_18_20",
+      "track": "Silverstone",
+      "entrants": 4
+    },
+    {
+      "name": "2026_10_12_16_55_PRACTICE",
+      "identity": "2026_10_12_16_55_PRACTICE",
+      "type": "PRACTICE",
+      "stamp": "2026_10_12_16_55",
+      "track": "Silverstone",
+      "entrants": 5
+    },
+    {
+      "name": "2026_10_12_10_51_PRACTICE",
+      "identity": "2026_10_12_10_51_PRACTICE",
+      "type": "PRACTICE",
+      "stamp": "2026_10_12_10_51",
+      "track": "Fujispeedway 2017",
+      "entrants": 1
+    },
+    {
+      "name": "2026_10_11_18_11_RACE",
+      "identity": "2026_10_11_18_11_RACE",
+      "type": "RACE",
+      "stamp": "2026_10_11_18_11",
+      "track": "Spa",
+      "entrants": 9
+    },
+    {
+      "name": "2026_10_11_17_24_QUALIFY",
+      "identity": "2026_10_11_17_24_QUALIFY",
+      "type": "QUALIFY",
+      "stamp": "2026_10_11_17_24",
+      "track": "Spa",
+      "entrants": 8
+    },
+    {
+      "name": "2026_10_11_16_59_PRACTICE",
+      "identity": "2026_10_11_16_59_PRACTICE",
+      "type": "PRACTICE",
+      "stamp": "2026_10_11_16_59",
+      "track": "Spa",
+      "entrants": 2
+    },
+    {
+      "name": "2026_10_4_16_45_PRACTICE",
+      "identity": "2026_10_4_16_45_PRACTICE",
+      "type": "PRACTICE",
+      "stamp": "2026_10_04_16_45",
+      "track": "Spa",
+      "entrants": 1
+    }
+  ],
+  "drafts": {
+    "2026_10_18_18_10_RACE": {
+      "success": true,
+      "sessionFile": "2026_10_18_18_10_RACE",
+      "sessionType": "RACE",
+      "draft": {
+        "track": "rt_fuji_speedway",
+        "config": "layout_gp",
+        "type": "RACE",
+        "date": "2026-10-18T18:10:00+02:00",
+        "sessionFile": "2026_10_18_18_10_RACE",
+        "entrants": 24,
+        "classified": 6,
+        "approximate": false,
+        "fastestLap": {
+          "driver": "Diego Pereira",
+          "guid": "76561199548642271",
+          "ms": 77562
+        },
+        "entries": [
+          {
+            "pos": 1,
+            "driver": "Diego Pereira",
+            "guid": "76561199548642271",
+            "car": "rss_formula_2010",
+            "team": "",
+            "bestLapMs": 77562,
+            "totalTimeMs": 2424880,
+            "hasPenalty": false,
+            "penaltyMs": 0,
+            "lapPenalty": 0,
+            "disqualified": false,
+            "status": "FINISHED"
+          },
+          {
+            "pos": 2,
+            "driver": "sbinn",
+            "guid": "76561199273274171",
+            "car": "rss_formula_2010",
+            "team": "",
+            "bestLapMs": 78743,
+            "totalTimeMs": 2467604,
+            "hasPenalty": false,
+            "penaltyMs": 0,
+            "lapPenalty": 0,
+            "disqualified": false,
+            "status": "FINISHED"
+          },
+          {
+            "pos": 3,
+            "driver": "ACRR|Licha",
+            "guid": "76561199331786324",
+            "car": "rss_formula_2010",
+            "team": "",
+            "bestLapMs": 79258,
+            "totalTimeMs": 2500573,
+            "hasPenalty": false,
+            "penaltyMs": 0,
+            "lapPenalty": 0,
+            "disqualified": false,
+            "status": "FINISHED"
+          },
+          {
+            "pos": 4,
+            "driver": "IWantMozaR5",
+            "guid": "76561199381231982",
+            "car": "rss_formula_2010",
+            "team": "",
+            "bestLapMs": 80651,
+            "totalTimeMs": 945243,
+            "hasPenalty": false,
+            "penaltyMs": 0,
+            "lapPenalty": 0,
+            "disqualified": false,
+            "status": "FINISHED"
+          },
+          {
+            "pos": 5,
+            "driver": "ACRR||Theagus60",
+            "guid": "76561199793961424",
+            "car": "rss_formula_2010",
+            "team": "",
+            "bestLapMs": 81275,
+            "totalTimeMs": 516464,
+            "hasPenalty": false,
+            "penaltyMs": 0,
+            "lapPenalty": 0,
+            "disqualified": false,
+            "status": "FINISHED"
+          },
+          {
+            "pos": 6,
+            "driver": "suforr",
+            "guid": "76561199148380051",
+            "car": "rss_formula_2010",
+            "team": "",
+            "bestLapMs": 92558,
+            "totalTimeMs": 92559,
+            "hasPenalty": false,
+            "penaltyMs": 0,
+            "lapPenalty": 0,
+            "disqualified": false,
+            "status": "FINISHED"
+          }
+        ]
+      },
+      "poleLap": {
+        "driver": "Diego Pereira",
+        "guid": "76561199548642271",
+        "ms": 78183
+      },
+      "poleSession": "2026_10_18_17_26_QUALIFY",
+      "qualifying": [
+        {
+          "pos": 1,
+          "driver": "Diego Pereira",
+          "guid": "76561199548642271",
+          "bestLapMs": 78183,
+          "status": "FINISHED"
+        },
+        {
+          "pos": 2,
+          "driver": "sbinn",
+          "guid": "76561199273274171",
+          "bestLapMs": 79343,
+          "status": "FINISHED"
+        },
+        {
+          "pos": 3,
+          "driver": "IWantMozaR5",
+          "guid": "76561199381231982",
+          "bestLapMs": 79416,
+          "status": "FINISHED"
+        },
+        {
+          "pos": 4,
+          "driver": "ACRR|Licha",
+          "guid": "76561199331786324",
+          "bestLapMs": 79608,
+          "status": "FINISHED"
+        },
+        {
+          "pos": 5,
+          "driver": "ACRR||Theagus60",
+          "guid": "76561199793961424",
+          "bestLapMs": 79979,
+          "status": "FINISHED"
+        }
+      ]
+    },
+    "2026_10_18_17_26_QUALIFY": {
+      "success": true,
+      "sessionFile": "2026_10_18_17_26_QUALIFY",
+      "sessionType": "QUALIFY",
+      "draft": {
+        "track": "rt_fuji_speedway",
+        "config": "layout_gp",
+        "type": "QUALIFY",
+        "date": "2026-10-18T17:26:00+02:00",
+        "sessionFile": "2026_10_18_17_26_QUALIFY",
+        "entrants": 24,
+        "classified": 5,
+        "approximate": false,
+        "fastestLap": {
+          "driver": "Diego Pereira",
+          "guid": "76561199548642271",
+          "ms": 78183
+        },
+        "entries": [
+          {
+            "pos": 1,
+            "driver": "Diego Pereira",
+            "guid": "76561199548642271",
+            "car": "rss_formula_2010",
+            "team": "",
+            "bestLapMs": 78183,
+            "totalTimeMs": 1166843,
+            "hasPenalty": false,
+            "penaltyMs": 0,
+            "lapPenalty": 0,
+            "disqualified": false,
+            "status": "FINISHED"
+          },
+          {
+            "pos": 2,
+            "driver": "sbinn",
+            "guid": "76561199273274171",
+            "car": "rss_formula_2010",
+            "team": "",
+            "bestLapMs": 79343,
+            "totalTimeMs": 1253074,
+            "hasPenalty": false,
+            "penaltyMs": 0,
+            "lapPenalty": 0,
+            "disqualified": false,
+            "status": "FINISHED"
+          },
+          {
+            "pos": 3,
+            "driver": "IWantMozaR5",
+            "guid": "76561199381231982",
+            "car": "rss_formula_2010",
+            "team": "",
+            "bestLapMs": 79416,
+            "totalTimeMs": 1059863,
+            "hasPenalty": false,
+            "penaltyMs": 0,
+            "lapPenalty": 0,
+            "disqualified": false,
+            "status": "FINISHED"
+          },
+          {
+            "pos": 4,
+            "driver": "ACRR|Licha",
+            "guid": "76561199331786324",
+            "car": "rss_formula_2010",
+            "team": "",
+            "bestLapMs": 79608,
+            "totalTimeMs": 861507,
+            "hasPenalty": false,
+            "penaltyMs": 0,
+            "lapPenalty": 0,
+            "disqualified": false,
+            "status": "FINISHED"
+          },
+          {
+            "pos": 5,
+            "driver": "ACRR||Theagus60",
+            "guid": "76561199793961424",
+            "car": "rss_formula_2010",
+            "team": "",
+            "bestLapMs": 79979,
+            "totalTimeMs": 914627,
+            "hasPenalty": false,
+            "penaltyMs": 0,
+            "lapPenalty": 0,
+            "disqualified": false,
+            "status": "FINISHED"
+          }
+        ]
+      },
+      "poleLap": {
+        "driver": "Diego Pereira",
+        "guid": "76561199548642271",
+        "ms": 78183
+      },
+      "poleSession": "2026_10_18_17_26_QUALIFY",
+      "qualifying": [
+        {
+          "pos": 1,
+          "driver": "Diego Pereira",
+          "guid": "76561199548642271",
+          "bestLapMs": 78183,
+          "status": "FINISHED"
+        },
+        {
+          "pos": 2,
+          "driver": "sbinn",
+          "guid": "76561199273274171",
+          "bestLapMs": 79343,
+          "status": "FINISHED"
+        },
+        {
+          "pos": 3,
+          "driver": "IWantMozaR5",
+          "guid": "76561199381231982",
+          "bestLapMs": 79416,
+          "status": "FINISHED"
+        },
+        {
+          "pos": 4,
+          "driver": "ACRR|Licha",
+          "guid": "76561199331786324",
+          "bestLapMs": 79608,
+          "status": "FINISHED"
+        },
+        {
+          "pos": 5,
+          "driver": "ACRR||Theagus60",
+          "guid": "76561199793961424",
+          "bestLapMs": 79979,
+          "status": "FINISHED"
+        }
+      ]
+    }
+  }
+}
