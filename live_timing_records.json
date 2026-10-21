@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-10-20T23:15:21.164Z",
+  "updatedAt": "2026-10-21T01:45:38.114Z",
   "default": "cota_2022|gt",
   "tracks": {
     "rt_fuji_speedway|layout_gp": {
@@ -114,9 +114,9 @@
         "driver": "IWantMozaR5",
         "car": "Formula RSS 2010 V8",
         "guid": "76561199381231982",
-        "at": "2026-10-20T23:15:18.245Z"
+        "at": "2026-10-21T01:45:35.259Z"
       },
-      "lastSeen": "2026-10-20T23:15:18.245Z"
+      "lastSeen": "2026-10-21T01:45:35.259Z"
     }
   }
 }
