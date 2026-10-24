@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-10-23T23:59:08.776Z",
+  "updatedAt": "2026-10-24T03:31:25.175Z",
   "default": "cota_2022|gt",
   "tracks": {
     "rt_fuji_speedway|layout_gp": {
@@ -112,23 +112,23 @@
         "driver": "IWantMozaR5",
         "car": "Formula RSS 2010 V8",
         "guid": "76561199381231982",
-        "at": "2026-10-23T23:59:05.988Z"
+        "at": "2026-10-24T03:31:21.473Z"
       },
       "topSpeed": {
         "kmh": 313.4,
         "driver": "IWantMozaR5",
         "car": "Formula RSS 2010 V8",
         "guid": "76561199381231982",
-        "at": "2026-10-23T23:59:05.988Z"
+        "at": "2026-10-24T03:31:21.473Z"
       },
       "laps": {
         "count": 24,
         "driver": "IWantMozaR5",
         "car": "Formula RSS 2010 V8",
         "guid": "76561199381231982",
-        "at": "2026-10-23T23:59:05.988Z"
+        "at": "2026-10-24T03:31:21.473Z"
       },
-      "lastSeen": "2026-10-23T23:59:05.988Z"
+      "lastSeen": "2026-10-24T03:31:21.473Z"
     }
   }
 }
