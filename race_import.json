@@ -1,7 +1,23 @@
 {
   "version": 1,
-  "updatedAt": "2026-10-19T09:03:38.009Z",
+  "updatedAt": "2026-10-25T18:23:57.206Z",
   "sessions": [
+    {
+      "name": "2026_10_25_17_27_QUALIFY",
+      "identity": "2026_10_25_17_27_QUALIFY",
+      "type": "QUALIFY",
+      "stamp": "2026_10_25_17_27",
+      "track": "Cota 2022",
+      "entrants": 7
+    },
+    {
+      "name": "2026_10_25_17_4_PRACTICE",
+      "identity": "2026_10_25_17_4_PRACTICE",
+      "type": "PRACTICE",
+      "stamp": "2026_10_25_17_04",
+      "track": "Cota 2022",
+      "entrants": 3
+    },
     {
       "name": "2026_10_18_18_10_RACE",
       "identity": "2026_10_18_18_10_RACE",
@@ -396,6 +412,183 @@
           "driver": "ACRR||Theagus60",
           "guid": "76561199793961424",
           "bestLapMs": 79979,
+          "status": "FINISHED"
+        }
+      ]
+    },
+    "2026_10_25_17_27_QUALIFY": {
+      "success": true,
+      "sessionFile": "2026_10_25_17_27_QUALIFY",
+      "sessionType": "QUALIFY",
+      "draft": {
+        "track": "cota_2022",
+        "config": "gt",
+        "type": "QUALIFY",
+        "date": "2026-10-25T17:27:00+01:00",
+        "sessionFile": "2026_10_25_17_27_QUALIFY",
+        "entrants": 25,
+        "classified": 7,
+        "approximate": false,
+        "fastestLap": {
+          "driver": "ACRR|Alex Munti",
+          "guid": "76561199190364639",
+          "ms": 96759
+        },
+        "entries": [
+          {
+            "pos": 1,
+            "driver": "ACRR|Alex Munti",
+            "guid": "76561199190364639",
+            "car": "rss_formula_2010",
+            "team": "",
+            "bestLapMs": 96759,
+            "totalTimeMs": 1229576,
+            "hasPenalty": false,
+            "penaltyMs": 0,
+            "lapPenalty": 0,
+            "disqualified": false,
+            "status": "FINISHED"
+          },
+          {
+            "pos": 2,
+            "driver": "Diego Pereira",
+            "guid": "76561199548642271",
+            "car": "rss_formula_2010",
+            "team": "",
+            "bestLapMs": 97133,
+            "totalTimeMs": 595780,
+            "hasPenalty": false,
+            "penaltyMs": 0,
+            "lapPenalty": 0,
+            "disqualified": false,
+            "status": "FINISHED"
+          },
+          {
+            "pos": 3,
+            "driver": "sbinn",
+            "guid": "76561199273274171",
+            "car": "rss_formula_2010",
+            "team": "",
+            "bestLapMs": 98086,
+            "totalTimeMs": 1149669,
+            "hasPenalty": false,
+            "penaltyMs": 0,
+            "lapPenalty": 0,
+            "disqualified": false,
+            "status": "FINISHED"
+          },
+          {
+            "pos": 4,
+            "driver": "IWantMozaR5",
+            "guid": "76561199381231982",
+            "car": "rss_formula_2010",
+            "team": "",
+            "bestLapMs": 98829,
+            "totalTimeMs": 1261244,
+            "hasPenalty": false,
+            "penaltyMs": 0,
+            "lapPenalty": 0,
+            "disqualified": false,
+            "status": "FINISHED"
+          },
+          {
+            "pos": 5,
+            "driver": "ACRR||Theagus60",
+            "guid": "76561199793961424",
+            "car": "rss_formula_2010",
+            "team": "",
+            "bestLapMs": 101504,
+            "totalTimeMs": 1204650,
+            "hasPenalty": false,
+            "penaltyMs": 0,
+            "lapPenalty": 0,
+            "disqualified": false,
+            "status": "FINISHED"
+          },
+          {
+            "pos": 6,
+            "driver": "ACRR|Licha",
+            "guid": "76561199331786324",
+            "car": "rss_formula_2010",
+            "team": "",
+            "bestLapMs": 101956,
+            "totalTimeMs": 767175,
+            "hasPenalty": false,
+            "penaltyMs": 0,
+            "lapPenalty": 0,
+            "disqualified": false,
+            "status": "FINISHED"
+          },
+          {
+            "pos": 7,
+            "driver": "Fran_17",
+            "guid": "76561199215276908",
+            "car": "rss_formula_2010",
+            "team": "",
+            "bestLapMs": 119651,
+            "totalTimeMs": 371562,
+            "hasPenalty": false,
+            "penaltyMs": 0,
+            "lapPenalty": 0,
+            "disqualified": false,
+            "status": "FINISHED"
+          }
+        ]
+      },
+      "poleLap": {
+        "driver": "ACRR|Alex Munti",
+        "guid": "76561199190364639",
+        "ms": 96759
+      },
+      "poleSession": "2026_10_25_17_27_QUALIFY",
+      "qualifying": [
+        {
+          "pos": 1,
+          "driver": "ACRR|Alex Munti",
+          "guid": "76561199190364639",
+          "bestLapMs": 96759,
+          "status": "FINISHED"
+        },
+        {
+          "pos": 2,
+          "driver": "Diego Pereira",
+          "guid": "76561199548642271",
+          "bestLapMs": 97133,
+          "status": "FINISHED"
+        },
+        {
+          "pos": 3,
+          "driver": "sbinn",
+          "guid": "76561199273274171",
+          "bestLapMs": 98086,
+          "status": "FINISHED"
+        },
+        {
+          "pos": 4,
+          "driver": "IWantMozaR5",
+          "guid": "76561199381231982",
+          "bestLapMs": 98829,
+          "status": "FINISHED"
+        },
+        {
+          "pos": 5,
+          "driver": "ACRR||Theagus60",
+          "guid": "76561199793961424",
+          "bestLapMs": 101504,
+          "status": "FINISHED"
+        },
+        {
+          "pos": 6,
+          "driver": "ACRR|Licha",
+          "guid": "76561199331786324",
+          "bestLapMs": 101956,
+          "status": "FINISHED"
+        },
+        {
+          "pos": 7,
+          "driver": "Fran_17",
+          "guid": "76561199215276908",
+          "bestLapMs": 119651,
           "status": "FINISHED"
         }
       ]
