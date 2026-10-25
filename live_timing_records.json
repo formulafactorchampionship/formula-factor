@@ -1,7 +1,7 @@
 {
   "version": 1,
-  "updatedAt": "2026-10-25T18:23:54.901Z",
-  "default": "cota_2022|gt",
+  "updatedAt": "2026-10-25T21:00:31.381Z",
+  "default": "vhe_interlagos|gp",
   "tracks": {
     "rt_fuji_speedway|layout_gp": {
       "key": "rt_fuji_speedway|layout_gp",
@@ -106,7 +106,7 @@
       "track": "cota_2022",
       "config": "gt",
       "name": "Circuit of The Americas",
-      "drivers": 8,
+      "drivers": 7,
       "bestLap": {
         "ms": 96759,
         "driver": "ACRR|Alex Munti",
@@ -129,6 +129,17 @@
         "at": "2026-10-25T18:23:52.526Z"
       },
       "lastSeen": "2026-10-25T18:23:52.526Z"
+    },
+    "vhe_interlagos|gp": {
+      "key": "vhe_interlagos|gp",
+      "track": "vhe_interlagos",
+      "config": "gp",
+      "name": "Interlagos - GP",
+      "drivers": 0,
+      "bestLap": null,
+      "topSpeed": null,
+      "laps": null,
+      "lastSeen": null
     }
   }
 }
