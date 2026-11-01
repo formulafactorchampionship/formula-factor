@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-11-01T00:17:19.439Z",
+  "updatedAt": "2026-11-01T06:30:52.320Z",
   "default": "vhe_interlagos|gp",
   "tracks": {
     "rt_fuji_speedway|layout_gp": {
@@ -141,23 +141,23 @@
         "driver": "IWantMozaR5",
         "car": "Formula RSS 2010 V8",
         "guid": "76561199381231982",
-        "at": "2026-11-01T00:17:16.888Z"
+        "at": "2026-11-01T06:30:49.036Z"
       },
       "topSpeed": {
         "kmh": 309.2,
         "driver": "IWantMozaR5",
         "car": "Formula RSS 2010 V8",
         "guid": "76561199381231982",
-        "at": "2026-11-01T00:17:16.888Z"
+        "at": "2026-11-01T06:30:49.036Z"
       },
       "laps": {
         "count": 1,
         "driver": "IWantMozaR5",
         "car": "Formula RSS 2010 V8",
         "guid": "76561199381231982",
-        "at": "2026-11-01T00:17:16.888Z"
+        "at": "2026-11-01T06:30:49.036Z"
       },
-      "lastSeen": "2026-11-01T00:17:16.888Z"
+      "lastSeen": "2026-11-01T06:30:49.036Z"
     }
   }
 }
