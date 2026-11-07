@@ -36,6 +36,7 @@
     <link rel="stylesheet" href="style.css?v=20261019_rc60">
     <link rel="stylesheet" href="components/BorderGlow.css">
     <link rel="stylesheet" href="components/LightPillar.css">
+    <link rel="stylesheet" href="abandoned.css?v=4">
     <script>
         // Early instant hook for FFC Fantasy Portal
         window.openFantasyPortal = function() {
@@ -123,6 +124,26 @@
 
 <body>
 
+<!-- =========================================================
+     ABANDONED ATMOSPHERE: dust, stains, grain, cobwebs
+     Decorative only (aria-hidden, pointer-events: none)
+========================================================= -->
+<div class="ffc-decay" aria-hidden="true">
+    <div class="ffc-decay__light"></div>
+    <div class="ffc-decay__grime"></div>
+    <div class="ffc-decay__drips"></div>
+    <div class="ffc-decay__fog"></div>
+    <div class="ffc-decay__dust"></div>
+    <div class="ffc-decay__plaster"></div>
+    <div class="ffc-decay__scratches"></div>
+    <div class="ffc-decay__grain"></div>
+</div>
+
+<div class="ffc-cobwebs" aria-hidden="true">
+    <span class="ffc-web ffc-web--tl"></span>
+    <span class="ffc-web ffc-web--tr"></span>
+    <span class="ffc-web ffc-web--bl"></span>
+</div>
 
 
 <header class="navbar">
@@ -459,11 +480,36 @@
 ========================= -->
 
 <section class="hero" id="home">
+    <!-- Derelict scenery: boarded wall, ivy, dead fluorescent tube,
+         barrier tape, puddle, debris and rubble. Decorative only. -->
+    <div class="ffc-hero-derelict" aria-hidden="true">
+        <div class="ffc-hero-boards"></div>
+        <div class="ffc-hero-vine ffc-hero-vine--left"></div>
+        <div class="ffc-hero-vine ffc-hero-vine--right"></div>
+        <div class="ffc-hero-lamp">
+            <span class="ffc-hero-lamp__cable"></span>
+            <span class="ffc-hero-lamp__tube"></span>
+            <span class="ffc-hero-lamp__glow"></span>
+        </div>
+        <span class="ffc-hero-graffiti">NO HAY CARRERAS</span>
+        <span class="ffc-hero-graffiti ffc-hero-graffiti--tag">FFC · 2010</span>
+        <div class="ffc-hero-tape"></div>
+        <div class="ffc-hero-puddle"></div>
+        <div class="ffc-hero-debris"></div>
+        <div class="ffc-hero-rubble"></div>
+    </div>
+
     <!-- ShapeWaves Background Canvas for Hero -->
     <div id="hero-shape-waves-bg" class="hero-waves-bg"></div>
 
     <!-- 3D Globe Background Canvas Mount Point -->
     <div id="hero-cobe-globe-container"></div>
+
+    <!-- Faded condemned-building stamp -->
+    <div class="ffc-abandoned-stamp" aria-hidden="true">
+        <span class="ffc-abandoned-stamp__main">FUERA DE SERVICIO</span>
+        <span class="ffc-abandoned-stamp__sub">CONDENADO · ÚLTIMA CARRERA 2010</span>
+    </div>
 
     <!-- STANDARD HERO CONTENT -->
     <div class="hero-content" id="heroContentStandard">
@@ -3120,6 +3166,10 @@
      SITE FOOTER
 ========================================================= -->
 <footer class="site-footer">
+    <div class="ffc-footer-rot" aria-hidden="true">
+        <span class="ffc-footer-vine ffc-footer-vine--left"></span>
+        <span class="ffc-footer-vine ffc-footer-vine--right"></span>
+    </div>
     <div class="footer-inner">
         <div class="footer-brand-col">
             <div class="footer-logo">FORMULA FACTOR // FFC</div>

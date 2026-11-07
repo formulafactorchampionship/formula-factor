@@ -1,0 +1,2051 @@
+/* =========================================================================
+   FFC — ABANDONED / CONDEMNED BUILDING THEME
+   Loaded after every other stylesheet so it can age the whole site.
+   Cold concrete, damp walls, dead lights, cracked and missing panels.
+   Layers are decorative only: pointer-events are disabled everywhere.
+   ========================================================================= */
+
+:root {
+    --gold: #a29c88;
+    --gold-light: #c9c4b1;
+    --gold-dark: #66624f;
+    --gold-glow: rgba(162, 156, 136, 0.14);
+    --bg: #070908;
+    --bg-2: #0b0e0c;
+    --panel: #0f1210;
+    --panel-2: #141814;
+    --border: rgba(196, 198, 186, 0.10);
+    --border-hover: rgba(196, 198, 186, 0.22);
+    --muted: #898d82;
+    --white: #d8d6c9;
+    --red-f1: #7f3a30;
+
+    --ffc-rust: #6d4a34;
+    --ffc-mold: rgba(76, 92, 72, 0.42);
+
+    /* Corner cobwebs — kept faint and cold, not a Halloween decoration. */
+    --ffc-web-tl: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 160 160'%3E%3Cg fill='none' stroke='%23b7bbaf' stroke-width='1' stroke-linecap='round'%3E%3Cpath d='M0 0L157.8 8.3M0 0L148.5 54M0 0L121 101.6M0 0L74.2 139.5M0 0L16.5 157.1' opacity='.55'/%3E%3Cpath d='M26 1.4Q19.1 3.9 24.4 8.9Q16.9 9.7 19.9 16.7Q12.3 15.2 12.2 23Q5.7 18.6 2.7 25.9M53.9 2.8Q39.7 8.1 50.7 18.5Q35.1 20.2 41.4 34.7Q25.5 31.5 25.4 47.7Q11.8 38.7 5.6 53.7M87.9 4.6Q64.7 13.2 82.7 30.1Q57.2 33 67.4 56.6Q41.5 51.3 41.3 77.7Q19.3 63.1 9.2 87.5M125.8 6.6Q92.6 18.8 118.4 43.1Q81.8 47.2 96.5 81Q59.5 73.4 59.2 111.3Q27.6 90.4 13.2 125.3M155.8 8.2Q114.7 23.3 146.6 53.4Q101.3 58.5 119.5 100.3Q73.6 90.9 73.2 137.7Q34.2 111.9 16.3 155.1' opacity='.8'/%3E%3C/g%3E%3C/svg%3E");
+    --ffc-web-tr: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 160 160'%3E%3Cg fill='none' stroke='%23b7bbaf' stroke-width='1' stroke-linecap='round'%3E%3Cpath d='M160 0L154.5 157.9M160 0L106 148.5M160 0L58.4 121M160 0L26 83.7M160 0L8.1 43.6M160 0L2.1 5.5' opacity='.55'/%3E%3Cpath d='M159.1 26Q156.1 19.9 151.1 24.4Q149.9 17.6 143.3 19.9Q144.7 13.3 138 13.8Q141.5 8.2 135 7.2Q140 3.2 134 0.9M158.1 54Q152 41.3 141.5 50.7Q138.9 36.5 125.3 41.4Q128.2 27.6 114.2 28.6Q121.5 17.1 108.1 14.9Q118.4 6.6 106 1.9M156.9 87.9Q146.9 67.4 129.9 82.7Q125.7 59.4 103.4 67.4Q108.2 45 85.4 46.6Q97.3 27.9 75.4 24.3Q92.2 10.7 72.1 3.1M155.6 125.9Q141.2 96.5 116.9 118.4Q110.9 85.1 79 96.5Q85.8 64.5 53.1 66.8Q70.2 40 38.9 34.7Q62.9 15.4 34.1 4.4M154.6 155.9Q136.8 119.4 106.6 146.6Q99.2 105.4 59.7 119.5Q68.2 79.8 27.7 82.7Q48.8 49.5 10 43Q39.8 19 4.1 5.4' opacity='.8'/%3E%3C/g%3E%3C/svg%3E");
+
+    /* Fracture running in from a corner. */
+    --ffc-crack-a: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 400'%3E%3Cg fill='none' stroke='%23d7d4c6' stroke-width='1.15' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M392.0 4.0L375.5 19.0L353.4 32.2L335.8 47.8L319.2 66.5L301.1 80.1L280.5 100.5L264.4 112.7L248.6 129.5L229.8 145.7L217.2 164.5L205.9 176.1L194.3 186.9L183.8 199.5L170.1 223.3L162.0 236.8L152.0 263.4L142.4 289.6L136.8 311.2L136.8 327.4M217.2 164.5L211.2 177.5L199.1 194.0L191.3 204.7L184.9 217.4M335.8 47.8L324.2 50.8L308.5 49.2L297.3 43.7L286.2 42.1M264.4 112.7L282.5 118.3L293.7 126.8L302.6 136.3L316.1 151.1L335.0 162.2M205.9 176.1L195.0 189.9L185.4 206.3L179.7 221.2L168.5 236.1M142.4 289.6L135.2 299.3L124.9 309.4L107.0 320.3L96.6 332.7'/%3E%3C/g%3E%3C/svg%3E");
+
+    /* Fracture running up from a bottom corner. */
+    --ffc-crack-b: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 400'%3E%3Cg fill='none' stroke='%23d7d4c6' stroke-width='1.15' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M10.0 390.0L15.8 376.3L30.5 357.6L42.8 342.2L53.4 328.5L68.8 309.8L77.3 296.0L91.0 279.8L100.7 263.3L109.4 243.6L117.8 217.2L122.2 191.3L122.2 175.3L118.7 157.6L114.6 133.2M30.5 357.6L45.5 344.9L61.3 333.9L71.1 330.4L82.2 322.7M77.3 296.0L66.7 286.4L52.0 273.7L41.2 260.7L31.2 251.6L21.0 246.6M122.2 175.3L113.8 169.1L100.3 155.4L87.9 142.0L76.7 126.4M42.8 342.2L59.6 334.9L78.2 328.3L93.6 328.9L103.3 331.8L115.9 335.7M109.4 243.6L123.8 232.4L136.2 221.6L149.6 213.8L159.2 206.1L164.2 197.1'/%3E%3C/g%3E%3C/svg%3E");
+
+    /* Shattered impact point. */
+    --ffc-impact: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 440 400'%3E%3Cg fill='none' stroke='%23d7d4c6' stroke-width='1.15' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M220 200L247 218L265 237L294 261L315 275L333 289L350 299L369 314L381 327L396 349M220 200L223 220L227 253L230 270L240 298L244 325L251 355L253 381M220 200L211 215L202 228L187 253L177 273L168 286L158 297L139 316L128 325M220 200L197 216L164 232L152 241L128 260L100 282L82 298L72 310L56 325L27 347M220 200L199 194L165 192L131 189L93 190L79 192L57 194L35 196L11 202M220 200L199 178L187 164L157 140L135 124L109 101L95 87L82 69M220 200L222 163L223 144L222 109L223 91L227 56L228 41L230 25M220 200L235 183L245 166L251 151L263 128L273 98L280 74L284 59L295 33L301 12M220 200L235 177L254 157L273 141L299 118M249 200L246 219L228 224L212 226L196 217L196 200L197 183L213 178L229 172L245 182L248 200M270 200L263 231L237 254L203 251L171 236L164 200L167 162L200 140L238 144L266 167L276 200M317 200L282 245L243 271L195 276L139 259L138 200L150 150L191 112L250 109L294 146L320 200'/%3E%3C/g%3E%3C/svg%3E");
+
+    /* Missing corner pieces. */
+    --ffc-chip-tr: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath d='M100 0H55L68 14L50 26L64 40L54 54L72 68L64 82L100 88Z' fill='%23080a09'/%3E%3Cpath d='M100 0H55L68 14L50 26L64 40L54 54L72 68L64 82L100 88' fill='none' stroke='%23b8b5a8' stroke-opacity='.58' stroke-width='1.2'/%3E%3C/svg%3E");
+    --ffc-chip-bl: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath d='M0 100V55L14 68L26 50L40 64L54 54L68 72L82 64L88 100Z' fill='%23080a09'/%3E%3Cpath d='M0 100V55L14 68L26 50L40 64L54 54L68 72L82 64L88 100' fill='none' stroke='%23b8b5a8' stroke-opacity='.58' stroke-width='1.2'/%3E%3C/svg%3E");
+}
+
+/* -------------------------------------------------------------------------
+   Base palette: cold, damp, concrete — not warm Halloween orange
+   ------------------------------------------------------------------------- */
+
+html {
+    background: #070908;
+}
+
+body {
+    background-color: #070908 !important;
+    background-image:
+        radial-gradient(circle at 50% -10%, rgba(160, 166, 148, 0.055), transparent 52%),
+        radial-gradient(circle at 84% 18%, rgba(88, 96, 78, 0.05), transparent 46%),
+        radial-gradient(circle at 12% 72%, rgba(52, 66, 54, 0.05), transparent 52%) !important;
+    color: #d2d1c7 !important;
+}
+
+::-webkit-scrollbar-track {
+    background: #070908;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #292d28;
+    border-color: #070908;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #5f6255;
+}
+
+::selection {
+    background: rgba(162, 156, 136, 0.32);
+    color: #f1efe6;
+}
+
+:focus-visible {
+    outline: 2px solid rgba(162, 156, 136, 0.7);
+    outline-offset: 3px;
+}
+
+/* -------------------------------------------------------------------------
+   FULL-VIEWPORT DECAY ATMOSPHERE
+   ------------------------------------------------------------------------- */
+
+.ffc-decay {
+    position: fixed;
+    inset: 0;
+    z-index: 200000;
+    pointer-events: none;
+    overflow: hidden;
+    background:
+        radial-gradient(ellipse 80% 70% at 50% 38%, transparent 36%, rgba(3, 4, 3, 0.40) 78%, rgba(1, 2, 1, 0.72) 100%),
+        linear-gradient(180deg, rgba(38, 44, 38, 0.10), rgba(6, 8, 6, 0.05) 40%, rgba(3, 4, 3, 0.15));
+    -webkit-backdrop-filter: saturate(0.40) contrast(1.04) brightness(0.90);
+    backdrop-filter: saturate(0.40) contrast(1.04) brightness(0.90);
+}
+
+/* A cold fluorescent tube that is mostly dead. */
+.ffc-decay__light {
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse 58% 46% at 50% -12%, rgba(206, 220, 210, 0.075), transparent 70%);
+    mix-blend-mode: screen;
+    animation: ffc-flicker 17s linear infinite;
+}
+
+/* Damp walls, water ingress and old oil stains. */
+.ffc-decay__grime {
+    position: absolute;
+    inset: 0;
+    background:
+        radial-gradient(ellipse 24% 18% at 14% 84%, rgba(63, 71, 56, 0.26), transparent 70%),
+        radial-gradient(ellipse 18% 14% at 79% 20%, rgba(64, 63, 48, 0.20), transparent 70%),
+        radial-gradient(ellipse 34% 12% at 52% 101%, rgba(24, 30, 24, 0.42), transparent 72%),
+        radial-gradient(ellipse 12% 20% at 96% 62%, rgba(52, 58, 47, 0.18), transparent 72%);
+    mix-blend-mode: multiply;
+}
+
+/* Slow flakes of dust suspended in the air. */
+.ffc-decay__dust {
+    position: absolute;
+    inset: -80px;
+    background-image:
+        radial-gradient(circle, rgba(222, 223, 212, 0.45) 0 0.8px, transparent 1.7px),
+        radial-gradient(circle, rgba(222, 223, 212, 0.28) 0 1px, transparent 1.9px),
+        radial-gradient(circle, rgba(188, 190, 178, 0.20) 0 0.7px, transparent 1.5px);
+    background-size: 190px 190px, 310px 310px, 470px 470px;
+    background-position: 10px 20px, 80px 140px, 200px 60px;
+    opacity: 0.32;
+    animation: ffc-dust-drift 95s linear infinite;
+}
+
+.ffc-decay__dust::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image:
+        radial-gradient(circle, rgba(222, 223, 212, 0.30) 0 1.3px, transparent 2.4px),
+        radial-gradient(circle, rgba(168, 172, 160, 0.20) 0 1.8px, transparent 3px);
+    background-size: 420px 420px, 610px 610px;
+    background-position: 120px 40px, 320px 220px;
+    animation: ffc-dust-drift-reverse 150s linear infinite;
+}
+
+/* Film grain / concrete dust. */
+.ffc-decay__grain {
+    position: absolute;
+    inset: -15%;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)' opacity='.55'/%3E%3C/svg%3E");
+    background-size: 200px 200px;
+    opacity: 0.06;
+    mix-blend-mode: soft-light;
+    animation: ffc-grain 9s steps(8) infinite;
+}
+
+/* -------------------------------------------------------------------------
+   COBWEBS — just two faint, cold webs in the top corners
+   ------------------------------------------------------------------------- */
+
+.ffc-cobwebs {
+    position: fixed;
+    inset: 0;
+    z-index: 200001;
+    pointer-events: none;
+    overflow: hidden;
+}
+
+.ffc-web {
+    position: absolute;
+    width: clamp(150px, 15vw, 240px);
+    height: clamp(150px, 15vw, 240px);
+    background-size: 100% 100%;
+    background-repeat: no-repeat;
+    filter: grayscale(1) drop-shadow(0 1px 2px rgba(0, 0, 0, 0.7));
+    opacity: 0.16;
+}
+
+.ffc-web--tl {
+    top: 0;
+    left: 0;
+    background-image: var(--ffc-web-tl);
+    opacity: 0.10;
+}
+
+/* -------------------------------------------------------------------------
+   BROKEN / MISSING PANEL DAMAGE
+   Cracks are layered over the surface; chips replace a whole corner.
+   ------------------------------------------------------------------------- */
+
+.home-top3-card,
+.standings-block,
+.calendar-photo-banner,
+.calendar-detail-pane,
+.participate-hero-banner,
+.info-hero-banner,
+.participate-step-card,
+.participate-info-card,
+.info-pillar-card,
+.news-card,
+.next-race-card,
+.stat {
+    position: relative;
+}
+
+.next-race-card::before,
+.home-top3-card.podium-p1::before,
+.standings-block::before,
+.calendar-photo-banner::before,
+.participate-step-card:nth-child(2)::before,
+.participate-info-card:nth-child(1)::before,
+.info-pillar-card:nth-child(2)::before,
+.news-card:nth-child(3n+1)::before,
+.stat:nth-child(3)::before,
+.calendar-detail-pane::before,
+.participate-hero-banner::before,
+.info-hero-banner::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 3;
+    pointer-events: none;
+    background-image:
+        var(--ffc-crack-a),
+        radial-gradient(ellipse at 8% 96%, var(--ffc-mold), transparent 55%);
+    background-repeat: no-repeat, no-repeat;
+    background-size: var(--ffc-crack-size, 260px 260px), 100% 100%;
+    background-position: var(--ffc-crack-pos, 100% 0), center;
+    opacity: var(--ffc-crack-opacity, 0.42);
+    mix-blend-mode: screen;
+}
+
+.next-race-card::before {
+    display: block;
+    --ffc-crack-size: 255px 235px;
+    --ffc-crack-pos: 100% 0;
+    --ffc-crack-opacity: 0.38;
+    background-image:
+        var(--ffc-impact),
+        radial-gradient(ellipse at 86% 4%, var(--ffc-mold), transparent 50%);
+}
+
+.home-top3-card.podium-p1::before {
+    --ffc-crack-size: 190px 190px;
+    --ffc-crack-pos: 100% 0;
+    --ffc-crack-opacity: 0.40;
+}
+
+.standings-block::before {
+    --ffc-crack-size: 360px 360px;
+    --ffc-crack-pos: 100% 0;
+    --ffc-crack-opacity: 0.58;
+}
+
+.calendar-photo-banner::before {
+    --ffc-crack-size: 220px 220px;
+    --ffc-crack-pos: 0 100%;
+    --ffc-crack-opacity: 0.48;
+    background-image:
+        var(--ffc-crack-b),
+        radial-gradient(ellipse at 88% 4%, var(--ffc-mold), transparent 55%);
+}
+
+.participate-step-card:nth-child(2)::before {
+    --ffc-crack-size: 165px 165px;
+    --ffc-crack-pos: 0 100%;
+    --ffc-crack-opacity: 0.44;
+    background-image:
+        var(--ffc-crack-b),
+        radial-gradient(ellipse at 90% 0%, var(--ffc-mold), transparent 58%);
+}
+
+.participate-info-card:nth-child(1)::before {
+    --ffc-crack-size: 200px 200px;
+    --ffc-crack-pos: 100% 50%;
+    --ffc-crack-opacity: 0.40;
+}
+
+.info-pillar-card:nth-child(2)::before {
+    --ffc-crack-size: 230px 210px;
+    --ffc-crack-pos: 100% 50%;
+    --ffc-crack-opacity: 0.42;
+    background-image:
+        var(--ffc-impact),
+        radial-gradient(ellipse at 0% 100%, var(--ffc-mold), transparent 60%);
+}
+
+.news-card:nth-child(3n+1)::before {
+    --ffc-crack-size: 185px 185px;
+    --ffc-crack-pos: 100% 0;
+    --ffc-crack-opacity: 0.46;
+}
+
+.stat:nth-child(3)::before {
+    --ffc-crack-size: 90px 90px;
+    --ffc-crack-pos: 100% 100%;
+    --ffc-crack-opacity: 0.42;
+    background-image: var(--ffc-crack-b);
+}
+
+.calendar-detail-pane::before {
+    --ffc-crack-size: 300px 300px;
+    --ffc-crack-pos: 100% 0;
+    --ffc-crack-opacity: 0.44;
+}
+
+.participate-hero-banner::before,
+.info-hero-banner::before {
+    --ffc-crack-size: 280px 280px;
+    --ffc-crack-pos: 100% 0;
+    --ffc-crack-opacity: 0.40;
+}
+
+/* Panels that are simply rotting rather than cracked. */
+.news-card:nth-child(6n+2)::before,
+.participate-step-card:nth-child(3)::before,
+.info-pillar-card:nth-child(4)::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    pointer-events: none;
+    background:
+        radial-gradient(ellipse at 0% 100%, rgba(122, 134, 112, 0.16), transparent 56%),
+        radial-gradient(ellipse at 100% 0%, rgba(106, 96, 74, 0.12), transparent 48%),
+        radial-gradient(circle at 14% 86%, transparent 0 15px, rgba(148, 152, 134, 0.10) 16px 18px, transparent 19px 27px, rgba(148, 152, 134, 0.06) 28px 29px, transparent 30px);
+}
+
+/* Missing corners (real cuts, so the page shows through) */
+.home-top3-card.podium-p3,
+.news-card:nth-child(4n),
+.stat:nth-child(3),
+.calendar-photo-banner,
+.calendar-detail-pane,
+.participate-hero-banner,
+.info-hero-banner {
+    clip-path: polygon(
+        0 0,
+        calc(100% - var(--ffc-cut, 42px)) 0,
+        calc(100% - var(--ffc-cut, 42px) + 9px) calc(var(--ffc-cut, 42px) * 0.22),
+        calc(100% - var(--ffc-cut, 42px) + 2px) calc(var(--ffc-cut, 42px) * 0.44),
+        calc(100% - var(--ffc-cut, 42px) + 13px) calc(var(--ffc-cut, 42px) * 0.62),
+        calc(100% - var(--ffc-cut, 42px) + 6px) calc(var(--ffc-cut, 42px) * 0.80),
+        100% var(--ffc-cut, 42px),
+        100% 100%,
+        0 100%
+    );
+    filter: drop-shadow(0 0 1px rgba(190, 188, 172, 0.38));
+}
+
+.home-top3-card.podium-p3 {
+    --ffc-cut: 46px;
+}
+
+.news-card:nth-child(4n) {
+    --ffc-cut: 40px;
+}
+
+.stat:nth-child(3) {
+    --ffc-cut: 30px;
+}
+
+.calendar-photo-banner {
+    --ffc-cut: 48px;
+}
+
+.calendar-detail-pane {
+    --ffc-cut: 34px;
+}
+
+.participate-hero-banner,
+.info-hero-banner {
+    --ffc-cut: 44px;
+}
+
+/* Missing corner overlay used only where a cut is not safe */
+.standings-block::after,
+.participate-step-card:nth-child(4)::after {
+    content: "";
+    position: absolute;
+    top: -1px;
+    right: -1px;
+    width: var(--ffc-chip-size, 56px);
+    height: var(--ffc-chip-size, 56px);
+    z-index: 4;
+    pointer-events: none;
+    background: var(--ffc-chip-tr) center / contain no-repeat;
+}
+
+.standings-block::after {
+    --ffc-chip-size: 48px;
+}
+
+.participate-step-card:nth-child(4)::after {
+    --ffc-chip-size: 48px;
+}
+
+.calendar-photo-banner::after {
+    content: "";
+    position: absolute;
+    left: -1px;
+    bottom: -1px;
+    width: 86px;
+    height: 86px;
+    z-index: 4;
+    pointer-events: none;
+    background: var(--ffc-chip-bl) center / contain no-repeat;
+}
+
+/* Whole surfaces look damp, stained and physically tired. */
+.home-top3-card,
+.standings-block,
+.calendar-photo-banner,
+.calendar-detail-pane,
+.participate-hero-banner,
+.info-hero-banner,
+.participate-step-card,
+.participate-info-card,
+.info-pillar-card,
+.news-card,
+.next-race-card {
+    border-color: #262b25 !important;
+    box-shadow:
+        inset 0 -52px 62px -52px rgba(71, 88, 70, 0.52),
+        inset 0 0 48px rgba(0, 0, 0, 0.26),
+        0 14px 34px rgba(0, 0, 0, 0.42) !important;
+}
+
+/* Asymmetric, corroded edges on the larger structures. */
+.standings-block {
+    border-top-color: #3a4038 !important;
+    border-right-color: #1c211c !important;
+    border-bottom-color: #262d26 !important;
+}
+
+.calendar-photo-banner {
+    border-top-color: #3a4038 !important;
+    border-bottom-color: #1d221d !important;
+}
+
+.home-top3-card.podium-p1 {
+    border-color: rgba(162, 156, 136, 0.40) !important;
+}
+
+.home-top3-card.podium-p2 {
+    border-color: rgba(140, 146, 132, 0.28) !important;
+}
+
+.home-top3-card.podium-p3 {
+    border-color: rgba(120, 112, 94, 0.30) !important;
+}
+
+.home-top3-card.podium-p1:hover,
+.home-top3-card.podium-p2:hover,
+.home-top3-card.podium-p3:hover {
+    border-color: rgba(180, 174, 154, 0.48) !important;
+    box-shadow:
+        inset 0 -52px 62px -52px rgba(71, 88, 70, 0.52),
+        0 18px 40px rgba(0, 0, 0, 0.55) !important;
+}
+
+/* Dying numbers on one of the stat displays. */
+.stat:nth-child(3) span {
+    color: #92978c;
+    animation: ffc-dead-display 9s steps(1) infinite;
+}
+
+.stat:nth-child(3) small {
+    color: #6d7268;
+}
+
+/* -------------------------------------------------------------------------
+   AGED SURFACES
+   ------------------------------------------------------------------------- */
+
+.navbar {
+    background: rgba(9, 11, 9, 0.91) !important;
+    border-bottom: 1px solid rgba(196, 198, 186, 0.09) !important;
+    box-shadow: 0 10px 34px rgba(0, 0, 0, 0.62) !important;
+}
+
+/* Damp seepage under the header. */
+.navbar::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -7px;
+    height: 7px;
+    pointer-events: none;
+    background:
+        repeating-linear-gradient(90deg, transparent 0 46px, rgba(64, 70, 55, 0.22) 46px 49px, transparent 49px 118px),
+        linear-gradient(180deg, rgba(64, 70, 55, 0.16), transparent);
+    -webkit-mask-image: linear-gradient(180deg, #000, transparent);
+    mask-image: linear-gradient(180deg, #000, transparent);
+}
+
+.brand-logo {
+    filter: grayscale(0.9) brightness(0.78) contrast(0.94) !important;
+}
+
+.brand-name {
+    color: #c8c6b8;
+}
+
+.brand-subtag {
+    color: var(--gold) !important;
+}
+
+.hero-gp-card,
+.info-card,
+.driver-card-inner,
+.fantasy-hud-card,
+.market-card,
+.slot-filled-card,
+.slot-empty-card,
+.admin-card,
+.claim-box,
+.auth-modal-dialog,
+.card-editor-modal,
+.compare-card,
+.race-modal,
+.standing-card,
+.ranking-table-card,
+.modal-content,
+.card {
+    background: #0d100d !important;
+    border: 1px solid #232822 !important;
+    box-shadow:
+        inset 0 0 42px rgba(0, 0, 0, 0.35),
+        0 18px 40px rgba(0, 0, 0, 0.28) !important;
+}
+
+.hero-gp-card:hover,
+.info-card:hover,
+.market-card:hover,
+.compare-card:hover,
+.driver-card-inner:hover,
+.slot-filled-card:hover {
+    border-color: rgba(162, 156, 136, 0.35) !important;
+}
+
+.standings-table,
+.leaderboard-table,
+.race-table,
+.fantasy-leaderboard-table,
+.compare-rounds-table {
+    border-color: #232822 !important;
+}
+
+.standings-table th,
+.leaderboard-table th,
+.race-table th,
+.fantasy-leaderboard-table th {
+    background: #10130f !important;
+    color: #afb2a5 !important;
+    border-bottom-color: #2a2f28 !important;
+}
+
+.standings-table td,
+.leaderboard-table td,
+.race-table td,
+.fantasy-leaderboard-table td {
+    color: #d2d1c7 !important;
+    border-bottom-color: #1b201a !important;
+}
+
+.standings-table tr:hover td,
+.leaderboard-table tr:hover td,
+.race-table tr:hover td {
+    background: rgba(162, 156, 136, 0.05) !important;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, #a49d86, #7d7661) !important;
+    color: #080a08 !important;
+    border-color: rgba(220, 216, 200, 0.16) !important;
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.12),
+        0 6px 20px rgba(0, 0, 0, 0.45) !important;
+}
+
+.btn-primary:hover {
+    background: linear-gradient(135deg, #b5ae96, #8e8770) !important;
+    color: #040504 !important;
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.16),
+        0 8px 26px rgba(0, 0, 0, 0.55) !important;
+}
+
+.btn-secondary {
+    background: rgba(15, 18, 15, 0.88) !important;
+    border-color: rgba(196, 198, 186, 0.15) !important;
+    color: #d6d4c8 !important;
+}
+
+.btn-secondary:hover {
+    background: rgba(24, 28, 23, 0.95) !important;
+    border-color: var(--gold) !important;
+    color: var(--gold-light) !important;
+}
+
+/* Headings feel printed on old, sun-bleached paper. */
+.hero h1,
+.section-heading h2 {
+    color: #dedcd0;
+    text-shadow:
+        0 1px 0 rgba(0, 0, 0, 0.9),
+        0 4px 30px rgba(0, 0, 0, 0.95),
+        0 0 44px rgba(162, 156, 136, 0.09);
+}
+
+.gold-text-glow {
+    color: #b7b19e;
+    text-shadow:
+        0 0 34px rgba(162, 156, 136, 0.16),
+        0 4px 24px rgba(0, 0, 0, 0.9);
+}
+
+.section-heading p {
+    color: #7f847a;
+}
+
+.section-kicker {
+    color: var(--gold);
+}
+
+.hero {
+    background:
+        radial-gradient(ellipse 65% 55% at 75% 35%, rgba(162, 156, 136, 0.08), transparent 70%),
+        radial-gradient(ellipse 42% 42% at 18% 72%, rgba(54, 66, 54, 0.06), transparent 62%),
+        linear-gradient(135deg, #060806 0%, #0a0d0a 52%, #070907 100%) !important;
+}
+
+.hero::after {
+    background: linear-gradient(90deg, transparent 0%, rgba(162, 156, 136, 0.32) 50%, transparent 100%) !important;
+    opacity: 0.45 !important;
+}
+
+.site-footer {
+    border-top-color: rgba(196, 198, 186, 0.07);
+}
+
+.site-footer::after {
+    content: "";
+    position: absolute;
+    left: 8%;
+    right: 8%;
+    top: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(64, 70, 55, 0.40), transparent);
+    pointer-events: none;
+}
+
+/* Faded painted crown badge — no orange trophy glow. */
+.podium-crown-badge {
+    background: linear-gradient(135deg, #a69f88, #7e7762) !important;
+    color: #080a08 !important;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.45) !important;
+}
+
+.news-card:hover {
+    border-color: rgba(162, 156, 136, 0.34) !important;
+    box-shadow:
+        inset 0 -52px 62px -52px rgba(71, 88, 70, 0.52),
+        0 12px 30px rgba(0, 0, 0, 0.5) !important;
+}
+
+.participate-step-card:hover,
+.info-pillar-card:hover,
+.participate-info-card:hover {
+    border-color: rgba(162, 156, 136, 0.30) !important;
+    background: rgba(162, 156, 136, 0.025) !important;
+}
+
+/* -------------------------------------------------------------------------
+   CONDEMNED STAMP (inside the hero)
+   ------------------------------------------------------------------------- */
+
+.ffc-abandoned-stamp {
+    position: absolute;
+    right: clamp(26px, 7vw, 150px);
+    bottom: 12%;
+    z-index: 11;
+    pointer-events: none;
+    padding: 12px 22px 10px;
+    border: 3px double rgba(198, 198, 184, 0.46);
+    border-radius: 2px;
+    color: rgba(206, 205, 190, 0.62);
+    text-align: center;
+    text-transform: uppercase;
+    transform: rotate(-2.5deg);
+    opacity: 0.58;
+    filter: contrast(0.92);
+    -webkit-mask-image:
+        radial-gradient(circle at 18% 32%, transparent 0 3px, #000 4px),
+        radial-gradient(circle at 82% 76%, transparent 0 2px, #000 3px);
+    -webkit-mask-composite: source-in;
+    mask-image:
+        radial-gradient(circle at 18% 32%, transparent 0 3px, #000 4px),
+        radial-gradient(circle at 82% 76%, transparent 0 2px, #000 3px);
+    mask-composite: intersect;
+}
+
+.ffc-abandoned-stamp__main {
+    display: block;
+    font-family: "Barlow Condensed", "Inter", sans-serif;
+    font-weight: 900;
+    font-size: 24px;
+    line-height: 1;
+    letter-spacing: 0.20em;
+    text-indent: 0.20em;
+}
+
+.ffc-abandoned-stamp__sub {
+    display: block;
+    margin-top: 5px;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.24em;
+    text-indent: 0.24em;
+    opacity: 0.8;
+}
+
+/* -------------------------------------------------------------------------
+   MOTION
+   ------------------------------------------------------------------------- */
+
+@keyframes ffc-flicker {
+    0%, 100% { opacity: 0.82; }
+    3% { opacity: 0.30; }
+    4% { opacity: 0.88; }
+    9% { opacity: 0.55; }
+    10% { opacity: 0.92; }
+    48% { opacity: 0.78; }
+    49% { opacity: 0.40; }
+    50% { opacity: 0.86; }
+    77% { opacity: 0.70; }
+    78% { opacity: 0.25; }
+    79% { opacity: 0.84; }
+}
+
+@keyframes ffc-dead-display {
+    0%, 100% { opacity: 0.9; }
+    7% { opacity: 0.55; }
+    8% { opacity: 0.9; }
+    44% { opacity: 0.9; }
+    45% { opacity: 0.32; }
+    46% { opacity: 0.9; }
+    71% { opacity: 0.9; }
+    72% { opacity: 0.5; }
+    73% { opacity: 0.9; }
+}
+
+@keyframes ffc-dust-drift {
+    from { transform: translate3d(0, 0, 0); }
+    to { transform: translate3d(-90px, -140px, 0); }
+}
+
+@keyframes ffc-dust-drift-reverse {
+    from { transform: translate3d(0, 0, 0); }
+    to { transform: translate3d(120px, 90px, 0); }
+}
+
+@keyframes ffc-grain {
+    0% { transform: translate3d(0, 0, 0); }
+    20% { transform: translate3d(-1.5%, 1%, 0); }
+    40% { transform: translate3d(1%, -1.5%, 0); }
+    60% { transform: translate3d(-1%, -1%, 0); }
+    80% { transform: translate3d(1.5%, 1.5%, 0); }
+    100% { transform: translate3d(0, 0, 0); }
+}
+
+/* -------------------------------------------------------------------------
+   RESPONSIVE + ACCESSIBILITY
+   ------------------------------------------------------------------------- */
+
+@media (max-width: 900px) {
+    .ffc-web {
+        width: 150px;
+        height: 150px;
+    }
+
+    .ffc-abandoned-stamp {
+        display: none;
+    }
+
+    .standings-block::before {
+        --ffc-crack-size: 240px 240px;
+    }
+
+    .news-card:nth-child(3n+1)::before {
+        --ffc-crack-size: 130px 130px;
+    }
+
+    .participate-hero-banner::before,
+    .info-hero-banner::before,
+    .calendar-detail-pane::before {
+        --ffc-crack-size: 190px 190px;
+        --ffc-crack-opacity: 0.28;
+    }
+
+    .participate-hero-banner,
+    .info-hero-banner {
+        --ffc-cut: 30px;
+    }
+
+    .calendar-detail-pane {
+        --ffc-cut: 26px;
+    }
+
+    .standings-block::after {
+        --ffc-chip-size: 58px;
+    }
+}
+
+@media (max-width: 520px) {
+    .ffc-web--tl {
+        opacity: 0.12;
+    }
+
+    .ffc-decay__dust {
+        opacity: 0.24;
+    }
+
+    .news-card:nth-child(4n)::after {
+        --ffc-chip-size: 42px;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .ffc-decay__light,
+    .ffc-decay__dust,
+    .ffc-decay__dust::before,
+    .ffc-decay__grain,
+    .stat:nth-child(3) span {
+        animation: none !important;
+    }
+}
+
+/* =========================================================================
+   PHASE 2 — DEEP DERELICTION
+   Sixteen years after the last race. Water has found the walls, ivy has
+   found the light, the emergency tube is nearly dead and the last barrier
+   tape is still hanging where the marshals left it.
+   ========================================================================= */
+
+:root {
+    --ffc-concrete: #0a0d09;
+    --ffc-soot: #040604;
+    --ffc-moss: #4d5d43;
+    --ffc-moss-deep: #2b3727;
+    --ffc-rust: #7a5238;
+    --ffc-ochre: #ad975d;
+    --ffc-bone: #d5d2c4;
+
+    --ffc-flake: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='240' viewBox='0 0 300 240'%3E%3Cg fill='%23d2d0bf'%3E%3Cpath d='M22 31l14-7 7 11-12 9z' fill-opacity='.30'/%3E%3Cpath d='M171 18l9-5 5 8-8 6z' fill-opacity='.20'/%3E%3Cpath d='M264 74l12-6 6 9-10 8z' fill-opacity='.24'/%3E%3Cpath d='M74 128l8-4 4 7-7 5z' fill-opacity='.20'/%3E%3Cpath d='M214 156l15-8 8 12-13 10z' fill-opacity='.18'/%3E%3Cpath d='M130 201l10-5 5 8-8 7z' fill-opacity='.22'/%3E%3Cpath d='M42 214l7-4 4 6-6 5z' fill-opacity='.16'/%3E%3C/g%3E%3C/svg%3E");
+}
+
+html {
+    background: #040604;
+}
+
+body {
+    background-color: #040604 !important;
+    background-image:
+        radial-gradient(circle at 50% -12%, rgba(142, 152, 132, 0.05), transparent 54%),
+        radial-gradient(circle at 6% 30%, rgba(58, 76, 50, 0.07), transparent 46%),
+        radial-gradient(circle at 95% 66%, rgba(96, 74, 50, 0.055), transparent 50%),
+        linear-gradient(180deg, #050705 0%, #060806 44%, #040604 100%) !important;
+}
+
+/* -------------------------------------------------------------------------
+   THE AIR ITSELF
+   ------------------------------------------------------------------------- */
+
+.ffc-decay {
+    background:
+        radial-gradient(ellipse 74% 64% at 50% 36%, transparent 28%, rgba(2, 3, 2, 0.42) 74%, rgba(1, 1, 1, 0.76) 100%),
+        linear-gradient(180deg, rgba(22, 28, 22, 0.16), rgba(5, 7, 5, 0.05) 38%, rgba(2, 3, 2, 0.22));
+    -webkit-backdrop-filter: saturate(0.32) contrast(1.06) brightness(0.9);
+    backdrop-filter: saturate(0.32) contrast(1.06) brightness(0.9);
+}
+
+.ffc-decay__light {
+    background:
+        radial-gradient(ellipse 40% 30% at 47% -10%, rgba(214, 226, 212, 0.15), transparent 64%),
+        radial-gradient(ellipse 16% 24% at 71% -6%, rgba(186, 202, 188, 0.06), transparent 70%);
+    animation: ffc-flicker 11s linear infinite;
+}
+
+.ffc-decay__grime {
+    background:
+        radial-gradient(ellipse 28% 22% at 12% 82%, rgba(60, 74, 54, 0.34), transparent 70%),
+        radial-gradient(ellipse 20% 16% at 80% 18%, rgba(78, 72, 52, 0.25), transparent 70%),
+        radial-gradient(ellipse 38% 16% at 52% 102%, rgba(20, 27, 20, 0.55), transparent 72%),
+        radial-gradient(ellipse 14% 24% at 97% 60%, rgba(52, 60, 47, 0.24), transparent 72%),
+        radial-gradient(ellipse 18% 12% at 42% 0%, rgba(72, 64, 48, 0.16), transparent 74%);
+    mix-blend-mode: multiply;
+}
+
+/* Long damp streaks running down from the ceiling. */
+.ffc-decay__drips {
+    position: absolute;
+    inset: 0 0 auto;
+    height: 58vh;
+    pointer-events: none;
+    background-image:
+        repeating-linear-gradient(90deg,
+            transparent 0 61px,
+            rgba(128, 144, 128, 0.055) 61px 63px,
+            transparent 63px 137px,
+            rgba(156, 166, 150, 0.035) 137px 139px,
+            transparent 139px 223px,
+            rgba(128, 144, 128, 0.045) 223px 226px,
+            transparent 226px 311px);
+    -webkit-mask-image: linear-gradient(180deg, rgba(0, 0, 0, 0.95), transparent);
+    mask-image: linear-gradient(180deg, rgba(0, 0, 0, 0.95), transparent);
+    opacity: 0.9;
+}
+
+/* Cold mist sitting low in the building. */
+.ffc-decay__fog {
+    position: absolute;
+    inset: -18%;
+    pointer-events: none;
+    background:
+        radial-gradient(ellipse 52% 26% at 22% 64%, rgba(172, 182, 166, 0.07), transparent 70%),
+        radial-gradient(ellipse 44% 20% at 80% 34%, rgba(172, 182, 166, 0.05), transparent 72%),
+        radial-gradient(ellipse 66% 24% at 50% 100%, rgba(158, 170, 154, 0.06), transparent 74%);
+    animation: ffc-fog-drift 130s ease-in-out infinite alternate;
+}
+
+/* Flakes of dead plaster suspended in the air. */
+.ffc-decay__plaster {
+    position: absolute;
+    inset: -12%;
+    pointer-events: none;
+    background-image: var(--ffc-flake);
+    background-size: 300px 240px;
+    opacity: 0.16;
+    -webkit-mask-image: radial-gradient(ellipse 66% 62% at 50% 46%, transparent 34%, #000 88%);
+    mask-image: radial-gradient(ellipse 66% 62% at 50% 46%, transparent 34%, #000 88%);
+    animation: ffc-plaster-creep 150s linear infinite alternate;
+}
+
+/* Hairline scratches in the grime on the lens. */
+.ffc-decay__scratches {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background-image:
+        repeating-linear-gradient(104deg, transparent 0 97px, rgba(220, 220, 205, 0.035) 97px 98px, transparent 98px 211px),
+        repeating-linear-gradient(71deg, transparent 0 181px, rgba(220, 220, 205, 0.025) 181px 182px, transparent 182px 337px),
+        repeating-linear-gradient(168deg, transparent 0 263px, rgba(220, 220, 205, 0.02) 263px 264px, transparent 264px 419px);
+    opacity: 0.7;
+}
+
+.ffc-decay__dust {
+    opacity: 0.44;
+    background-size: 170px 170px, 290px 290px, 440px 440px;
+    animation-duration: 110s;
+}
+
+.ffc-decay__grain {
+    opacity: 0.09;
+}
+
+/* -------------------------------------------------------------------------
+   COBWEBS — more corners, older webs
+   ------------------------------------------------------------------------- */
+
+.ffc-web {
+    opacity: 0.2;
+}
+
+.ffc-web--tl {
+    opacity: 0.13;
+}
+
+.ffc-web--tr {
+    top: 0;
+    right: 0;
+    background-image: var(--ffc-web-tr);
+    opacity: 0.11;
+}
+
+.ffc-web--bl {
+    left: 0;
+    bottom: 0;
+    background-image: var(--ffc-web-tl);
+    opacity: 0.09;
+    transform: rotate(180deg);
+}
+
+/* -------------------------------------------------------------------------
+   THE HERO — the condemned circuit itself
+   ------------------------------------------------------------------------- */
+
+.hero {
+    border-bottom: 1px solid #1c221c;
+    background:
+        radial-gradient(ellipse 58% 46% at 74% 30%, rgba(148, 156, 136, 0.10), transparent 66%),
+        radial-gradient(ellipse 46% 40% at 15% 70%, rgba(50, 66, 48, 0.11), transparent 62%),
+        radial-gradient(ellipse 30% 22% at 92% 88%, rgba(104, 80, 54, 0.09), transparent 70%),
+        linear-gradient(135deg, #040604 0%, #080b08 50%, #050705 100%) !important;
+}
+
+.hero::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 4;
+    pointer-events: none;
+    background:
+        radial-gradient(ellipse 50% 30% at 6% 96%, rgba(54, 72, 50, 0.22), transparent 70%),
+        radial-gradient(ellipse 44% 26% at 98% 8%, rgba(60, 58, 44, 0.16), transparent 70%),
+        linear-gradient(180deg, rgba(2, 3, 2, 0.24), transparent 28%, transparent 72%, rgba(2, 3, 2, 0.34));
+}
+
+.ffc-hero-derelict {
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    overflow: hidden;
+    pointer-events: none;
+}
+
+/* Boarded-up wall behind the headline. */
+.ffc-hero-boards {
+    position: absolute;
+    top: 9%;
+    left: 2.4%;
+    width: min(470px, 38vw);
+    height: 320px;
+    opacity: 0.42;
+    transform: rotate(-1.2deg);
+    clip-path: polygon(0 4%, 96% 0, 100% 96%, 3% 100%);
+    background:
+        radial-gradient(circle at 8% 11%, #050503 0 2.4px, transparent 3px),
+        radial-gradient(circle at 92% 12%, #050503 0 2.4px, transparent 3px),
+        radial-gradient(circle at 10% 88%, #050503 0 2.4px, transparent 3px),
+        radial-gradient(circle at 90% 87%, #050503 0 2.4px, transparent 3px),
+        radial-gradient(circle at 51% 10%, #050503 0 2px, transparent 2.6px),
+        radial-gradient(circle at 49% 90%, #050503 0 2px, transparent 2.6px),
+        repeating-linear-gradient(93deg, transparent 0 71px, rgba(0, 0, 0, 0.30) 71px 74px, transparent 74px 157px),
+        linear-gradient(180deg,
+            #221d14 0 63px, #080705 63px 72px,
+            #1d1911 72px 136px, #070604 136px 145px,
+            #241f15 145px 208px, #080705 208px 217px,
+            #1a160f 217px 281px, #070604 281px 290px,
+            #120f0a 290px 320px);
+    box-shadow:
+        0 22px 56px rgba(0, 0, 0, 0.55),
+        inset 0 0 70px rgba(0, 0, 0, 0.7);
+    filter: saturate(0.42) brightness(0.82);
+}
+
+/* Ivy coming down from the ceiling. */
+.ffc-hero-vine {
+    position: absolute;
+    top: -14px;
+    width: clamp(170px, 17vw, 260px);
+    height: clamp(330px, 56vh, 520px);
+    background: url("assets/ffc-ivy.svg") top left / 100% auto no-repeat;
+    opacity: 0.62;
+    filter: drop-shadow(0 6px 14px rgba(0, 0, 0, 0.55)) saturate(0.8);
+}
+
+.ffc-hero-vine--left {
+    left: -10px;
+    transform-origin: top left;
+    opacity: 0.68;
+    animation: ffc-ivy-breathe 19s ease-in-out infinite;
+}
+
+.ffc-hero-vine--right {
+    right: -12px;
+    transform: scaleX(-1);
+    transform-origin: top right;
+    opacity: 0.56;
+    animation: ffc-ivy-breathe-right 23s ease-in-out infinite;
+}
+
+/* A fluorescent tube that never quite died. */
+.ffc-hero-lamp {
+    position: absolute;
+    top: -10px;
+    left: 46%;
+    width: 2px;
+    height: 236px;
+    z-index: 2;
+    transform-origin: 50% 0;
+    animation: ffc-lamp-sway 17s ease-in-out infinite;
+}
+
+.ffc-hero-lamp__cable {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    width: 2px;
+    height: 184px;
+    transform: translateX(-50%);
+    background: linear-gradient(180deg, #0a0b08, #2a2b22 78%, #090a07);
+    box-shadow: 0 0 6px rgba(0, 0, 0, 0.85);
+}
+
+.ffc-hero-lamp__tube {
+    position: absolute;
+    top: 182px;
+    left: 50%;
+    width: 108px;
+    height: 9px;
+    transform: translateX(-50%) rotate(-3deg);
+    border-radius: 3px;
+    background: linear-gradient(180deg, #34382c 0%, #c6ccb6 42%, #858a74 58%, #25281f 100%);
+    box-shadow:
+        0 0 34px rgba(198, 214, 194, 0.16),
+        0 10px 22px rgba(0, 0, 0, 0.7);
+    opacity: 0.66;
+}
+
+.ffc-hero-lamp__tube::before,
+.ffc-hero-lamp__tube::after {
+    content: "";
+    position: absolute;
+    top: -3px;
+    width: 8px;
+    height: 15px;
+    background: linear-gradient(180deg, #2c2f25, #0b0c09);
+    border-radius: 1px;
+}
+
+.ffc-hero-lamp__tube::before {
+    left: -6px;
+}
+
+.ffc-hero-lamp__tube::after {
+    right: -6px;
+}
+
+.ffc-hero-lamp__glow {
+    position: absolute;
+    top: 104px;
+    left: 50%;
+    width: 360px;
+    height: 360px;
+    transform: translateX(-50%);
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(196, 214, 192, 0.11), transparent 64%);
+    mix-blend-mode: screen;
+    animation: ffc-lamp-flicker 9.5s steps(1) infinite;
+}
+
+/* Old spray paint on the back wall. */
+.ffc-hero-graffiti {
+    position: absolute;
+    left: 1.5%;
+    bottom: 7%;
+    z-index: 0;
+    font-family: "Barlow Condensed", "Inter", sans-serif;
+    font-size: clamp(78px, 11.5vw, 182px);
+    font-weight: 900;
+    line-height: 0.78;
+    letter-spacing: 0.015em;
+    white-space: nowrap;
+    color: rgba(150, 160, 140, 0.055);
+    transform: rotate(-4deg);
+    mix-blend-mode: screen;
+    text-shadow: 0 0 2px rgba(150, 160, 140, 0.05);
+}
+
+.ffc-hero-graffiti--tag {
+    left: auto;
+    right: 5%;
+    bottom: 19%;
+    font-family: "JetBrains Mono", monospace;
+    font-size: clamp(30px, 3.6vw, 58px);
+    font-weight: 700;
+    letter-spacing: 0.22em;
+    color: rgba(152, 142, 112, 0.075);
+    transform: rotate(6deg);
+}
+
+/* Barrier tape nobody came back for. */
+.ffc-hero-tape {
+    position: absolute;
+    left: 3.5%;
+    right: auto;
+    bottom: 13.5%;
+    z-index: 4;
+    width: min(400px, 32vw);
+    height: 28px;
+    transform: rotate(-3deg);
+    opacity: 0.5;
+    clip-path: polygon(0 12%, 100% 0, 98% 88%, 1% 100%);
+    background: repeating-linear-gradient(135deg,
+        rgba(162, 142, 80, 0.72) 0 18px,
+        rgba(18, 19, 14, 0.78) 18px 36px);
+    box-shadow: 0 8px 22px rgba(0, 0, 0, 0.45);
+}
+
+.ffc-hero-tape::after {
+    content: "CONDENADO · NO PASAR ·";
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: "Barlow Condensed", sans-serif;
+    font-size: 12px;
+    font-weight: 900;
+    letter-spacing: 0.24em;
+    color: rgba(12, 13, 9, 0.82);
+    white-space: nowrap;
+}
+
+/* Standing water at the foot of the wall. */
+.ffc-hero-puddle {
+    position: absolute;
+    left: 5%;
+    bottom: 10px;
+    width: min(430px, 34vw);
+    height: 74px;
+    border-radius: 50%;
+    background:
+        radial-gradient(ellipse at 50% 44%, rgba(170, 182, 162, 0.11), rgba(58, 74, 56, 0.10) 46%, transparent 72%);
+    filter: blur(2px);
+    opacity: 0.9;
+}
+
+.ffc-hero-puddle::after {
+    content: "";
+    position: absolute;
+    inset: 26% 18%;
+    border-radius: 50%;
+    border: 1px solid rgba(180, 190, 170, 0.06);
+    box-shadow: 0 0 22px rgba(170, 182, 162, 0.05);
+}
+
+/* Bricks, chunks and flakes that fell out of the walls. */
+.ffc-hero-debris {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 120px;
+    z-index: 3;
+}
+
+.ffc-hero-debris::before {
+    content: "";
+    position: absolute;
+    left: 8%;
+    bottom: 22px;
+    width: 18px;
+    height: 10px;
+    background: #1f1d16;
+    transform: rotate(12deg);
+    box-shadow:
+        84px 7px 0 #17160f,
+        150px -3px 0 #242117,
+        236px 9px 0 #14130e,
+        318px 1px 0 #211e15,
+        412px 12px 0 #16150f,
+        506px 2px 0 #1d1a12,
+        612px 10px 0 #121109,
+        694px -2px 0 #201d14,
+        792px 8px 0 #17160f,
+        872px 3px 0 #222016;
+}
+
+.ffc-hero-debris::after {
+    content: "";
+    position: absolute;
+    right: 6%;
+    bottom: 16px;
+    width: 8px;
+    height: 8px;
+    background: #2b291f;
+    transform: rotate(28deg);
+    box-shadow:
+        -46px 6px 0 #1b1a12,
+        -92px -2px 0 #252218,
+        -150px 8px 0 #17160f,
+        -210px 1px 0 #201d14,
+        -284px 7px 0 #14130d,
+        -360px -3px 0 #232017,
+        -430px 5px 0 #191811;
+}
+
+/* Collapsed masonry along the bottom edge. */
+.ffc-hero-rubble {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -2px;
+    z-index: 3;
+    height: 112px;
+    background: url("assets/ffc-rubble.svg") bottom center / 1200px 112px repeat-x;
+    opacity: 0.92;
+    filter: brightness(1.22) contrast(1.05);
+}
+
+/* -------------------------------------------------------------------------
+   STRUCTURAL FAILURE ON THE SURFACES
+   ------------------------------------------------------------------------- */
+
+.home-top3-card,
+.standings-block,
+.battle-scenarios-wrapper,
+.calendar-photo-banner,
+.calendar-detail-pane,
+.participate-hero-banner,
+.info-hero-banner,
+.participate-step-card,
+.participate-info-card,
+.info-pillar-card,
+.news-card,
+.next-race-card,
+.hero-gp-card,
+.info-card,
+.driver-card-inner,
+.fantasy-hud-card,
+.market-card,
+.slot-filled-card,
+.slot-empty-card,
+.compare-card,
+.race-modal,
+.standing-card,
+.ranking-table-card,
+.modal-content,
+.card {
+    background-color: #0e120e !important;
+    background-image:
+        radial-gradient(ellipse at 104% 108%, rgba(64, 82, 58, 0.22), transparent 54%),
+        radial-gradient(ellipse at -6% -8%, rgba(104, 84, 58, 0.14), transparent 44%),
+        linear-gradient(180deg, rgba(255, 255, 255, 0.012), transparent 34%) !important;
+    border-color: #20261f !important;
+    box-shadow:
+        inset 0 -64px 74px -58px rgba(58, 78, 54, 0.6),
+        inset 0 0 58px rgba(0, 0, 0, 0.42),
+        0 18px 44px rgba(0, 0, 0, 0.52) !important;
+}
+
+/* Readable decay: the building is dark, the information is not. */
+.home-top3-heading p,
+.podium-pts-lbl,
+.podium-gap-lbl:not(.gold-glow-text),
+.battle-scenarios-sub,
+.scenarios-th-sub,
+.battle-scenarios-table tbody td,
+.participate-step-card p,
+.participate-info-card p,
+.info-pillar-card p,
+.news-card p,
+.calendar-detail-pane p,
+.info-pillar-card li,
+.participate-step-card li {
+    color: #b9bbaf !important;
+}
+
+.scenario-filter-btn {
+    color: #c6c8bc;
+}
+
+.home-top3-card:hover,
+.standings-block:hover,
+.news-card:hover,
+.participate-step-card:hover,
+.info-pillar-card:hover,
+.participate-info-card:hover,
+.hero-gp-card:hover,
+.info-card:hover,
+.driver-card-inner:hover,
+.market-card:hover,
+.compare-card:hover,
+.slot-filled-card:hover {
+    border-color: rgba(160, 152, 120, 0.32) !important;
+    box-shadow:
+        inset 0 -64px 74px -58px rgba(58, 78, 54, 0.66),
+        inset 0 0 58px rgba(0, 0, 0, 0.46),
+        0 22px 52px rgba(0, 0, 0, 0.6) !important;
+}
+
+/* More impact fractures on the cards that previously had none. */
+.hero-gp-card::before,
+.info-card::before,
+.driver-card-inner::before,
+.fantasy-hud-card::before,
+.market-card::before,
+.slot-filled-card::before,
+.compare-card::before,
+.race-modal::before,
+.ranking-table-card::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 3;
+    pointer-events: none;
+    background-image:
+        var(--ffc-crack-a),
+        radial-gradient(ellipse at 92% 96%, var(--ffc-mold), transparent 58%);
+    background-repeat: no-repeat, no-repeat;
+    background-size: 230px 230px, 100% 100%;
+    background-position: 100% 0, center;
+    opacity: 0.34;
+    mix-blend-mode: screen;
+}
+
+.info-card::before,
+.slot-filled-card::before {
+    background-image:
+        var(--ffc-crack-b),
+        radial-gradient(ellipse at 4% 0%, var(--ffc-mold), transparent 58%);
+    background-position: 0 100%, center;
+}
+
+/* Heavier, dirtier fractures on the big blocks. */
+.standings-block::before {
+    --ffc-crack-opacity: 0.68;
+    --ffc-crack-size: 400px 400px;
+}
+
+.next-race-card::before {
+    --ffc-crack-opacity: 0.5;
+}
+
+.news-card:nth-child(3n+1)::before {
+    --ffc-crack-opacity: 0.58;
+}
+
+.calendar-photo-banner::before {
+    --ffc-crack-opacity: 0.58;
+}
+
+.news-card:nth-child(6n+2)::before,
+.participate-step-card:nth-child(3)::before,
+.info-pillar-card:nth-child(4)::before {
+    background:
+        radial-gradient(ellipse at 0% 100%, rgba(120, 134, 110, 0.24), transparent 58%),
+        radial-gradient(ellipse at 100% 0%, rgba(112, 98, 74, 0.18), transparent 50%),
+        radial-gradient(circle at 14% 86%, transparent 0 20px, rgba(148, 152, 134, 0.14) 21px 23px, transparent 24px 34px, rgba(148, 152, 134, 0.08) 35px 36px, transparent 37px);
+}
+
+/* Peeling corners and old repair tape. */
+.news-card:nth-child(4n+2)::after {
+    content: "";
+    position: absolute;
+    top: -7px;
+    left: 13%;
+    z-index: 6;
+    width: 86px;
+    height: 22px;
+    pointer-events: none;
+    transform: rotate(-2.4deg);
+    background: linear-gradient(180deg, rgba(196, 188, 160, 0.26), rgba(118, 110, 88, 0.13));
+    clip-path: polygon(0 10%, 100% 0, 98% 100%, 2% 92%);
+    box-shadow: inset 0 0 12px rgba(0, 0, 0, 0.35);
+}
+
+.news-card:nth-child(5n+4)::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    right: 0;
+    z-index: 6;
+    width: 62px;
+    height: 30px;
+    pointer-events: none;
+    background: linear-gradient(158deg, rgba(196, 194, 172, 0.09), transparent 72%);
+    clip-path: polygon(0 0, 100% 0, 100% 28%, 82% 52%, 62% 34%, 40% 60%, 18% 42%, 0 68%);
+}
+
+.participate-step-card:nth-child(3)::after,
+.info-pillar-card:nth-child(3)::after {
+    content: "";
+    position: absolute;
+    left: -8px;
+    bottom: 18%;
+    z-index: 6;
+    width: 56px;
+    height: 20px;
+    pointer-events: none;
+    transform: rotate(1.6deg);
+    background: linear-gradient(180deg, rgba(186, 178, 150, 0.2), rgba(110, 102, 82, 0.1));
+    clip-path: polygon(0 4%, 100% 0, 97% 100%, 3% 92%);
+}
+
+/* The next-race card is water-damaged down one side. */
+.next-race-card {
+    border-right-color: #33291f !important;
+    border-bottom-color: #2a332a !important;
+}
+
+.next-race-card::after {
+    content: "";
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    z-index: 4;
+    width: 74px;
+    height: 62%;
+    pointer-events: none;
+    background:
+        linear-gradient(270deg, rgba(58, 76, 54, 0.20), transparent 72%),
+        repeating-linear-gradient(180deg, transparent 0 26px, rgba(150, 156, 136, 0.04) 26px 28px);
+    -webkit-mask-image: linear-gradient(180deg, transparent, #000 34%);
+    mask-image: linear-gradient(180deg, transparent, #000 34%);
+}
+
+/* One table row has been rained on. */
+.standings-table tr:nth-child(5) td,
+.leaderboard-table tr:nth-child(5) td,
+.race-table tr:nth-child(5) td {
+    background:
+        radial-gradient(ellipse at 22% 120%, rgba(70, 88, 64, 0.16), transparent 58%),
+        rgba(18, 22, 17, 0.4) !important;
+    border-bottom-color: rgba(74, 88, 66, 0.22) !important;
+}
+
+/* -------------------------------------------------------------------------
+   HEADER — an old circuit office sign
+   ------------------------------------------------------------------------- */
+
+.navbar {
+    background: linear-gradient(180deg, rgba(9, 12, 9, 0.97), rgba(6, 8, 6, 0.95)) !important;
+    -webkit-backdrop-filter: blur(10px) saturate(0.55) brightness(0.9) !important;
+    backdrop-filter: blur(10px) saturate(0.55) brightness(0.9) !important;
+    border-bottom-color: #1d231d !important;
+    box-shadow:
+        0 12px 38px rgba(0, 0, 0, 0.7),
+        inset 0 -1px 0 rgba(170, 168, 145, 0.06) !important;
+}
+
+.navbar::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background:
+        radial-gradient(ellipse 22% 120% at 8% 50%, rgba(64, 78, 58, 0.13), transparent 72%),
+        radial-gradient(ellipse 18% 120% at 92% 50%, rgba(86, 70, 50, 0.10), transparent 72%),
+        linear-gradient(180deg, rgba(255, 255, 255, 0.018), transparent 40%);
+}
+
+.navbar::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -8px;
+    height: 8px;
+    pointer-events: none;
+    background:
+        repeating-linear-gradient(90deg, transparent 0 46px, rgba(68, 76, 58, 0.26) 46px 49px, transparent 49px 118px),
+        repeating-linear-gradient(135deg, rgba(146, 126, 72, 0.22) 0 9px, rgba(18, 19, 14, 0.25) 9px 18px),
+        linear-gradient(180deg, rgba(64, 70, 55, 0.18), transparent);
+    -webkit-mask-image: linear-gradient(180deg, #000 0 46%, transparent);
+    mask-image: linear-gradient(180deg, #000 0 46%, transparent);
+    opacity: 0.8;
+}
+
+.brand-logo {
+    filter: grayscale(1) brightness(0.68) contrast(0.92) !important;
+}
+
+.brand-name {
+    color: #c2c0b2;
+    text-shadow: 0 1px 0 rgba(0, 0, 0, 0.8);
+}
+
+.brand-subtag {
+    color: #8e8871 !important;
+}
+
+.nav-links {
+    background: rgba(16, 20, 16, 0.72);
+    border-color: #262c24;
+    box-shadow: inset 0 1px 0 rgba(200, 200, 180, 0.05), inset 0 -8px 16px rgba(0, 0, 0, 0.18);
+}
+
+.nav-links a {
+    color: #8d9287;
+}
+
+.nav-links a:hover {
+    color: #d8d5c7;
+    background: rgba(160, 158, 132, 0.08);
+}
+
+.nav-links a.active {
+    color: #e4e0cf;
+    background: rgba(150, 142, 108, 0.16);
+    border-color: rgba(160, 150, 112, 0.28);
+    box-shadow: inset 0 0 14px rgba(160, 150, 112, 0.12);
+}
+
+/* -------------------------------------------------------------------------
+   BUTTONS — corroded metal and gaffer tape
+   ------------------------------------------------------------------------- */
+
+.btn-primary,
+.fantasy-hud-btn,
+.market-action-btn.sign-btn,
+.claim-submit-btn,
+.auth-submit-btn {
+    background:
+        repeating-linear-gradient(115deg, transparent 0 15px, rgba(0, 0, 0, 0.08) 15px 16px),
+        linear-gradient(160deg, #a79f85 0%, #6f6852 54%, #8a826a 100%) !important;
+    color: #080a08 !important;
+    border-color: rgba(220, 216, 200, 0.14) !important;
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.10),
+        inset 0 -9px 16px rgba(0, 0, 0, 0.26),
+        0 10px 26px rgba(0, 0, 0, 0.5) !important;
+    text-shadow: 0 1px 0 rgba(255, 255, 255, 0.14);
+}
+
+.btn-primary:hover,
+.fantasy-hud-btn:hover,
+.market-action-btn.sign-btn:hover:not(:disabled),
+.claim-submit-btn:hover,
+.auth-submit-btn:hover {
+    background:
+        repeating-linear-gradient(115deg, transparent 0 15px, rgba(0, 0, 0, 0.07) 15px 16px),
+        linear-gradient(160deg, #b8b096 0%, #7d7660 54%, #99917a 100%) !important;
+    color: #040504 !important;
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.14),
+        inset 0 -9px 16px rgba(0, 0, 0, 0.28),
+        0 13px 32px rgba(0, 0, 0, 0.58) !important;
+}
+
+.btn-secondary {
+    background:
+        linear-gradient(180deg, rgba(26, 31, 25, 0.94), rgba(12, 15, 12, 0.94)) !important;
+    border-color: #333a31 !important;
+    color: #cfccbf !important;
+    box-shadow:
+        inset 0 1px 0 rgba(190, 190, 170, 0.05),
+        inset 0 -8px 14px rgba(0, 0, 0, 0.22),
+        0 8px 22px rgba(0, 0, 0, 0.4) !important;
+}
+
+.btn-secondary:hover {
+    background:
+        linear-gradient(180deg, rgba(36, 42, 34, 0.96), rgba(17, 21, 16, 0.96)) !important;
+    border-color: #6c6a54 !important;
+    color: #e2dfd0 !important;
+}
+
+/* -------------------------------------------------------------------------
+   TYPE — sun-bleached paint and a failing sign
+   ------------------------------------------------------------------------- */
+
+.hero h1,
+.section-heading h2 {
+    animation: ffc-sign-flicker 29s steps(1) infinite;
+    text-shadow:
+        2px 0 rgba(120, 140, 120, 0.05),
+        -2px 0 rgba(0, 0, 0, 0.55),
+        0 1px 0 rgba(0, 0, 0, 0.95),
+        0 5px 34px rgba(0, 0, 0, 0.95);
+}
+
+.gold-text-glow {
+    color: #b1a98f;
+    text-shadow:
+        0 0 44px rgba(162, 156, 136, 0.13),
+        0 2px 0 #171b16,
+        0 5px 28px rgba(0, 0, 0, 0.95);
+}
+
+.section-heading p {
+    color: #9a9e92;
+}
+
+.section-kicker {
+    color: #a39b80;
+    letter-spacing: 0.26em;
+}
+
+.hero-description {
+    color: #b8bab0;
+}
+
+/* -------------------------------------------------------------------------
+   STATS — a bank of dying monitors
+   ------------------------------------------------------------------------- */
+
+.stats-section {
+    background:
+        repeating-linear-gradient(0deg, rgba(255, 255, 255, 0.016) 0 1px, transparent 1px 3px),
+        radial-gradient(ellipse 34% 130% at 28% 120%, rgba(64, 82, 58, 0.26), transparent 56%),
+        radial-gradient(ellipse 26% 110% at 86% 130%, rgba(88, 70, 48, 0.14), transparent 58%),
+        linear-gradient(180deg, #080b08 0%, #050704 100%) !important;
+    border-color: #22281f !important;
+    overflow: hidden;
+}
+
+.stats-section::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 3;
+    pointer-events: none;
+    background-image:
+        var(--ffc-impact),
+        radial-gradient(ellipse at 0% 100%, rgba(74, 92, 68, 0.28), transparent 52%),
+        radial-gradient(ellipse at 100% 0%, rgba(96, 80, 56, 0.16), transparent 48%);
+    background-repeat: no-repeat;
+    background-size: 380px 340px, 100% 100%, 100% 100%;
+    background-position: 86% 100%, center, center;
+    opacity: 0.34;
+    mix-blend-mode: screen;
+}
+
+.stats-section::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 4;
+    pointer-events: none;
+    background: repeating-linear-gradient(0deg, transparent 0 2px, rgba(0, 0, 0, 0.16) 2px 3px);
+    opacity: 0.3;
+    mix-blend-mode: multiply;
+}
+
+.stat {
+    position: relative;
+    z-index: 5;
+    border-right-color: #1e241e !important;
+}
+
+.stat span {
+    color: #d5d3c6;
+    text-shadow: 0 0 14px rgba(202, 214, 196, 0.08), 0 2px 0 rgba(0, 0, 0, 0.9);
+}
+
+.stat:nth-child(2) span {
+    animation: ffc-dead-display 6.2s steps(1) infinite;
+}
+
+.stat:nth-child(3) span {
+    animation-duration: 4.1s;
+}
+
+.stat small {
+    color: #8f9588;
+    letter-spacing: 0.24em;
+}
+
+/* -------------------------------------------------------------------------
+   SECTIONS — damp walls between the races that never happened
+   ------------------------------------------------------------------------- */
+
+#mainSiteContent {
+    background-image:
+        radial-gradient(ellipse 30% 16% at 8% 12%, rgba(58, 74, 50, 0.09), transparent 70%),
+        radial-gradient(ellipse 24% 13% at 92% 38%, rgba(94, 74, 50, 0.065), transparent 70%),
+        radial-gradient(ellipse 34% 18% at 48% 72%, rgba(58, 74, 50, 0.075), transparent 72%),
+        radial-gradient(ellipse 22% 12% at 14% 92%, rgba(80, 64, 44, 0.06), transparent 70%);
+}
+
+.section {
+    border-top: 1px solid rgba(130, 138, 118, 0.035);
+}
+
+/* -------------------------------------------------------------------------
+   FOOTER — the back of the paddock
+   ------------------------------------------------------------------------- */
+
+.site-footer {
+    background: linear-gradient(180deg, #040604 0%, #070907 56%, #030503 100%) !important;
+    border-top-color: #20261f !important;
+    padding-top: 38px;
+    overflow: hidden;
+}
+
+.site-footer::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: -1px;
+    height: 9px;
+    pointer-events: none;
+    background: repeating-linear-gradient(135deg,
+        rgba(148, 128, 74, 0.34) 0 10px,
+        rgba(16, 17, 13, 0.45) 10px 20px);
+    opacity: 0.42;
+    -webkit-mask-image: linear-gradient(180deg, #000, transparent);
+    mask-image: linear-gradient(180deg, #000, transparent);
+}
+
+.site-footer::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 96px;
+    pointer-events: none;
+    background:
+        url("assets/ffc-rubble.svg") bottom center / 1100px 96px repeat-x,
+        radial-gradient(ellipse 30% 90% at 4% 100%, rgba(62, 82, 56, 0.30), transparent 68%),
+        radial-gradient(ellipse 26% 80% at 96% 100%, rgba(62, 82, 56, 0.24), transparent 68%);
+    background-repeat: repeat-x, no-repeat, no-repeat;
+    opacity: 0.7;
+}
+
+.footer-inner {
+    position: relative;
+    z-index: 2;
+}
+
+.ffc-footer-rot {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    overflow: hidden;
+    pointer-events: none;
+}
+
+.ffc-footer-vine {
+    position: absolute;
+    bottom: -18px;
+    width: clamp(150px, 15vw, 230px);
+    height: clamp(220px, 26vw, 340px);
+    background: url("assets/ffc-ivy.svg") top left / 100% auto no-repeat;
+    opacity: 0.42;
+    filter: drop-shadow(0 6px 14px rgba(0, 0, 0, 0.55)) saturate(0.75);
+}
+
+.ffc-footer-vine--left {
+    left: -14px;
+    transform: scaleY(-1);
+    transform-origin: center;
+}
+
+.ffc-footer-vine--right {
+    right: -16px;
+    transform: scale(-1, -1);
+    transform-origin: center;
+    opacity: 0.34;
+}
+
+.footer-logo {
+    color: #8f3b2e;
+    text-shadow: 0 0 18px rgba(143, 59, 46, 0.18);
+    filter: saturate(0.7);
+}
+
+.footer-copy {
+    color: #858b7e;
+}
+
+.footer-link-btn,
+.footer-link-a {
+    color: #b4b8aa;
+}
+
+.footer-link-btn:hover,
+.footer-link-a:hover {
+    color: #b3a984;
+}
+
+.footer-dot {
+    color: rgba(160, 164, 146, 0.22);
+}
+
+/* -------------------------------------------------------------------------
+   CONDEMNED STAMP — half painted over, half fallen off
+   ------------------------------------------------------------------------- */
+
+.ffc-abandoned-stamp {
+    bottom: 2.5%;
+    border-color: rgba(194, 190, 168, 0.44);
+    color: rgba(203, 200, 181, 0.68);
+    background: rgba(8, 10, 8, 0.18);
+    opacity: 0.66;
+    box-shadow: inset 0 0 26px rgba(0, 0, 0, 0.4);
+}
+
+.ffc-abandoned-stamp__main {
+    text-shadow: 0 2px 0 rgba(0, 0, 0, 0.55);
+}
+
+/* -------------------------------------------------------------------------
+   MOTION
+   ------------------------------------------------------------------------- */
+
+@keyframes ffc-fog-drift {
+    from { transform: translate3d(-2%, 0, 0) scale(1.02); }
+    to { transform: translate3d(2%, -1.5%, 0) scale(1.06); }
+}
+
+@keyframes ffc-plaster-creep {
+    from { transform: translate3d(0, 0, 0); }
+    to { transform: translate3d(-2%, 1.4%, 0); }
+}
+
+@keyframes ffc-ivy-breathe {
+    0%, 100% { transform: rotate(0deg); }
+    50% { transform: rotate(1.1deg); }
+}
+
+@keyframes ffc-ivy-breathe-right {
+    0%, 100% { transform: scaleX(-1) rotate(0deg); }
+    50% { transform: scaleX(-1) rotate(-1.1deg); }
+}
+
+@keyframes ffc-lamp-sway {
+    0%, 100% { transform: rotate(-1.4deg); }
+    50% { transform: rotate(1.6deg); }
+}
+
+@keyframes ffc-lamp-flicker {
+    0%, 100% { opacity: 0.68; }
+    4% { opacity: 0.18; }
+    5% { opacity: 0.78; }
+    11% { opacity: 0.42; }
+    12% { opacity: 0.72; }
+    37% { opacity: 0.6; }
+    38% { opacity: 0.16; }
+    39% { opacity: 0.74; }
+    62% { opacity: 0.66; }
+    63% { opacity: 0.26; }
+    64% { opacity: 0.7; }
+    83% { opacity: 0.5; }
+    84% { opacity: 0.12; }
+    85% { opacity: 0.66; }
+}
+
+@keyframes ffc-sign-flicker {
+    0%, 100% { opacity: 1; }
+    58% { opacity: 1; }
+    58.6% { opacity: 0.74; }
+    59.4% { opacity: 1; }
+    77% { opacity: 1; }
+    77.5% { opacity: 0.86; }
+    78.2% { opacity: 1; }
+    91% { opacity: 1; }
+    91.4% { opacity: 0.78; }
+    92% { opacity: 1; }
+}
+
+/* -------------------------------------------------------------------------
+   RESPONSIVE
+   ------------------------------------------------------------------------- */
+
+@media (max-width: 1100px) {
+    .ffc-hero-boards {
+        width: 34vw;
+        opacity: 0.3;
+    }
+
+    .ffc-hero-lamp {
+        left: 54%;
+    }
+}
+
+@media (max-width: 900px) {
+    .ffc-hero-boards,
+    .ffc-hero-lamp,
+    .ffc-hero-graffiti,
+    .ffc-hero-tape,
+    .ffc-hero-puddle {
+        display: none;
+    }
+
+    .ffc-hero-vine {
+        width: 150px;
+        height: 300px;
+        opacity: 0.42;
+    }
+
+    .ffc-hero-rubble {
+        height: 82px;
+        background-size: 900px 82px;
+    }
+
+    .ffc-hero-debris {
+        height: 90px;
+    }
+
+    .ffc-footer-vine {
+        opacity: 0.24;
+    }
+
+    .ffc-web--tr,
+    .ffc-web--bl {
+        display: none;
+    }
+
+    .ffc-decay__drips {
+        height: 42vh;
+    }
+}
+
+@media (max-width: 520px) {
+    .ffc-hero-vine {
+        width: 112px;
+        height: 230px;
+        opacity: 0.34;
+    }
+
+    .ffc-hero-rubble {
+        height: 62px;
+        background-size: 700px 62px;
+    }
+
+    .ffc-hero-graffiti--tag {
+        display: none;
+    }
+
+    .ffc-decay__plaster {
+        opacity: 0.1;
+    }
+
+    .ffc-footer-vine {
+        width: 130px;
+        height: 200px;
+        opacity: 0.18;
+    }
+
+    .news-card:nth-child(4n+2)::after,
+    .news-card:nth-child(5n+4)::after,
+    .participate-step-card:nth-child(3)::after,
+    .info-pillar-card:nth-child(3)::after {
+        display: none;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .ffc-decay__fog,
+    .ffc-decay__plaster,
+    .ffc-hero-vine,
+    .ffc-hero-lamp,
+    .ffc-hero-lamp__glow,
+    .hero h1,
+    .section-heading h2,
+    .stat:nth-child(2) span,
+    .stat:nth-child(3) span {
+        animation: none !important;
+    }
+}
