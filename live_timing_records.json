@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-11-08T19:13:40.722Z",
+  "updatedAt": "2026-11-08T22:53:01.701Z",
   "default": "vhe_interlagos|gp",
   "tracks": {
     "rt_fuji_speedway|layout_gp": {
@@ -152,9 +152,9 @@
       },
       "laps": {
         "count": 35,
-        "driver": "Driezz",
+        "driver": "suforr",
         "car": "Formula RSS 2010 V8",
-        "guid": "76561199525925061",
+        "guid": "76561199148380051",
         "at": "2026-11-08T16:09:00.000Z"
       },
       "lastSeen": "2026-11-08T16:09:00.000Z"
