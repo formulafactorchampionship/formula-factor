@@ -1,7 +1,31 @@
 {
   "version": 1,
-  "updatedAt": "2026-10-25T18:23:57.206Z",
+  "updatedAt": "2026-11-08T19:13:44.760Z",
   "sessions": [
+    {
+      "name": "2026_11_8_17_9_RACE",
+      "identity": "2026_11_8_17_9_RACE",
+      "type": "RACE",
+      "stamp": "2026_11_08_17_09",
+      "track": "Vhe Interlagos",
+      "entrants": 8
+    },
+    {
+      "name": "2026_11_8_16_22_QUALIFY",
+      "identity": "2026_11_8_16_22_QUALIFY",
+      "type": "QUALIFY",
+      "stamp": "2026_11_08_16_22",
+      "track": "Vhe Interlagos",
+      "entrants": 8
+    },
+    {
+      "name": "2026_11_8_16_1_PRACTICE",
+      "identity": "2026_11_8_16_1_PRACTICE",
+      "type": "PRACTICE",
+      "stamp": "2026_11_08_16_01",
+      "track": "Vhe Interlagos",
+      "entrants": 4
+    },
     {
       "name": "2026_10_25_17_27_QUALIFY",
       "identity": "2026_10_25_17_27_QUALIFY",
@@ -59,12 +83,12 @@
       "entrants": 1
     },
     {
-      "name": "2026_10_14_15_59_PRACTICE-time-attack",
+      "name": "2026_10_14_15_59_PRACTICE",
       "identity": "2026_10_14_15_59_PRACTICE",
-      "type": "TIME_ATTACK",
+      "type": "PRACTICE",
       "stamp": "2026_10_14_15_59",
       "track": "Rt Fuji Speedway",
-      "entrants": 2
+      "entrants": 0
     },
     {
       "name": "2026_10_12_18_29_RACE",
@@ -589,6 +613,402 @@
           "driver": "Fran_17",
           "guid": "76561199215276908",
           "bestLapMs": 119651,
+          "status": "FINISHED"
+        }
+      ]
+    },
+    "2026_11_8_17_9_RACE": {
+      "success": true,
+      "sessionFile": "2026_11_8_17_9_RACE",
+      "sessionType": "RACE",
+      "draft": {
+        "track": "vhe_interlagos",
+        "config": "gp",
+        "type": "RACE",
+        "date": "2026-11-08T17:09:00+01:00",
+        "sessionFile": "2026_11_8_17_9_RACE",
+        "entrants": 21,
+        "classified": 8,
+        "approximate": false,
+        "fastestLap": {
+          "driver": "suforr",
+          "guid": "76561199148380051",
+          "ms": 70823
+        },
+        "entries": [
+          {
+            "pos": 1,
+            "driver": "Javier Hernández",
+            "guid": "76561199125857998",
+            "car": "rss_formula_2010",
+            "team": "",
+            "bestLapMs": 72532,
+            "totalTimeMs": 2679056,
+            "hasPenalty": false,
+            "penaltyMs": 0,
+            "lapPenalty": 0,
+            "disqualified": false,
+            "status": "FINISHED"
+          },
+          {
+            "pos": 2,
+            "driver": "Driezz",
+            "guid": "76561199525925061",
+            "car": "rss_formula_2010",
+            "team": "",
+            "bestLapMs": 71692,
+            "totalTimeMs": 2679397,
+            "hasPenalty": false,
+            "penaltyMs": 0,
+            "lapPenalty": 0,
+            "disqualified": false,
+            "status": "FINISHED"
+          },
+          {
+            "pos": 3,
+            "driver": "Diego Pereira",
+            "guid": "76561199548642271",
+            "car": "rss_formula_2010",
+            "team": "",
+            "bestLapMs": 71555,
+            "totalTimeMs": 2695791,
+            "hasPenalty": false,
+            "penaltyMs": 0,
+            "lapPenalty": 0,
+            "disqualified": false,
+            "status": "FINISHED"
+          },
+          {
+            "pos": 4,
+            "driver": "suforr",
+            "guid": "76561199148380051",
+            "car": "rss_formula_2010",
+            "team": "",
+            "bestLapMs": 70823,
+            "totalTimeMs": 2697519,
+            "hasPenalty": false,
+            "penaltyMs": 0,
+            "lapPenalty": 0,
+            "disqualified": false,
+            "status": "FINISHED"
+          },
+          {
+            "pos": 5,
+            "driver": "IWantMozaR5",
+            "guid": "76561199381231982",
+            "car": "rss_formula_2010",
+            "team": "",
+            "bestLapMs": 73141,
+            "totalTimeMs": 2711169,
+            "hasPenalty": false,
+            "penaltyMs": 0,
+            "lapPenalty": 0,
+            "disqualified": false,
+            "status": "FINISHED"
+          },
+          {
+            "pos": 6,
+            "driver": "NoviNada",
+            "guid": "76561199237991434",
+            "car": "rss_formula_2010",
+            "team": "",
+            "bestLapMs": 73367,
+            "totalTimeMs": 2502905,
+            "hasPenalty": false,
+            "penaltyMs": 0,
+            "lapPenalty": 0,
+            "disqualified": false,
+            "status": "FINISHED"
+          },
+          {
+            "pos": 7,
+            "driver": "ACRR|Alex Munti",
+            "guid": "76561199190364639",
+            "car": "rss_formula_2010",
+            "team": "",
+            "bestLapMs": 72877,
+            "totalTimeMs": 2676898,
+            "hasPenalty": false,
+            "penaltyMs": 0,
+            "lapPenalty": 0,
+            "disqualified": false,
+            "status": "FINISHED"
+          },
+          {
+            "pos": 8,
+            "driver": "ACRR||Theagus60",
+            "guid": "76561199793961424",
+            "car": "rss_formula_2010",
+            "team": "",
+            "bestLapMs": 75374,
+            "totalTimeMs": 259394,
+            "hasPenalty": false,
+            "penaltyMs": 0,
+            "lapPenalty": 0,
+            "disqualified": false,
+            "status": "FINISHED"
+          }
+        ]
+      },
+      "poleLap": {
+        "driver": "suforr",
+        "guid": "76561199148380051",
+        "ms": 70652
+      },
+      "poleSession": "2026_11_8_16_22_QUALIFY",
+      "qualifying": [
+        {
+          "pos": 1,
+          "driver": "suforr",
+          "guid": "76561199148380051",
+          "bestLapMs": 70652,
+          "status": "FINISHED"
+        },
+        {
+          "pos": 2,
+          "driver": "Driezz",
+          "guid": "76561199525925061",
+          "bestLapMs": 70901,
+          "status": "FINISHED"
+        },
+        {
+          "pos": 3,
+          "driver": "ACRR|Alex Munti",
+          "guid": "76561199190364639",
+          "bestLapMs": 71139,
+          "status": "FINISHED"
+        },
+        {
+          "pos": 4,
+          "driver": "Diego Pereira",
+          "guid": "76561199548642271",
+          "bestLapMs": 71647,
+          "status": "FINISHED"
+        },
+        {
+          "pos": 5,
+          "driver": "ACRR||Theagus60",
+          "guid": "76561199793961424",
+          "bestLapMs": 71686,
+          "status": "FINISHED"
+        },
+        {
+          "pos": 6,
+          "driver": "Javier Hernández",
+          "guid": "76561199125857998",
+          "bestLapMs": 72186,
+          "status": "FINISHED"
+        },
+        {
+          "pos": 7,
+          "driver": "NoviNada",
+          "guid": "76561199237991434",
+          "bestLapMs": 72282,
+          "status": "FINISHED"
+        },
+        {
+          "pos": 8,
+          "driver": "IWantMozaR5",
+          "guid": "76561199381231982",
+          "bestLapMs": 72457,
+          "status": "FINISHED"
+        }
+      ]
+    },
+    "2026_11_8_16_22_QUALIFY": {
+      "success": true,
+      "sessionFile": "2026_11_8_16_22_QUALIFY",
+      "sessionType": "QUALIFY",
+      "draft": {
+        "track": "vhe_interlagos",
+        "config": "gp",
+        "type": "QUALIFY",
+        "date": "2026-11-08T16:22:00+01:00",
+        "sessionFile": "2026_11_8_16_22_QUALIFY",
+        "entrants": 21,
+        "classified": 8,
+        "approximate": false,
+        "fastestLap": {
+          "driver": "suforr",
+          "guid": "76561199148380051",
+          "ms": 70652
+        },
+        "entries": [
+          {
+            "pos": 1,
+            "driver": "suforr",
+            "guid": "76561199148380051",
+            "car": "rss_formula_2010",
+            "team": "",
+            "bestLapMs": 70652,
+            "totalTimeMs": 1228904,
+            "hasPenalty": false,
+            "penaltyMs": 0,
+            "lapPenalty": 0,
+            "disqualified": false,
+            "status": "FINISHED"
+          },
+          {
+            "pos": 2,
+            "driver": "Driezz",
+            "guid": "76561199525925061",
+            "car": "rss_formula_2010",
+            "team": "",
+            "bestLapMs": 70901,
+            "totalTimeMs": 1099901,
+            "hasPenalty": false,
+            "penaltyMs": 0,
+            "lapPenalty": 0,
+            "disqualified": false,
+            "status": "FINISHED"
+          },
+          {
+            "pos": 3,
+            "driver": "ACRR|Alex Munti",
+            "guid": "76561199190364639",
+            "car": "rss_formula_2010",
+            "team": "",
+            "bestLapMs": 71139,
+            "totalTimeMs": 1177027,
+            "hasPenalty": false,
+            "penaltyMs": 0,
+            "lapPenalty": 0,
+            "disqualified": false,
+            "status": "FINISHED"
+          },
+          {
+            "pos": 4,
+            "driver": "Diego Pereira",
+            "guid": "76561199548642271",
+            "car": "rss_formula_2010",
+            "team": "",
+            "bestLapMs": 71647,
+            "totalTimeMs": 1256160,
+            "hasPenalty": false,
+            "penaltyMs": 0,
+            "lapPenalty": 0,
+            "disqualified": false,
+            "status": "FINISHED"
+          },
+          {
+            "pos": 5,
+            "driver": "ACRR||Theagus60",
+            "guid": "76561199793961424",
+            "car": "rss_formula_2010",
+            "team": "",
+            "bestLapMs": 71686,
+            "totalTimeMs": 1084162,
+            "hasPenalty": false,
+            "penaltyMs": 0,
+            "lapPenalty": 0,
+            "disqualified": false,
+            "status": "FINISHED"
+          },
+          {
+            "pos": 6,
+            "driver": "Javier Hernández",
+            "guid": "76561199125857998",
+            "car": "rss_formula_2010",
+            "team": "",
+            "bestLapMs": 72186,
+            "totalTimeMs": 1232875,
+            "hasPenalty": false,
+            "penaltyMs": 0,
+            "lapPenalty": 0,
+            "disqualified": false,
+            "status": "FINISHED"
+          },
+          {
+            "pos": 7,
+            "driver": "NoviNada",
+            "guid": "76561199237991434",
+            "car": "rss_formula_2010",
+            "team": "",
+            "bestLapMs": 72282,
+            "totalTimeMs": 1264749,
+            "hasPenalty": false,
+            "penaltyMs": 0,
+            "lapPenalty": 0,
+            "disqualified": false,
+            "status": "FINISHED"
+          },
+          {
+            "pos": 8,
+            "driver": "IWantMozaR5",
+            "guid": "76561199381231982",
+            "car": "rss_formula_2010",
+            "team": "",
+            "bestLapMs": 72457,
+            "totalTimeMs": 1180593,
+            "hasPenalty": false,
+            "penaltyMs": 0,
+            "lapPenalty": 0,
+            "disqualified": false,
+            "status": "FINISHED"
+          }
+        ]
+      },
+      "poleLap": {
+        "driver": "suforr",
+        "guid": "76561199148380051",
+        "ms": 70652
+      },
+      "poleSession": "2026_11_8_16_22_QUALIFY",
+      "qualifying": [
+        {
+          "pos": 1,
+          "driver": "suforr",
+          "guid": "76561199148380051",
+          "bestLapMs": 70652,
+          "status": "FINISHED"
+        },
+        {
+          "pos": 2,
+          "driver": "Driezz",
+          "guid": "76561199525925061",
+          "bestLapMs": 70901,
+          "status": "FINISHED"
+        },
+        {
+          "pos": 3,
+          "driver": "ACRR|Alex Munti",
+          "guid": "76561199190364639",
+          "bestLapMs": 71139,
+          "status": "FINISHED"
+        },
+        {
+          "pos": 4,
+          "driver": "Diego Pereira",
+          "guid": "76561199548642271",
+          "bestLapMs": 71647,
+          "status": "FINISHED"
+        },
+        {
+          "pos": 5,
+          "driver": "ACRR||Theagus60",
+          "guid": "76561199793961424",
+          "bestLapMs": 71686,
+          "status": "FINISHED"
+        },
+        {
+          "pos": 6,
+          "driver": "Javier Hernández",
+          "guid": "76561199125857998",
+          "bestLapMs": 72186,
+          "status": "FINISHED"
+        },
+        {
+          "pos": 7,
+          "driver": "NoviNada",
+          "guid": "76561199237991434",
+          "bestLapMs": 72282,
+          "status": "FINISHED"
+        },
+        {
+          "pos": 8,
+          "driver": "IWantMozaR5",
+          "guid": "76561199381231982",
+          "bestLapMs": 72457,
           "status": "FINISHED"
         }
       ]
