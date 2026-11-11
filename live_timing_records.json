@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-11-08T22:53:01.701Z",
+  "updatedAt": "2026-11-11T17:42:38.118Z",
   "default": "vhe_interlagos|gp",
   "tracks": {
     "rt_fuji_speedway|layout_gp": {
@@ -8,7 +8,7 @@
       "track": "rt_fuji_speedway",
       "config": "layout_gp",
       "name": "Fuji Speedway GP",
-      "drivers": 7,
+      "drivers": 2,
       "bestLap": {
         "ms": 77168,
         "driver": "Diego Pereira",
@@ -37,7 +37,7 @@
       "track": "ks_silverstone",
       "config": "gp_48pits",
       "name": null,
-      "drivers": 5,
+      "drivers": 2,
       "bestLap": {
         "ms": 107183,
         "driver": "IvanR",
@@ -83,7 +83,7 @@
       "track": "spa",
       "config": "2022",
       "name": null,
-      "drivers": 10,
+      "drivers": 2,
       "bestLap": {
         "ms": 105031,
         "driver": "suforr",
@@ -106,7 +106,7 @@
       "track": "cota_2022",
       "config": "gt",
       "name": "Circuit of The Americas",
-      "drivers": 7,
+      "drivers": 2,
       "bestLap": {
         "ms": 96759,
         "driver": "ACRR|Alex Munti",
@@ -135,7 +135,7 @@
       "track": "vhe_interlagos",
       "config": "gp",
       "name": "Interlagos - GP",
-      "drivers": 8,
+      "drivers": 2,
       "bestLap": {
         "ms": 70652,
         "driver": "suforr",
