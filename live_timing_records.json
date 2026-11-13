@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-11-13T16:40:07.432Z",
+  "updatedAt": "2026-11-13T22:10:45.464Z",
   "default": "spa|2022",
   "tracks": {
     "rt_fuji_speedway|layout_gp": {
@@ -14,23 +14,23 @@
         "driver": "Diego Pereira",
         "car": "rss_formula_2010",
         "guid": "76561199548642271",
-        "at": "2026-11-13T16:40:05.831Z"
+        "at": "2026-11-13T22:10:43.743Z"
       },
       "topSpeed": {
         "kmh": 316.7,
         "driver": "IWantMozaR5",
         "car": "rss_formula_2010",
         "guid": "76561199381231982",
-        "at": "2026-11-13T16:40:05.974Z"
+        "at": "2026-11-13T22:10:43.900Z"
       },
       "laps": {
         "count": 43,
         "driver": "IWantMozaR5",
         "car": "rss_formula_2010",
         "guid": "76561199381231982",
-        "at": "2026-11-13T16:40:05.974Z"
+        "at": "2026-11-13T22:10:43.900Z"
       },
-      "lastSeen": "2026-11-13T16:40:05.974Z"
+      "lastSeen": "2026-11-13T22:10:43.900Z"
     },
     "ks_silverstone|gp_48pits": {
       "key": "ks_silverstone|gp_48pits",
@@ -43,7 +43,7 @@
         "driver": "IvanR",
         "car": "rss_formula_rss_3_v6_2026",
         "guid": "76561198821953505",
-        "at": "2026-11-13T16:40:06.557Z"
+        "at": "2026-11-13T22:10:44.525Z"
       },
       "topSpeed": null,
       "laps": {
@@ -51,9 +51,9 @@
         "driver": "Admin",
         "car": "rss_formula_rss_3_v6_2026",
         "guid": "76561199525925061",
-        "at": "2026-11-13T16:40:06.557Z"
+        "at": "2026-11-13T22:10:44.525Z"
       },
-      "lastSeen": "2026-11-13T16:40:06.557Z"
+      "lastSeen": "2026-11-13T22:10:44.525Z"
     },
     "fujispeedway_2017|": {
       "key": "fujispeedway_2017|",
@@ -66,7 +66,7 @@
         "driver": "Sebinho",
         "car": "rss_formula_2010",
         "guid": "76561199578739987",
-        "at": "2026-11-13T16:40:06.704Z"
+        "at": "2026-11-13T22:10:44.680Z"
       },
       "topSpeed": null,
       "laps": {
@@ -74,9 +74,9 @@
         "driver": "Sebinho",
         "car": "rss_formula_2010",
         "guid": "76561199578739987",
-        "at": "2026-11-13T16:40:06.704Z"
+        "at": "2026-11-13T22:10:44.680Z"
       },
-      "lastSeen": "2026-11-13T16:40:06.704Z"
+      "lastSeen": "2026-11-13T22:10:44.680Z"
     },
     "spa|2022": {
       "key": "spa|2022",
@@ -89,7 +89,7 @@
         "driver": "suforr",
         "car": "rss_formula_2010",
         "guid": "76561199148380051",
-        "at": "2026-11-13T16:40:07.141Z"
+        "at": "2026-11-13T22:10:45.151Z"
       },
       "topSpeed": null,
       "laps": {
@@ -97,9 +97,9 @@
         "driver": "IWantMozaR5",
         "car": "rss_formula_2010",
         "guid": "76561199381231982",
-        "at": "2026-11-13T16:40:07.141Z"
+        "at": "2026-11-13T22:10:45.151Z"
       },
-      "lastSeen": "2026-11-13T16:40:07.431Z"
+      "lastSeen": "2026-11-13T22:10:45.463Z"
     },
     "cota_2022|gt": {
       "key": "cota_2022|gt",
@@ -112,23 +112,23 @@
         "driver": "ACRR|Alex Munti",
         "car": "rss_formula_2010",
         "guid": "76561199190364639",
-        "at": "2026-11-13T16:40:05.099Z"
+        "at": "2026-11-13T22:10:42.655Z"
       },
       "topSpeed": {
         "kmh": 315.4,
         "driver": "ACRR|Alex Munti",
         "car": "rss_formula_2010",
         "guid": "76561199190364639",
-        "at": "2026-11-13T16:40:05.099Z"
+        "at": "2026-11-13T22:10:42.655Z"
       },
       "laps": {
         "count": 32,
         "driver": "IWantMozaR5",
         "car": "rss_formula_2010",
         "guid": "76561199381231982",
-        "at": "2026-11-13T16:40:05.099Z"
+        "at": "2026-11-13T22:10:42.655Z"
       },
-      "lastSeen": "2026-11-13T16:40:05.099Z"
+      "lastSeen": "2026-11-13T22:10:42.655Z"
     },
     "vhe_interlagos|gp": {
       "key": "vhe_interlagos|gp",
@@ -141,23 +141,23 @@
         "driver": "suforr",
         "car": "rss_formula_2010",
         "guid": "76561199148380051",
-        "at": "2026-11-13T16:40:04.808Z"
+        "at": "2026-11-13T22:10:42.342Z"
       },
       "topSpeed": {
         "kmh": 309.3,
         "driver": "ACRR||Theagus60",
         "car": "rss_formula_2010",
         "guid": "76561199793961424",
-        "at": "2026-11-13T16:40:04.663Z"
+        "at": "2026-11-13T22:10:42.184Z"
       },
       "laps": {
         "count": 35,
         "driver": "suforr",
         "car": "rss_formula_2010",
         "guid": "76561199148380051",
-        "at": "2026-11-13T16:40:04.808Z"
+        "at": "2026-11-13T22:10:42.342Z"
       },
-      "lastSeen": "2026-11-13T16:40:04.808Z"
+      "lastSeen": "2026-11-13T22:10:42.342Z"
     }
   }
 }
